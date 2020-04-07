@@ -1,0 +1,792 @@
+@font-face {
+  font-family: 'Noto Sans';
+  src: url(../fonts/notosansdisplay-regular-webfont.woff2), url(../fonts/NotoSansDisplay-Regular.ttf);
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url(../fonts/notosansdisplay-semibold-webfont.woff2), url(../fonts/NotoSansDisplay-SemiBold.ttf);
+  font-style: normal;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  src: url(../fonts/notosansdisplay-italic-webfont.woff2), url(../fonts/NotoSansDisplay-Italic.ttf);
+  font-style: italic;
+  font-weight: normal;
+}
+
+html {
+    height: 100%;
+    font-size: 15px;
+}
+
+body {
+    height: 100%;
+    font-family: 'Noto Sans', sans-serif;
+    line-height: 1.6;
+}
+
+h5 {
+    font-size: 1.133333rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#overlay {
+    font-size: 80px;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background-color: rgba(55,60,65,0.5);
+}
+
+.content-light {
+    background-color: #f2f3f6;
+}
+
+.content-light ::placeholder {
+    color: rgba(0,0,0,0.4);
+}
+
+.content-dark {
+    background-color: #22252a;
+}
+
+.content-dark ::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+#pdfviewer-bookmarks ::placeholder, #pdfviewer-menu ::placeholder  {
+    color: rgba(0,0,0,0.4);
+}
+
+
+.form-group label {
+    font-weight: bold;
+}
+
+.label-required:after {
+    color: red;
+    padding-left: 0.15em;
+    content: "*"
+}
+
+#menu-first-name {
+    font-size: 14px;
+    max-width: 180px;
+    line-height: 18px;
+    position: relative;
+    top: 4px;
+}
+
+#toolbar {
+    margin: 0 -15px;
+}
+
+.mdi-18px {
+    line-height: 1rem;
+    position: relative;
+    top: 2px;
+}
+
+.mdi-24px {
+    line-height: 1rem;
+    position: relative;
+    top: 3px;
+}
+
+.mdi-36px {
+    line-height: 1rem;
+    position: relative;
+    top: 7px;
+}
+
+.md-box-shadow-1 {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.item-card-row .card-body {
+    min-height: 140px;
+    height: 100%;
+    overflow: auto;
+}
+
+.item-card-row {
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.file-upload-list .card-body {
+    max-height: 200px;
+    overflow: auto;
+}
+
+.file-upload-list .card-header {
+    padding: 0;
+    border: 0;
+}
+
+.projects-button {
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    position: relative;
+    top: 1px;
+}
+
+.pdfviewer-menu .dropdown-toggle {
+    border: none;
+}
+
+.pdfviewer-menu .dropdown-toggle {
+    line-height: 29.5px;
+    font-size: 20px;
+    padding: 3px 13px;
+}
+
+.pdfviewer-left, .pdfviewer-right {
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+.pdfviewer-image {
+    display: inline-block;
+    min-height: 1px;
+}
+
+.pdfviewer-page.img-night-mode, .pdfviewer-thumb.img-night-mode {
+    background-color: hsl(0, 0%, 12.5%);
+}
+
+img.img-night-mode {
+    filter:invert(100%) grayscale(100%) contrast(75%);
+}
+
+.pdfviewer-thumb {
+    display: inline-block;
+    position: relative;
+    margin-bottom: 15px;
+    cursor: pointer;
+    width: 230px;
+    height: auto;
+}
+
+.pdfviewer-thumb > div {
+    position: absolute;
+    bottom: 0;
+    left: 30%;
+    width: 40%;
+}
+
+#pdfviewer-thumbs {
+    width: 270px;
+    max-width: 270px;
+}
+
+#pdfviewer-bookmarks {
+    width: 270px;
+    max-width: 270px;
+    text-align: left;
+}
+
+#pdfviewer-bookmarks a {
+    display: block;
+    color: white;
+    line-height: 1.2;
+}
+
+.pdfviewer-page {
+    position: relative;
+}
+
+.pdfviewer-page > img {
+    position: relative;
+    /*z-index: 1;*/
+    width: 2000px;
+    height: 2000px;
+}
+
+.pdfviewer-text, .pdfviewer-highlights, .pdfviewer-notes, .pdfviewer-links {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pdfviewer-highlights > .yellow {
+    background-color: rgba(255, 245, 0, 0.25);
+}
+
+.img-night-mode .yellow {
+    background-color: rgba(202, 202, 0, 0.25);
+}
+
+.highlight-yellow {
+    background-color: hsl(57, 90%, 60%);
+}
+
+.highlight-yellow:hover {
+    background-color: hsl(57, 80%, 50%);
+}
+
+.pdfviewer-highlights > .blue {
+    background-color: rgba(90, 150, 255, 0.25);
+}
+
+.img-night-mode .blue {
+    background-color: rgba(83, 134, 255, 0.25);
+}
+
+.highlight-blue {
+    background-color: hsl(210, 100%, 80%);
+}
+
+.highlight-blue:hover {
+    background-color: hsl(210, 90%, 70%);
+}
+
+.pdfviewer-highlights > .green {
+    background-color: rgba(80, 225, 130, 0.25);
+}
+
+.img-night-mode .green {
+    background-color: rgba(100, 190, 150, 0.25);
+}
+
+.highlight-green {
+    background-color: hsl(150, 60%, 70%);
+}
+
+.highlight-green:hover {
+    background-color: hsl(150, 50%, 60%);
+}
+
+.pdfviewer-highlights > .red {
+    background-color: rgba(255, 100, 120, 0.25);
+}
+
+.img-night-mode .red {
+    background-color: rgba(255, 100, 120, 0.25);
+}
+
+.highlight-red {
+    background-color: hsl(350, 100%, 85%);
+}
+
+.highlight-red:hover {
+    background-color: hsl(350, 70%, 75%);
+}
+
+.pdfnote {
+    width: 4.5%;
+    padding-top: 3%;
+    background: rgba(47, 141, 237, 0.66);
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 10px));
+    cursor: pointer;
+}
+
+.pdfnote::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: calc(50% - 5px);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid rgba(47, 141, 237, 0.66);
+}
+
+.pdfnote.active {
+    background: rgba(220, 53, 69, 0.66);
+}
+
+.pdfnote.active::after {
+    border-top: 10px solid rgba(220, 53, 69, 0.66);
+}
+
+.pdflink {
+    position: absolute;
+    cursor: pointer;
+}
+
+.pdflink:hover {
+    border-bottom: 1px dotted rgba(155,155,155,0.66);
+}
+
+.highlight-cancel:hover, .highlight-eraser:hover {
+    background-color: rgba(120, 125, 135, 0.2);
+}
+
+.cursor-marker-blue {
+    cursor: url("../img/cursor-marker-blue.svg") 0 20, auto;
+}
+
+.cursor-marker-yellow {
+    cursor: url("../img/cursor-marker-yellow.svg") 0 20, auto;
+}
+
+.cursor-marker-green {
+    cursor: url("../img/cursor-marker-green.svg") 0 20, auto;
+}
+
+.cursor-marker-red {
+    cursor: url("../img/cursor-marker-red.svg") 0 20, auto;
+}
+
+.cursor-eraser {
+    cursor: url("../img/cursor-eraser.svg") 0 20, auto;
+}
+
+.cursor-cross {
+    cursor: crosshair;
+}
+
+.pdfviewer-text {
+    z-index: 1;
+}
+
+.pdfviewer-text > div, .pdfviewer-highlights > div, .pdfviewer-result-boxes > div {
+    position: absolute;
+    color: transparent;
+}
+
+.pdfviewer-text > div {
+    border-bottom: 1px dotted rgba(100, 120, 130, 0.66);
+}
+
+.pdfviewer-result-boxes > div.result {
+    outline: 3px solid rgba(0, 100, 255, 0.66);
+}
+
+.pdfviewer-result-boxes > div.result.active {
+    outline: 3px solid rgba(255, 0, 100, 0.66);
+    animation: 1s pulsate-opacity infinite;
+}
+
+/* Horizontal layout. */
+
+@media (min-width: 992px) {
+
+    .left-container {
+        background-color: rgb(0, 89, 182);
+        width: 230px;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    #content-col {
+        height: 100vh;
+        overflow: auto;
+    }
+
+    #filter-list {
+        width: 230px;
+        height:100vh;
+        overflow-y: auto;
+    }
+}
+
+/* Vertical layout. */
+
+@media (max-width: 991px) {
+
+    .left-container {
+        background-color: rgb(0, 89, 182);
+    }
+
+    #content-col {
+        height: calc(100% - 42px);
+        overflow-y: auto;
+    }
+    
+    #filter-list {
+        height: 20vh;
+        overflow-y: auto;
+        /* display: flex is bugged in Chrome. */
+        display: block;
+    }
+}
+
+/* Form beautification */
+
+.form-check-label {
+    margin-left: -18px;
+}
+
+.form-check-inline .form-check-label {
+    margin-left: 0;
+}
+
+.form-check-label > .label-text {
+    display: inline-block;
+    transform: translateY(1px);
+}
+
+.form-check-label.disabled > .mdi {
+    opacity: 0.5;
+}
+
+/* Keyboard. */
+#keyboard-window {
+    position: absolute;
+    width: 80%;
+    min-width: 320px;
+    height: auto;
+    min-height: 200px;
+    z-index: 10000;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+#keyboard-window > .card-body {
+    padding: 0
+}
+
+#keyboard {
+    height:14.5rem;
+    overflow: auto;
+}
+
+#keyboard .tab-content .btn {
+    font-size: 1.25rem;
+    border: 0;
+    width: 4rem;
+}
+
+/* Typeahead. */
+
+.typeahead .dropdown-menu {
+    max-height: 11.25rem;
+    overflow-y: auto;
+}
+
+/* Mark */
+mark {
+    padding: 0;
+    font-weight: normal;
+    background-color: rgba(255,255,155, 0.75)
+}
+
+/* Button */
+
+.btn {
+    line-height: 1.6;
+    padding: 6px 16px;
+    border-radius: 5px;
+    box-shadow: none !important;
+}
+
+.btn:focus {
+    outline: 1px dotted rgba(0,0,0,0.33);
+}
+
+.btn-shadow {
+    border-bottom: 4px solid rgba(0,0,0,0.2)
+}
+
+.btn-shadow-sm {
+    border-bottom: 3px solid rgba(0,0,0,0.2)
+}
+
+.btn-shadow-lg {
+    border-bottom: 5px solid rgba(0,0,0,0.2)
+}
+
+.btn-sm {
+    line-height: 21px;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.btn-lg {
+    line-height: 29.5px;
+    padding: 6px 20px;
+    border-radius: 6px;
+}
+
+.btn-link {
+    border: none;
+}
+
+.btn-icon {
+    line-height: 29.5px;
+    font-size: 20px;
+    padding: 3px 13px;
+}
+
+.btn-icon.btn-lg {
+    line-height: 30px;
+    font-size: 24px;
+    padding: 6px 18px;
+}
+
+.btn-icon.btn-sm {
+    line-height: 21px;
+    font-size: 18px;
+    padding: 4px 8px;
+}
+
+.btn-round {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 1rem;
+}
+
+/* Card, list, etc. */
+
+.card, .card-group, .item-container, .list-group {
+    border: 0;
+    box-shadow: 0 1px 20px rgba(0,0,0,0.02), 0 1px 10px rgba(0,0,0,0.04);
+}
+
+.card-group > .card {
+    border: 1px solid rgba(0, 10, 20, 0.075);
+    box-shadow: none;
+}
+
+.modal-body .list-group, .card .list-group {
+    box-shadow: none;
+}
+
+.list-group-item {
+    border-color: rgba(0,30,60,0.1);
+}
+
+.popover {
+    border-radius: 0;
+    width:300px;
+    max-width: 300px;
+}
+
+.alert {
+    border-width: 3px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+small {
+    font-size: 0.85rem;
+}
+
+/* Breadcrumb */
+
+.breadcrumb-item + .breadcrumb-item::before {
+    font-family: "Material Design Icons", monospace;
+    display: inline;
+    content: "\F142";
+    padding-right: 0.25rem;
+}
+
+/* Modal */
+.modal {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background-color: rgba(55,60,65,0.5);
+}
+
+.close {
+    text-shadow: none;
+    color: inherit;
+}
+
+/* Table */
+.table td {
+    vertical-align: middle;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    font-size: 1rem;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+
+/* Utilities */
+
+.bg-black {
+    background-color: rgb(0, 0, 0);
+}
+
+.bg-transparent {
+    background-color: transparent;
+}
+
+.bg-gray-85 {
+    background-color: hsl(0, 0%, 85%);
+}
+
+.bg-darker-3 {
+    background-color: rgba(0, 10, 30, 0.03);
+}
+
+.bg-darker-5 {
+    background-color: rgba(0, 10, 30, 0.05);
+}
+
+.bg-lighter-5 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.border-darker {
+    border: 1px solid rgba(0, 10, 30,0.125);
+}
+
+.border-darker-top {
+    border-top: 1px solid rgba(0, 10, 30,0.125);
+}
+
+.border-darker-bottom {
+    border-bottom: 1px solid rgba(0, 10, 30,0.125);
+}
+
+.border-lighter {
+    border: 1px solid rgba(255,255,255,0.125);
+}
+
+.opacity-50 {
+    opacity: 0.5
+}
+
+.overflow-scroll {
+    overflow-y: scroll;
+}
+
+.unselectable {
+    -webkit-user-select: none;     
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* sr-only bug with inline radios */
+.sr-only{
+    position: absolute !important;
+}
+
+.mdi-resizable {
+    font-size: 18px;
+    padding: 0;
+    line-height: 10px;
+    right: 7px;
+    bottom: 3px;
+}
+
+.ui-draggable-handle {
+    cursor: move;
+}
+
+/* Expandable */
+div.il-expandable {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+div.il-expandable > div {
+    display: table-cell;
+}
+
+div.il-expandable-left {
+    width: 1.8rem;
+}
+
+div.il-expandable-left > button {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 0.7rem;
+    padding: 0;
+    border: none;
+    opacity: 0.5;
+    position: relative;
+    top: -1px;
+}
+
+/* TinyMCE */
+.mce-tinymce {
+    box-shadow: none !important;
+    border: none !important;
+}
+
+#notes-window {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: auto;
+    min-width: 290px;
+    height: auto;
+    min-height: 200px;
+    z-index: 1000;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+#notes-window .card-body {
+    padding: 0;
+}
+
+.mce-img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Draggable */
+.dragscroll {
+    cursor: move;
+}
+
+/* Cropper */
+.cropper-container {
+    z-index: 1;
+}
+
+.cropper-center:before,
+.cropper-center:after {
+  background-color: rgba(155,155,155,0.75);
+}
+
+.cropper-crop-box {
+    background-color: rgba(155, 155, 155, 0.33);
+}
+
+.cropper-dashed {
+    border-color: rgba(155,155,155,0.75);
+}
+
+.cropper-view-box > img {
+    background-color: rgb(255,255,255);
+}
+
+/* jQuery UI */
+.ui-selectable:hover, .ui-selecting {
+    background: rgba(100, 120, 150, 0.33);
+}
+
+@keyframes pulsate-opacity {
+    0%  {
+        opacity: 1
+    }
+    50% {
+        opacity: 0.5
+    }
+}
+
+/* DataTables */
+.dataTables_wrapper {
+    margin-bottom: 1rem;
+}
