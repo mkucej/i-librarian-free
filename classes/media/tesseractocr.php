@@ -201,7 +201,7 @@ final class TesseractOcr {
             'text'  => ''
         ];
 
-        exec($this->binary->tesseract() . ' ' . escapeshellarg($image) . ' -l ' . escapeshellarg($language) . ' stdout tsv', $lines);
+        exec($this->binary->tesseract() . ' ' . escapeshellarg($image) . ' stdout -l ' . escapeshellarg($language) . ' tsv', $lines);
 
         // Get image dimensions.
         array_shift($lines);
