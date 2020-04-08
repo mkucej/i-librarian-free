@@ -183,7 +183,7 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
                         if ($days < 1 || $days > 365) {
 
-                            continue;
+                            break;
                         }
 
                         $from = date('Y/m/d', time() - $days * 86400);

@@ -160,23 +160,21 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
             foreach ($filters as $filter) {
 
-                switch (key($filter)) {
+                if (key($filter) === 'last_added') {
 
-                    case 'last_added':
-                        $days = current($filter);
+                    $days = current($filter);
 
-                        if ($days < 1 || $days > 365) {
+                    if ($days < 1 || $days > 365) {
 
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        $from = date('Y/m/d', time() - $days * 86400);
-                        $now = date('Y/m/d', time() - 86400);
+                    $from = date('Y-m-d', time() - $days * 86400);
+                    $now = date('Y-m-d', time() - 86400);
 
-                        $queries[] = "{$from}:{$now}[EDAT]";
-                        $plural = $days === '1' ? '' : 's';
-                        $search_name .= "\u{2022} last {$days} day{$plural} ";
-                        break;
+                    $queries[] = "{$from}:{$now}[EDAT]";
+                    $plural = $days === '1' ? '' : 's';
+                    $search_name .= "\u{2022} last {$days} day{$plural} ";
                 }
             }
         }
