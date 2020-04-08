@@ -159,7 +159,7 @@ final class Binary {
 
         if ($this->os === 'WINDOWS') {
 
-            if (is_executable($binary) === false && is_executable($this->withPath($binary)) === false) {
+            if (is_executable($this->withPath($binary)) === false) {
 
                 throw new Exception("the program <kbd>{$binary}</kbd> not found", 500);
             }
