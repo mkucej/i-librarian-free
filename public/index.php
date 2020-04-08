@@ -46,7 +46,7 @@ if (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config')) {
 
     // Can be defined in paths.php, e.g. /etc/i-librarian.
     include_once IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'paths.php';
-    define('IL_CONFIG_PATH', $IL_CONFIG_PATH);
+    define('IL_CONFIG_PATH', $IL_CONFIG_PATH . DIRECTORY_SEPARATOR . 'config');
 }
 
 // We must have the config path at this point.
