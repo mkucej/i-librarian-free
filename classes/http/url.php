@@ -34,7 +34,7 @@ final class Url {
         $port = $url->getPort();
         $port = $port === '80' || $port === '443' ? '' : ":{$port}";
 
-        return "{$url->getScheme()}://{$url->getHost()}{$base_path}";
+        return "{$url->getScheme()}://{$url->getHost()}{$port}{$base_path}";
     }
 
     /**
