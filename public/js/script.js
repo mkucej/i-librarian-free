@@ -3115,6 +3115,10 @@ class PdfMainView extends View {
                     });
                 }
             });
+            // Remove night mode.
+            if ($('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page:first').hasClass('img-night-mode')) {
+                e.data.object.nightMode();
+            }
         } else {
             e.data.object.destroyCropper();
         }
@@ -3204,10 +3208,11 @@ class PdfMainView extends View {
         e.data.object.scrollToPage($(this).data('page'));
     }
     nightMode() {
-        $('#pdfviewer-pages img').toggleClass('img-night-mode');
-        $('#pdfviewer-pages .pdfviewer-page').toggleClass('img-night-mode bg-white');
-        $('#pdfviewer-pages .pdfviewer-thumb').toggleClass('img-night-mode bg-white');
-        let nightMode = $('#pdfviewer-pages img:first').hasClass('img-night-mode');
+        $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page > img').toggleClass('img-night-mode');
+        $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page').toggleClass('img-night-mode bg-white');
+        $('#pdfviewer-pages > .pdfviewer-left .pdfviewer-thumb > img').toggleClass('img-night-mode bg-white');
+        $('#pdfviewer-pages > .pdfviewer-left .pdfviewer-thumb').toggleClass('img-night-mode bg-white');
+        let nightMode = $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page > img:first').hasClass('img-night-mode');
         store.save('il.nightMode', nightMode);
     }
     toggleTextLayer(e) {
@@ -4821,11 +4826,13 @@ $(function(){
             views.pdfmain.destroyCropper();
             views.pdfmain.destroyTextLayer();
             views.pdfmain.clearNewNote();
+            $('#pdfviewer-highlight-menu .highlight-cancel').click();
         }
         if ($('#pdfviewer-menu').length === 1 && typeof window.pdfmainview === 'object') {
             window.pdfmainview.destroyCropper();
             window.pdfmainview.destroyTextLayer();
             window.pdfmainview.clearNewNote();
+            $('#pdfviewer-highlight-menu .highlight-cancel').click();
         }
     });
     $(document).on('keydown.hotkeys', null, 'h', function () {
