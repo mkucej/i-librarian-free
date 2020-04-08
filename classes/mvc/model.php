@@ -23,8 +23,6 @@ use const FILEINFO_MIME_TYPE;
  */
 abstract class Model {
 
-    const IL_MODEL_VERSION = '5.0.2';
-
     /**
      * @var DependencyInjector
      */
