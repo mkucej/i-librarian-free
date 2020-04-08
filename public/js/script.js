@@ -4118,57 +4118,6 @@ views.nasamain = new ExternalMainView();
 views.patentsmain = new ExternalMainView();
 views.scopusmain = new ExternalMainView();
 
-class ScopusMainView extends View {
-    constructor() {
-        super();
-        this.parent = '#content-col';
-        this.events = {
-            'submit #search-form': 'search',
-            'click .delete-search': 'deleteSearch'
-        };
-    }
-    afterRender(data) {
-        $('#clone-row').clonable({target: '#search-row'});
-        formStyle.init();
-    }
-    search(e) {
-        e.preventDefault();
-        let $f = $(this), params = $f.serialize();
-        $.when(model.load({
-            url: window.IL_BASE_URL + 'index.php/scopus/presearch?' + params
-        })).done(function (response) {
-            let searchName = response.search_name;
-            $.when(model.load({
-                url: response.url,
-                cors: true,
-                dataType: 'text'
-            })).done(function (response) {
-                $.when(model.load({
-                    url: window.IL_BASE_URL + 'index.php/scopus/search?' + params,
-                    data: {
-                        json: response,
-                        search_name: searchName
-                    }
-                })).done(function (data) {
-                    router.navigate('#scopus/search?' + params, {trigger: false});
-                    views.scopussearch.render(data);
-                });
-            });
-        });
-    }
-    deleteSearch(e) {
-        let $t = $(this);
-        $.when(model.save({
-            url: $t.data('url'),
-            data: {
-                id: $t.data('id')
-            }
-        })).done(function () {
-            B.history.loadUrl();
-        });
-    }
-}
-
 class ExternalSearchView extends View {
     constructor() {
         super();
@@ -4198,67 +4147,6 @@ views.crossrefsearch = new ExternalSearchView();
 views.pubmedsearch = new ExternalSearchView();
 views.pmcsearch = new ExternalSearchView();
 views.nasasearch = new ExternalSearchView();
-views.patentssearch = new ExternalSearchView();
-
-class ScopusSearchView extends View {
-    constructor() {
-        super();
-        this.parent = '#content-col';
-        this.events = {
-            'click .add-pdf-btn': 'makeUploadable',
-            'click button': 'makeUploadableBtn'
-        };
-    }
-    afterRender(data) {
-        let This = this;
-        if (data.html !== '') {
-            $(window).off('resize.ExternalSearchView').on('resize.ExternalSearchView', function () {
-                views.itemsmain.itemsHeight();
-            });
-            views.itemsmain.itemsHeight();
-        } else {
-            let searchName = data.search_name, params = location.hash.split('?').pop();
-            $.when(model.load({
-                url: data.url,
-                cors: true,
-                dataType: 'text'
-            })).done(function (response) {
-                This.convertJson(searchName, response);
-            }).fail(function (xhr) {
-                if(xhr.status === 401) {
-                    let newUrl = data.url.replace('COMPLETE', 'STANDARD');
-                    $.when(model.load({
-                        url: newUrl,
-                        cors: true,
-                        dataType: 'text'
-                    })).done(function (response) {
-                        This.convertJson(searchName, response);
-                    });
-                }
-            });
-        }
-    }
-    makeUploadable() {
-        $(this).parent().find('form').uploadable();
-    }
-    makeUploadableBtn() {
-        $(this).closest('form').uploadable();
-    }
-    convertJson(searchName, data) {
-        let params = location.hash.split('?').pop();
-        $.when(model.save({
-            url: window.IL_BASE_URL + 'index.php/scopus/search?' + params,
-            data: {
-                json: data,
-                search_name: searchName
-            }
-        })).done(function (data) {
-            views.scopussearch.render(data);
-        });
-    }
-}
-
-views.scopussearch = new ScopusSearchView();
 
 class GlobalSettingsMainView extends View {
     constructor() {
