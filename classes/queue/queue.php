@@ -26,9 +26,8 @@ final class Queue {
 
         // Delays. Interval in microsecs. E.g. 5 req/sec = 200,000 microsecs.
         $this->delays = [
-            'pubmed' => 100000,
-            'nasa'   => 100000,
-            'google' =>  33334
+            'pubmed' => 350000,
+            'nasa'   => 100000
         ];
 
         // Create semaphores keys.
@@ -36,7 +35,6 @@ final class Queue {
             'binary'     => crc32('IL_LOCK_BINARY'),
             'pubmed'     => crc32('IL_LOCK_PUBMED'),
             'nasa'       => crc32('IL_LOCK_NASA'),
-            'google'     => crc32('IL_LOCK_GOOGLE'),
             'pdfextract' => crc32('IL_LOCK_PDFEXTRACT')
         ];
 
@@ -44,13 +42,11 @@ final class Queue {
         $IL_SHM_BINARY     = crc32('IL_SHM_BINARY');
         $IL_SHM_PUBMED     = crc32('IL_SHM_PUBMED');
         $IL_SHM_NASA       = crc32('IL_SHM_NASA');
-        $IL_SHM_GOOGLE     = crc32('IL_SHM_GOOGLE');
         $IL_SHM_PDFEXTRACT = crc32('IL_SHM_PDFEXTRACT');
 
         $this->shmvars['binary']     = shm_attach($IL_SHM_BINARY);
         $this->shmvars['pubmed']     = shm_attach($IL_SHM_PUBMED);
         $this->shmvars['nasa']       = shm_attach($IL_SHM_NASA);
-        $this->shmvars['google']     = shm_attach($IL_SHM_GOOGLE);
         $this->shmvars['pdfextract'] = shm_attach($IL_SHM_PDFEXTRACT);
     }
 
@@ -77,10 +73,6 @@ final class Queue {
                 $this->lane = 'nasa';
                 break;
 
-            case "google":
-                $this->lane = 'google';
-                break;
-
             case "pdfextract":
                 $this->lane = 'pdfextract';
                 break;
@@ -104,12 +96,12 @@ final class Queue {
 
         $this->semaphores[$this->lane] = sem_get($this->sem_keys[$this->lane]);
 
-        // Acquire semaphore.
-        $acquire = sem_acquire($this->semaphores[$this->lane]);
-
         // Some scripts need to be delayed. Delays are very undesirable, but
         // there are APIs that could ban the server, if RPS is too high.
         $this->delay();
+
+        // Acquire semaphore.
+        $acquire = sem_acquire($this->semaphores[$this->lane]);
 
         // Last access is the time of acquire + delay.
         $this->setLastAccess();
@@ -141,6 +133,7 @@ final class Queue {
         }
 
         // Release the semaphore lock.
+        sem_release($this->semaphores[$this->lane]);
         $this->semaphores[$this->lane] = null;
 
         return;
@@ -233,12 +226,12 @@ final class Queue {
 
         if (function_exists('sem_get') === false) {
 
-            return 0;
+            return microtime(true) - 1;
         }
 
         if (shm_has_var($this->shmvars[$this->lane], 1) === false) {
 
-            $accessed = 0;
+            $accessed = microtime(true) - 1;
 
         } else {
 
