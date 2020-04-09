@@ -1311,7 +1311,7 @@ class ILChart {
             }
         };
         yAxes.push(yAxis1);
-        if(dataset2 !== undefined) {
+        if(dataset2 !== undefined && dataset2 !== null) {
             yAxes.push(yAxis2);
         }
         return {
