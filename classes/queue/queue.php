@@ -149,16 +149,16 @@ final class Queue {
      */
     private function delay(): void {
 
-        // If semaphores not available, at least delay by an arbitrary amount.
-        if (function_exists('sem_get') === false) {
-
-            usleep(500000);
-        }
-
         // If delay not set.
         if (isset($this->delays[$this->lane]) === false) {
 
             return;
+        }
+
+        // If semaphores not available, at least delay by an arbitrary amount.
+        if (function_exists('sem_get') === false) {
+
+            usleep(500000);
         }
 
         $delay = max(0, $this->delays[$this->lane] - 1000000 * (microtime(true) - $this->getLastAccess()));
