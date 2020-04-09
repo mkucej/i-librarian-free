@@ -32,6 +32,9 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
         parent::__construct($di);
 
+        // Set queue lane.
+        $this->queue->lane('pubmed');
+
         $this->client = $this->di->get('HttpClient', [
             [
                 'timeout' => 10,
@@ -223,17 +226,22 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
         // Try to get records from Cache.
         $this->cache->context('searches');
-//        $this->cache->clear();
 
         $key = $this->cache->key(
             __METHOD__
             . serialize($params)
         );
 
+        // Debug.
+//        $this->cache->delete($key);
+
         // Get items from cache.
         $items = $this->cache->get($key);
 
         if (empty($items)) {
+
+            // Acquire semaphore.
+            $this->queue->wait();
 
             // Get results.
             $response = $this->client->get($this->url_search . http_build_query($params));
@@ -241,7 +249,15 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
             $json = json_decode($contents, true);
 
-            $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+            $items['items'] = [];
+
+            if (!empty($json['esearchresult']['idlist'])) {
+
+                // Acquire another semaphore.
+                $this->queue->wait();
+
+                $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+            }
 
             $items['found'] = $json['esearchresult']['count'];
 

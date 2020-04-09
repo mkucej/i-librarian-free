@@ -32,6 +32,9 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
         parent::__construct($di);
 
+        // Set queue lane.
+        $this->queue->lane('pubmed');
+
         $this->client = $this->di->get('HttpClient', [
             [
                 'timeout' => 10,
@@ -219,12 +222,24 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
         if (empty($items)) {
 
+            // Acquire semaphore.
+            $this->queue->wait();
+
             // Get results.
             $response = $this->client->get($this->url_search . http_build_query($params));
             $contents = $response->getBody()->getContents();
 
             $json = json_decode($contents, true);
-            $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+
+            $items['items'] = [];
+
+            if (!empty($json['esearchresult']['idlist'])) {
+
+                // Acquire another semaphore.
+                $this->queue->wait();
+
+                $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+            }
 
             $items['found'] = $json['esearchresult']['count'];
 
