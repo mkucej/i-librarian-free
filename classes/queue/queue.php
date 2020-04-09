@@ -106,6 +106,9 @@ final class Queue {
         // Last access is the time of acquire + delay.
         $this->setLastAccess();
 
+        // Release semaphore.
+        $this->release();
+
         return $acquire;
     }
 
