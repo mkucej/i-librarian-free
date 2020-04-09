@@ -449,10 +449,13 @@ EOT;
             $sqls[] = <<<EOT
 SELECT id as item_id
     FROM items
-    WHERE id > ? AND id < (? + {$this->app_settings->getGlobal('max_items')})
+    WHERE id >= ? AND id < ?
 EOT;
 
-            $columns = [$filters['catalog'], $filters['catalog']];
+            $columns = [
+                $filters['catalog'],
+                $filters['catalog'] + $this->app_settings->getGlobal('max_items')
+            ];
         }
 
         if ($collection === 'clipboard') {

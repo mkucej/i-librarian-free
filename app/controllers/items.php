@@ -560,7 +560,7 @@ class ItemsController extends Controller {
                 throw new Exception("id parameter {$this->validation->error}", 422);
             }
 
-            $from_id = $this->get['from_id'] % 1000 === 1 ? $this->get['from_id'] : 1;
+            $from_id = $this->get['from_id'] % $this->app_settings->getGlobal('max_items') === 1 ? $this->get['from_id'] : 1;
 
             // Limit from.
             $from = ($this->get['page'] - 1) * $this->app_settings->getUser('page_size');
