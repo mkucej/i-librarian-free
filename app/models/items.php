@@ -2229,6 +2229,29 @@ EOT;
                 $i++;
             }
 
+            if ( $display_action == "title" ) {
+                for ($idx = 0; $idx < $i; $idx++) {
+                    $item_id = $output[$idx]['id'];
+ 
+                    // Query Authors.
+                    $sql = <<<EOT
+SELECT
+    authors.id, CASE WHEN first_name is NULL THEN last_name ELSE last_name || ', ' || first_name END AS author
+    FROM authors
+    INNER JOIN items_authors ON items_authors.author_id=authors.id
+    WHERE items_authors.item_id=?
+    ORDER by items_authors.position
+EOT;
+        
+                    $this->db_main->run($sql, [$item_id]);
+                    $authors = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
+                    if (!empty($authors)) {
+                        $output[$idx]['authors'] = $authors;
+                    }   
+                }
+            }
+
+
             // Add clipboard flags.
             $output = $this->clipboardFlags($output);
 
@@ -2254,7 +2277,6 @@ EOT;
             $output = [];
 
             while ($row = $this->db_main->getResultRow()) {
-
                 // Add row to the items array.
                 $output[] = [
                     'id'       => $row['id'],
@@ -2265,6 +2287,25 @@ EOT;
                 ];
 
                 $i++;
+            }
+            for ($idx = 0; $idx < $i; $idx++) {
+                $item_id = $output[$idx]['id'];
+ 
+                // Query Authors.
+                $sql = <<<EOT
+SELECT
+    authors.id, CASE WHEN first_name is NULL THEN last_name ELSE last_name || ', ' || first_name END AS author
+    FROM authors
+    INNER JOIN items_authors ON items_authors.author_id=authors.id
+    WHERE items_authors.item_id=?
+    ORDER by items_authors.position
+EOT;
+
+                $this->db_main->run($sql, [$item_id]);
+                $authors = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
+                if (!empty($authors)) {
+                    $output[$idx]['authors'] = $authors;
+                }       
             }
 
             // Add clipboard flags.

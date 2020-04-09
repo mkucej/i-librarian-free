@@ -894,6 +894,14 @@ EOT;
                 }
             }
 
+            // Authors
+            $authors = '';
+
+            if (!empty($item['authors'])) {
+                $authors = join('; ', $item['authors']);
+                $authors = "<div class=\"truncate mb-1\">{$authors}</div>";
+            }  
+
             // Top HTML structure.
 
             $titles .= <<<EOT
@@ -905,6 +913,7 @@ EOT;
                             </td>
                             <td class="pl-1 pt-3 pr-4" style="height: 3.5rem">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
+                                {$authors}
                             </td>
                         </tr>
                         <tr>
@@ -1251,6 +1260,14 @@ EOT;
             // Abstract.
             $abstract = empty($item['abstract']) ? 'No abstract' : $item['abstract'];
 
+            // Authors
+            $authors = '';
+
+            if (!empty($item['authors'])) {
+                $authors = join('; ', $item['authors']);
+                $authors = "<div class=\"truncate mb-1\">{$authors}</div>";
+            }  
+
             // Rich-text notes.
             $notes_arr = [];
             $notes_arr[] = $this->sanitation->lmth($item['notes']);
@@ -1274,6 +1291,7 @@ EOT;
                             </td>
                             <td class="pt-3 pr-3">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
+                                {$authors}
                             </td>
                         </tr>
                         <tr>
