@@ -32,7 +32,7 @@ final class Url {
 
         // Add port.
         $port = $url->getPort();
-        $port = $port === '80' || $port === '443' ? '' : ":{$port}";
+        $port = $port === '80' || $port === '443' || empty($port) ? '' : ":{$port}";
 
         return "{$url->getScheme()}://{$url->getHost()}{$port}{$base_path}";
     }
