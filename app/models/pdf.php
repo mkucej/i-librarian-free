@@ -372,10 +372,25 @@ SQL;
             return;
         }
 
+        $pdf_file = $this->idToPdfPath($item_id);
+
+        // Not a PDF.
+        if (mime_content_type($pdf_file) !== 'application/pdf') {
+
+            return;
+        }
+
         // Extract full text.
-        $this->pdf_object = $this->di->get('Pdf', $this->idToPdfPath($item_id));
+        $this->pdf_object = $this->di->get('Pdf', $pdf_file);
 
         $text_file = $this->pdf_object->text();
+
+        // No text file.
+        if (is_readable($text_file) === false) {
+
+            return;
+        }
+
         $text = trim(file_get_contents($text_file));
         unlink($text_file);
 

@@ -453,10 +453,24 @@ EOT;
                 continue;
             }
 
-            /** @var Pdf $pdf_object */
-            $pdf_object = $this->di->get('Pdf', $this->idToPdfPath($id));
+            $pdf_file = $this->idToPdfPath($id);
 
+            // Not a PDF.
+            if (mime_content_type($pdf_file) !== 'application/pdf') {
+
+                continue;
+            }
+
+            /** @var Pdf $pdf_object */
+            $pdf_object = $this->di->get('Pdf', $pdf_file);
             $text_file = $pdf_object->text();
+
+            // No text file.
+            if (is_readable($text_file) === false) {
+
+                continue;
+            }
+
             $text = file_get_contents($text_file);
 
             if(empty($text)) {

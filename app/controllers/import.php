@@ -165,48 +165,51 @@ class ImportController extends Controller {
 
             /** @var Pdf $pdf_obj */
             $pdf_obj = new Pdf($this->di, $temp_filename);
-            $text = $pdf_obj->text();
+            $text_file = $pdf_obj->text();
 
-            $ft = fopen($text, 'r');
+            if (is_readable($text_file) === true) {
 
-            while(feof($ft) === false) {
+                $ft = fopen($text_file, 'r');
 
-                $line = fgets($ft);
+                while (feof($ft) === false) {
 
-                preg_match_all('/10\.\d{4,5}\.?\d*\/\S+/ui', $line, $match, PREG_PATTERN_ORDER);
+                    $line = fgets($ft);
 
-                if (count($match[0]) > 0) {
+                    preg_match_all('/10\.\d{4,5}\.?\d*\/\S+/ui', $line, $match, PREG_PATTERN_ORDER);
 
-                    // First match.
-                    $doi = $match[0][0];
+                    if (count($match[0]) > 0) {
 
-                    // Remove punctuation marks from the end.
-                    if (in_array(substr($doi, -1), ['.', ',', ';']) === true) {
+                        // First match.
+                        $doi = $match[0][0];
 
-                        $doi = substr($doi, 0, -1);
-                    }
-
-                    // Extract DOI from parentheses.
-                    if (substr($doi, -1) === ')' || substr($doi, -1) === ']') {
-
-                        preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\S+)/ui', $line, $match2, PREG_PATTERN_ORDER);
-
-                        if (substr($doi, -1) === ')' && isset($match2[1][0]) === true && $match2[1][0] === '(') {
+                        // Remove punctuation marks from the end.
+                        if (in_array(substr($doi, -1), ['.', ',', ';']) === true) {
 
                             $doi = substr($doi, 0, -1);
                         }
 
-                        if (substr($doi, -1) === ']' && isset($match2[1][0]) === true && $match2[1][0] === '[') {
+                        // Extract DOI from parentheses.
+                        if (substr($doi, -1) === ')' || substr($doi, -1) === ']') {
 
-                            $doi = substr($doi, 0, -1);
+                            preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\S+)/ui', $line, $match2, PREG_PATTERN_ORDER);
+
+                            if (substr($doi, -1) === ')' && isset($match2[1][0]) === true && $match2[1][0] === '(') {
+
+                                $doi = substr($doi, 0, -1);
+                            }
+
+                            if (substr($doi, -1) === ']' && isset($match2[1][0]) === true && $match2[1][0] === '[') {
+
+                                $doi = substr($doi, 0, -1);
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                    }
                 }
-            }
 
-            fclose($ft);
+                fclose($ft);
+            }
 
         } elseif (in_array($mime_type, $this->app_settings->extra_mime_types) === false) {
 
