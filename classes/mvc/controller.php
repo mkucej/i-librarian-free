@@ -111,6 +111,20 @@ abstract class Controller {
 
             define('IL_LANGUAGE', $language);
         }
+
+        // All POST requests must contain CSRF token.
+        if ($this->request->getMethod() === 'POST') {
+
+            if (empty($this->post['csrfToken'])) {
+
+                throw new Exception('missing CSRF token in POST request', 400);
+            }
+
+            if ($this->session->data('token') !== $this->post['csrfToken']) {
+
+                throw new Exception('session has expired, please reload', 401);
+            }
+        }
     }
 
     /**

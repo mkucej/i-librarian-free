@@ -120,23 +120,6 @@ final class Session {
         if ($this->data('token') === null) {
 
             $this->data('token', $this->encryption->getRandomKey(64));
-
-        }
-
-        // All POST requests must contain CSRF token.
-        if ($this->request->getMethod() === 'POST') {
-
-            $post = $this->request->getParsedBody();
-
-            if (empty($post['csrfToken'])) {
-
-                throw new Exception('missing CSRF token in POST request', 400);
-            }
-
-            if ($this->data('token') !== $post['csrfToken']) {
-
-                throw new Exception('session has expired, please reload', 401);
-            }
         }
     }
 
