@@ -4791,8 +4791,8 @@ $(function(){
      */
     $('body').on('click', 'a', function () {
         let href = $(this).attr('href');
-        // Full and empty links are exempt.
-        if (href.indexOf('//') > 0 || href.indexOf('mailto') === 0) {
+        // Full, empty and data links are exempt.
+        if (href.indexOf('//') > 0 || href.indexOf('mailto') === 0 || href.indexOf('data') === 0) {
             // Store item link referrer in storage.
             if (/\/item#/.test(href) === true) {
                 store.save('il.itemReferrer', location.href);
