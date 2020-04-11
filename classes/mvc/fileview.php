@@ -71,6 +71,11 @@ abstract class FileView extends View {
                         break;
                     }
                 }
+                break;
+
+            default:
+                $filename = rawurlencode('file.txt');
+                $this->response = $this->response->withHeader('Content-Disposition', "$disposition_header; filename*=UTF-8''$filename");
         }
     }
 
