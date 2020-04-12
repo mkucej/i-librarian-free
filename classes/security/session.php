@@ -51,7 +51,7 @@ final class Session {
         $cookie_secure = $this->app_settings->getIni('session', 'cookie_secure');
 
         ini_set('session.name', 'IL');
-        ini_set('session.cookie_path', pathinfo(IL_PATH_URL, PATHINFO_DIRNAME));
+        ini_set('session.cookie_path', parse_url(IL_BASE_URL, PHP_URL_PATH));
         ini_set('session.cookie_secure', (integer) $cookie_secure);
         ini_set('session.cookie_httponly', 1);
         ini_set('session.use_strict_mode', 1);
@@ -278,10 +278,6 @@ final class Session {
 
     /**
      * Regenerate session id. Prevents session id hijacking.
-     *
-     * PHP bug cookie sent by `session_regenerate_id` has wrong path.
-     *
-     * @deprecated
      */
     public function regenerateId(): void {
 

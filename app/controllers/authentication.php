@@ -41,8 +41,8 @@ class AuthenticationController extends Controller {
         // Must be signed out.
         $this->authorization->signedId(false);
 
-        // Regenerate session id to prevent hijacking. PHP is bugged send wrong cookie path.
-//        $this->session->regenerateId();
+        // Regenerate session id to prevent hijacking.
+        $this->session->regenerateId();
 
         $model = new AuthenticationModel($this->di);
 
