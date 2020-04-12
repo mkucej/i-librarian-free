@@ -37,10 +37,14 @@ if (!is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app')) {
 define('IL_APP_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app');
 define('IL_CLASS_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'classes');
 
-// CONFIG. Can be the sibling folder config.
+// CONFIG. Can be the private or public sibling folder config.
 if (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config')) {
 
     define('IL_CONFIG_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config');
+
+} elseif (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config')) {
+
+    define('IL_CONFIG_PATH', dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config');
 
 } else {
 
@@ -60,6 +64,10 @@ if (!is_dir(IL_CONFIG_PATH)) {
 if (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data')) {
 
     define('IL_DATA_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data');
+
+} elseif (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'data')) {
+
+    define('IL_DATA_PATH', dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'data');
 
 } else {
 
