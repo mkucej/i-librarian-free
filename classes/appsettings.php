@@ -366,7 +366,14 @@ final class AppSettings {
         // Second, look in global settings.
         try {
 
-            return $this->getGlobal('api_' . strtolower($name));
+            if ($this->getGlobal('api_' . strtolower($name)) !== '') {
+
+                return $this->getGlobal('api_' . strtolower($name));
+
+            } elseif ($optional === false) {
+
+                throw new Exception("API key <kbd>$name</kbd> not found. It must be set in the administrator settings.", 500);
+            }
 
         } catch (Exception $exc) {
 
@@ -374,8 +381,8 @@ final class AppSettings {
 
                 throw new Exception("API key <kbd>$name</kbd> not found. It must be set in the administrator settings.", 500);
             }
-
-            return '';
         }
+
+        return '';
     }
 }
