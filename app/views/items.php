@@ -482,7 +482,7 @@ EOT;
         $el = $this->di->get('Icon');
 
         $el->addClass('d-xl-none');
-        $el->icon('filter');
+        $el->icon('filter-outline');
         $filter_icon = $el->render();
 
         $el = null;
@@ -518,7 +518,7 @@ EOT;
         $el = $this->di->get('Icon');
 
         $el->addClass('d-xl-none');
-        $el->icon('briefcase-download');
+        $el->icon('briefcase-download-outline');
         $export_icon = $el->render();
 
         $el = null;
@@ -545,7 +545,7 @@ EOT;
         $el = $this->di->get('Icon');
 
         $el->addClass('d-xl-none');
-        $el->icon('wrench');
+        $el->icon('wrench-outline');
         $omnitool_icon = $el->render();
 
         $el = null;
@@ -568,7 +568,7 @@ EOT;
         $el = $this->di->get('Icon');
 
         $el->addClass('d-xl-none');
-        $el->icon('sort-alphabetical');
+        $el->icon('monitor');
         $sort_icon = $el->render();
 
         $el = null;
@@ -728,8 +728,8 @@ EOT;
         $el->id('bottom-row');
         $el->role('toolbar');
         $el->addClass('px-3 ' . $toolbar_class);
-        $el->column("$search_toggle $filter_toggle $export_button $omnitool_button $display_button", 'col-12 col-xl-8 p-0 my-2 text-center text-xl-left');
-        $el->column("$first_button $prev_button $next_button $last_button", 'col-12 col-xl-4 p-0 my-2 text-center text-xl-right');
+        $el->column("$search_toggle $filter_toggle $export_button $omnitool_button $display_button", 'col-sm-auto text-center text-sm-left p-0 my-2');
+        $el->column("$first_button $prev_button $next_button $last_button", 'col-sm text-center text-sm-right p-0 my-2');
         $bottom_row = $el->render();
 
         $el = null;

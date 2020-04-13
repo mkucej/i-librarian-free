@@ -835,8 +835,10 @@ BODY
         $el->id('bottom-row');
         $el->role('toolbar');
         $el->addClass("px-3 {$toolbar_class}");
-        $el->column("$delete_button $export_button $email_button", 'col-8 p-0 my-2');
-        $el->column("$prev_button $next_button", 'col-4 p-0 my-2 text-right');
+        $el->column(
+            "<div>$delete_button $export_button $email_button</div><div>$prev_button $next_button</div>",
+            'col p-0 my-2 d-flex justify-content-between'
+        );
         $bottom_row = $el->render();
 
         $el = null;
