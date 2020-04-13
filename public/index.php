@@ -12,12 +12,13 @@ define('IL_VERSION', '5.0.5');
  * Define paths.
  */
 
-// PUBLIC. This file's path.
+// PUBLIC. This file's directory.
 define('IL_PUBLIC_PATH', __DIR__);
 
-// PRIVATE. Can be the parent folder.
+// PRIVATE.
 if (is_dir(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'app')) {
 
+    // Can be the parent directory of the public directory.
     define('IL_PRIVATE_PATH', dirname(__DIR__));
 
 } else {
@@ -37,14 +38,16 @@ if (!is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app')) {
 define('IL_APP_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app');
 define('IL_CLASS_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'classes');
 
-// CONFIG. Can be the private or public sibling folder config.
-if (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config')) {
+// CONFIG.
+if (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config')) {
 
-    define('IL_CONFIG_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config');
-
-} elseif (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config')) {
-
+    // Can be the sibling directory of the public directory.
     define('IL_CONFIG_PATH', dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config');
+
+} elseif (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config')) {
+
+    // Can be in the private directory.
+    define('IL_CONFIG_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'config');
 
 } else {
 
@@ -60,14 +63,16 @@ if (!is_dir(IL_CONFIG_PATH)) {
     exit;
 }
 
-// DATA. Can be the sibling folder data. Must not be in the server's document root!
-if (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data')) {
+// DATA.
+if (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'data')) {
 
-    define('IL_DATA_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data');
-
-} elseif (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'data')) {
-
+    // Can be the sibling directory of the public directory.
     define('IL_DATA_PATH', dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'data');
+
+} elseif (is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data')) {
+
+    // Can be in the private directory.
+    define('IL_DATA_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'data');
 
 } else {
 
