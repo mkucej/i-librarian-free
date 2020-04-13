@@ -32,6 +32,7 @@ body.content-light {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    background-image: url("img/bg-v1x.jpg");
 }
 
 @media screen and (max-resolution: 143dpi) {
@@ -341,7 +342,7 @@ EOT
          */
         $menu_arr[] = [
             'label'   => "{$account}<span id=\"menu-first-name\" class=\"d-inline-block text-truncate\" style=\"width: 140px\">{$first_name}</span>",
-            'link'    => '',
+            'link'    => '#',
             'submenu' => [
                 [
                     'label' => 'User profile',
@@ -440,7 +441,7 @@ EOT
 
             $menu_arr[] = [
                 'label' => "{$record}Import",
-                'link' => '',
+                'link' => '#',
                 'submenu' => [
                     [
                         'label' => 'Import wizard',
@@ -452,7 +453,7 @@ EOT
                     ],
                     [
                         'label' => 'Internet search',
-                        'link' => '',
+                        'link' => '#',
                         'submenu' => $external
                     ]
                 ]
@@ -498,7 +499,7 @@ EOT
 
             $menu_arr[] = [
                 'label' => "{$wrench}Tools",
-                'link' => '',
+                'link' => '#',
                 'submenu' => [
                     [
                         'label' => 'Citation styles',
@@ -523,7 +524,7 @@ EOT
 
             $menu_arr[] = [
                 'label'   => "{$admin}Administrator",
-                'link'    => '',
+                'link'    => '#',
                 'submenu' => [
                     [
                         'label' => 'Logs',
@@ -558,7 +559,7 @@ EOT
          */
         $menu_arr[] = [
             'label'   => "{$keyboard}Extended keyboard",
-            'link'    => '',
+            'link'    => '#',
             'attrs'   => 'id="keyboard-toggle" class="d-none d-lg-block"'
         ];
 
