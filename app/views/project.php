@@ -131,7 +131,7 @@ class ProjectView extends TextView {
         $menu_arr = [
             [
                 'label'   => "{$account}<span id=\"menu-first-name\" class=\"d-inline-block text-truncate\" style=\"width: 140px\">{$first_name}</span>",
-                'link'    => '',
+                'link'    => '#',
                 'submenu' => [
                     [
                         'label' => 'User profile',
@@ -143,7 +143,7 @@ class ProjectView extends TextView {
                     ],
                     [
                         'label' => '<div id="sign-out">Sign out</div>',
-                        'link'  => ''
+                        'link'  => '#'
                     ]
                 ]
             ],
@@ -187,7 +187,7 @@ class ProjectView extends TextView {
 //            ],
             [
                 'label'   => "{$keyboard}Extended keyboard",
-                'link'    => '',
+                'link'    => '#',
                 'attrs'   => 'id="keyboard-toggle" class="d-none d-lg-block"'
             ]
         ];

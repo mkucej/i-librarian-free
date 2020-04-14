@@ -1176,7 +1176,7 @@ class Sidebar {
             if (location.hash === $(this).attr('href')) {
                 B.history.loadUrl();
             }
-            if ($(this).attr('href') !== '' && $nt.is(':visible')) {
+            if ($(this).attr('href') !== '' && $(this).attr('href') !== '#' && $nt.is(':visible')) {
                 $nt.trigger('click');
             }
         });

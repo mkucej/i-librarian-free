@@ -354,7 +354,7 @@ EOT
                 ],
                 [
                     'label' => '<div id="sign-out">Sign out</div>',
-                    'link'  => ''
+                    'link'  => '#'
                 ]
             ]
         ];
