@@ -4,6 +4,7 @@ namespace Librarian\Storage;
 
 use Exception;
 use PDO;
+use PDOException;
 use PDOStatement;
 
 class Database {
@@ -113,7 +114,7 @@ class Database {
             $this->stmt->closeCursor();
         }
 
-       $this->dbh->beginTransaction();
+        $this->dbh->beginTransaction();
     }
 
     /**
@@ -147,9 +148,9 @@ class Database {
     /**
      * Export PDO object to use PDO functions not implemented in this class.
      *
-     * @return PDO
+     * @return PDO|null
      */
-    public function getPDO(): PDO {
+    public function getPDO() {
 
         return is_object($this->dbh) ? $this->dbh : null;
     }
@@ -157,9 +158,9 @@ class Database {
     /**
      * Export the current PDOStatement object to use PDO functions not implemented in this class.
      *
-     * @return PDOStatement
+     * @return PDOStatement|null
      */
-    public function getPDOStatement(): PDOStatement {
+    public function getPDOStatement() {
 
         return is_object($this->stmt) ? $this->stmt : null;
     }
@@ -230,8 +231,15 @@ class Database {
             $this->bind($columns);
         }
 
-        // Execute statement.
-        $execute = $this->stmt->execute();
+        try {
+
+            // Execute statement.
+            $execute = $this->stmt->execute();
+
+        } catch (PDOException $ex) {
+
+            throw new PDOException("{$ex->getMessage()} {$ex->getTraceAsString()}", 500);
+        }
 
         // Execute failed.
         if ($execute === false) {

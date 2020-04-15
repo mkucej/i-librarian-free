@@ -401,7 +401,7 @@ INSERT OR IGNORE INTO projects_items
     (project_id, item_id)
     SELECT projectID, fileID
         FROM library.projectsfiles
-        WHERE fileID IN (SELECT id FROM library.library)
+        WHERE projectID IN (SELECT projectID FROM library.projects) AND fileID IN (SELECT id FROM library.library)
 EOT;
 
         // Projects users
