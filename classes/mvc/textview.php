@@ -580,15 +580,6 @@ EOT
         // Send headers. if not sent before.
         if (headers_sent($file, $line) === false) {
 
-            if (ob_get_level() > 0) {
-
-                ob_end_clean();
-            }
-
-            // SSE is send compressed.
-            ini_set("zlib.output_compression", 1);
-            ini_set("zlib.output_compression_level", 6);
-
             // Add headers.
             $this->setCacheControl();
             $this->setEtag();
@@ -596,6 +587,11 @@ EOT
             // Send headers.
             $this->sendHeaders();
             http_response_code($this->response->getStatusCode());
+        }
+
+        if (ob_get_level() > 0) {
+
+            ob_end_clean();
         }
 
         $this->stream->seek(-$size, SEEK_END);
