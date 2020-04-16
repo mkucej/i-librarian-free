@@ -275,8 +275,8 @@ INSERT INTO items
         CASE custom4 WHEN '' THEN NULL ELSE custom4 END,
         'N',
         CASE filehash WHEN '' THEN NULL ELSE filehash END,
-        CASE CAST(added_by AS INT) WHEN 0 THEN (SELECT min(id) FROM users) ELSE added_by END,
-        CASE CAST(modified_by AS INT) WHEN 0 THEN (SELECT min(id) FROM users) ELSE modified_by END,
+        (SELECT min(id) FROM users),
+        (SELECT min(id) FROM users),
         CASE addition_date WHEN '' THEN datetime('now') ELSE datetime(addition_date) END,
         CASE modified_date WHEN '' THEN datetime('now') ELSE datetime(modified_date) END
         FROM library.library
@@ -392,7 +392,7 @@ EOT;
 INSERT OR IGNORE INTO projects
     (id, user_id, project, is_active, is_restricted)
     SELECT projectID, userID, project, CASE active WHEN 1 THEN 'Y' ELSE 'N' END, 'Y'
-    FROM library.projects
+    FROM library.projects WHERE userID IN (SELECT id FROM users)
 EOT;
 
         // Projects items
@@ -408,19 +408,19 @@ EOT;
         $sql_insert_projects_users = <<<'EOT'
 INSERT OR IGNORE INTO projects_users
     (project_id, user_id)
-    SELECT projectID, userID FROM library.projectsusers
+    SELECT projectID, userID FROM library.projectsusers WHERE userID IN (SELECT id FROM users)
 EOT;
 
         $sql_insert_projects_users_owner = <<<'EOT'
 INSERT OR IGNORE INTO projects_users
     (project_id, user_id)
-    SELECT projectID, userID FROM library.projects
+    SELECT projectID, userID FROM library.projects WHERE userID IN (SELECT id FROM users)
 EOT;
 
         // Convert shelf to a project with name `Shelf`.
         $sql_select_distinct_shelves = <<<'EOT'
 SELECT DISTINCT userID
-    FROM library.shelves
+    FROM library.shelves WHERE userID IN (SELECT id FROM users)
 EOT;
 
         // Create shelf projects.
@@ -432,7 +432,7 @@ EOT;
 
         $sql_select_shelf_rows = <<<'EOT'
 SELECT fileID, userID
-    FROM library.shelves
+    FROM library.shelves WHERE userID IN (SELECT id FROM users)
 EOT;
 
         // Populate shelf project.
@@ -460,7 +460,7 @@ INSERT OR IGNORE INTO item_notes
     (id, user_id, item_id, note)
     SELECT notesID, userID, fileID, html_entity_decode(notes)
         FROM library.notes
-        WHERE trim(notes) != '' AND fileID IN (SELECT id FROM library.library)
+        WHERE trim(notes) != '' AND fileID IN (SELECT id FROM library.library) AND userID IN (SELECT id FROM users)
 EOT;
 
         // Markers.
@@ -490,7 +490,7 @@ INSERT OR IGNORE INTO markers
         'blue',
         NULL
         FROM library.yellowmarkers
-        WHERE fileID IN (SELECT id FROM library.library)
+        WHERE fileID IN (SELECT id FROM library.library) AND userID IN (SELECT id FROM users)
 EOT;
 
         // PDF notes.
@@ -512,7 +512,7 @@ INSERT OR IGNORE INTO annotations
         CAST(10 * `left` AS INTEGER),
         annotation
         FROM library.annotations
-        WHERE fileID IN (SELECT id FROM library.library)
+        WHERE fileID IN (SELECT id FROM library.library) AND userID IN (SELECT id FROM users)
 EOT;
 
         // Detach old library.
