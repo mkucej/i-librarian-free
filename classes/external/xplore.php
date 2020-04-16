@@ -33,7 +33,7 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
 
         $this->client = $this->di->get('HttpClient', [
             [
-                'timeout' => 10,
+                'timeout' => 30,
                 'curl'    => [
                     CURLOPT_PROXY        => $this->app_settings->proxyUrl(),
                     CURLOPT_PROXYUSERPWD => $this->app_settings->proxyUserPwd(),
