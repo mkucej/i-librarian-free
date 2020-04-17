@@ -209,6 +209,7 @@ class ImportController extends Controller {
                 }
 
                 fclose($ft);
+                unlink($text_file);
             }
 
         } elseif (in_array($mime_type, $this->app_settings->extra_mime_types) === false) {
@@ -280,13 +281,15 @@ class ImportController extends Controller {
         if (!empty($result['item_id'])) {
 
             // Open stream for the temp file.
-            $fp = try_fopen($temp_filename, 'r');
+            $fp = try_fopen($temp_filename, 'rb');
             $stream = stream_for($fp);
 
             // Save the file.
             $model = new PdfModel($this->di);
             $model->save($result['item_id'], $stream, $client_name);
         }
+
+        unlink($temp_filename);
 
         $view = new DefaultView($this->di);
         return $view->main(['info' => "New item was saved."]);
