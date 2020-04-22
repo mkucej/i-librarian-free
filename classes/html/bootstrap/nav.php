@@ -16,7 +16,6 @@ class Nav extends Component {
 
         parent::__construct();
 
-        $this->element_name = 'nav';
         $this->addClass('nav');
         $this->attr('role', 'tablist');
     }
@@ -48,7 +47,7 @@ class Nav extends Component {
             $html .= <<<EOT
                 <span
                     id="{$item[1]}-nav"
-                    class="btn btn-{$this->context} mr-1 border-0 nav-item nav-link{$class}{$activeClass}"
+                    class="cursor-pointer mr-1 border-0 nav-item nav-link{$class}{$activeClass}"
                     data-target="#{$item[1]}"
                     data-toggle="tab"
                     role="tab"
