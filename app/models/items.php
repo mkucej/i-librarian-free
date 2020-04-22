@@ -296,7 +296,7 @@ EOT;
             foreach ($filters['tag'] as $id) {
 
                 $sqls[] = <<<EOT
-SELECT items.id as item_id
+SELECT items.id as item_id, publication_date, title
     FROM items INNER JOIN items_tags ON items.id=items_tags.item_id
     WHERE items_tags.tag_id=?
 EOT;
@@ -311,7 +311,7 @@ EOT;
             foreach ($filters['author'] as $id) {
 
                 $sqls[] = <<<EOT
-SELECT items.id as item_id
+SELECT items.id as item_id, publication_date, title
     FROM items INNER JOIN items_authors ON items.id=items_authors.item_id
     WHERE items_authors.author_id=?
 EOT;
@@ -326,7 +326,7 @@ EOT;
             foreach ($filters['editor'] as $id) {
 
                 $sqls[] = <<<EOT
-SELECT items.id as item_id
+SELECT items.id as item_id, publication_date, title
     FROM items INNER JOIN items_editors ON items.id=items_editors.item_id
     WHERE items_editors.editor_id=?
 EOT;
@@ -341,7 +341,7 @@ EOT;
             foreach ($filters['keyword'] as $id) {
 
                 $sqls[] = <<<EOT
-SELECT items.id as item_id
+SELECT items.id as item_id, publication_date, title
     FROM items INNER JOIN items_keywords ON items.id=items_keywords.item_id
     WHERE items_keywords.keyword_id=?
 EOT;
@@ -353,7 +353,7 @@ EOT;
         if (!empty($filters['misc']) && in_array('nopdf', $filters['misc'])) {
 
             $sqls[] = <<<EOT
-SELECT id as item_id
+SELECT id as item_id, publication_date, title
     FROM items
     WHERE file_hash IS NULL 
 EOT;
@@ -362,7 +362,7 @@ EOT;
         if (!empty($filters['misc']) && in_array('myitems', $filters['misc'])) {
 
             $sqls[] = <<<EOT
-SELECT id as item_id
+SELECT id as item_id, publication_date, title
     FROM items
     WHERE added_by = ?
 EOT;
@@ -373,7 +373,7 @@ EOT;
         if (!empty($filters['misc']) && in_array('othersitems', $filters['misc'])) {
 
             $sqls[] = <<<EOT
-SELECT id as item_id
+SELECT id as item_id, publication_date, title
     FROM items
     WHERE added_by > ? OR added_by < ?
 EOT;
@@ -432,7 +432,7 @@ EOT;
                 }
 
                 $sqls[] = <<<EOT
-SELECT items.id as item_id
+SELECT items.id as item_id, publication_date, title
     FROM items
     WHERE {$placeholder}
 EOT;
@@ -447,7 +447,7 @@ EOT;
             $sqls = [];
 
             $sqls[] = <<<EOT
-SELECT id as item_id
+SELECT id as item_id, publication_date, title
     FROM items
     WHERE id >= ? AND id < ?
 EOT;
@@ -461,9 +461,9 @@ EOT;
         if ($collection === 'clipboard') {
 
             $sqls[] = <<<EOT
-SELECT item_id
-    FROM clipboard
-    WHERE user_id = ?
+SELECT items.id AS item_id, items.publication_date, items.title
+    FROM items INNER JOIN clipboard ON items.id=clipboard.item_id
+    WHERE clipboard.user_id = ?
 EOT;
 
             $columns[] = $this->user_id;
@@ -486,9 +486,9 @@ EOT;
             $output['project'] = $this->db_main->getResult();
 
             $sqls[] = <<<EOT
-SELECT item_id
-    FROM projects_items
-    WHERE project_id = ?
+SELECT items.id AS item_id, items.publication_date, items.title
+    FROM items INNER JOIN projects_items ON items.id=projects_items.item_id
+    WHERE projects_items.project_id = ?
 EOT;
 
             $columns[] = $project_id;
