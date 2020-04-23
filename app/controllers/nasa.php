@@ -51,8 +51,8 @@ class NasaController extends Controller {
         // Page size 10. Allowed values: 1, 11, 21...
         $from = isset($this->get['from']) && $this->get['from'] % 10 === 1 ? $this->get['from'] : 1;
 
-        // Max 1,000 results.
-        $from = min($from, 991);
+        // Max 10,000 results.
+        $from = min($from, 9991);
 
         // Model.
         $api_key = $this->app_settings->apiKey('nasa', $this->server);
