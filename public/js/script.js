@@ -3231,8 +3231,16 @@ class PdfMainView extends View {
                     maxSelectable: 1000
                 });
             }
-            This.selectable.off('end');
-            This.selectable.on('end', This.copyText);
+            This.selectable.on('start', function (e, item) {
+                if(typeof item === 'object') {
+                    // User started the lasso inside an item. Allow selecting.
+                    This.selectable.off('end');
+                    This.selectable.on('end', This.copyText);
+                } else {
+                    // User started the lasso outside an item. Disallow selecting.
+                    This.selectable.off('end');
+                }
+            });
             This.getBoxes(pgNum);
         } else {
             // Destroy Selectable.
@@ -3252,7 +3260,7 @@ class PdfMainView extends View {
     copyText() {
         let txt = '';
         $(".pdfviewer-text").children(".ui-selected").each(function () {
-            txt = txt + $(this).data('text') + ' ';
+            txt = txt + $(this).attr('data-text') + ' ';
         });
         // Try to remove word hyphenation.
         txt = txt.replace(/(- )/g, '');
@@ -3345,8 +3353,16 @@ class PdfMainView extends View {
                 maxSelectable: 1000
             });
         }
-        This.selectable.off('end');
-        This.selectable.on('end', This.saveHighlights);
+        This.selectable.on('start', function (e, item) {
+            if(typeof item === 'object') {
+                // User started the lasso inside an item. Allow selecting.
+                This.selectable.off('end');
+                This.selectable.on('end', This.saveHighlights);
+            } else {
+                // User started the lasso outside an item. Disallow selecting.
+                This.selectable.off('end');
+            }
+        });
         if ($('#pdfviewer-pages').find('.pdfviewer-text').length === 0) {
             This.getBoxes(pgNum);
         }
@@ -3396,7 +3412,7 @@ class PdfMainView extends View {
                 width: w,
                 height: h,
                 position: $t.data('position'),
-                text: $t.data('text')
+                text: $t.attr('data-text')
             };
         });
         if (typeof b[0] === 'object') {
@@ -3443,8 +3459,16 @@ class PdfMainView extends View {
                     maxSelectable: 1000
                 });
             }
-            This.selectable.off('end');
-            This.selectable.on('end', This.deleteHighlights);
+            This.selectable.on('start', function (e, item) {
+                if(typeof item === 'object') {
+                    // User started the lasso inside an item. Allow selecting.
+                    This.selectable.off('end');
+                    This.selectable.on('end', This.deleteHighlights);
+                } else {
+                    // User started the lasso outside an item. Disallow selecting.
+                    This.selectable.off('end');
+                }
+            });
             // Make sure we have selectable boxes.
             if ($pages.find('.pdfviewer-text').length === 0) {
                 This.getBoxes(This.page);
