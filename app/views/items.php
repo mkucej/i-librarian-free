@@ -779,7 +779,7 @@ EOT;
 
                 $el->elementName('a');
                 $el->href("{$IL_BASE_URL}index.php/pdf?id={$item['id']}" . $search);
-                $el->addClass('px-2 py-1 border-0');
+                $el->addClass('px-2 py-2 border-0');
                 $el->context('primary');
                 $el->html('PDF');
                 $pdf = $el->render();
@@ -791,7 +791,7 @@ EOT;
 
                 $el->elementName('a');
                 $el->href("{$IL_BASE_URL}index.php/pdf/file?disposition=attachment&id={$item['id']}");
-                $el->addClass('px-2 py-0 border-0');
+                $el->addClass('px-2 py-1 border-0');
                 $el->context('secondary');
                 $el->icon('download');
                 $download = $el->render();
@@ -810,7 +810,7 @@ EOT;
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
-                $el->addClass('px-2 py-1 bg-darker-5 border-0');
+                $el->addClass('px-2 py-2 bg-darker-5 border-0');
                 $el->html('PDF');
                 $el->disabled('disabled');
                 $pdf = $el->render();
@@ -820,7 +820,7 @@ EOT;
                 /** @var Bootstrap\IconButton $el */
                 $el = $this->di->get('IconButton');
 
-                $el->addClass('px-2 py-0 bg-darker-5 border-0');
+                $el->addClass('px-2 py-1 bg-darker-5 border-0');
                 $el->icon('download');
                 $el->disabled('disabled');
                 $download = $el->render();
@@ -894,6 +894,9 @@ EOT;
                 }
             }
 
+            // Authors.
+            $authors = join('<span class="ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
+
             // Top HTML structure.
 
             $titles .= <<<EOT
@@ -905,6 +908,7 @@ EOT;
                             </td>
                             <td class="pl-1 pt-3 pr-4" style="height: 3.5rem">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
+                                <span class="text-secondary">{$authors}</span>
                             </td>
                         </tr>
                         <tr>
@@ -1133,7 +1137,7 @@ EOT
 
                 $el->elementName('a');
                 $el->href("{$IL_BASE_URL}index.php/pdf?id={$item['id']}" . $search);
-                $el->addClass('px-2 py-1 border-0');
+                $el->addClass('px-2 py-2 border-0');
                 $el->context('primary');
                 $el->html('PDF');
                 $pdf = $el->render();
@@ -1145,7 +1149,7 @@ EOT
 
                 $el->elementName('a');
                 $el->href("{$IL_BASE_URL}index.php/pdf/file?disposition=attachment&id={$item['id']}");
-                $el->addClass('px-2 py-0 border-0');
+                $el->addClass('px-2 py-1 border-0');
                 $el->context('secondary');
                 $el->icon('download');
                 $download = $el->render();
@@ -1164,7 +1168,7 @@ EOT;
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
-                $el->addClass('px-2 py-1 bg-darker-5 border-0');
+                $el->addClass('px-2 py-2 bg-darker-5 border-0');
                 $el->html('PDF');
                 $el->disabled('disabled');
                 $pdf = $el->render();
@@ -1174,7 +1178,7 @@ EOT;
                 /** @var Bootstrap\IconButton $el */
                 $el = $this->di->get('IconButton');
 
-                $el->addClass('px-2 py-0 bg-darker-5 border-0');
+                $el->addClass('px-2 py-1 bg-darker-5 border-0');
                 $el->icon('download');
                 $el->disabled('disabled');
                 $download = $el->render();
@@ -1265,6 +1269,9 @@ EOT;
             $pdf_notes_arr = array_filter($pdf_notes_arr);
             $pdf_notes = empty($pdf_notes_arr) ? 'No notes' : join('<hr>', $pdf_notes_arr);
 
+            // Authors.
+            $authors = join('<span class="text-secondary ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
+
             $titles .= <<<EOT
                 <table data-id="{$item['id']}" class="{$theme_classes} item-container mb-2" style="table-layout: fixed;width:100%">
                     <tbody>
@@ -1274,6 +1281,7 @@ EOT;
                             </td>
                             <td class="pt-3 pr-3">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
+                                <span class="text-secondary">{$authors}</span>
                             </td>
                         </tr>
                         <tr>

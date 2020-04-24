@@ -2232,6 +2232,36 @@ EOT;
                 $i++;
             }
 
+            // Add short author list.
+            $sql = <<<EOT
+SELECT CASE WHEN first_name IS NULL THEN last_name ELSE last_name || ', ' || first_name END AS author
+    FROM authors INNER JOIN items_authors ON authors.id = items_authors.author_id
+    WHERE items_authors.item_id = ?
+    ORDER BY items_authors.position
+EOT;
+
+            for ($i = 0; $i < count($item_ids); $i++) {
+
+                $this->db_main->run($sql, [$item_ids[$i]]);
+                $authors = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
+
+                $first_author = array_shift($authors);
+                $last_author = array_pop($authors);
+
+                if (empty($first_author)) {
+
+                    $output[$i]['authors'] = ['No authors'];
+
+                } elseif (empty($last_author)) {
+
+                    $output[$i]['authors'] = [$first_author];
+
+                } else {
+
+                    $output[$i]['authors'] = [$first_author, $last_author];
+                }
+            }
+
             // Add clipboard flags.
             $output = $this->clipboardFlags($output);
 
@@ -2268,6 +2298,36 @@ EOT;
                 ];
 
                 $i++;
+            }
+
+            // Add short author list.
+            $sql = <<<EOT
+SELECT CASE WHEN first_name IS NULL THEN last_name ELSE last_name || ', ' || first_name END AS author
+    FROM authors INNER JOIN items_authors ON authors.id = items_authors.author_id
+    WHERE items_authors.item_id = ?
+    ORDER BY items_authors.position
+EOT;
+
+            for ($i = 0; $i < count($item_ids); $i++) {
+
+                $this->db_main->run($sql, [$item_ids[$i]]);
+                $authors = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
+
+                $first_author = array_shift($authors);
+                $last_author = array_pop($authors);
+
+                if (empty($first_author)) {
+
+                    $output[$i]['authors'] = ['No authors'];
+
+                } elseif (empty($last_author)) {
+
+                    $output[$i]['authors'] = [$first_author];
+
+                } else {
+
+                    $output[$i]['authors'] = [$first_author, $last_author];
+                }
             }
 
             // Add clipboard flags.

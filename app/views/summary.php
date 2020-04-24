@@ -53,7 +53,7 @@ class SummaryView extends TextView {
             $el->elementName('a');
             $el->href("{$IL_BASE_URL}index.php/pdf/main?id={$item['id']}");
             $el->target('_blank');
-            $el->addClass('px-2 py-0 border-0');
+            $el->addClass('px-2 py-1 border-0');
             $el->context('secondary');
             $el->icon('open-in-new');
             $new_window = $el->render();
@@ -65,7 +65,7 @@ class SummaryView extends TextView {
 
             $el->elementName('a');
             $el->href("#pdf/main?id={$item['id']}");
-            $el->addClass('px-2 py-1 border-0');
+            $el->addClass('px-2 py-2 border-0');
             $el->context('primary');
             $el->html('PDF');
             $pdf = $el->render();
@@ -77,7 +77,7 @@ class SummaryView extends TextView {
 
             $el->elementName('a');
             $el->href("{$IL_BASE_URL}index.php/pdf/file?disposition=attachment&id={$item['id']}");
-            $el->addClass('px-2 py-0 border-0');
+            $el->addClass('px-2 py-1 border-0');
             $el->context('secondary');
             $el->icon('download');
             $download = $el->render();
@@ -89,7 +89,7 @@ class SummaryView extends TextView {
             /** @var Bootstrap\IconButton $el */
             $el = $this->di->get('IconButton');
 
-            $el->addClass('px-2 py-0 bg-darker-5 border-0');
+            $el->addClass('px-2 py-1 bg-darker-5 border-0');
             $el->icon('open-in-new');
             $el->disabled('disabled');
             $new_window = $el->render();
@@ -99,7 +99,7 @@ class SummaryView extends TextView {
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
-            $el->addClass('px-2 py-1 bg-darker-5 border-0');
+            $el->addClass('px-2 py-2 bg-darker-5 border-0');
             $el->html('PDF');
             $el->disabled('disabled');
             $pdf = $el->render();
@@ -109,7 +109,7 @@ class SummaryView extends TextView {
             /** @var Bootstrap\IconButton $el */
             $el = $this->di->get('IconButton');
 
-            $el->addClass('px-2 py-0 bg-darker-5 border-0');
+            $el->addClass('px-2 py-1 bg-darker-5 border-0');
             $el->icon('download');
             $el->disabled('disabled');
             $download = $el->render();
@@ -126,7 +126,7 @@ class SummaryView extends TextView {
 EOT;
 
         // Authors.
-        $authors = '';
+        $authors = '<div class="mb-1">No authors</div>';
 
         if (!empty($item['authors'])) {
 
