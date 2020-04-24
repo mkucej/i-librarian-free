@@ -3231,16 +3231,8 @@ class PdfMainView extends View {
                     maxSelectable: 1000
                 });
             }
-            This.selectable.on('start', function (e, item) {
-                if(typeof item === 'object') {
-                    // User started the lasso inside an item. Allow selecting.
-                    This.selectable.off('end');
-                    This.selectable.on('end', This.copyText);
-                } else {
-                    // User started the lasso outside an item. Disallow selecting.
-                    This.selectable.off('end');
-                }
-            });
+            This.selectable.off('end');
+            This.selectable.on('end', This.copyText);
             This.getBoxes(pgNum);
         } else {
             // Destroy Selectable.
@@ -3353,16 +3345,8 @@ class PdfMainView extends View {
                 maxSelectable: 1000
             });
         }
-        This.selectable.on('start', function (e, item) {
-            if(typeof item === 'object') {
-                // User started the lasso inside an item. Allow selecting.
-                This.selectable.off('end');
-                This.selectable.on('end', This.saveHighlights);
-            } else {
-                // User started the lasso outside an item. Disallow selecting.
-                This.selectable.off('end');
-            }
-        });
+        This.selectable.off('end');
+        This.selectable.on('end', This.saveHighlights);
         if ($('#pdfviewer-pages').find('.pdfviewer-text').length === 0) {
             This.getBoxes(pgNum);
         }
@@ -3459,16 +3443,8 @@ class PdfMainView extends View {
                     maxSelectable: 1000
                 });
             }
-            This.selectable.on('start', function (e, item) {
-                if(typeof item === 'object') {
-                    // User started the lasso inside an item. Allow selecting.
-                    This.selectable.off('end');
-                    This.selectable.on('end', This.deleteHighlights);
-                } else {
-                    // User started the lasso outside an item. Disallow selecting.
-                    This.selectable.off('end');
-                }
-            });
+            This.selectable.off('end');
+            This.selectable.on('end', This.deleteHighlights);
             // Make sure we have selectable boxes.
             if ($pages.find('.pdfviewer-text').length === 0) {
                 This.getBoxes(This.page);
