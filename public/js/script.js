@@ -1112,6 +1112,17 @@ class AdvancedSearch {
         $('#input-filter-tag').typeahead({
             minLength: 0
         });
+        $('#tag-filter-search').filterable({
+            complete: function () {
+                $('#search-tags .label-text').each(function() {
+                    if($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
     formSubmit() {
         let $m = $('#modal-advanced-search'), $f = $('#advanced-search-form'),

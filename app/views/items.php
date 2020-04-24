@@ -53,7 +53,7 @@ class ItemsView extends TextView {
      *
      * @param string $collection Specify library, clipboard.
      * @param array $get GET super global array.
-     * @param array $input [array items, integer total_count]
+     * @param array $input [array items, integer total_count, array tags]
      * @param bool $filter_menu
      * @return string
      * @throws Exception
@@ -234,7 +234,7 @@ class ItemsView extends TextView {
         $el->button($searches_button);
         $el->button($button);
         $el->button($search_button);
-        $el->body($this->sharedAdvancedSearch($action), 'bg-darker-5');
+        $el->body($this->sharedAdvancedSearch($input['tags'] ?? [], $action), 'bg-darker-5');
         $el->componentSize('large');
         $advanced_search = $el->render();
 

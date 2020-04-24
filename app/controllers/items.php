@@ -115,6 +115,11 @@ class ItemsController extends Controller {
 
         } else {
 
+            // Get tag list for search.
+            $tag_model = new TagsModel($this->di);
+            $items['tags'] = $tag_model->getTags('library');
+            $tag_model = null;
+
             $view = new ItemsView($this->di);
 
             if (isset($this->get['save_search'])) {
@@ -217,6 +222,11 @@ class ItemsController extends Controller {
             return $view->main();
 
         } else {
+
+            // Get tag list for search.
+            $tag_model = new TagsModel($this->di);
+            $items['tags'] = $tag_model->getTags('library');
+            $tag_model = null;
 
             $view = new ItemsView($this->di);
             return $view->filteredPage('library', $this->get, $items);

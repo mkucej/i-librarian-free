@@ -115,6 +115,11 @@ class ClipboardController extends Controller {
 
         } else {
 
+            // Get tag list for search.
+            $tag_model = new TagsModel($this->di);
+            $items['tags'] = $tag_model->getTags('clipboard');
+            $tag_model = null;
+
             $view = new ItemsView($this->di);
 
             if (isset($this->get['save_search'])) {
@@ -217,6 +222,11 @@ class ClipboardController extends Controller {
             return $view->main();
 
         } else {
+
+            // Get tag list for search.
+            $tag_model = new TagsModel($this->di);
+            $items['tags'] = $tag_model->getTags('clipboard');
+            $tag_model = null;
 
             $view = new ItemsView($this->di);
             return $view->filteredPage('clipboard', $this->get, $items);

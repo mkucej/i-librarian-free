@@ -1626,14 +1626,39 @@ EOT;
             $columns[] = $project_id;
         }
 
+        // Tag filters.
+        $tag_join = '';
+        $tag_where = '';
+
+        if (isset($search['search_filter'])) {
+
+            foreach ($search['search_filter'] as $type => $filters) {
+
+                if ($type === 'tag') {
+
+                    $tag_placeholders = array_fill(0, count($filters), '?');
+                    $tag_placeholder = join(', ', $tag_placeholders);
+                    $tag_join = 'LEFT JOIN items_tags ON ind_items.id=items_tags.item_id';
+                    $tag_where = "AND items_tags.tag_id IN ({$tag_placeholder}) GROUP BY ind_items.id";
+
+                    foreach ($filters as $tag_id) {
+
+                        $columns[] = $tag_id;
+                    }
+                }
+            }
+        }
+
         $sql = <<<EOT
 SELECT
-    id as item_id
+    ind_items.id as item_id
     FROM ind_items
     {$join_collection}
+    {$tag_join}
     WHERE {$placeholder}
     {$where_collection}
-    ORDER BY id DESC
+    {$tag_where}
+    ORDER BY ind_items.id DESC
     LIMIT ?
 EOT;
 

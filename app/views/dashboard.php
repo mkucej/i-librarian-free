@@ -506,7 +506,7 @@ SESSION;
         $el->id('modal-advanced-search');
         $el->header('Search library');
         $el->button($search_button);
-        $el->body($this->sharedAdvancedSearch(), 'bg-darker-5');
+        $el->body($this->sharedAdvancedSearch($data['tags']), 'bg-darker-5');
         $el->componentSize('large');
         $content .= $el->render();
 

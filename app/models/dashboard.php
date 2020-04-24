@@ -312,6 +312,19 @@ EOT;
         $this->db_main->run($sql_sessions, [$this->user_id]);
         $output['sessions'] = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
 
+        /*
+         * Tags for search.
+         */
+
+        $sql_tags = <<<'EOT'
+SELECT id, tag
+    FROM tags
+    ORDER BY tag COLLATE utf8Collation
+EOT;
+
+        $this->db_main->run($sql_tags);
+        $output['tags'] = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
+
         $this->db_main->commit();
 
         return $output;

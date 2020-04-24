@@ -140,11 +140,12 @@ trait SharedHtmlView {
     }
 
     /**
+     * @param array $tags
      * @param string|null $action
      * @return string
      * @throws Exception
      */
-    public function sharedAdvancedSearch(string $action = null): string {
+    public function sharedAdvancedSearch(array $tags, string $action = null): string {
 
         $rows = '';
 
@@ -289,6 +290,61 @@ trait SharedHtmlView {
 
         $el = null;
 
+        // Tags.
+
+        /** @var Bootstrap\Icon $el */
+        $el = $this->di->get('Icon');
+
+        $el->icon('chevron-down');
+        $arrow = $el->render();
+
+        $el = null;
+
+        $tag_html = "<div class=\"my-3 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#search-tags\">$arrow<b>Tagged by</b></div>";
+
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter-search');
+        $el->placeholder('Filter');
+        $el->ariaLabel('Filter');
+        $el->attr('data-targets', '#search-tags .label-text');
+        $tag_filter = $el->render();
+
+        $el = null;
+
+        $i = 0;
+        $tag_checkboxes = '';
+
+        foreach ($tags as $id => $tag) {
+
+            /** @var Bootstrap\Input $el */
+            $el = $this->di->get('Input');
+
+            $el->id('search-checkbox-tags-' . $id);
+            $el->type('checkbox');
+            $el->name("search_filter[tag][{$i}]");
+            $el->value($id);
+            $el->label($tag);
+            $el->inline(true);
+            $tag_checkboxes .= $el->render();
+
+            $el = null;
+
+            $i++;
+        }
+
+        /** @var Bootstrap\Card $el */
+        $el = $this->di->get('Element');
+
+        $el->id('search-tags');
+        $el->addClass('mb-3 collapse');
+        $el->html($tag_filter . $tag_checkboxes);
+        $tag_html .= $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
@@ -318,7 +374,7 @@ trait SharedHtmlView {
         $el->id('advanced-search-form');
         $el->method('GET');
         $el->action(isset($action) ? $action : '#items/main');
-        $el->html("$rows $clone_rows $save_search $submit");
+        $el->html("$rows $clone_rows $tag_html $save_search $submit");
         $quick_search_form = $el->render();
 
         $el = null;
