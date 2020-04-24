@@ -72,7 +72,7 @@ final class Modal extends Component {
         $theme_btn_classes = TextView::$theme === 'dark' ? 'btn-dark' : '';
 
         $html = <<<EOT
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered {$size_class}" role="document">
+            <div class="modal-dialog modal-dialog-scrollable {$size_class}" role="document">
                 <div class="modal-content rounded-0 {$theme_classes}">
 EOT;
 
@@ -111,5 +111,4 @@ EOT;
 
         return parent::render();
     }
-
 }
