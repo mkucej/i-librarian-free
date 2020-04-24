@@ -1036,6 +1036,17 @@ class OmnitoolForm {
                 $w.find('.modal-footer button:first-child').on('click', function () {
                     omnitoolform.formSubmit();
                 });
+                $('#tag-filter-omnitool').filterable({
+                    complete: function () {
+                        $('#omnitool-tags .label-text').each(function() {
+                            if($(this).hasClass('d-none')) {
+                                $(this).parent().parent().addClass('d-none');
+                            } else {
+                                $(this).parent().parent().removeClass('d-none');
+                            }
+                        });
+                    }
+                });
             });
         } else {
             let $f = $w.find('form');
@@ -2632,6 +2643,17 @@ class TagsItemView extends View {
     afterRender (data) {
         // Form beautification.
         formStyle.init();
+        $('#tag-filter').filterable({
+            complete: function () {
+                $('#content-col .label-text').each(function() {
+                    if($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
     /**
      * Create new item tags.
@@ -2858,7 +2880,7 @@ class PdfMainView extends View {
                         $('.pdfviewer-right')[0].getBoundingClientRect()
                     );
                 });
-            }, 800));
+            }, 400));
         });
         // Initial page number.
         this.scrollToPage($('#pdfviewer-page-input').val(), 0);

@@ -84,51 +84,62 @@ class TagsView extends TextView {
 
         $el = null;
 
-        /** @var Bootstrap\Row $el */
-        $el = $this->di->get('Row');
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter');
+        $el->name('tag_filter');
+        $el->placeholder('Filter');
+        $el->ariaLabel('Filter');
+        $el->attr('data-targets', '.label-text');
+        $filter = $el->render();
+
+        $el = null;
+
+        $tag_html = '';
 
         if (empty($tags['tags'])) {
 
-            $el->column('No tags', 'col text-center text-muted text-uppercase py-4');
+            $tag_html = '<div class="text-center text-muted text-uppercase py-4">No tags</div>';
         }
 
         foreach ($tags['tags'] as $tag_id => $tag) {
 
-            $el2 = $this->di->get('Input');
+            /** @var Bootstrap\Input $el */
+            $el = $this->di->get('Input');
 
-            $el2->addClass('tag-inputs');
-            $el2->id('tag-' . $tag_id);
-            $el2->type('checkbox');
-            $el2->name('tag_id[]');
-            $el2->value($tag_id);
-            $el2->label($tag);
+            $el->groupClass('tag-divs');
+            $el->addClass('tag-inputs');
+            $el->id('tag-' . $tag_id);
+            $el->type('checkbox');
+            $el->name('tag_id[]');
+            $el->value($tag_id);
+            $el->label($tag);
+            $el->inline(true);
 
             // Make recommended tags bold.
             if (in_array($tag, $tags['recommended_tags'])) {
 
-                $el2->groupClass('font-weight-bold');
+                $el->groupClass('font-weight-bold');
             }
 
             // Item tags are checked.
             if (isset($tags['item_tags'][$tag_id])) {
 
-                $el2->checked('checked');
+                $el->checked('checked');
             }
 
-            $tag_html = $el2->render();
+            $tag_html .= $el->render();
 
-            $el->column($tag_html, 'col-lg-6 mt-1 mb-1');
+            $el = null;
         }
-
-        $tag_row = $el->render();
-
-        $el = null;
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
         $el->header("<b>ITEM TAGS</b>");
-        $el->body($tag_row);
+        $el->body($filter . $tag_html);
         $tag_card = $el->render();
 
         $el = null;

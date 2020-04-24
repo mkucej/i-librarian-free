@@ -1962,7 +1962,18 @@ SCRIPT;
 
         $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#omnitool-tags\">$arrow<b>Tags</b></div>";
 
-        $tag_html = '';
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter-omnitool');
+        $el->name('tag_filter');
+        $el->placeholder('Filter');
+        $el->ariaLabel('Filter');
+        $el->attr('data-targets', '#omnitool-tags .label-text');
+        $tag_html = $el->render();
+
+        $el = null;
 
         foreach ($tags as $id => $tag) {
 

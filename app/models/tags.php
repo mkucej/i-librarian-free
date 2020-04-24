@@ -42,7 +42,7 @@ class TagsModel extends AppModel {
             $sql0 = <<<'EOT'
 SELECT id, tag
     FROM tags
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
             // Filter with 1 tag_id.
@@ -55,7 +55,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ?
-    ORDER BY tag
+    ORDER BY tag  COLLATE utf8Collation
 EOT;
 
             // Filter with 2 tag_ids.
@@ -72,7 +72,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ? AND tag_id != ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
             // Filter with 3 tag_ids.
@@ -93,7 +93,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ?  AND tag_id != ?  AND tag_id != ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 break;
@@ -108,7 +108,7 @@ SELECT id, tag
     WHERE items_tags.item_id IN (
         SELECT item_id FROM clipboard WHERE user_id = ?
     )
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
             // Filter with 1 tag_id.
@@ -124,7 +124,7 @@ SELECT id, tag
     items_tags.item_id IN (
         SELECT item_id FROM clipboard WHERE user_id = ?
     )
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
             // Filter with 2 tag_ids.
@@ -144,7 +144,7 @@ SELECT id, tag
     items_tags.item_id IN (
         SELECT item_id FROM clipboard WHERE user_id = ?
     )
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
             // Filter with 3 tag_ids.
@@ -168,7 +168,7 @@ SELECT id, tag
     items_tags.item_id IN (
         SELECT item_id FROM clipboard WHERE user_id = ?
     )
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 break;
@@ -187,7 +187,7 @@ SELECT id, tag
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
     INNER JOIN projects_items on items_tags.item_id = projects_items.item_id
     WHERE projects_items.project_id = ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 // Filter with 1 tag_id.
@@ -201,7 +201,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ? AND projects_items.project_id = ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 // Filter with 2 tag_ids.
@@ -219,7 +219,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ? AND tag_id != ? AND projects_items.project_id = ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 // Filter with 3 tag_ids.
@@ -241,7 +241,7 @@ SELECT id, tag
             FROM items_tags
             WHERE tag_id = ?
     ) AND tag_id != ?  AND tag_id != ?  AND tag_id != ? AND projects_items.project_id = ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
                 break;
@@ -329,7 +329,7 @@ EOT;
         $sql = <<<'EOT'
 SELECT id, tag
     FROM tags
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
         $this->db_main->run($sql);
@@ -341,7 +341,7 @@ SELECT id, tag
     FROM tags
     LEFT JOIN items_tags ON tags.id=items_tags.tag_id
     WHERE items_tags.item_id = ?
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
         $this->db_main->run($sql, [$item_id]);
@@ -356,7 +356,7 @@ EOT;
 SELECT id, tag
     FROM tags
     WHERE tag IN ($placeholders)
-    ORDER BY tag
+    ORDER BY tag COLLATE utf8Collation
 EOT;
 
         $this->db_main->run($sql, $columns);
