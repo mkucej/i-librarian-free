@@ -1,22 +1,22 @@
 @font-face {
-  font-family: 'Noto Sans';
-  src: url(../fonts/notosansdisplay-regular-webfont.woff2), url(../fonts/NotoSansDisplay-Regular.ttf);
-  font-style: normal;
-  font-weight: normal;
+    font-family: 'Noto Sans';
+    src: url(../fonts/notosansdisplay-regular-webfont.woff2), url(../fonts/NotoSansDisplay-Regular.ttf);
+    font-style: normal;
+    font-weight: normal;
 }
 
 @font-face {
-  font-family: 'Noto Sans';
-  src: url(../fonts/notosansdisplay-semibold-webfont.woff2), url(../fonts/NotoSansDisplay-SemiBold.ttf);
-  font-style: normal;
-  font-weight: bold;
+    font-family: 'Noto Sans';
+    src: url(../fonts/notosansdisplay-semibold-webfont.woff2), url(../fonts/NotoSansDisplay-SemiBold.ttf);
+    font-style: normal;
+    font-weight: bold;
 }
 
 @font-face {
-  font-family: 'Noto Sans';
-  src: url(../fonts/notosansdisplay-italic-webfont.woff2), url(../fonts/NotoSansDisplay-Italic.ttf);
-  font-style: italic;
-  font-weight: normal;
+    font-family: 'Noto Sans';
+    src: url(../fonts/notosansdisplay-italic-webfont.woff2), url(../fonts/NotoSansDisplay-Italic.ttf);
+    font-style: italic;
+    font-weight: normal;
 }
 
 html {
@@ -476,7 +476,7 @@ img.img-night-mode {
 /* Mark */
 mark {
     padding: 0;
-    font-weight: normal;
+    font-weight: inherit;
     background-color: rgba(255,255,155, 0.75)
 }
 
