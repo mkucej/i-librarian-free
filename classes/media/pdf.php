@@ -4,6 +4,7 @@ namespace Librarian\Media;
 
 use DOMDocument;
 use DOMElement;
+use DomXpath;
 use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Queue\Queue;
@@ -361,6 +362,9 @@ SQL;
 
                 exec($this->binary->pdftocairo() . " -svg -f {$pageNumber} -l {$pageNumber} "
                     . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
+
+                // Cairo library has serious bugs, let's try to repair the SVG.
+                $this->repairCairoSvg($imagePath);
 
                 break;
 
@@ -1384,5 +1388,147 @@ EOT;
 
         $db->commit();
         $db->close();
+    }
+
+    /**
+     * Compensate for Cairo bugs.
+     *
+     * @param string $filename
+     * @see https://gitlab.freedesktop.org/cairo/cairo/-/issues/4 ImageMask disappears or gets wrong transform.
+     * @see https://gitlab.freedesktop.org/poppler/poppler/issues/375 PDF highlight annotations don't print correctly.
+     */
+    private function repairCairoSvg(string $filename): void {
+
+        libxml_use_internal_errors(true);
+        libxml_disable_entity_loader(false);
+        libxml_clear_errors();
+
+        $xml = new DOMDocument();
+        $xml->load($filename);
+
+        $xpath = new DomXpath($xml);
+
+        /*
+         * Highlight bug fix.
+         */
+
+        // Find global surfaces, presumably highlights.
+        $surfaces = $xpath->query("//*[name()='defs']/*[name()='g' and starts-with(@id, 'surface')]");
+
+        // Get the page g, and the first node in page g.
+        $page_g = $xpath->query("//*[name()='svg']/*[name()='g']")->item(0);
+        $first_g = $page_g->firstChild;
+
+        foreach ($surfaces as $surface) {
+
+            $surface_id = $surface->getAttribute('id');
+
+            // Find g where the surface is used.
+            $g = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#{$surface_id}')]")->item(0)->parentNode;
+
+            // Move the node up so that it does not cover text.
+            $page_g->insertBefore($g, $first_g);
+        }
+
+        /*
+         * Image mask bug fix.
+         */
+
+        // Find global masks.
+        $defs = $xml->getElementsByTagName('defs');
+        $masks = isset($defs[0]) ? $defs[0]->getElementsByTagName('mask') : [];
+
+        foreach ($masks as $mask) {
+
+            $mask_id = $mask->getAttribute('id');
+
+            if ($mask_id === '') {
+
+                break;
+            }
+
+            // Get mask transform.
+            $use = $mask->getElementsByTagName('use');
+            $mask_transform = isset($use[0]) ? $use[0]->getAttribute('transform') : '';
+
+            if ($mask_transform === '') {
+
+                break;
+            }
+
+            $transform = substr($mask_transform, 7, -1);
+            $transfrom_matrix = explode(',', $transform);
+            $transform_x = (float) $transfrom_matrix[0] ?? 1;
+            $transform_y = (float) $transfrom_matrix[4] ?? 1;
+
+            // Masks smaller than 2x2 pts are invalid.
+            $mask_is_invalid = abs($transform_x) < 0.0033 && abs($transform_y) < 0.0025;
+
+            if ($mask_is_invalid === false) {
+
+                break;
+            }
+
+            // Find clip path for this mask.
+            /** @var DOMElement $g_clip */
+            $g_clip = $xpath->query("//*[@mask=\"url(#{$mask_id})\"]")->item(0)->parentNode;
+
+            $clip_id = $g_clip->getAttribute('clip-path');
+            $clip_id = substr($clip_id, 5, -1);
+
+            if ($clip_id === '') {
+
+                break;
+            }
+
+            // Parse clip path starting point, width and height.
+            /** @var DOMElement $clip_path */
+            $clip_path = $xpath->query("//*[@id=\"{$clip_id}\"]")->item(0);
+            $path = $clip_path->getElementsByTagName('path');
+            $d = isset($path[0]) ? $path[0]->getAttribute('d') : '';
+
+            if ($d === '') {
+
+                break;
+            }
+
+            preg_match('/^M (\d{1,6}\.?\d{0,6}) (\d{1,6}\.?\d{0,6}) L (\d{1,6}\.?\d{0,6}) (\d{1,6}\.?\d{0,6}) L (\d{1,6}\.?\d{0,6}) (\d{1,6}\.?\d{0,6}) L (\d{1,6}\.?\d{0,6}) (\d{1,6}\.?\d{0,6}) Z/', $d, $matches);
+
+            // Only rectangular shapes are supported.
+            if ($matches[1] !== $matches[7] || $matches[2] !== $matches[4] || $matches[3] !== $matches[5] || $matches[6] !== $matches[8]) {
+
+                break;
+            }
+
+            $tx = (float) $matches[1] ?? 0;
+            $ty = (float) $matches[2] ?? 0;
+            $dw = (float) $matches[3] - $tx;
+            $dh = (float) $matches[6] - $ty;
+
+            // Get image id.
+            $image_id = isset($use[0]) ? $use[0]->getAttribute('xlink:href') : '';
+            $image_id = substr($image_id, 1);
+
+            // Get image original dimensions.
+            /** @var DOMElement $image */
+            $image = $xpath->query("//*[@id=\"{$image_id}\"]")->item(0);
+
+            if ($image === null) {
+
+                break;
+            }
+
+            $img_w = (float) $image->getAttribute('width');
+            $img_h = (float) $image->getAttribute('height');
+
+            // Get transform ratio.
+            $a = round($dw / $img_w, 6);
+            $c = round($dh / $img_h, 6);
+
+            // Update the transform matrix.
+            $use[0]->setAttribute('transform', "matrix({$a},0,0,{$c},{$tx},{$ty})");
+        }
+
+        $xml->save($filename);
     }
 }
