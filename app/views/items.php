@@ -351,7 +351,7 @@ class ItemsView extends TextView {
 
             for ($i = 1; $i <= 8; $i++) {
 
-                $this->type_to_readable["[C{$i}]"] = $this->app_settings->getGlobal("custom{$i}");
+                $this->type_to_readable["C{$i}"] = $this->app_settings->getGlobal("custom{$i}");
             }
 
             foreach ($get['search_type'] as $i => $type) {
@@ -2093,7 +2093,7 @@ SCRIPT;
             // Custom customN names.
             for ($i = 1; $i <= 8; $i++) {
 
-                $this->type_to_readable["[C{$i}]"] = $this->app_settings->getGlobal("custom{$i}");
+                $this->type_to_readable["C{$i}"] = $this->app_settings->getGlobal("custom{$i}");
             }
 
             foreach ($get['search_type'] as $i => $type) {
