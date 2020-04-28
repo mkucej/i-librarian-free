@@ -1795,6 +1795,7 @@ SCRIPT;
         $el->name('style');
         $el->attr('data-source', IL_BASE_URL . 'index.php/filter/citation');
         $el->attr('data-minLength', '1');
+        $el->placeholder('Search styles');
         $inputs .= $el->render();
 
         $el = null;
