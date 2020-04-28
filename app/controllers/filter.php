@@ -54,16 +54,15 @@ class FilterController extends Controller {
 
         if (empty($this->get['q'])) {
 
-            $view = new DefaultView($this->di);
-            return $view->main();
+            $items = $model->getAuthors('library');
 
         } else {
 
             $items = $model->searchAuthors('library', $this->get['q']);
-
-            $view = new FilterView($this->di);
-            return $view->main($items);
         }
+
+        $view = new FilterView($this->di);
+        return $view->main($items);
     }
 
     /**
@@ -78,16 +77,15 @@ class FilterController extends Controller {
 
         if (empty($this->get['q'])) {
 
-            $view = new DefaultView($this->di);
-            return $view->main();
+            $items = $model->getEditors('library');
 
         } else {
 
             $items = $model->searchEditors('library', $this->get['q']);
-
-            $view = new FilterView($this->di);
-            return $view->main($items);
         }
+
+        $view = new FilterView($this->di);
+        return $view->main($items);
     }
 
     /**
@@ -103,16 +101,15 @@ class FilterController extends Controller {
 
         if (empty($this->get['q'])) {
 
-            $view = new DefaultView($this->di);
-            return $view->main();
+            $items = $model->get('library', $type);
 
         } else {
 
             $items = $model->search('library', $type, $this->get['q']);
-
-            $view = new FilterView($this->di);
-            return $view->main($items);
         }
+
+        $view = new FilterView($this->di);
+        return $view->main($items);
     }
 
     /**
@@ -161,16 +158,15 @@ class FilterController extends Controller {
 
         if (empty($this->get['q'])) {
 
-            $view = new DefaultView($this->di);
-            return $view->main();
+            $items = $model->get('library', $type);
 
         } else {
 
             $items = $model->search('library', $type, $this->get['q']);
-
-            $view = new FilterView($this->di);
-            return $view->main($items);
         }
+
+        $view = new FilterView($this->di);
+        return $view->main($items);
     }
 
     /**
@@ -279,7 +275,7 @@ class FilterController extends Controller {
     }
 
     /**
-     * Filter tags.
+     * Filter tags. Not used. Tags are searched client-side.
      *
      * @return string
      * @throws Exception

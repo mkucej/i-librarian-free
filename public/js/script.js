@@ -58,7 +58,7 @@ $.widget("il.typeahead", {
     ignoredKeys: [9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45],
     options: {
         delay:     300,
-        minLength: 2,
+        minLength: 0,
         source:    ''
     },
     _getCreateOptions: function() {
@@ -73,35 +73,35 @@ $.widget("il.typeahead", {
      */
     _create: function() {
         // Input keyup.
-        this._on(this.element, {input: this._search, focus: this._clearMenus});
+        this._on(this.element, {input: this._search, focus: this._search});
         // Select dropdown option.
         let $menu = this.element.parent().next();
         this._on($menu, {'click button': function (e) {
-            this.element.val($(e.target).text()).attr('data-id', $(e.target).attr('data-id'));
-            this._clearMenus();
-            this._trigger("onSelect", null, {element: this.element});
-        }});
+                this.element.val($(e.target).text()).attr('data-id', $(e.target).attr('data-id'));
+                this._clearMenus();
+                this._trigger("onSelect", null, {element: this.element});
+            }});
         // Menu focus management using arrows.
         this._on($menu, {'keyup button': function (e) {
-            e.stopPropagation();
-            if (e.which === 38) {
-                $(e.target).prev().focus();
-            }
-            if (e.which === 40) {
-                $(e.target).next().focus();
-            }
-            // Escape.
-            if (e.which === 27) {
-                this.element.focus();
-                this._clearMenus();
-            }
-        }});
+                e.stopPropagation();
+                if (e.which === 38) {
+                    $(e.target).prev().focus();
+                }
+                if (e.which === 40) {
+                    $(e.target).next().focus();
+                }
+                // Escape.
+                if (e.which === 27) {
+                    this.element.focus();
+                    this._clearMenus();
+                }
+            }});
         // Outside click closes dropdown.
         this._on('body', {'click': this._clearMenus});
         // Stop inside click propagation to trigger menu close.
         this._on(this.element.closest('.typeahead'), {click: function (e) {
-            e.stopPropagation();
-        }});
+                e.stopPropagation();
+            }});
         // Resize dropdown on window resize.
         this._on(this.window, {resize: this._resizeMenus});
     },
@@ -150,7 +150,13 @@ $.widget("il.typeahead", {
             $menu.width($t.outerWidth() - 2).show().prev().attr('aria-expanded', true);
             let popper = new Popper($t[0], $menu[0], {
                 placement: 'bottom',
-                eventsEnabled: false
+                eventsEnabled: true,
+                positionFixed: true,
+                modifiers: {
+                    preventOverflow: {
+                        enabled: false
+                    }
+                }
             });
             // Populate menu.
             $menu.html(response.html);
