@@ -1875,11 +1875,11 @@ class ItemsMainView extends View {
             let uri = new URL('http://foo.bar/' + location.hash.substr(1));
             document.designMode = 'on';
             var sel = window.getSelection();
-            sel.collapse(document.getElementsByClassName('item-container')[0], 0);
             for (let p of uri.searchParams) {
                 if (p[0].indexOf('search_query') === 0) {
                     let terms = p[1].split(' ');
                     for (let t of terms) {
+                        sel.collapse(document.getElementsByClassName('item-container')[0], 0);
                         t = t.replace('*', '');
                         while (window.find(t, false)) {
                             document.execCommand('hiliteColor', false, '#ffff9bbf');
