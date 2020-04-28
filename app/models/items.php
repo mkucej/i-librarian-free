@@ -1581,7 +1581,6 @@ EOT;
                         }
 
                         $placeholder .= '(' . join(' OR ', $placeholder_parts) . ')';
-                        $columns[] = "% {$search_query}%";
 
                     } else {
 
