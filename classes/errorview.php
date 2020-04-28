@@ -79,7 +79,7 @@ final class ErrorView extends TextView {
 
         } else {
 
-            $message = get_class($exc) . ": $message";
+            $message = ucfirst($message);
         }
 
         // Add details.
