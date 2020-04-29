@@ -95,5 +95,6 @@ PHP-FPM must also be configured. Locate where the configuration files are (e.g. 
 **A common source of problems is incorrect permissions and ownership - the web server and PHP must be able to read and execute the files**
 
 5. Restart the web server (and also php-fpm if needed)
+
 6. You can access your library in a browser at http://127.0.0.1/librarian
 

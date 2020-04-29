@@ -2,21 +2,23 @@
 
 ### Mac OS X manual installation
 
-If you are comfortable with Terminal and the command line, it is recommeded to use [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. In this case, the Linux instructions can be followed with paths adjusted as needed (e.g. /opt/local/var/www instead of /var/www).  The PHP extension Sodium will also be needed (php72-sodium, php73-sodium, or php74-sodium).
+If you are comfortable with Terminal and the command line, it is highly recommeded that you use [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. In this case, the Linux instructions can be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local  
+
+The PHP extension Sodium will also be needed (php72-sodium, php73-sodium, or php74-sodium) as it is non-standard.
 
 If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using.
 
-Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with Yosemite does not include GD, so you will need to install one that does: it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.).
+Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with Yosemite does not include GD, so you will need to install one that does: it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.). PHP also needs to be upgraded to 7.2 or above.
 
-Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple related security "quirks". Read through https://php-osx.liip.ch/ extensively.
+Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple specific issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)).
 
-Edit /etc/apache2/httpd.conf using a text editor (e.g. TextEdit). You must make two changes:
+Once PHP has been built successfully, edit /etc/apache2/httpd.conf using a text editor (e.g. TextEdit). You must make two changes:
 
-* Enabling php, by removing the initial hash symbol from the line beginning "#LoadModule php5_module" (pre-yosemite), or adding a similar line with the path to wherever you installed PHP, eg:
-    
-    LoadModule php5_module    /usr/local/php5-5.3.29-20141019-211753/libphp5.so
+* Enabling php, by removing the initial hash symbol from the line beginning "#LoadModule php5_module" (pre-yosemite), or adding a similar line with the path to wherever PHP has been installed, e.g.
 
-* Additional PHP extensions, like **php-sqlite3 php-gd php-curl php-xml php-intl php-json php-mbstring php-zip** may need to be installed.
+    LoadModule php7_module /usr/local/php5-7.2.9-20180821-074958/libphp7.so
+
+* The additional PHP extensions mentioned in the Linux instructions are provided as part of the LIIP build, except for Sodium. If you build PHP yourself, you should configure the compilation to include all of these extensions.
 
 * Adding a new Directory directive, by inserting: 
 
@@ -36,11 +38,13 @@ Alias /librarian /Users/yourusername/librarian/public
     # "Require all granted" opens access to everybody
 </Directory>
 ```
-* Don't forget to change "yourusername" to your actual user name. You can find out your user name by typing `whoami` in Terminal.
-* You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
-* Restart Apache, by typing `sudo apachectl restart` in Terminal
-* Install LibreOffice, Tesseract OCR, Ghostscript, and Poppler.
-* Download *I, Librarian* source for Linux and double-click the file to extract its contents. Rename the extracted directory to 'librarian' and move it to your folder.
+
+* Don't forget to change "yourusername" to your actual user name. You can find out your user name by typing `whoami` in Terminal.  
+* You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.  
+* Restart Apache, by typing `sudo apachectl restart` in Terminal  
+* Install LibreOffice, Tesseract OCR, Ghostscript, and Poppler.  
+* Download *I, Librarian* source for Linux and double-click the file to extract its contents. Rename the extracted directory to 'librarian' and move it to your folder.  
+
 * Make sure that the directory is accessible to *Others*. Use the `Get Info` dialog of the *Sites* directory to change permissions for *Everyone* to access and read (alternatively, run `chmod o+r ~/Sites/` at the terminal). You also need to make sure *Everyone* has **Execute** permissions for your home directory.
 * Change the owner of the `data` sub-folder to the Apache user (_www for the default install). You can do this at the Terminal: `chown -R _www ~/librarian/data`.)
 * Open your web browser and go to [http://127.0.0.1/librarian](http://127.0.0.1/librarian).
