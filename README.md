@@ -123,11 +123,11 @@ PHP-FPM must also be configured. Locate where the configuration files are (e.g. 
   1. In php.ini, ensure cgi.fix_pathinfo=1
   1. In php.ini, enable the installed extensions in the ``Dynamic Extensions`` section (e.g. extension=curl)
   1. Double check and configure the file php-fpm.conf as desired
-  1. In the directory php-fpm.d, copy the example ``www.conf.default` to `www.conf`
+  1. In the directory php-fpm.d, copy the example `www.conf.default` to `www.conf`
   1. Edit and configure this new file which sets up the www pool
-    * `User` and `Group` should match the account running the PHP process
-    * `listen` should equal the setting in nginx.conf (e.g. listen = 127.0.0.1:9000)
-    * Increasing the value of the `php_admin_value[memory_limit]` setting may be useful
+     - `User` and `Group` should match the account running the PHP process
+     - `listen` should equal the setting in nginx.conf (e.g. listen = 127.0.0.1:9000)
+     - Increasing the value of the `php_admin_value[memory_limit]` setting may be useful
 
 5. Restart the web server (and also php-fpm if needed)
 6. You can access your library in a browser at http://127.0.0.1/librarian
