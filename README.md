@@ -100,6 +100,12 @@ You may wish to alter who has access (e.g. to allow access from more IP numbers 
  * Nginx: Add a block like this example to the `server` section:  (/var/www is assumed to be the root of the web server)
 
 ```nginx.conf
+# if no directives, then access from all IPs is enabled
+allow 127.0.0.1;
+allow 10.0.0.0/8;
+allow 172.16.0.0/16;
+deny all;   # catch-all that denies everything else
+
 location /library {
   # Ensures the URL `/library/` executes index.php
   index index.php;
@@ -131,6 +137,7 @@ PHP-FPM must also be configured. Locate where the configuration files are (e.g. 
 
 5. Restart the web server (and also php-fpm if needed)
 6. You can access your library in a browser at http://127.0.0.1/librarian
+
 
 ### Mac OS X manual installation
 
