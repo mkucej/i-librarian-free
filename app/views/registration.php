@@ -57,11 +57,31 @@ EOT
 
             $el = null;
 
+            $argon = '';
+
+            if (defined('PASSWORD_ARGON2I') === false) {
+
+                /** @var Bootstrap\Alert $el */
+                $el = $this->di->get('Alert');
+
+                $el->addClass('my-4');
+                $el->context('danger');
+                $el->html(<<<EOT
+                A required PHP encryption extension Sodium is missing. You won't be able to create user accounts.
+EOT
+                );
+                $argon = $el->render();
+
+            }
+
+            $el = null;
+
             $bc = '';
 
         } else {
 
             $welcome = '';
+            $argon = '';
 
             /** @var Bootstrap\Breadcrumb $el */
             $el = $this->di->get('Breadcrumb');
@@ -201,7 +221,7 @@ EOT
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
 
-        $el->column($welcome . $card, 'col-lg-4 offset-lg-4');
+        $el->column($welcome . $argon . $card, 'col-lg-4 offset-lg-4');
         $outer_row = $el->render();
 
         $el = null;
