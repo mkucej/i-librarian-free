@@ -15,7 +15,7 @@ and PHP for you. If you don't want that, follow the instructions below to instal
 
 ### Windows manual installation
   * A running *Apache 2.4+* and *PHP 7.2+* are required. Install them using a Windows installer like WAMP.
-  * Edit Apache configuration file (httpd.conf). Append this and edit appropriately at the end using Notepad:
+  * Edit Apache configuration file (httpd.conf). Append this at the end using Notepad and edit as needed:
 
 ```apache_conf
 Alias /librarian "C:\I, Librarian\public"
@@ -52,31 +52,31 @@ Alias /librarian "C:\I, Librarian\public"
     * For Apache, **php** and **libapache2-mod-php**
     * For Nginx, **php-fpm** is recommended.
   - PHP Extensions
-   * **php-sqlite3**: SQLite database for PHP.
-   * **php-gd**, **php-curl**, **php-intl**, **php-xml**, **php-json**, **php-mbstring**, **php-zip**: Other required PHP extensions.
-   * **php-ldap**: Required for using LDAP.
+    * **php-sqlite3**: SQLite database for PHP.
+    * **php-gd**, **php-curl**, **php-intl**, **php-xml**, **php-json**, **php-mbstring**, **php-zip**: Other required PHP extensions.
+    * **php-ldap**: Required for using LDAP.
   - External Utilities
-   * **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
-   * **ghostscript**: required for the built-in PDF viewer.
-   * **tesseract-ocr**: optional OCR.
-   * **libreoffice**: optional import of office files.
+    * **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
+    * **ghostscript**: required for the built-in PDF viewer.
+    * **tesseract-ocr**: optional OCR.
+    * **libreoffice**: optional import of office files.
 
-1. If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
+2. If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
   into a directory underneath the web server's root directory (e.g. `/var/www/librarian`). Example:
 
 ```bash
   tar -Jxf I-Librarian-*.tar.xz -C /var/www/librarian
 ```
-* Change the owner of the `data` sub-folder to the account that runs the web server. For Apache, this is usually `www-data`
+3. Change the owner of the `data` sub-folder to the account that runs the web server. For Apache, this is usually `www-data`
 and for Nginx, `nobody`. Example:
 
 ```bash
   chown -R www-data:www-data /var/www/librarian/data
 ```
 
-* Configure the web server appropriately:
+4. Configure the web server appropriately:
 
-* Apache: Insert a setting like this example into your Apache configuration file:
+ * Apache: Insert a setting like this example into the configuration file:
 
 ```apache_conf
 Alias /librarian "/var/www/librarian/public"
@@ -94,9 +94,12 @@ Alias /librarian "/var/www/librarian/public"
     # "Require all granted" opens access to everybody
 </Directory>
 ```
-* You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
-* Restart the server.
-* You can access your library in a browser at http://127.0.0.1/librarian
+You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
+
+
+
+ * Restart the web server.
+ * You can access your library in a browser at http://127.0.0.1/librarian
 
 ### Mac OS X manual installation
 
