@@ -2,13 +2,13 @@
 
 ### Mac OS X manual installation
 
-If you are comfortable with Terminal and the command line, it is highly recommeded that you use [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. In this case, the Linux instructions can be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local  
+If you are comfortable with Terminal and the command line, it is highly recommeded that you use [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. In this case, the Linux instructions can be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local )
 
-The PHP extension Sodium will also be needed (php72-sodium, php73-sodium, or php74-sodium) as it is non-standard.
+The PHP extension Sodium will also be useful (php72-sodium, php73-sodium, or php74-sodium) as it is non-standard.
 
-If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using.
+If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using. One option is to install [MAMP](https://www.mamp.info/en/mac/) but it comes with MySQL as well. To configure a MAMP based installation, the Linux instructions can be followed.
 
-Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with Yosemite does not include GD, so you will need to install one that does: it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.). PHP also needs to be upgraded to 7.2 or above.
+If you want to use the Apache server OS X comes with, then a new version of PHP is needed. Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with Yosemite does not include GD, so you will need to install one that does: it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.). PHP also needs to be upgraded to 7.2 or above.
 
 Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple specific issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)).
 
@@ -49,19 +49,3 @@ Alias /librarian /Users/yourusername/librarian/public
 * Change the owner of the `data` sub-folder to the Apache user (_www for the default install). You can do this at the Terminal: `chown -R _www ~/librarian/data`.)
 * Open your web browser and go to [http://127.0.0.1/librarian](http://127.0.0.1/librarian).
 
-### First use
-* Note on security: These installation instructions allow access to your library only from local computer
-  or an internal network.
-* In order to start *I, Librarian*, open your web browser, and visit:
-  [http://127.0.0.1/librarian](http://127.0.0.1/librarian)
-* Replace `127.0.0.1` with your static IP, or qualified server domain name, if you have either one.
-* Migrate your previous library, or create an account and head to `Administrator > Software details` to see if everything checks fine.
-* You should also check `Administrator > Global settings` to run *I, Librarian* the way you want.
-
-**Thank you for using *I, Librarian*!**
-
-### Un-installation
-* If you used the DEB package, execute the `uninstall.sh` un-installer.
-* Otherwise un-install all programs that you installed solely to use *I, Librarian*.
-* These may include Apache and PHP. **Note: You might have other programs using these. Only remove if sure.**
-* Delete *I, Librarian* directory.
