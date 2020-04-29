@@ -1104,6 +1104,8 @@ EOT
      */
     private function summaryList(array $items): string {
 
+        $this->temporal_obj = $this->di->get('Temporal');
+
         // Theme.
         $theme_classes = self::$theme === 'light' ? 'bg-white' : 'bg-dark text-white';
 
@@ -1272,27 +1274,53 @@ EOT;
             // Authors.
             $authors = join('<span class="text-secondary ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
 
+            // Publication.
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : '';
+            $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
+
+            // Tags.
+            $tags = '';
+
+            foreach ($item['tags'] as $tag_id => $tag) {
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Button');
+
+                $el->elementName('a');
+                $el->href("#items/filter?filter[tag][0]={$tag_id}");
+                $el->context('outline-primary');
+                $el->componentSize('small');
+                $el->addClass('mr-1 mb-1');
+                $el->html($tag);
+
+                $tags .= $el->render();
+
+                $el = null;
+            }
+
             $titles .= <<<EOT
                 <table data-id="{$item['id']}" class="{$theme_classes} item-container mb-2" style="table-layout: fixed;width:100%">
                     <tbody>
                         <tr>
                             <td class="px-3 pt-3" style="width:4.5em;vertical-align: top" rowspan="5">
-                                $pdf_link
+                                {$pdf_link}
                             </td>
                             <td class="pt-3 pr-3">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
-                                <span class="text-secondary">{$authors}</span>
+                                {$authors}
                             </td>
                         </tr>
                         <tr>
                             <td class="pt-0 pb-2">
-                                $button $check
+                                {$button} {$check}
                                 <div class="collapse" id="projects-{$item['id']}">$project_html</div>
                             </td>
                         </tr>
                         <tr>
                             <td class="pt-0 pb-3 pr-5">
-                                <div style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</div>
+                                <p>{$publication} $date</p>
+                                <p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
+                                <p>{$tags}</p>
                             </td>
                         </tr>
                         <tr>

@@ -2303,8 +2303,19 @@ EOT;
         } elseif ($display_action === 'summary') {
 
             $sql = <<<EOT
-SELECT items.id, items.title, items.abstract, items.file_hash
+SELECT
+       items.id,
+       items.title,
+       items.abstract,
+       primary_titles.primary_title,
+       secondary_titles.secondary_title,
+       tertiary_titles.tertiary_title,
+       items.publication_date,
+       items.file_hash
     FROM items
+    LEFT JOIN primary_titles ON items.primary_title_id = primary_titles.id
+    LEFT JOIN secondary_titles ON items.secondary_title_id = secondary_titles.id
+    LEFT JOIN tertiary_titles ON items.tertiary_title_id = tertiary_titles.id
     WHERE items.id IN ($item_placeholder)
     ORDER BY CASE items.id
         $item_ordering
@@ -2318,11 +2329,17 @@ EOT;
 
             while ($row = $this->db_main->getResultRow()) {
 
+                $publication = !empty($row['primary_title']) ? $row['primary_title'] : $row['secondary_title'];
+                $publication = !empty($publication) ? $publication : $row['tertiary_title'];
+                $publication = !empty($publication) ? $publication : 'No publication title';
+
                 // Add row to the items array.
                 $output[] = [
                     'id'       => $row['id'],
                     'title'    => $row['title'],
                     'abstract' => $row['abstract'],
+                    'publication_title' => $publication,
+                    'publication_date'  => substr($row['publication_date'], 0, 4),
                     'has_pdf'  => !empty($row['file_hash']),
                     'snippet' => $item_rows[$i]['snippet'] ?? ''
                 ];
@@ -2358,6 +2375,24 @@ EOT;
 
                     $output[$i]['authors'] = [$first_author, $last_author];
                 }
+            }
+
+            // Add tags.
+            $sql = <<<EOT
+SELECT
+       id, tag
+    FROM tags
+    INNER JOIN items_tags ON tags.id = items_tags.tag_id
+    WHERE items_tags.item_id = ?
+    ORDER BY tag COLLATE utf8Collation
+EOT;
+
+            for ($i = 0; $i < count($item_ids); $i++) {
+
+                $this->db_main->run($sql, [$item_ids[$i]]);
+                $tags = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
+
+                $output[$i]['tags'] = $tags ?? [];
             }
 
             // Add clipboard flags.
