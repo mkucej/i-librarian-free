@@ -15,7 +15,7 @@ and PHP for you. If you don't want that, follow the instructions below to instal
 
 ### Windows manual installation
   * A running *Apache 2.4+* and *PHP 7.2+* are required. Install them using a Windows installer like WAMP.
-  * Edit Apache configuration file (httpd.conf). Append this at the end using Notepad:
+  * Edit Apache configuration file (httpd.conf). Append this and edit appropriately at the end using Notepad:
 
 ```apache_conf
 Alias /librarian "C:\I, Librarian\public"
@@ -44,27 +44,39 @@ Alias /librarian "C:\I, Librarian\public"
   * *Optional.* You can install LibreOffice and Tesseract OCR to enable importing Office files and OCR, respectively. 
 
 ### Linux manual installation
-* If you did not use the DEB package, make sure you have installed these packages from repositories:
-  - **apache2 (may be named httpd)**: a web server (you may run *I, Librarian* with a different web server).
-  - **php libapache2-mod-php**: *I, Librarian* requires PHP +7.2.
-  - **php-sqlite3**: SQLite database for PHP.
-  - **php-gd php-curl php-xml php-intl php-json php-mbstring php-zip**: Other required PHP extensions.
-  - **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
-  - **ghostscript**: required for the built-in PDF viewer.
-  - **tesseract-ocr**: optional OCR.
-  - **libreoffice**: optional import of office files.
-* If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
-  into e.g. `/var/www/librarian` directory in your web sever's root directory. Example:
+1. If you did not use the DEB package, make sure you have installed these packages from repositories:
+  - Either of these web servers is recommended (you may run *I, Librarian* with any web server)
+    * **apache2 (may be named httpd)**
+    * **nginx**
+  - PHP (*I, Librarian* requires PHP 7.2+)
+    * For Apache, **php** and **libapache2-mod-php**
+    * For Nginx, **php-fpm** is recommended.
+  - PHP Extensions
+   * **php-sqlite3**: SQLite database for PHP.
+   * **php-gd**, **php-curl**, **php-intl**, **php-xml**, **php-json**, **php-mbstring**, **php-zip**: Other required PHP extensions.
+   * **php-ldap**: Required for using LDAP.
+  - External Utilities
+   * **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
+   * **ghostscript**: required for the built-in PDF viewer.
+   * **tesseract-ocr**: optional OCR.
+   * **libreoffice**: optional import of office files.
+
+1. If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
+  into a directory underneath the web server's root directory (e.g. `/var/www/librarian`). Example:
 
 ```bash
   tar -Jxf I-Librarian-*.tar.xz -C /var/www/librarian
 ```
-* Change the owner of the `data` sub-folder to Apache. Example:
+* Change the owner of the `data` sub-folder to the account that runs the web server. For Apache, this is usually `www-data`
+and for Nginx, `nobody`. Example:
 
 ```bash
   chown -R www-data:www-data /var/www/librarian/data
 ```
-* Insert a setting like this example into your Apache configuration file:
+
+* Configure the web server appropriately:
+
+* Apache: Insert a setting like this example into your Apache configuration file:
 
 ```apache_conf
 Alias /librarian "/var/www/librarian/public"
