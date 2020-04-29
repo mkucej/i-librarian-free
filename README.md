@@ -94,12 +94,43 @@ Alias /librarian "/var/www/librarian/public"
     # "Require all granted" opens access to everybody
 </Directory>
 ```
+
 You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
 
+ * Nginx: Add a block like this example to the `server` section:  (/var/www is assumed to be the root of the web server)
 
+```nginx.conf
+location /library {
+  # Ensures the URL `/library/` executes index.php
+  index index.php;
 
- * Restart the web server.
- * You can access your library in a browser at http://127.0.0.1/librarian
+  location ~ ^(.+\.php)(.*)$ {
+    alias /var/www/library/public;
+    fastcgi_split_path_info ^/library(.+\.php)(.*)$ ;
+    fastcgi_pass   127.0.0.1:9000;
+    include        fastcgi.conf;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+  }
+
+  # Maps the URL `/library/` to the correct file system location
+  alias /var/www/library/public;
+  try_files $uri $uri/ =404;
+}
+```
+
+PHP-FPM must also be configured. Locate where the configuration files are (e.g. /etc/php or /etc/php74) and 
+
+  1. In php.ini, ensure cgi.fix_pathinfo=1
+  1. In php.ini, enable the installed extensions in the ``Dynamic Extensions`` section (e.g. extension=curl)
+  1. Double check and configure the file php-fpm.conf as desired
+  1. In the directory php-fpm.d, copy the example ``www.conf.default` to `www.conf`
+  1. Edit and configure this new file which sets up the www pool
+    * `User` and `Group` should match the account running the PHP process
+    * `listen` should equal the setting in nginx.conf (e.g. listen = 127.0.0.1:9000)
+    * Increasing the value of the `php_admin_value[memory_limit]` setting may be useful
+
+5. Restart the web server (and also php-fpm if needed)
+6. You can access your library in a browser at http://127.0.0.1/librarian
 
 ### Mac OS X manual installation
 
