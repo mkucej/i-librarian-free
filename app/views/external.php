@@ -128,7 +128,7 @@ class ExternalView extends TextView {
 
             $el = null;
 
-            $metadata = $this->sanitation->attr(\Librarian\Http\Client\json_encode($article));
+            $metadata = $this->sanitation->attr($this->sanitation->lmth(\Librarian\Http\Client\json_encode($article)));
 
             // Upload form.
 
