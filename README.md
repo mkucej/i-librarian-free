@@ -2,8 +2,8 @@
 ## Contents
   - Automated installation using installers
   - Windows manual installation
-  - Linux manual installation
-  - Mac OS X manual installation
+  - [Linux manual installation](README-Linux.md)
+  - [Mac OS X manual installation](README-Mac.md)
   - First use
   - Un-installation
 
@@ -43,145 +43,6 @@ Alias /librarian "C:\I, Librarian\public"
   * Now you can access your library in a browser at http://127.0.0.1/librarian
   * *Optional.* You can install LibreOffice and Tesseract OCR to enable importing Office files and OCR, respectively. 
 
-### Linux manual installation
-1. If you did not use the DEB package, make sure you have installed these packages from repositories:
-  - Either of these web servers is recommended (you may run *I, Librarian* with any web server)
-    * **apache2 (may be named httpd)**
-    * **nginx**
-  - PHP (*I, Librarian* requires PHP 7.2+)
-    * For Apache, **php** and **libapache2-mod-php**
-    * For Nginx, **php-fpm** is recommended.
-  - PHP Extensions
-    * **php-sqlite3**: SQLite database for PHP.
-    * **php-gd**, **php-curl**, **php-intl**, **php-xml**, **php-json**, **php-mbstring**, **php-zip**: Other required PHP extensions.
-    * **php-ldap**: Required for using LDAP.
-  - External Utilities
-    * **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
-    * **ghostscript**: required for the built-in PDF viewer.
-    * **tesseract-ocr**: optional OCR.
-    * **libreoffice**: optional import of office files.
-
-2. If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
-  into a directory underneath the web server's root directory (e.g. `/var/www/librarian`). Example:
-
-```bash
-  tar -Jxf I-Librarian-*.tar.xz -C /var/www/librarian
-```
-3. Change the owner of the `data` sub-folder to the account that runs the web server. For Apache, this is usually `www-data`
-and for Nginx, `nobody`. Example:
-
-```bash
-  chown -R www-data:www-data /var/www/librarian/data
-```
-
-4. Configure the web server appropriately:
-
- * Apache: Insert a setting like this example into the configuration file:
-
-```apache_conf
-Alias /librarian "/var/www/librarian/public"
-<Directory "/var/www/librarian/public">
-    AllowOverride All
-    # Allow access from this computer
-    Require local
-    # Allow access from intranet computers
-    Require ip 10
-    Require ip 172.16 172.17 172.18 172.19 172.20
-    Require ip 172.21 172.22 172.23 172.24 172.25
-    Require ip 172.26 172.27 172.28 172.29 172.30 172.31
-    Require ip 192.168
-    # Insert Allow from directives here to allow access from the internet
-    # "Require all granted" opens access to everybody
-</Directory>
-```
-
-You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
-
- * Nginx: Add a block like this example to the `server` section:  (/var/www is assumed to be the root of the web server)
-
-```nginx.conf
-# if no directives, then access from all IPs is enabled
-allow 127.0.0.1;
-allow 10.0.0.0/8;
-allow 172.16.0.0/16;
-deny all;   # catch-all that denies everything else
-
-location /library {
-  # Ensures the URL `/library/` executes index.php
-  index index.php;
-
-  location ~ ^(.+\.php)(.*)$ {
-    alias /var/www/library/public;
-    fastcgi_split_path_info ^/library(.+\.php)(.*)$ ;
-    fastcgi_pass   127.0.0.1:9000;
-    include        fastcgi.conf;
-    fastcgi_param PATH_INFO $fastcgi_path_info;
-  }
-
-  # Maps the URL `/library/` to the correct file system location
-  alias /var/www/library/public;
-  try_files $uri $uri/ =404;
-}
-```
-
-PHP-FPM must also be configured. Locate where the configuration files are (e.g. /etc/php or /etc/php74) and 
-
-  1. Copy php.ini-production to php.ini (if it does not exist)
-  1. In php.ini, ensure cgi.fix_pathinfo=1 and configure important settings as needed (e.g. max_execution_time, max_input_time, memory_limit)
-  1. In php.ini, enable the installed extensions in the ``Dynamic Extensions`` section (e.g. extension=curl, no semicolon)
-  1. Double check and configure the file php-fpm.conf as desired
-  1. In the directory php-fpm.d, copy the example `www.conf.default` to `www.conf`
-  1. Edit and configure this new file which sets up the www pool
-     - `User` and `Group` should match the account running the PHP process
-     - `listen` should equal the setting in nginx.conf (e.g. listen = 127.0.0.1:9000)
-
-5. Restart the web server (and also php-fpm if needed)
-6. You can access your library in a browser at http://127.0.0.1/librarian
-
-
-### Mac OS X manual installation
-
-**These instructions may be obsolete. A contribution to update this section from an OS X user is welcome.**
-
-You will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using.
-
-Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with     Yosemite does not include GD, so you will need to install one that does:     it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.).
-
-Edit  /etc/apache2/httpd.conf using a text editor (e.g. TextEdit). You must make two changes:
-
-* Enabling php, by removing the initial hash symbol from the line beginning "#LoadModule php5_module" (pre-yosemite), or adding a similar line with the path to wherever you installed PHP, eg:
-    
-    LoadModule php5_module    /usr/local/php5-5.3.29-20141019-211753/libphp5.so
-
-* Additional PHP extensions, like **php-sqlite3 php-gd php-curl php-xml php-intl php-json php-mbstring php-zip** may need to be installed.
-
-* Adding a new Directory directive, by inserting: 
-
-```apache_conf
-Alias /librarian /Users/yourusername/librarian/public
-<Directory /Users/Yourusername/librarian/public>
-    AllowOverride All
-    # Allow access from this computer
-    Require local
-    # Allow access from intranet computers
-    Require ip 10
-    Require ip 172.16 172.17 172.18 172.19 172.20
-    Require ip 172.21 172.22 172.23 172.24 172.25
-    Require ip 172.26 172.27 172.28 172.29 172.30 172.31
-    Require ip 192.168
-    # Insert Allow from directives here to allow access from the internet
-    # "Require all granted" opens access to everybody
-</Directory>
-```
-* Don't forget to change "yourusername" to your actual user name. You can find out your user name by typing `whoami` in Terminal.
-* You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
-* Restart Apache, by typing `sudo apachectl restart` in Terminal
-* Install LibreOffice, Tesseract OCR, Ghostscript, and Poppler.
-* Download *I, Librarian* source for Linux and double-click the file to extract its contents. Rename the extracted directory to 'librarian' and move it to your folder.
-* Make sure that the directory is accessible to *Others*. Use the `Get Info` dialog of the *Sites* directory to change permissions for *Everyone* to access and read (alternatively, run `chmod o+r ~/Sites/` at the terminal). You also need to make sure *Everyone* has **Execute** permissions for your home directory.
-* Change the owner of the `data` sub-folder to the Apache user (_www for the default install). You can do this at the Terminal: `chown -R _www ~/librarian/data`.)
-* Open your web browser and go to [http://127.0.0.1/librarian](http://127.0.0.1/librarian).
-
 ### First use
 * Note on security: These installation instructions allow access to your library only from local computer
   or an internal network.
@@ -196,5 +57,6 @@ Alias /librarian /Users/yourusername/librarian/public
 ### Un-installation
 * If you used the DEB package, execute the `uninstall.sh` un-installer.
 * Otherwise un-install all programs that you installed solely to use *I, Librarian*.
-* These may include Apache and PHP. **Note: You might have other programs using these. Only remove if sure.**
+* These may include Apache, Nginx, and PHP - using package managers like Apt, Homebrew, or Macports will make this task easier. **Note: You might have other programs using these. Only remove if sure.**
 * Delete *I, Librarian* directory.
+
