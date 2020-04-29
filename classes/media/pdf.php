@@ -1426,8 +1426,15 @@ EOT;
             // Find g where the surface is used.
             $g = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#{$surface_id}')]")->item(0)->parentNode;
 
-            // Move the node up so that it does not cover text.
-            $page_g->insertBefore($g, $first_g);
+            // Try moving the node up so that it does not cover text.
+            try {
+
+                $page_g->insertBefore($g, $first_g);
+
+            } catch (Exception $ex) {
+
+                // This can silently fail if $page_g === $g, or $first_g === $g.
+            }
         }
 
         /*
