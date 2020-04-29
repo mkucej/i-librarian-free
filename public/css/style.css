@@ -412,7 +412,7 @@ img.img-night-mode {
         height: calc(100% - 42px);
         overflow-y: auto;
     }
-    
+
     #filter-list {
         height: 20vh;
         overflow-y: auto;
@@ -464,6 +464,15 @@ img.img-night-mode {
     font-size: 1.25rem;
     border: 0;
     width: 4rem;
+}
+
+/* Advanced search */
+#advanced-search-form .row.text-search .form-check {
+    visibility: visible;
+}
+
+#advanced-search-form .row.string-search .form-check {
+    visibility: hidden;
 }
 
 /* Typeahead. */
@@ -669,7 +678,7 @@ small {
 }
 
 .unselectable {
-    -webkit-user-select: none;     
+    -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
@@ -757,7 +766,7 @@ div.il-expandable-left > button {
 
 .cropper-center:before,
 .cropper-center:after {
-  background-color: rgba(155,155,155,0.75);
+    background-color: rgba(155,155,155,0.75);
 }
 
 .cropper-crop-box {

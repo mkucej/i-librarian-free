@@ -1114,13 +1114,16 @@ class AdvancedSearch {
             This.formSubmit();
         });
         $('#advanced-search-form .clone-button').clonable({
-            target: '#clone-target'
+            target: '#clone-target',
+            onClone: function (e, t) {
+                // This hides booleans for string fields.
+                $(t.clonedTarget).find('select.fields').trigger('change');
+            }
         });
         // Saveable should appear after clonable, so it can clone/load extra rows.
         $f.saveable();
-        $('#input-filter-tag').typeahead({
-            minLength: 0
-        });
+        $f.on('change', 'select.fields', this.hideBooleans);
+        this.hideBooleans();
         $('#tag-filter-search').filterable({
             complete: function () {
                 $('#search-tags .label-text').each(function() {
@@ -1133,6 +1136,9 @@ class AdvancedSearch {
             }
         });
     }
+    /**
+     * Save and submit search form.
+     */
     formSubmit() {
         let $m = $('#modal-advanced-search'), $f = $('#advanced-search-form'),
             urlObj = new URL('http://foo.bar/' + $f.attr('action').substr(1)),
@@ -1140,6 +1146,40 @@ class AdvancedSearch {
         $f.saveable('save');
         router.navigate($f.attr('action') + sep + $f.serialize(), {trigger: true});
         $m.modal('hide');
+    }
+    /**
+     * Show/hide boolean radios, based on search field type.
+     * @param e
+     */
+    hideBooleans (e) {
+        let hide, selects = e === undefined ? $('#advanced-search-form').find('select.fields') : $(this);
+        $.each(selects, function (i, select) {
+            switch ($(select).val()) {
+                case 'AU':
+                case 'T1':
+                case 'T2':
+                case 'T3':
+                case 'KW':
+                case 'YR':
+                case 'C1':
+                case 'C2':
+                case 'C3':
+                case 'C4':
+                case 'C5':
+                case 'C6':
+                case 'C7':
+                case 'C8':
+                    hide = true;
+                    break;
+                default:
+                    hide = false;
+            }
+            if (hide) {
+                $(select).closest('.row').removeClass('text-search').addClass('string-search');
+            } else {
+                $(select).closest('.row').removeClass('string-search').addClass('text-search');
+            }
+        });
     }
 }
 

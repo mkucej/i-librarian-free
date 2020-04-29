@@ -156,17 +156,19 @@ trait SharedHtmlView {
 
             $el->id('input-type-' . $i);
             $el->groupClass('my-2');
+            $el->addClass('fields');
             $el->name("search_type[{$i}]");
             $el->ariaLabel('Search in');
             $el->option('Title', 'TI');
-            $el->option('Title + abstract', 'AB', $i === 0 ? true : false);
+            $el->option('Title or abstract', 'AB', $i === 0);
             $el->option('PDF fulltext', 'FT');
-            $el->option('Authors + editors', 'AU', $i === 1 ? true : false);
+            $el->option('Author or editor', 'AU', $i === 1);
             $el->option('Affiliation', 'AF');
             $el->option('Primary title', 'T1');
             $el->option('Secondary title', 'T2');
             $el->option('Tertiary title', 'T3');
-            $el->option('Keywords', 'KW');
+            $el->option('Keyword', 'KW');
+            $el->option('Year', 'YR');
 
             /** @var AppSettings $app_settings */
             $app_settings = $this->app_settings;

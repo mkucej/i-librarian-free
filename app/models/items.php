@@ -1528,6 +1528,12 @@ EOT;
             // Glue.
             $placeholder .= $placeholder !== '' && isset($search['search_glue'][$key]) ? " {$search['search_glue'][$key]} " : '';
 
+            // Some fields must have PHRASE boolean.
+            if (in_array($search['search_type'][$key], ['AU', 'KW', 'JO', 'T1', 'T2', 'T3', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'])) {
+
+                $search['search_boolean'][$key] = 'PHRASE';
+            }
+
             // Modify query based on boolean type.
             switch ($search['search_boolean'][$key]) {
 
