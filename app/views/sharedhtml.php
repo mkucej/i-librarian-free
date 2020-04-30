@@ -168,7 +168,6 @@ trait SharedHtmlView {
             $el->option('Secondary title', 'T2');
             $el->option('Tertiary title', 'T3');
             $el->option('Keyword', 'KW');
-            $el->option('Year', 'YR');
 
             /** @var AppSettings $app_settings */
             $app_settings = $this->app_settings;

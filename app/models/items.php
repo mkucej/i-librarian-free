@@ -954,7 +954,7 @@ EOT;
                     foreach ($fields as $field) {
 
                         $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "% {$term}%";
+                        $columns[] = "% {$term} %";
                     }
 
                     $placeholders[] = '(' . join(' OR ', $field_placeholders) . ')';
@@ -970,7 +970,7 @@ EOT;
                 foreach ($fields as $field) {
 
                     $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                    $columns[] = "% {$query}%";
+                    $columns[] = "% {$query} %";
                 }
 
                 $placeholder = '(' . join(' OR ', $field_placeholders) . ')';
@@ -1140,9 +1140,9 @@ SQL;
 
                 foreach ($query_parts as $term) {
 
-                    $placeholders[] = "annotations.annotation LIKE ? ESCAPE '\'";
-                    $columns[] = "%{$term}%";
-                    $columns_count[] = "%{$term}%";
+                    $placeholders[] = "' ' || annotations.annotation || ' ' LIKE ? ESCAPE '\'";
+                    $columns[] = "% {$term} %";
+                    $columns_count[] = "% {$term} %";
                 }
 
                 $placeholder = join(" {$search['search_boolean'][0]} ", $placeholders);
@@ -1150,9 +1150,9 @@ SQL;
 
             case 'PHRASE':
 
-                $placeholder = "annotations.annotation LIKE ? ESCAPE '\'";
-                $columns[] = "%{$query}%";
-                $columns_count[] = "%{$query}%";
+                $placeholder = "' ' || annotations.annotation || ' ' LIKE ? ESCAPE '\'";
+                $columns[] = "% {$query} %";
+                $columns_count[] = "% {$query} %";
                 break;
         }
 
@@ -1316,9 +1316,9 @@ EOT;
 
                 foreach ($query_parts as $term) {
 
-                    $placeholders[] = "striptags(item_notes.note) LIKE ? ESCAPE '\'";
-                    $columns[] = "%{$term}%";
-                    $columns_count[] = "%{$term}%";
+                    $placeholders[] = "' ' || striptags(item_notes.note) || ' ' LIKE ? ESCAPE '\'";
+                    $columns[] = "% {$term} %";
+                    $columns_count[] = "% {$term} %";
                 }
 
                 $placeholder = join(" {$search['search_boolean'][0]} ", $placeholders);
@@ -1326,9 +1326,9 @@ EOT;
 
             case 'PHRASE':
 
-                $placeholder = "striptags(item_notes.note) LIKE ? ESCAPE '\'";
-                $columns[] = "%{$query}%";
-                $columns_count[] = "%{$query}%";
+                $placeholder = "' ' || striptags(item_notes.note) || ' ' LIKE ? ESCAPE '\'";
+                $columns[] = "% {$query} %";
+                $columns_count[] = "% {$query} %";
                 break;
         }
 
@@ -1555,7 +1555,7 @@ EOT;
                             foreach ($field as $field_part) {
 
                                 $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\'";
-                                $columns[] = "% {$term}%";
+                                $columns[] = "% {$term} %";
                             }
 
                             $placeholders[] = '(' . join(' OR ', $placeholder_parts) . ')';
@@ -1563,7 +1563,7 @@ EOT;
                         } else {
 
                             $placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                            $columns[] = "% {$term}%";
+                            $columns[] = "% {$term} %";
                         }
                     }
 
@@ -1583,7 +1583,7 @@ EOT;
                         foreach ($field as $field_part) {
 
                             $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\'";
-                            $columns[] = "% {$search_query}%";
+                            $columns[] = "% {$search_query} %";
                         }
 
                         $placeholder .= '(' . join(' OR ', $placeholder_parts) . ')';
@@ -1591,7 +1591,7 @@ EOT;
                     } else {
 
                         $placeholder .= "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "% {$search_query}%";
+                        $columns[] = "% {$search_query} %";
                     }
 
                     break;
