@@ -44,21 +44,11 @@ final class Encryption {
      */
     public function hashPassword(string $password): string {
 
-        if (defined('PASSWORD_ARGON2I')) {
-
-            return password_hash($password, PASSWORD_ARGON2I, [
-                'memory_cost' => 10000,
-                'threads'     => 1,
-                'time_cost'   => $this->cost
-            ]);
-
-        } else {
-
-            return password_hash($password, PASSWORD_DEFAULT, [
-                'cost' => 10
-            ]);
-
-        }
+        return password_hash($password, PASSWORD_ARGON2I, [
+            'memory_cost' => 10000,
+            'threads'     => 1,
+            'time_cost'   => $this->cost
+        ]);
     }
 
     /**
@@ -83,27 +73,15 @@ final class Encryption {
      */
     public function rehashPassword(string $password, string $storedPassword) {
 
-        if (defined('PASSWORD_ARGON2I')) {
-
-           $rehash = password_needs_rehash($storedPassword, PASSWORD_ARGON2I, [
-               'memory_cost' => 10000,
-               'threads'     => 1,
-               'time_cost'   => $this->cost
-           ]);
-
-        } else {
-
-           $rehash = password_needs_rehash($storedPassword, PASSWORD_DEFAULT, [
-               'cost' => 10
-           ]);
-
-        }
-
-        if ($rehash) {
+        if (password_needs_rehash($storedPassword, PASSWORD_ARGON2I, [
+            'memory_cost' => 10000,
+            'threads'     => 1,
+            'time_cost'   => $this->cost
+        ]) === true) {
 
             return $this->hashPassword($password);
-    
         }
+
         return false;
     }
 

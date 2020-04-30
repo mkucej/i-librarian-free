@@ -2,23 +2,25 @@
 
 ### Mac OS X manual installation
 
-If you are comfortable with Terminal and the command line, it is highly recommeded that you use [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. In this case, the Linux instructions can be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local )
+It is **highly** recommended that you use the package managers [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. A Linux-like environment will be setup and the latest versions of the required software (web servers, PHP 7.2+, PHP extensions) can be easily downloaded and automatically compiled when necessary. The Linux instructions can then be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local )
 
-The PHP extension Sodium will also be useful (php72-sodium, php73-sodium, or php74-sodium) as it is non-standard.
+The PHP extension Sodium is essential (php72-sodium, php73-sodium, or php74-sodium); it is not usually part of a standard build of PHP.
 
-If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using. One option is to install [MAMP](https://www.mamp.info/en/mac/) but it comes with MySQL as well. To configure a MAMP based installation, the Linux instructions can be followed.
+----
 
-If you want to use the Apache server OS X comes with, then a new version of PHP is needed. Prior to Mac OS 10.10.1 (Yosemite), the default install of Mac OS included Apache and PHP built with the GD library. However, the PHP installed with Yosemite does not include GD, so you will need to install one that does: it is simplest to use the one line installation instructions at [http://php-osx.liip.ch/](http://php-osx.liip.ch/.). PHP also needs to be upgraded to 7.2 or above.
+If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using. Two options aree [MAMP](https://www.mamp.info/en/mac/) and [XAMPP](https://xampp.site/) but they come with MySQL as well. To configure these installations, the Linux instructions can be followed. But missing PHP extensions will need to be downloaded (or compiled, like Sodium). Source for Sodium can be found at [PECL](https://pecl.php.net/).
 
-Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple specific issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)).
+----
+
+If you want to use the Apache server OS X comes with, then a new version of PHP is needed. Below 10.15, the installed PHP is 7.1 or below - PHP 7.2 is a minimum. However, the PHP installed with 10.15 does not include some necessary extensions, so again you will need to compile something, e.g. Sodium. [PHPBrew](https://github.com/phpbrew/phpbrew) may be useful.
+
+Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple code signing issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)).
 
 Once PHP has been built successfully, edit /etc/apache2/httpd.conf using a text editor (e.g. TextEdit). You must make two changes:
 
 * Enabling php, by removing the initial hash symbol from the line beginning "#LoadModule php5_module" (pre-yosemite), or adding a similar line with the path to wherever PHP has been installed, e.g.
 
     LoadModule php7_module /usr/local/php5-7.2.9-20180821-074958/libphp7.so
-
-* The additional PHP extensions mentioned in the Linux instructions are provided as part of the LIIP build, except for Sodium. If you build PHP yourself, you should configure the compilation to include all of these extensions.
 
 * Adding a new Directory directive, by inserting: 
 
