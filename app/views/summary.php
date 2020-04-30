@@ -651,7 +651,7 @@ UIDS;
 
         $el->addClass('item-card-row h-100');
         $el->header("<b>IDENTIFIERS</b> $edit_button");
-        $el->body($uids);
+        $el->body($uids, null, 'p-0');
         $uid_card = $el->render();
 
         $el = null;
