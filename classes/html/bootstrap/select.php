@@ -83,7 +83,7 @@ EOT
         // Size.
         if (!empty($this->size)) {
 
-            $sizeClass = $this->size === 'small' ? 'form-control-sm' : 'form-control-lg';
+            $sizeClass = $this->size === 'small' ? 'custom-select-sm' : 'custom-select-lg';
             $this->addClass($sizeClass);
         }
 
