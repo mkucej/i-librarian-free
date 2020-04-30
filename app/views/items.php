@@ -842,7 +842,7 @@ EOT;
             $el->inline(true);
             $el->label('Clipboard');
             $el->name('clipboard');
-            $el->addClass('clipboard');
+            $el->addClass('clipboard mb-3');
             $el->id('clipboard-' . $item['id']);
 
             if ($item['in_clipboard'] === '1') {
@@ -858,7 +858,7 @@ EOT;
             $el = $this->di->get('Element');
 
             $el->elementName('button');
-            $el->addClass('px-0 py-0 pr-1 mr-3 projects-button');
+            $el->addClass('px-0 py-0 pr-1 mb-3 mr-3 projects-button');
             $el->dataToggle('collapse');
             $el->dataTarget("#projects-{$item['id']}");
             $el->html("{$chevron}Projects");
@@ -897,22 +897,26 @@ EOT;
             // Authors.
             $authors = join('<span class="ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
 
+            // Publication.
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : '';
+            $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
+
             // Top HTML structure.
 
             $titles .= <<<EOT
                 <table data-id="{$item['id']}" class="{$theme_classes} item-container mb-2" style="border: 1px solid rgba(0,0,0,0.08);table-layout: fixed;width:100%">
                     <tbody>
                         <tr>
-                            <td class="py-3 pl-3 pr-0" rowspan="2" style="vertical-align: top;width: 4.25em">
+                            <td class="py-3 pl-3" rowspan="2" style="vertical-align: top;width: 4.25em">
                                 $pdf_link
                             </td>
-                            <td class="pl-1 pt-3 pr-4" style="height: 3.5rem">
+                            <td class="pl-1 pt-3 pr-5" style="height: 3.5rem">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
-                                <span class="text-secondary">{$authors}</span>
+                                <span class="mr-1">{$authors}</span> <span class="mr-1">{$date}</span> {$publication}
                             </td>
                         </tr>
                         <tr>
-                            <td class="pr-4" style="vertical-align: top">
+                            <td class="pr-5" style="vertical-align: top">
                                 $button $check
                                 <div class="collapse pl-1 mb-2" id="projects-{$item['id']}">$project_html</div>
                             </td>
@@ -1073,7 +1077,7 @@ EOT;
                             alt="PDF preview">
                     </a>
                 </div>
-                <div class="px-3 pt-3 pb-2 border-darker-top">
+                <div class="px-3 pt-2 pb-1 border-darker-top">
                     <div class="d-table" style="table-layout: fixed;width: 100%;">
                         <div class="d-table-cell align-middle text-truncate">
                             <a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a>
@@ -1299,7 +1303,7 @@ EOT;
             }
 
             $titles .= <<<EOT
-                <table data-id="{$item['id']}" class="{$theme_classes} item-container mb-2" style="table-layout: fixed;width:100%">
+                <table data-id="{$item['id']}" class="{$theme_classes} item-container mb-2" style="border: 1px solid rgba(0,0,0,0.08);table-layout: fixed;width:100%">
                     <tbody>
                         <tr>
                             <td class="px-3 pt-3" style="width:4.5em;vertical-align: top" rowspan="5">
@@ -1307,24 +1311,23 @@ EOT;
                             </td>
                             <td class="pt-3 pr-3">
                                 <h5><a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a></h5>
-                                {$authors}
+                                <span class="mr-1">{$authors}</span> <span class="mr-1">{$date}</span> {$publication}
                             </td>
                         </tr>
                         <tr>
-                            <td class="pt-0 pb-2">
+                            <td>
                                 {$button} {$check}
                                 <div class="collapse" id="projects-{$item['id']}">$project_html</div>
                             </td>
                         </tr>
                         <tr>
                             <td class="pt-0 pb-3 pr-5">
-                                <p>{$publication} $date</p>
                                 <p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
                                 <p>{$tags}</p>
                             </td>
                         </tr>
                         <tr>
-                            <td class="row pt-0 pb-4 pr-5">
+                            <td class="row pb-4 pr-5">
                                 <div class="col-md-6">
                                     <p><span class="badge badge-secondary rounded-0">Notes</span></p>
                                     {$notes}
