@@ -39,6 +39,7 @@ class PubmedView extends TextView {
             'AD'     => 'Affiliation',
             'ALL'    => 'Anywhere',
             'AU'     => 'Author',
+            'AID'    => 'DOI',
             '1AU'    => 'First Author',
             'PG'     => 'First Page',
             'TA'     => 'Journal Abbreviation',
