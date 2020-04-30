@@ -241,7 +241,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
                 $items = $this->fetchMultiple($json['esearchresult']['idlist']);
             }
 
-            $items['found'] = $json['esearchresult']['count'];
+            $items['found'] = $json['esearchresult']['count'] ?? 0;
 
             // Hold in Cache for 24h.
             $this->cache->set($key, $items, 86400);

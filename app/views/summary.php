@@ -511,17 +511,34 @@ EOT;
         $el = null;
 
         // UIDs.
-        /** @var Bootstrap\Descriptionlist $el */
-        $el = $this->di->get('Descriptionlist');
+        $dark_table = self::$theme === 'dark' ? 'table-dark' : '';
 
-        $el->term('I, Librarian', 'col-xl-3');
-        $el->description($item['id'], 'col-xl-9 pb-2');
+        $uids = <<<UIDS
+            <table class="table {$dark_table} table-borderless table-sm w-100 m-0">
+                <tr>
+                    <td class="px-4">
+                        <b>I, Librarian</b><br>
+                        {$item['id']}
+                    </td>
+                    <td class="px-4">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-4">
+                        <b>Citation key</b><br>
+                        {$item[ItemMeta::COLUMN['BIBTEX_ID']]}
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+UIDS;
 
-        $el->term('Citation key', 'col-xl-3');
-        $el->description($item[ItemMeta::COLUMN['BIBTEX_ID']], 'col-xl-9 pb-2');
-
-        // External UIDs.
         if (!empty($item[ItemMeta::COLUMN['UID_TYPES']])) {
+
+            $uids .= <<<UIDS
+                <table class="table {$dark_table} table-borderless table-sm table-hover w-100 m-0">
+UIDS;
 
             foreach ($item[ItemMeta::COLUMN['UID_TYPES']] as $key => $type) {
 
@@ -529,6 +546,27 @@ EOT;
                 $form = '';
 
                 if (in_array($type, ['ARXIV', 'DOI', 'IEEE', 'PMID', 'PMCID', 'NASAADS'])) {
+
+                    // Select for DOI.
+                    $datbase_select = '';
+
+                    if ($type === 'DOI') {
+
+                        /** @var Bootstrap\Select $sel */
+                        $sel = $this->di->get('Select');
+
+                        $sel->componentSize('small');
+                        $sel->addClass('mr-2');
+                        $sel->name('repository');
+                        $sel->option('IEEE Xplore', 'xplore');
+                        $sel->option('NASA ADS', 'nasa');
+                        $sel->option('PubMed', 'pubmed');
+                        $sel->option('PMC', 'pmc');
+                        $sel->option('Crossref', 'crossref');
+                        $datbase_select = $sel->render();
+
+                        $sel = null;
+                    }
 
                     /** @var Bootstrap\Input $inp */
                     $inp = $this->di->get('Input');
@@ -565,6 +603,7 @@ EOT;
 
                     $btn->type('submit');
                     $btn->context('outline-danger');
+                    $btn->addClass('mb-3 mb-sm-0');
                     $btn->componentSize('small');
                     $btn->html('Autoupdate');
                     $update = $btn->render();
@@ -574,22 +613,38 @@ EOT;
                     /** @var Bootstrap\Form $f */
                     $f = $this->di->get('Form');
 
-                    $f->addClass('form-uid');
+                    if ($type === 'DOI') {
+
+                        $f->id('autoupload-doi-form');
+                    }
+
+                    $f->addClass('form-uid form-inline justify-content-end align-self-center');
                     $f->action($IL_BASE_URL . 'index.php/item/autoupdate');
-                    $f->html($hidden_item_id . $hidden_type . $hidden_uid . $update);
+                    $f->html("$datbase_select $hidden_item_id $hidden_type $hidden_uid $update");
                     $form = $f->render();
 
                     $f = null;
                 }
 
-                $el->term(ItemMeta::UID_TYPE[$type] ?? 'Other', 'col-xl-3');
-                $el->description($value . $form, 'col-xl-9 d-flex justify-content-between align-items-center');
+                $type_name = ItemMeta::UID_TYPE[$type];
+
+                $uids .= <<<UIDS
+                    <tr>
+                        <td class="pl-4">
+                            <b>{$type_name}</b><br>
+                            $value
+                        </td>
+                        <td class="pr-4 align-middle">
+                            $form
+                        </td>
+                    </tr>
+UIDS;
             }
+
+            $uids .= <<<UIDS
+            </table>
+UIDS;
         }
-
-        $uids = $el->render();
-
-        $el = null;
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');

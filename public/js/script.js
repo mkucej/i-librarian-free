@@ -499,7 +499,17 @@ $.widget("il.saveable", {
      * Save the form data to local storage.
      */
     save: function () {
-        store.save('saveable.' + this.element.attr('id'), this.element.serializeArray());
+        let $f = this.element, saveParams = [], params = this.element.serializeArray();
+        // Ignore hidden inputs.
+        _.forEach(params, function (v, i) {
+            if ($f.find('input[name="' + v.name + '"').attr('type') !== 'hidden') {
+                saveParams.push({
+                    name: v.name,
+                    value: v.value
+                });
+            }
+        });
+        store.save('saveable.' + this.element.attr('id'), saveParams);
     },
     /**
      * Load data from local storage and populate the form.
@@ -507,7 +517,7 @@ $.widget("il.saveable", {
     load: function () {
         let clonedNum = 0, This = this, formData = store.load('saveable.' + this.element.attr('id')) || [];
         this.element.get(0).reset();
-        formData.forEach(function (o) {
+        _.forEach(formData, function (o) {
             let input = This.element.find("[name='" + o.name + "']");
             if (input.length === 0 && clonedNum < 3) {
                 This.element.find(".clone-button").trigger('click');
@@ -517,6 +527,10 @@ $.widget("il.saveable", {
         });
         formStyle.updateForm(this.element);
     },
+    /**
+     * Save external object as form data. Used by external search form loading.
+     * @param params
+     */
     saveParams: function (params) {
         store.save('saveable.' + this.element.attr('id'), params);
     }
@@ -2504,6 +2518,7 @@ class SummaryMainView extends View {
         } else {
             $('#summary-next, #summary-previous').remove();
         }
+        $('#autoupload-doi-form').saveable();
     }
     itemHeight() {
         let bH = $('#bottom-row').outerHeight();
@@ -2559,6 +2574,7 @@ class SummaryMainView extends View {
         })).done(function () {
             B.history.loadUrl();
         });
+        $('#autoupload-doi-form').trigger('save');
     }
 }
 

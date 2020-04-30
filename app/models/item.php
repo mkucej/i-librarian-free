@@ -990,10 +990,27 @@ SQL;
         $sql_uid_delete = <<<SQL
 DELETE
     FROM uids
-    WHERE item_id = ?
+    WHERE item_id = ? AND uid_type = ?
 SQL;
 
-        $this->db_main->run($sql_uid_delete, [$item['id']]);
+        $sql_uid_find = <<<SQL
+SELECT id
+    FROM uids
+    WHERE item_id = ? AND uid_type = ? AND uid = ?
+SQL;
+
+        $sql_uid_find2 = <<<SQL
+SELECT id
+    FROM uids
+    WHERE item_id = ? AND uid_type = ?
+SQL;
+
+        $sql_uid_update = <<<SQL
+UPDATE
+    uids
+    SET uid = ?
+    WHERE item_id = ? AND uid_type = ?
+SQL;
 
         $sql_uid_insert = <<<SQL
 INSERT INTO uids
@@ -1005,11 +1022,57 @@ SQL;
 
             foreach ($item[ItemMeta::COLUMN['UIDS']] as $i => $uid) {
 
+                // If empty, delete.
                 if (empty($uid)) {
+
+                    $columns_uid = [
+                        $item['id'],
+                        $item[ItemMeta::COLUMN['UID_TYPES']][$i]
+                    ];
+
+                    $this->db_main->run($sql_uid_delete, $columns_uid);
 
                     continue;
                 }
 
+                // If exact match exists, ignore.
+                $columns_uid = [
+                    $item['id'],
+                    $item[ItemMeta::COLUMN['UID_TYPES']][$i],
+                    $uid
+                ];
+
+                $this->db_main->run($sql_uid_find, $columns_uid);
+                $exists = $this->db_main->getResult();
+
+                if (!empty($exists)) {
+
+                    continue;
+                }
+
+                // Change existing UID type.
+                $columns_uid = [
+                    $item['id'],
+                    $item[ItemMeta::COLUMN['UID_TYPES']][$i]
+                ];
+
+                $this->db_main->run($sql_uid_find2, $columns_uid);
+                $exists = $this->db_main->getResult();
+
+                if (!empty($exists)) {
+
+                    $columns_uid = [
+                        $uid,
+                        $item['id'],
+                        $item[ItemMeta::COLUMN['UID_TYPES']][$i]
+                    ];
+
+                    $this->db_main->run($sql_uid_update, $columns_uid);
+
+                    continue;
+                }
+
+                // Finally, add new UID.
                 $columns_uid = [
                     $item[ItemMeta::COLUMN['UID_TYPES']][$i],
                     $uid,
