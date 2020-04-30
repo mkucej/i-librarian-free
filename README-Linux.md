@@ -11,7 +11,8 @@
   - PHP Extensions
     * **php-sqlite3**: SQLite database for PHP.
     * **php-gd**, **php-curl**, **php-intl**, **php-xml**, **php-json**, **php-mbstring**, **php-zip**: Other required PHP extensions.
-    * **php-ldap**: Required for using LDAP.
+    * **php-ldap**: Required if using LDAP.
+    * **php-sodium**: Encryption related requirement
   - External Utilities
     * **poppler-utils**: required for PDF indexing and for the built-in PDF viewer.
     * **ghostscript**: required for the built-in PDF viewer.
