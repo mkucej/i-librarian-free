@@ -898,7 +898,7 @@ EOT;
 SELECT page, markers.id, id_hash, IFNULL(last_name, username) as username, item_id, marker_position, marker_top, marker_left, marker_width, marker_height, marker_color, marker_text
     FROM markers
     INNER JOIN users ON markers.user_id = users.id
-    WHERE item_id = ? 
+    WHERE item_id = ? AND user_id = ?
     ORDER BY page, marker_position
 EOT;
 
@@ -910,7 +910,7 @@ SELECT page, annotations.id, id_hash, IFNULL(last_name, username) as username, i
     ORDER BY page, annotation_top
 EOT;
 
-            $this->db_main->run($sql_highlights, [$item_id]);
+            $this->db_main->run($sql_highlights, [$item_id, $this->user_id]);
             $highlights = $this->db_main->getResultRows(PDO::FETCH_ASSOC);
 
             $this->db_main->run($sql_notes, [$item_id]);
