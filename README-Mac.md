@@ -2,19 +2,19 @@
 
 ### Mac OS X manual installation
 
-It is **highly** recommended that you use the package managers [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. A Linux-like environment will be setup and the latest versions of the required software (web servers, PHP 7.2+, PHP extensions) can be easily downloaded and automatically compiled when necessary. The Linux instructions can then be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local )
+It is **HIGHLY** recommended that you use the package managers [Homebrew](https://brew.sh/) or [MacPorts](https://www.macports.org/) to enable the use of UNIX based software on your Mac. A Linux-like environment will be setup and the latest versions of the required software (web servers, PHP 7.2+, PHP extensions) can be easily downloaded and automatically compiled when/if necessary. The Linux instructions can then be followed with paths modified as needed (Standard Macport installations live at /opt/local (e.g. /opt/local/var/www, not /var/www) while Brew lives at /usr/local )
 
-The PHP extension Sodium is essential (php72-sodium, php73-sodium, or php74-sodium); it is not usually part of a standard build of PHP.
+The PHP extension Sodium is essential (php72-sodium, php73-sodium, or php74-sodium); it is not usually part of a standard build of PHP on OS X.
 
 ----
 
-If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using. Two options aree [MAMP](https://www.mamp.info/en/mac/) and [XAMPP](https://xampp.site/) but they come with MySQL as well. To configure these installations, the Linux instructions can be followed. But missing PHP extensions will need to be downloaded (or compiled, like Sodium). Source for Sodium can be found at [PECL](https://pecl.php.net/).
+If you want a standalone installation, you will need to have an Apache + PHP stack installed. Details may vary depending on which PHP stack you are using. Two options are [MAMP](https://www.mamp.info/en/mac/) and [XAMPP](https://xampp.site/) but they come with MySQL as well. To configure these installations, the Linux instructions can be followed. But missing PHP extensions will need to be downloaded (or compiled, like Sodium). Source for Sodium can be found at [PECL](https://pecl.php.net/).
 
 ----
 
 If you want to use the Apache server OS X comes with, then a new version of PHP is needed. Below 10.15, the installed PHP is 7.1 or below - PHP 7.2 is a minimum. However, the PHP installed with 10.15 does not include some necessary extensions, so again you will need to compile something, e.g. Sodium. [PHPBrew](https://github.com/phpbrew/phpbrew) may be useful.
 
-Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple code signing issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)).
+Warning: there are potential headaches with using the built-in Apache on 10.14+ and custom PHP modules due to Apple code signing issues. Read through https://php-osx.liip.ch/ extensively (specifically [here](https://github.com/liip/php-osx/issues/249)). That premade build of PHP does not include Sodium either if you want to try it out.
 
 Once PHP has been built successfully, edit /etc/apache2/httpd.conf using a text editor (e.g. TextEdit). You must make two changes:
 
