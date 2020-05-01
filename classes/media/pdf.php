@@ -1424,7 +1424,14 @@ EOT;
             $surface_id = $surface->getAttribute('id');
 
             // Find g where the surface is used.
-            $g = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#{$surface_id}')]")->item(0)->parentNode;
+            $g_use = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#{$surface_id}')]")->item(0);
+
+            if (empty($g_use)) {
+
+                continue;
+            }
+
+            $g = $g_use->parentNode;
 
             // Try moving the node up so that it does not cover text.
             try {
@@ -1478,8 +1485,14 @@ EOT;
 
             // Find clip path for this mask.
             /** @var DOMElement $g_clip */
-            $g_clip = $xpath->query("//*[@mask=\"url(#{$mask_id})\"]")->item(0)->parentNode;
+            $g_mask = $xpath->query("//*[@mask=\"url(##{$mask_id})\"]")->item(0);
 
+            if (empty($g_mask)) {
+
+                continue;
+            }
+
+            $g_clip = $g_mask->parentNode;
             $clip_id = $g_clip->getAttribute('clip-path');
             $clip_id = substr($clip_id, 5, -1);
 
@@ -1491,6 +1504,12 @@ EOT;
             // Parse clip path starting point, width and height.
             /** @var DOMElement $clip_path */
             $clip_path = $xpath->query("//*[@id=\"{$clip_id}\"]")->item(0);
+
+            if (empty($clip_path)) {
+
+                continue;
+            }
+
             $path = $clip_path->getElementsByTagName('path');
             $d = isset($path[0]) ? $path[0]->getAttribute('d') : '';
 
