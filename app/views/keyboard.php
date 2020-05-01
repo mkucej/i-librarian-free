@@ -16,12 +16,11 @@ class KeyboardView extends TextView {
      */
     public function main(): string {
 
-        /** @var Bootstrap\Nav $el */
-        $el = new Bootstrap\Nav();
+        /** @var Bootstrap\Pills $el */
+        $el = $this->di->get('Pills');
 
-        $el->context('outline-primary');
         $el->id('keyboard-header');
-        $el->addClass('bg-light m-1 mt-2');
+        $el->addClass("mx-1");
         $el->item('Arrows', 'keyboard-arrows');
         $el->item('Currency', 'keyboard-currency');
         $el->item('Greek', 'keyboard-greek', true);
@@ -37,19 +36,21 @@ class KeyboardView extends TextView {
 
         $arrows_content = '';
 
+        $btn_class = self::$theme === 'dark' ? 'btn-dark' : 'btn-light';
+
         for ($i = 8592; $i <= 8703; $i++) {
 
-            $arrows_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $arrows_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 10224; $i <= 10239; $i++) {
 
-            $arrows_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $arrows_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 10496; $i <= 10623; $i++) {
 
-            $arrows_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $arrows_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $currency_content = '';
@@ -58,147 +59,147 @@ class KeyboardView extends TextView {
 
         foreach ($chars as $char) {
 
-            $currency_content .= '<div class="btn btn-light">&#' . $char . ';</div>';
+            $currency_content .= '<div class="btn ' . $btn_class . '">&#' . $char . ';</div>';
         }
 
         for ($i = 8352; $i <= 8378; $i++) {
 
-            $currency_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $currency_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $greek_content = '';
 
         for ($i = 880; $i <= 887; $i++) {
 
-            $greek_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $greek_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 890; $i <= 894; $i++) {
 
-            $greek_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $greek_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 900; $i <= 906; $i++) {
 
-            $greek_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $greek_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
-        $greek_content .= '<div class="btn btn-light">&#908;</div>';
+        $greek_content .= '<div class="btn ' . $btn_class . '">&#908;</div>';
 
         for ($i = 910; $i <= 929; $i++) {
 
-            $greek_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $greek_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 931; $i <= 1023; $i++) {
 
-            $greek_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $greek_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $latin_content = '';
 
         for ($i = 192; $i <= 591; $i++) {
 
-            $latin_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $latin_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $math_content = '';
 
         for ($i = 119808; $i <= 119892; $i++) {
 
-            $math_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 119894; $i <= 120485; $i++) {
 
-            $math_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 120488; $i <= 120779; $i++) {
 
-            $math_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 120782; $i <= 120831; $i++) {
 
-            $math_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $math2_content = '';
 
-        $math2_content .= '<div class="btn btn-light">&#172;</div>';
-        $math2_content .= '<div class="btn btn-light">&#177;</div>';
+        $math2_content .= '<div class="btn ' . $btn_class . '">&#172;</div>';
+        $math2_content .= '<div class="btn ' . $btn_class . '">&#177;</div>';
 
         for ($i = 8704; $i <= 8959; $i++) {
 
-            $math2_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math2_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 10176; $i <= 10223; $i++) {
 
-            $math2_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math2_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 10624; $i <= 11007; $i++) {
 
-            $math2_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $math2_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $super_content = '';
 
         for ($i = 8304; $i <= 8305; $i++) {
 
-            $super_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $super_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
-        $super_content .= '<div class="btn btn-light">&#185;</div>';
-        $super_content .= '<div class="btn btn-light">&#178;</div>';
-        $super_content .= '<div class="btn btn-light">&#179;</div>';
+        $super_content .= '<div class="btn ' . $btn_class . '">&#185;</div>';
+        $super_content .= '<div class="btn ' . $btn_class . '">&#178;</div>';
+        $super_content .= '<div class="btn ' . $btn_class . '">&#179;</div>';
 
         for ($i = 8308; $i <= 8334; $i++) {
 
-            $super_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $super_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 8336; $i <= 8348; $i++) {
 
-            $super_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $super_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $technical_content = '';
 
         for ($i = 8960; $i <= 9203; $i++) {
 
-            $technical_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $technical_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         $other_content = '';
 
         for ($i = 134; $i <= 135; $i++) {
 
-            $other_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $other_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
-        $other_content .= '<div class="btn btn-light">&#137;</div>';
-        $other_content .= '<div class="btn btn-light">&#151;</div>';
-        $other_content .= '<div class="btn btn-light">&#153;</div>';
-        $other_content .= '<div class="btn btn-light">&#169;</div>';
-        $other_content .= '<div class="btn btn-light">&#174;</div>';
+        $other_content .= '<div class="btn ' . $btn_class . '">&#137;</div>';
+        $other_content .= '<div class="btn ' . $btn_class . '">&#151;</div>';
+        $other_content .= '<div class="btn ' . $btn_class . '">&#153;</div>';
+        $other_content .= '<div class="btn ' . $btn_class . '">&#169;</div>';
+        $other_content .= '<div class="btn ' . $btn_class . '">&#174;</div>';
 
         for ($i = 8448; $i <= 8585; $i++) {
 
-            $other_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $other_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         for ($i = 188; $i <= 190; $i++) {
 
-            $other_content .= '<div class="btn btn-light">&#' . $i . ';</div>';
+            $other_content .= '<div class="btn ' . $btn_class . '">&#' . $i . ';</div>';
         }
 
         /** @var Bootstrap\NavContent $el */
-        $el = new Bootstrap\NavContent();
+        $el = $this->di->get('NavContent');
 
-        $el->addClass('bg-light mx-1');
+        $el->addClass("mx-1");
         $el->tab($arrows_content, 'keyboard-arrows');
         $el->tab($currency_content, 'keyboard-currency');
         $el->tab($greek_content, 'keyboard-greek', true);
@@ -213,7 +214,7 @@ class KeyboardView extends TextView {
         $el = null;
 
         $html = <<<KEYBOARD
-            <div id="keyboard" class="bg-light">
+            <div id="keyboard">
                 $header
                 $tabs
             </div>
