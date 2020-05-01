@@ -74,6 +74,12 @@ location /library {
     fastcgi_pass   127.0.0.1:9000;
     include        fastcgi.conf;
     fastcgi_param PATH_INFO $fastcgi_path_info;
+
+    # If you will be migrating data from version 4.10, then these settings are recommended to 
+    # prevent FastCGI timeout problems in re-extracting the full text of all PDFs
+    # They can be unset back to defaults after updating the database
+    fastcgi_read_timeout 1200s;
+    fastcgi_send_timeout 1200s;
   }
 
   # Maps the URL `/library/` to the correct file system location
