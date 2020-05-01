@@ -22,7 +22,7 @@ use function Librarian\Http\Client\Psr7\stream_for;
  * @method array read(string $collection, string $orderby = 'id', int $limit = 10, int $offset = 0, string|array|null $display_action = 'title', int $project_id = null)
  * @method array readFiltered(array $filters, $collection, $orderby = 'id', $limit = 10, $offset = 0, string|array|null $display_action = 'title', int $project_id = null)
  * @method void  resetBibtexIds()
- * @method array search(array $search, $collection = 'library', $limit = 10, $offset = 0, string|array|null $display_action = 'title', int $project_id = null)
+ * @method array search(array $search, $collection = 'library', string $orderby = 'id', $limit = 10, $offset = 0, string|array|null $display_action = 'title', int $project_id = null)
  * @method void  tag(int|array $items, int|array $tags)
  * @method void  untag(int|array $items, int|array $tags)
  */
@@ -827,6 +827,7 @@ EOT;
      *
      * @param array $search
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string|array|null $display_action
@@ -837,6 +838,7 @@ EOT;
     protected function _search(
         array $search,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -847,34 +849,35 @@ EOT;
         if ($search['search_type'][0] === 'itemid') {
 
             $item_ids = explode(' ', $search['search_query'][0]);
-            return $this->searchIds($item_ids, $collection, $limit, $offset, $display_action, $project_id);
+            return $this->searchIds($item_ids, $collection, $orderby, $limit, $offset, $display_action, $project_id);
         }
 
         // Item note search.
         if ($search['search_type'][0] === 'pdfnotes') {
 
-            return $this->searchPdfnotes($search, $collection, $limit, $offset, $display_action, $project_id);
+            return $this->searchPdfnotes($search, $collection, $orderby, $limit, $offset, $display_action, $project_id);
         }
 
         // Item note search.
         if ($search['search_type'][0] === 'itemnotes') {
 
-            return $this->searchItemnotes($search, $collection, $limit, $offset, $display_action, $project_id);
+            return $this->searchItemnotes($search, $collection, $orderby, $limit, $offset, $display_action, $project_id);
         }
 
         // Quicksearch.
         if ($search['search_type'][0] === 'metadata' || $search['search_type'][0] === 'anywhere') {
 
-            return $this->searchMetadata($search, $collection, $limit, $offset, $display_action, $project_id);
+            return $this->searchMetadata($search, $collection, $orderby, $limit, $offset, $display_action, $project_id);
         }
 
         // Advanced search.
-        return $this->searchColumns($search, $collection, $limit, $offset, $display_action, $project_id);
+        return $this->searchColumns($search, $collection, $orderby, $limit, $offset, $display_action, $project_id);
     }
 
     /**
      * @param array $search
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string|array|null $display_action
@@ -885,6 +888,7 @@ EOT;
     private function searchMetadata(
         array $search,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -898,6 +902,9 @@ EOT;
             'items' => [],
             'total_count' => 0
         ];
+
+        // SQL ORDER BY.
+        $order = $this->orderByColumn($orderby);
 
         $fields = [
             'ind_items.abstract_index',
@@ -1012,12 +1019,12 @@ EOT;
 
         $sql = <<<EOT
 SELECT
-    id as item_id
-    FROM ind_items
+    items.id as item_id
+    FROM items INNER JOIN ind_items ON items.id=ind_items.id
     {$join_collection}
     WHERE {$placeholder}
     {$where_collection}
-    ORDER BY id DESC
+    ORDER BY {$order}
     LIMIT ?
 EOT;
 
@@ -1029,7 +1036,7 @@ EOT;
 
         $key = $cache->key(
             __METHOD__
-            . serialize([$search, $collection, $project_id])
+            . serialize([$search, $collection, $orderby, $project_id])
         );
 
         // Debug.
@@ -1098,6 +1105,7 @@ SQL;
     /**
      * @param array $search
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string|array|null $display_action
@@ -1108,6 +1116,7 @@ SQL;
     private function searchPdfnotes(
         array $search,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -1118,6 +1127,9 @@ SQL;
             'items' => [],
             'total_count' => 0
         ];
+
+        // SQL ORDER BY.
+        $order = $this->orderByColumn($orderby);
 
         /** @var Sanitation $sanitation */
         $sanitation = $this->di->getShared('Sanitation');
@@ -1197,7 +1209,7 @@ SELECT
     {$join_collection}
     WHERE {$placeholder}
     {$where_collection}
-    ORDER BY item_id DESC
+    ORDER BY {$order}
     LIMIT ? OFFSET ?
 EOT;
 
@@ -1274,6 +1286,7 @@ EOT;
     /**
      * @param array $search
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string|array|null $display_action
@@ -1284,6 +1297,7 @@ EOT;
     private function searchItemnotes(
         array $search,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -1294,6 +1308,9 @@ EOT;
             'items' => [],
             'total_count' => 0
         ];
+
+        // SQL ORDER BY.
+        $order = $this->orderByColumn($orderby);
 
         /** @var Sanitation $sanitation */
         $sanitation = $this->di->getShared('Sanitation');
@@ -1373,7 +1390,7 @@ SELECT
     {$join_collection}
     WHERE {$placeholder}
     {$where_collection}
-    ORDER BY item_id DESC
+    ORDER BY {$order}
     LIMIT ? OFFSET ?
 EOT;
 
@@ -1450,6 +1467,7 @@ EOT;
     /**
      * @param array $search
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string $display_action
@@ -1460,6 +1478,7 @@ EOT;
     private function searchColumns(
         array $search,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -1470,6 +1489,9 @@ EOT;
             'items' => [],
             'total_count' => 0
         ];
+
+        // SQL ORDER BY.
+        $order = $this->orderByColumn($orderby);
 
         $fields = [
             'AB' => ['ind_items.title_index','ind_items.abstract_index'],
@@ -1657,13 +1679,13 @@ EOT;
         $sql = <<<EOT
 SELECT
     ind_items.id as item_id
-    FROM ind_items
+    FROM items INNER JOIN ind_items ON items.id=ind_items.id
     {$join_collection}
     {$tag_join}
     WHERE {$placeholder}
     {$where_collection}
     {$tag_where}
-    ORDER BY ind_items.id DESC
+    ORDER BY {$order}
     LIMIT ?
 EOT;
 
@@ -1674,7 +1696,7 @@ EOT;
 
         $key = $cache->key(
             __METHOD__
-            . serialize([$search, $collection, $project_id])
+            . serialize([$search, $collection, $orderby, $project_id])
         );
 
         // Debug.
@@ -1745,6 +1767,7 @@ SQL;
      *
      * @param array $item_ids
      * @param string $collection
+     * @param string $orderby
      * @param int $limit
      * @param int $offset
      * @param string $display_action
@@ -1755,6 +1778,7 @@ SQL;
     private function searchIds(
         array $item_ids,
         string $collection,
+        string $orderby = 'id',
         int $limit = 10,
         int $offset = 0,
         $display_action = 'title',
@@ -1768,6 +1792,9 @@ SQL;
 
         $join_collection = '';
         $where_collection = '';
+
+        // SQL ORDER BY.
+        $order = $this->orderByColumn($orderby);
 
         // Search columns.
         $columns = $item_ids;
@@ -1815,7 +1842,7 @@ SELECT
     {$join_collection}
     WHERE id IN ({$placeholders})
     {$where_collection}
-    ORDER BY item_id DESC
+    ORDER BY {$order}
     LIMIT ? OFFSET ?
 EOT;
 

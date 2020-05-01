@@ -76,6 +76,7 @@ class ItemsController extends Controller {
             $items = $model->search(
                 $search,
                 'library',
+                $this->app_settings->getUser('sorting'),
                 $this->app_settings->getUser('page_size'),
                 $from,
                 $display_actions

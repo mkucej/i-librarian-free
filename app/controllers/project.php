@@ -107,6 +107,7 @@ class ProjectController extends Controller {
             $items = $model->search(
                 $search,
                 'project',
+                $this->app_settings->getUser('sorting'),
                 $this->app_settings->getUser('page_size'),
                 $from,
                 $display_actions,
