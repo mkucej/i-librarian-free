@@ -381,7 +381,7 @@ GRAPHICAL;
                 }
 
                 $note_html = $this->sanitation->lmth($note['note']);
-                $notes .= "<p>$user_icon<b>{$note['name']}</b></p><div id=\"user-note\">$note_html</div>";
+                $notes .= "<p>$user_icon<b>{$note['name']}</b></p>$note_html";
             }
         }
 

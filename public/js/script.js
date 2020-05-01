@@ -2471,7 +2471,8 @@ class SummaryMainView extends View {
             'click .clipboard': 'clipboard',
             'click .project': 'project',
             'click #open-export': exportform.init,
-            'submit .form-uid': 'submitForm'
+            'submit .form-uid': 'submitForm',
+            'click .open-notes': 'openNotes'
         };
     }
     afterRender(data) {
@@ -2492,7 +2493,7 @@ class SummaryMainView extends View {
                 });
             }
         });
-        // Add id to links and BODY.
+        // Add id to links, BODY, and notes.
         let params = (new URL('http://foo.bar/' + location.hash.substring(1))).searchParams,
             anId = params.get('id') || '';
         $('body').attr('data-id', anId).data('id', anId);
@@ -2519,6 +2520,16 @@ class SummaryMainView extends View {
             $('#summary-next, #summary-previous').remove();
         }
         $('#autoupload-doi-form').saveable();
+        // Item id changed. Load notes, reload editor if notes initialized.
+        if ($('#id-hidden').val() !== anId) {
+            $.when(model.load({url: window.IL_BASE_URL + 'index.php/notes/user', data: {id: anId}})).done(function (response) {
+                $('#notes-ta').val(response.user.note);
+                $('#id-hidden').val(anId);
+                if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
+                    window.tinymce.activeEditor.load();
+                }
+            });
+        }
     }
     itemHeight() {
         let bH = $('#bottom-row').outerHeight();
@@ -2576,6 +2587,84 @@ class SummaryMainView extends View {
         });
         $('#autoupload-doi-form').trigger('save');
     }
+    /**
+     * Open notes. Init, or reload TinyMCE.
+     */
+    openNotes() {
+        if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
+            // Previously initialized, just show window.
+            $('#notes-window').removeClass('d-none');
+        } else {
+            // Unintialized, load notes.
+            views.summarymain.loadNotes();
+        }
+    }
+    /**
+     * Load textarea with item notes.
+     */
+    loadNotes() {
+        let This = this, itemId = $('body').attr('data-id');
+        $.when(model.load({url: window.IL_BASE_URL + 'index.php/notes/user', data: {id: itemId}})).done(function (response) {
+            $('#notes-ta').val(response.user.note);
+            $('#id-hidden').val(itemId);
+            This.initNotes();
+        });
+    }
+    initNotes() {
+        if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
+            window.tinymce.activeEditor.load();
+            return;
+        }
+        window.tinymce.init({
+            theme: 'silver',
+            selector: '#notes-ta',
+            content_css: window.IL_BASE_URL + "css/style.css",
+            resize: 'both',
+            min_height: 300,
+            menubar: false,
+            plugins: 'importcss save lists advlist link image code fullscreen table searchreplace',
+            toolbar1: 'save undo redo fullscreen code | formatselect link unlink image table searchreplace',
+            toolbar2: 'bold italic underline strikethrough subscript superscript removeformat | forecolor backcolor | outdent indent bullist numlist',
+            save_onsavecallback: function (editor) {
+                let $f = $('#note-form');
+                $.when(model.save({url: $f.attr('action'), data: $f.serialize()})).done(function () {
+                    $('#user-note').html(editor.getContent());
+                });
+            },
+            image_description: false,
+            relative_urls: false,
+            remove_script_host: false,
+            image_dimensions: false,
+            image_class_list: [
+                {title: 'Auto width', value: 'mce-img-fluid'}
+            ],
+            image_list: window.IL_BASE_URL + 'index.php/supplements/imagelist?as=json&id=' + $('body').data('id')
+        }).then(function () {
+            let $nw = $('#notes-window');
+            $nw.removeClass('d-none');
+            $nw.position({
+                my: 'left bottom',
+                at: 'left bottom',
+                of: '#content-col'
+            });
+            $(window).off('resize.notes').on('resize.notes', function () {
+                $nw.position({
+                    my: 'left bottom',
+                    at: 'left bottom',
+                    of: '#content-col'
+                });
+            });
+            // $(window).trigger('resize.notes');
+            $nw.draggable({
+                handle: ".card-header",
+                containment: "body"
+            });
+            // Window close.
+            $nw.find('.close').off('click.notes').on('click.notes', function () {
+                $('#notes-window').addClass('d-none');
+            });
+        });
+    }
 }
 
 views.summarymain = new SummaryMainView();
@@ -2587,6 +2676,15 @@ class NotesMainView extends View {
     constructor() {
         super();
         this.parent = '#content-col';
+        this.events = {
+            'click .open-notes': views.summarymain.openNotes
+        };
+    }
+    afterRender() {
+        // Add id to links, BODY, and notes.
+        let params = (new URL('http://foo.bar/' + location.hash.substring(1))).searchParams,
+            anId = params.get('id') || '';
+        $('body').attr('data-id', anId).data('id', anId);
     }
 }
 
@@ -4659,17 +4757,11 @@ class ItemView {
             anId = params.get('id') || '';
         // Add id to links and BODY.
         $('body').attr('data-id', anId).data('id', anId);
+        // Notes form.
+        $('#id-hidden').val(anId);
         $('a.add-id-link').each(function () {
             let thisHParts = $(this).attr('href').split('id=');
             $(this).attr('href', thisHParts[0] + 'id=' + anId);
-        });
-        // Notes form.
-        $('#id-hidden').val(anId);
-        // Note-opening buttons.
-        $('#content-col').on('click', '.open-notes', function () {
-            if ($('#notes-window').hasClass('d-none')) {
-                This.loadNotes(anId);
-            }
         });
         // Extended keyboard.
         $('#keyboard-toggle').on('click', function () {
@@ -4680,70 +4772,6 @@ class ItemView {
             $.when(model.save({url: window.IL_BASE_URL + 'index.php/authentication/signout'})).done(function () {
                 location.assign(window.IL_BASE_URL);
             });
-        });
-    }
-    loadNotes(notesId) {
-        let This = this;
-        $.when(model.load({url: window.IL_BASE_URL + 'index.php/notes/user', data: {id: notesId}})).done(function (response) {
-            $('#notes-ta').val(response.user.note);
-            This.openNotes();
-        });
-    }
-    openNotes() {
-        if (typeof window['editor'] === 'object') {
-            $('#notes-window').removeClass('d-none');
-        }
-        window['editor'] = window.tinymce.init({
-            theme: 'silver',
-            selector: '#notes-ta',
-            content_css: window.IL_BASE_URL + "css/style.css",
-            resize: 'both',
-            min_height: 300,
-            menubar: false,
-            plugins: 'importcss save lists advlist link image code fullscreen table searchreplace',
-            toolbar1: 'save undo redo fullscreen code | formatselect link unlink image table searchreplace',
-            toolbar2: 'bold italic underline strikethrough subscript superscript removeformat | forecolor backcolor | outdent indent bullist numlist',
-            setup: function (editor) {
-                editor.on('Load', function () {
-                    $('#notes-window').removeClass('d-none');
-                    $('#notes-window').position({
-                        my: 'left bottom',
-                        at: 'left bottom',
-                        of: '#content-col'
-                    });
-                    $(window).off('resize.notes').on('resize.notes', function () {
-                        $('#notes-window').position({
-                            my: 'left bottom',
-                            at: 'left bottom',
-                            of: '#content-col'
-                        });
-                    });
-                    // $(window).trigger('resize.notes');
-                    $('#notes-window').draggable({
-                        handle: ".card-header",
-                        containment: "body"
-                    });
-                    // Window close.
-                    $('#notes-window').find('.close').off('click.notes').on('click.notes', function () {
-                        $('#notes-window').addClass('d-none');
-                        $('#notes-ta').val('');
-                    });
-                });
-            },
-            save_onsavecallback: function (editor) {
-                let $f = $('#note-form');
-                $.when(model.save({url: $f.attr('action'), data: $f.serialize()})).done(function () {
-                    $('#user-note').html(editor.getContent());
-                });
-            },
-            image_description: false,
-            relative_urls: false,
-            remove_script_host: false,
-            image_dimensions: false,
-            image_class_list: [
-                {title: 'Auto width', value: 'mce-img-fluid'}
-            ],
-            image_list: window.IL_BASE_URL + 'index.php/supplements/imagelist?as=json&id=' + $('body').data('id')
         });
     }
 }
@@ -4768,11 +4796,7 @@ class ProjectView {
         // Notes form.
         $('#id-hidden').val(anId);
         // Note-opening buttons.
-        $('#content-col').on('click', '.open-notes', function () {
-            if ($('#notes-window').hasClass('d-none')) {
-                This.loadNotes($('body').data('id'));
-            }
-        });
+        $('#content-col').on('click', '.open-notes', {object: this}, this.openNotes);
         // Extended keyboard.
         $('#keyboard-toggle').on('click', function () {
             keyboard.init();
@@ -4811,18 +4835,30 @@ class ProjectView {
         });
         searchlist.init();
     }
-    loadNotes(notesId) {
-        let This = this;
-        $.when(model.load({url: window.IL_BASE_URL + 'index.php/project/usernotes', data: {id: notesId}})).done(function (response) {
+    /**
+     * Open notes. Init, or reload TinyMCE.
+     */
+    openNotes(e) {
+        if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
+            // Previously initialized, just show window.
+            $('#notes-window').removeClass('d-none');
+        } else {
+            // Unintialized, load notes.
+            e.data.object.loadNotes();
+        }
+    }
+    /**
+     * Load textarea with item notes.
+     */
+    loadNotes() {
+        let This = this, projectId = $('body').data('id');
+        $.when(model.load({url: window.IL_BASE_URL + 'index.php/project/usernotes', data: {id: projectId}})).done(function (response) {
             $('#notes-ta').val(response.user.note);
-            This.openNotes();
+            This.initNotes();
         });
     }
-    openNotes() {
-        if (typeof window['editor'] === 'object') {
-            $('#notes-window').removeClass('d-none');
-        }
-        window['editor'] = window.tinymce.init({
+    initNotes() {
+        window.tinymce.init({
             theme: 'silver',
             selector: '#notes-ta',
             content_css: window.IL_BASE_URL + "css/style.css",
@@ -4833,32 +4869,6 @@ class ProjectView {
             plugins: 'importcss save lists advlist link image code fullscreen table searchreplace',
             toolbar1: 'save undo redo fullscreen code | formatselect link unlink image table searchreplace',
             toolbar2: 'bold italic underline strikethrough subscript superscript removeformat | forecolor backcolor | outdent indent bullist numlist',
-            setup: function (editor) {
-                editor.on('init', function () {
-                    $('#notes-window').removeClass('d-none');
-                    $('#notes-window').position({
-                        my: 'left bottom',
-                        at: 'left bottom',
-                        of: '#content-col'
-                    });
-                    $(window).off('resize.notes').on('resize.notes', function () {
-                        $('#notes-window').position({
-                            my: 'left bottom',
-                            at: 'left bottom',
-                            of: '#content-col'
-                        });
-                    });
-                    $('#notes-window').draggable({
-                        handle: ".card-header",
-                        containment: "body"
-                    });
-                    // Window close.
-                    $('#notes-window').find('.close').off('click.notes').on('click.notes', function () {
-                        $('#notes-window').addClass('d-none');
-                        $('#notes-ta').val('');
-                    });
-                });
-            },
             save_onsavecallback: function (editor) {
                 let $f = $('#note-form');
                 $.when(model.save({url: $f.attr('action'), data: $f.serialize()})).done(function () {
@@ -4872,6 +4882,29 @@ class ProjectView {
             image_class_list: [
                 {title: 'Auto width', value: 'mce-img-fluid'}
             ],
+        }).then(function () {
+            let $nw = $('#notes-window');
+            $nw.removeClass('d-none');
+            $nw.position({
+                my: 'left bottom',
+                at: 'left bottom',
+                of: '#content-col'
+            });
+            $(window).off('resize.notes').on('resize.notes', function () {
+                $('#notes-window').position({
+                    my: 'left bottom',
+                    at: 'left bottom',
+                    of: '#content-col'
+                });
+            });
+            $nw.draggable({
+                handle: ".card-header",
+                containment: "body"
+            });
+            // Window close.
+            $nw.find('.close').off('click.notes').on('click.notes', function () {
+                $('#notes-window').addClass('d-none');
+            });
         });
     }
 }
