@@ -48,12 +48,18 @@ class AuthenticationModel extends AppModel {
         // Allow sign in using username, or email.
         switch (filter_var($username, FILTER_VALIDATE_EMAIL)) {
 
+            // Email is case-insensitive.
             case true:
                 $sql = <<<'EOT'
 SELECT id, id_hash, password, permissions, status
     FROM users
-    WHERE email = ?
+    WHERE email LIKE ? ESCAPE '\'
 EOT;
+
+                $columns = [
+                    str_replace(["\\", "%", "_"], ["\\\\", "\%", "\_"], $username)
+                ];
+
                 break;
 
             case false:
@@ -62,12 +68,20 @@ SELECT id, id_hash, password, permissions, status
     FROM users
     WHERE username = ?
 EOT;
+
+                $columns = [
+                    $username
+                ];
+
                 break;
+
+            default:
+                throw new Exception('authentication error');
         }
 
         $this->db_main->beginTransaction();
 
-        $this->db_main->run($sql, [$username]);
+        $this->db_main->run($sql, $columns);
 
         $row = $this->db_main->getResultRow();
 
