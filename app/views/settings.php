@@ -782,6 +782,25 @@ class SettingsView extends TextView {
         $el = $this->di->get('Input');
 
         $el->type('checkbox');
+        $el->id('connect-sciencedirect');
+        $el->name('settings[connect_sciencedirect]');
+        $el->value('1');
+        $el->label('ScienceDirect (Pro only)');
+        $el->hint('ScienceDirect is Elsevier\'s database containing over over 12 million pieces of content from 3,500 academic journals and 34,000 e-books.');
+
+        if ($user_settings['connect_sciencedirect'] === '1') {
+
+            $el->checked('checked');
+        }
+
+        $radios_r .= $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->type('checkbox');
         $el->id('connect-scopus');
         $el->name('settings[connect_scopus]');
         $el->value('1');

@@ -29,6 +29,7 @@ final class AppSettings {
         'connect_patents'  => '1',
         'connect_pubmed'   => '1',
         'connect_pmc'      => '1',
+        'connect_sciencedirect' => '1',
         'connect_scopus'   => '1',
         'custom_filename'  => ['author', '_', 'year', '_', 'title'],
         'display_type'     => 'title',

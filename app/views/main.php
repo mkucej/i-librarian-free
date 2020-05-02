@@ -431,6 +431,14 @@ EOT
                 ];
             }
 
+            if ($this->app_settings->getUser('connect_sciencedirect') === '1') {
+
+                $external[] = [
+                    'label' => 'ScienceDirect',
+                    'link' => '#sciencedirect/main'
+                ];
+            }
+
             if ($this->app_settings->getUser('connect_scopus') === '1') {
 
                 $external[] = [

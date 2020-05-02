@@ -4317,6 +4317,7 @@ views.pubmedmain = new ExternalMainView();
 views.pmcmain = new ExternalMainView();
 views.nasamain = new ExternalMainView();
 views.patentsmain = new ExternalMainView();
+views.sciencedirectmain = new ExternalMainView();
 views.scopusmain = new ExternalMainView();
 
 class ExternalSearchView extends View {
