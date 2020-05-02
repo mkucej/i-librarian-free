@@ -177,6 +177,20 @@ final class ErrorView extends TextView {
 
             $this->scriptLink('js/plugins.js');
 
+            // HTML unauthenticated.
+            if ($this->response->getStatusCode() === 401) {
+
+                $this->session->start();
+                $this->session->destroy();
+
+                $IL_BASE_URL = IL_BASE_URL;
+
+                $this->script(<<<SCRIPT
+location.replace('{$IL_BASE_URL}?ref=' + window.btoa(location.href));
+SCRIPT
+                );
+            }
+
             $this->end();
         }
 

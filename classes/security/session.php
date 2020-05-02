@@ -69,7 +69,7 @@ final class Session {
     public function start(): void {
 
         // Only start if session does not exist.
-        if ($this->exists() === true) {
+        if ($this->isActive() === true) {
 
             return;
         }
@@ -200,9 +200,9 @@ final class Session {
      *
      * @return boolean
      */
-    public function exists(): bool {
+    public function isActive(): bool {
 
-        return session_id() === '' ? false : true;
+        return session_status() === PHP_SESSION_ACTIVE;
     }
 
     /**

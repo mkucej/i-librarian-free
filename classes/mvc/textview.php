@@ -379,7 +379,7 @@ EOT
     protected function end(): void {
 
         // CSRF. Put the token in <script>.
-        if ($this->session->exists() === true) {
+        if ($this->session->data('token') !== null) {
 
             $IL_BASE_URL = IL_BASE_URL;
             $MAX_UPLOAD  = $this->scalar_utils->unformatBytes(ini_get('upload_max_filesize'));

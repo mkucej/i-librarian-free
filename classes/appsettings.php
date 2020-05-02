@@ -194,7 +194,8 @@ final class AppSettings {
 
             if (!isset($this->settings['user'][$name])) {
 
-                throw new Exception("user setting <kbd>$name</kbd> does not exist", 500);
+                // A new setting, sign the user out.
+                throw new Exception("you will be signed out to experience upgraded I, Librarian", 401);
             }
 
             return $this->settings['user'][$name];
@@ -242,7 +243,8 @@ final class AppSettings {
 
             if (!isset($this->settings['global'][$name])) {
 
-                throw new Exception("global setting <kbd>$name</kbd> does not exist", 500);
+                // A new setting, sign the user out.
+                throw new Exception("you will be signed out to experience upgraded I, Librarian", 401);
             }
 
             return $this->settings['global'][$name];
