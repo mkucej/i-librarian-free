@@ -104,7 +104,7 @@ final class Temporal {
         }
 
         $datetime = is_numeric($time) === true ? gmdate('c', $time) : $time;
-        $date_obj = new DateTime($datetime);
+        $date_obj = new DateTime($datetime, new DateTimeZone('UTC'));
 
         if (extension_loaded('intl') === false) {
 
