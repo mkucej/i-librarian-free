@@ -244,7 +244,8 @@ final class AppSettings {
 
             if (!isset($this->settings['global'][$name])) {
 
-                // A new setting, sign the user out.
+                // A new setting, delete stale settings.json, sign the user out.
+                unlink(IL_TEMP_PATH . DIRECTORY_SEPARATOR . 'settings.json');
                 throw new Exception("you will be signed out to experience upgraded I, Librarian", 401);
             }
 
