@@ -367,7 +367,7 @@ TBODY
             }
         }
 
-        $output = str_replace(' ', '', $output);
+        $output = preg_replace('/[^\p{L}\p{N}\-_]/u', '', $output);
 
         return $output;
     }
