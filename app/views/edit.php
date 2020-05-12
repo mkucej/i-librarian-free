@@ -257,6 +257,7 @@ EOT;
             $el->name('uid_types[]');
             $el->id('uid-type-' . $key);
             $el->label('UID type');
+            $el->option('', '');
 
             foreach (ItemMeta::UID_TYPE as $option => $label) {
 
@@ -293,6 +294,7 @@ EOT;
         $el->name('uid_types[]');
         $el->id('new-uid-type');
         $el->label('UID type');
+        $el->option('', '');
 
         foreach (ItemMeta::UID_TYPE as $option => $label) {
 

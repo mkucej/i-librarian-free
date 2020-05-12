@@ -430,6 +430,12 @@ SQL;
 
             foreach ($item[ItemMeta::COLUMN['UIDS']] as $i => $uid) {
 
+                // Ignore if no UID type set.
+                if (empty($item[ItemMeta::COLUMN['UID_TYPES']][$i])) {
+
+                    continue;
+                }
+
                 if (empty($uid)) {
 
                     continue;
@@ -1021,6 +1027,12 @@ SQL;
         if (isset($item[ItemMeta::COLUMN['UIDS']])) {
 
             foreach ($item[ItemMeta::COLUMN['UIDS']] as $i => $uid) {
+
+                // Ignore if no UID type set.
+                if (empty($item[ItemMeta::COLUMN['UID_TYPES']][$i])) {
+
+                    continue;
+                }
 
                 // If empty, delete.
                 if (empty($uid)) {
