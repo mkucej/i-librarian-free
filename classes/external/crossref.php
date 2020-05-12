@@ -284,34 +284,44 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
 
             // Reference type.
-            switch ($article['type']) {
+            if (isset($article['type'])) {
 
-                case 'journal-article':
-                    $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['ARTICLE'];
-                    $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['ARTICLE'];
-                    // Publication.
-                    $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
-                    break;
+                switch ($article['type']) {
 
-                case 'proceedings':
-                case 'proceedings-series':
-                $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CONFERENCE'];
-                $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['CONFERENCE'];
+                    case 'journal-article':
+                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['ARTICLE'];
+                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['ARTICLE'];
+                        // Publication.
+                        $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
+                        break;
+
+                    case 'proceedings':
+                    case 'proceedings-series':
+                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CONFERENCE'];
+                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['CONFERENCE'];
+                        // Publication.
+                        $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['event']['name'] ?? '';
+                        break;
+
+                    case 'book':
+                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['BOOK'];
+                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['BOOK'];
+                        break;
+
+                    case 'book-chapter':
+                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CHAPTER'];
+                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['INCOLLECTION'];
+                        // Publication.
+                        $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
+                        break;
+                }
+
+            } else {
+
+                $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['ARTICLE'];
+                $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['ARTICLE'];
                 // Publication.
-                $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['event']['name'] ?? '';
-                    break;
-
-                case 'book':
-                    $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['BOOK'];
-                    $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['BOOK'];
-                    break;
-
-                case 'book-chapter':
-                    $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CHAPTER'];
-                    $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['INCOLLECTION'];
-                    // Publication.
-                    $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
-                    break;
+                $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
             }
 
             // Publisher
