@@ -1473,10 +1473,10 @@ EOT;
             $transform = substr($mask_transform, 7, -1);
             $transfrom_matrix = explode(',', $transform);
             $transform_x = (float) $transfrom_matrix[0] ?? 1;
-            $transform_y = (float) $transfrom_matrix[4] ?? 1;
+            $transform_y = (float) $transfrom_matrix[3] ?? 1;
 
             // Masks smaller than 2x2 pts are invalid.
-            $mask_is_invalid = abs($transform_x) < 0.0033 && abs($transform_y) < 0.0025;
+            $mask_is_invalid = abs($transform_x) < 0.0033 || abs($transform_y) < 0.0025;
 
             if ($mask_is_invalid === false) {
 
@@ -1485,7 +1485,7 @@ EOT;
 
             // Find clip path for this mask.
             /** @var DOMElement $g_clip */
-            $g_mask = $xpath->query("//*[@mask=\"url(##{$mask_id})\"]")->item(0);
+            $g_mask = $xpath->query("//*[@mask=\"url(#{$mask_id})\"]")->item(0);
 
             if (empty($g_mask)) {
 
@@ -1496,23 +1496,40 @@ EOT;
             $clip_id = $g_clip->getAttribute('clip-path');
             $clip_id = substr($clip_id, 5, -1);
 
-            if ($clip_id === '') {
+            // There is a clip path.
+            if (!empty($clip_id)) {
 
-                break;
+                // Parse clip path starting point, width and height.
+                /** @var DOMElement $clip_path */
+                $clip_path = $xpath->query("//*[@id=\"{$clip_id}\"]")->item(0);
+
+                if (empty($clip_path)) {
+
+                    continue;
+                }
+
+                $path = $clip_path->getElementsByTagName('path');
+                $d = isset($path[0]) ? $path[0]->getAttribute('d') : '';
+
+            } else {
+
+                // No clip path. Is there a path sibling before the mask?
+                $clip_path = $g_mask->previousSibling;
+
+                if (trim($clip_path->nodeValue) === '') {
+
+                    $clip_path = $g_mask->previousSibling->previousSibling;
+                }
+
+                if (empty($clip_path)) {
+
+                    continue;
+                }
+
+                $d = $clip_path->getAttribute('d');
             }
 
-            // Parse clip path starting point, width and height.
-            /** @var DOMElement $clip_path */
-            $clip_path = $xpath->query("//*[@id=\"{$clip_id}\"]")->item(0);
-
-            if (empty($clip_path)) {
-
-                continue;
-            }
-
-            $path = $clip_path->getElementsByTagName('path');
-            $d = isset($path[0]) ? $path[0]->getAttribute('d') : '';
-
+            // No path d found.
             if ($d === '') {
 
                 break;
@@ -1526,10 +1543,25 @@ EOT;
                 break;
             }
 
-            $tx = (float) $matches[1] ?? 0;
-            $ty = (float) $matches[2] ?? 0;
-            $dw = (float) $matches[3] - $tx;
-            $dh = (float) $matches[6] - $ty;
+            // Image can be vertically flipped.
+            $vertically_flipped = $matches[6] < $matches[2];
+
+            switch ($vertically_flipped) {
+
+                case true:
+                    $tx = (float) $matches[7] ?? 0;
+                    $ty = (float) $matches[8] ?? 0;
+                    $dw = (float) $matches[3] - $tx;
+                    $dh = (float) $matches[2] - $ty;
+                    break;
+
+                case false:
+                    $tx = (float) $matches[1] ?? 0;
+                    $ty = (float) $matches[2] ?? 0;
+                    $dw = (float) $matches[3] - $tx;
+                    $dh = (float) $matches[6] - $ty;
+                    break;
+            }
 
             // Get image id.
             $image_id = isset($use[0]) ? $use[0]->getAttribute('xlink:href') : '';
