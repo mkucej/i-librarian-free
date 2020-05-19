@@ -139,11 +139,17 @@ class Bibtex {
                 case 'journal':
                 case 'booktitle':
                 case 'school':
+                case 'institution':
                     $entry[ItemMeta::COLUMN['SECONDARY_TITLE']] = $right;
                     break;
 
                 case 'series':
                     $entry[ItemMeta::COLUMN['TERTIARY_TITLE']] = $right;
+                    break;
+
+                case 'holder':
+                case 'source':
+                    $entry[ItemMeta::COLUMN['AFFILIATION']] = $right;
                     break;
 
                 case 'year':

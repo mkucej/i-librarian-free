@@ -112,20 +112,29 @@ class Bibtex {
                     break;
 
                 case 'conference':
-                case 'chapter':
+                case 'inproceedings':
+                case 'incollection':
                     $output .= $this->prettyTag('booktitle') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
+                    $output .= $this->prettyTag('series') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['TERTIARY_TITLE']] ?? '') . '},' . PHP_EOL;
                     break;
 
                 case 'book':
-                    $output .= $this->prettyTag('series') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
+                    $series = $item[ItemMeta::COLUMN['TERTIARY_TITLE']] ?? $item[ItemMeta::COLUMN['SECONDARY_TITLE']];
+                    $output .= $this->prettyTag('series') . '{' . $this->prettyValue($series ?? '') . '},' . PHP_EOL;
                     break;
 
-                case 'manual':
-                    $output .= $this->prettyTag('section') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
+                case 'techreport':
+                    $output .= $this->prettyTag('institution') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
+                    break;
+
+                case 'mastersthesis':
+                case 'phdthesis':
+                    $output .= $this->prettyTag('school') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
                     break;
 
                 case 'patent':
-                    $output .= $this->prettyTag('source') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['SECONDARY_TITLE']] ?? '') . '},' . PHP_EOL;
+                    $output .= $this->prettyTag('source') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['AFFILIATION']] ?? '') . '},' . PHP_EOL;
+                    $output .= $this->prettyTag('holder') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['AFFILIATION']] ?? '') . '},' . PHP_EOL;
                     break;
             }
 
