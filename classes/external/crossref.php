@@ -282,7 +282,6 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
                 $output['items'][$i][ItemMeta::COLUMN['UIDS']][] = $article['DOI'];
             }
 
-
             // Reference type.
             if (isset($article['type'])) {
 
@@ -297,6 +296,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
                     case 'proceedings':
                     case 'proceedings-series':
+                    case 'proceedings-article':
                         $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CONFERENCE'];
                         $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['CONFERENCE'];
                         // Publication.
