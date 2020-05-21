@@ -121,7 +121,7 @@ class PmcController extends Controller {
 
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("Pubmed Central", $items, $from, $items['search_name']);
+        return $view->results("Pubmed Central", $items, $from, $items['search_name'], $terms);
     }
 
     /**

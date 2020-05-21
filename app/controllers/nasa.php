@@ -124,7 +124,7 @@ class NasaController extends Controller {
 
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("NASA ADS", $items, $from, $items['search_name'] ?? '');
+        return $view->results("NASA ADS", $items, $from, $items['search_name'] ?? '', $terms);
     }
 
     /**

@@ -123,7 +123,7 @@ class IEEEController extends Controller {
 
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("IEEE Xplore\u{00ae}", $items, $from, $items['search_name']);
+        return $view->results("IEEE Xplore\u{00ae}", $items, $from, $items['search_name'], $terms);
     }
 
     /**

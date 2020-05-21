@@ -27,10 +27,11 @@ class ExternalView extends TextView {
      * @param $items
      * @param $from
      * @param string $search_name
+     * @param array $terms
      * @return string
      * @throws Exception
      */
-    public function results($database, $items, $from, $search_name = '') {
+    public function results($database, $items, $from, $search_name = '', $terms = []) {
 
         $get = $this->request->getQueryParams();
         $trimmed_get = $this->sanitation->trim($get);
@@ -102,17 +103,101 @@ class ExternalView extends TextView {
 
         $el = null;
 
+        // Highlighting.
+        $patterns = [];
+
+        foreach ($terms as $term) {
+
+            $value = current($term);
+            $parts = array_filter(explode(' ', $value));
+
+            foreach ($parts as $part) {
+
+                $part = trim($part);
+
+                // Ignore tags.
+                if (mb_strpos($part, '[') === 0) {
+
+                    continue;
+                }
+
+                // Ignore NASA tag.
+                $part = strpos($part, ':') !== false ? strstr($part, ':') : $part;
+
+                // Ignore booleans.
+                if (in_array($part, ['AND', 'OR', 'NOT', 'ANDNOT', 'BUTNOT', 'and', 'or', 'not', 'andnot', 'butnot',])) {
+
+                    continue;
+                }
+
+                // Remove punctuations.
+                $part = preg_replace('/[^\p{L}\p{N}*]/ui', '', $part);
+
+                $boundary = mb_strrpos($part, '*') === mb_strlen($part) - 1 ? '' : '\b';
+                $part = str_replace('*', '', $part);
+
+                // Skip if nothign left.
+                if (empty($part)) {
+
+                    continue;
+                }
+
+                $part = preg_quote($part);
+                $patterns[] = "/(\b{$part}{$boundary})/ui";
+            }
+        }
+
+        $patterns = array_unique($patterns);
+
+        // Found items.
         foreach ($items['items'] as $article) {
 
-            $exists   = isset($article['exists']) && $article['exists'] === 'Y' ? $exists_badge: '';
-            $title    = $this->sanitation->html($article[ItemMeta::COLUMN['TITLE']] ?? '');
-            $author   = $this->sanitation->html($article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][0] ?? '');
-            $year     = $this->sanitation->html($article[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? null);
-            $year     = empty($year) ? 'No date' : substr($year, 0, 4);
+            // Exists in library badge.
+            $exists = isset($article['exists']) && $article['exists'] === 'Y' ? $exists_badge: '';
+
+            // Title with search term highlighting.
+            $title = $this->sanitation->html($article[ItemMeta::COLUMN['TITLE']] ?? '');
+
+            // Compact authors - first and last.
+            $author = $this->sanitation->html($article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][0] ?? '');
+
+            if (!empty($author)) {
+
+                // First name.
+                $first_name = $article[ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][0] ?? '';
+                $author .= $this->sanitation->html(empty($first_name) ? '' : ", {$first_name}");
+
+                // Last author.
+                $author_count = count($article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']]);
+                $last_last_name = $article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][($author_count - 1)] ?? '';
+
+                if ($last_last_name !== $article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][0]) {
+
+                    $author .= $this->sanitation->html(" ...{$last_last_name}");
+
+                    // First name.
+                    $last_first_name = $article[ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][($author_count - 1)] ?? '';
+                    $author .= $this->sanitation->html(empty($last_first_name) ? '' : ", {$last_first_name}");
+                }
+            }
+
+            $author = empty($author) ? 'No authors' : $author;
+
+            // Year.
+            $year = $this->sanitation->html($article[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? null);
+            $year = empty($year) ? 'No date' : substr($year, 0, 4);
+
+            // Publication name.
             $publication = !empty($article[ItemMeta::COLUMN['TERTIARY_TITLE']]) ? $article[ItemMeta::COLUMN['TERTIARY_TITLE']] : '';
             $publication = !empty($article[ItemMeta::COLUMN['SECONDARY_TITLE']]) ? $article[ItemMeta::COLUMN['SECONDARY_TITLE']] : $publication;
             $publication = !empty($article[ItemMeta::COLUMN['PRIMARY_TITLE']]) ? $article[ItemMeta::COLUMN['PRIMARY_TITLE']] : $publication;
-            $abstract = $this->sanitation->html($article[ItemMeta::COLUMN['ABSTRACT']] ?? '');
+
+            $publication = empty($publication) ? 'No publication title' : $publication;
+
+            // Abstract with search tern highlighting.
+            $abstract = preg_replace($patterns, '<mark>$1</mark>', $this->sanitation->html($article[ItemMeta::COLUMN['ABSTRACT']] ?? ''));
+
+            // Links.
             $link     = $article[ItemMeta::COLUMN['URLS']][0] ?? null;
             $pdf_link = $article[ItemMeta::COLUMN['URLS']][1] ?? null;
 
@@ -173,7 +258,7 @@ EOT
             $title = <<<EOT
 $exists
                 <h5><a href="{$link}">{$title}</a></h5>
-                <p>$author <span class="ml-1">({$year})</span> <span class="ml-1">$publication</span></p>
+                <p>$author <span class="ml-1">({$year})</span> <i class="ml-1">$publication</i></p>
                 <p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
                 $pdf_button
                 <div>$form</div>

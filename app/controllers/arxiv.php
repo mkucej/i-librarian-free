@@ -122,6 +122,6 @@ class ArxivController extends Controller {
 
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("arXiv", $items, $from, $items['search_name']);
+        return $view->results("arXiv", $items, $from, $items['search_name'], $terms);
     }
 }
