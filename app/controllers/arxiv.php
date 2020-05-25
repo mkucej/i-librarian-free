@@ -101,16 +101,22 @@ class ArxivController extends Controller {
         // Get 10 results from $from.
         $items = $this->arxiv->search($terms, $from, 10, $filters, $this->get['sort']);
 
+        // Search URL to save.
+        unset($this->get['from']);
+        unset($this->get['save_search']);
+        $search_url = '#' . IL_PATH_URL . '?' . http_build_query($this->get);
+
+        // Model.
+        $model = new SearchModel($this->di);
+
         if (isset($this->get['save_search'])) {
 
-            // Search URL to save.
-            unset($this->get['from']);
-            unset($this->get['save_search']);
-            $search_url = '#' . IL_PATH_URL . '?' . http_build_query($this->get);
-
-            // Model.
-            $model = new SearchModel($this->di);
             $model->save('arxiv', $items['search_name'], $search_url);
+
+        } else {
+
+            // Update search, if exists.
+            $model->update('arxiv', $items['search_name'], $search_url);
         }
 
         // Find out if UIDs exist.

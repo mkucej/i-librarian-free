@@ -10,6 +10,7 @@ namespace LibrarianApp;
  * @method void  delete(int $id)
  * @method array list(string $type)
  * @method void  save(string $type, string $name, string $url)
+ * @method void  update(string $type, string $name, string $url)
  */
 final class SearchModel extends AppModel {
 
@@ -76,6 +77,24 @@ SQL;
         }
 
         $this->db_main->commit();
+    }
+
+    /**
+     * Update existing search, if exists.
+     *
+     * @param string $type
+     * @param string $name
+     * @param string $url
+     */
+    protected function _update(string $type, string $name, string $url): void {
+
+        $sql_update = <<<'SQL'
+UPDATE searches
+    SET search_type = ?, search_name = ?, changed_time = CURRENT_TIMESTAMP
+    WHERE user_id = ? AND search_url = ?
+SQL;
+
+        $this->db_main->run($sql_update, [$type, $name, $this->user_id, $url]);
     }
 
     /**

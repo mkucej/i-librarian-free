@@ -155,7 +155,11 @@ class ProjectController extends Controller {
 
             $view = new ItemsView($this->di);
 
-            if (isset($this->get['save_search'])) {
+            // Search saving.
+            if ($search_keys !== []) {
+
+                // Search saving model.
+                $model = new SearchModel($this->di);
 
                 // Save search.
                 $url_get = $this->get;
@@ -163,9 +167,16 @@ class ProjectController extends Controller {
                 unset($url_get['save_search']);
                 $search_url = '#' . IL_PATH_URL . '?' . http_build_query($url_get);
 
-                // Model.
-                $model = new SearchModel($this->di);
-                $model->save('internal', $items['project'] . ' - ' . $view->searchName($this->get), $search_url);
+                if (isset($this->get['save_search'])) {
+
+                    // Force save/update search.
+                    $model->save('internal', $items['project'] . ' - ' . $view->searchName($this->get), $search_url);
+
+                } else {
+
+                    // Update search, if exists.
+                    $model->update('internal', $items['project'] . ' - ' . $view->searchName($this->get), $search_url);
+                }
             }
 
             return $view->page('project', $this->get, $items);
