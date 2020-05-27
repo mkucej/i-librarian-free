@@ -390,7 +390,7 @@ EOT;
         // URLs.
         if (isset($item[ItemMeta::COLUMN['URLS']]) && is_string($item[ItemMeta::COLUMN['URLS']])) {
 
-            $columns[] = str_replace(PHP_EOL, '|', $item[ItemMeta::COLUMN['URLS']]);
+            $columns[] = str_replace("\n", '|', $item[ItemMeta::COLUMN['URLS']]);
 
         } elseif (isset($item[ItemMeta::COLUMN['URLS']]) && is_array($item[ItemMeta::COLUMN['URLS']])) {
 
@@ -605,7 +605,7 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter(explode(PHP_EOL, $item[ItemMeta::COLUMN['KEYWORDS']]));
+            $keywords = array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']]));
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
@@ -966,7 +966,7 @@ SQL;
         // URLs.
         if (isset($item[ItemMeta::COLUMN['URLS']]) && is_string($item[ItemMeta::COLUMN['URLS']])) {
 
-            $columns[] = str_replace(PHP_EOL, '|', $item[ItemMeta::COLUMN['URLS']]);
+            $columns[] = str_replace("\n", '|', $item[ItemMeta::COLUMN['URLS']]);
 
         } elseif (isset($item[ItemMeta::COLUMN['URLS']]) && is_array($item[ItemMeta::COLUMN['URLS']])) {
 
@@ -1232,7 +1232,7 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter(explode(PHP_EOL, $item[ItemMeta::COLUMN['KEYWORDS']]));
+            $keywords = array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']]));
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 

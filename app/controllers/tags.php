@@ -147,7 +147,7 @@ class TagsController extends Controller {
             $item_id = $this->post['id'];
         }
 
-        $tags = explode(PHP_EOL, $this->post['new_tags']);
+        $tags = explode("\n", $this->post['new_tags']);
         $tags = $this->sanitation->trim($tags);
 
         $model = new TagsModel($this->di);
