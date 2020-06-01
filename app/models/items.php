@@ -2868,12 +2868,10 @@ EOT;
         }
 
         // Add Bootstrap to ZIP.
-        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'bootstrap.min.css', 'css/bootstrap.min.css');
-        $zip->setCompressionName('css/bootstrap.min.css', ZipArchive::CM_STORE);
-        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'popper.min.js', 'js/popper.min.js');
-        $zip->setCompressionName('css/bootstrap.min.css', ZipArchive::CM_STORE);
-        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'bootstrap.min.js', 'js/bootstrap.min.js');
-        $zip->setCompressionName('css/bootstrap.min.css', ZipArchive::CM_STORE);
+        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'plugins.css', 'css/plugins.css');
+        $zip->setCompressionName('css/plugins.css', ZipArchive::CM_STORE);
+        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugins.js', 'js/plugins.js');
+        $zip->setCompressionName('js/plugins.js', ZipArchive::CM_STORE);
 
         $close = $zip->close();
 
@@ -2890,7 +2888,7 @@ EOT;
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/plugins.css" rel="stylesheet">
         <style>
             .content-light {
                 background-color: #f2f3f6;
@@ -2991,8 +2989,7 @@ EOT;
         }
 
         $html .= <<<HTML
-        <script src="js/popper.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="js/plugins.js"></script>
     </body>
 </html>
 HTML;

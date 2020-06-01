@@ -35,7 +35,7 @@ class PdfView extends TextView {
 
         if ($this->contentType() === 'html') {
 
-            $this->styleLink('css/bootstrap.min.css');
+            $this->styleLink('css/plugins.css');
 
             $this->head();
 
