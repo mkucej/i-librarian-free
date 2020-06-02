@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 /*
  * I, Librarian version.
  */
-define('IL_VERSION', '5.2.3');
+define('IL_VERSION', '5.3.0');
 
 /*
  * Define paths.
