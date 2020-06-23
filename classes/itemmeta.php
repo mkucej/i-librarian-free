@@ -49,6 +49,7 @@ final class ItemMeta {
         'BOOK'        => 'book',
         'CHAPTER'     => 'chapter',
         'CONFERENCE'  => 'conference',
+        'DATASET'     => 'dataset',
         'ELECTRONIC'  => 'electronic',
         'GENERIC'     => 'generic',
         'MANUAL'      => 'manual',
@@ -66,12 +67,14 @@ final class ItemMeta {
         'ARTICLE'       => 'article',
         'BOOK'          => 'book',
         'CONFERENCE'    => 'conference',
+        'DATASET'       => 'dataset',
         'ELECTRONIC'    => 'electronic',
         'INCOLLECTION'  => 'incollection',
         'INPROCEEDINGS' => 'inproceedings',
         'MANUAL'        => 'manual',
         'MASTERTHESIS'  => 'mastersthesis',
         'MISC'          => 'misc',
+        'ONLINE'        => 'online',
         'PHDTHESIS'     => 'phdthesis',
         'PATENT'        => 'patent',
         'TECHREPORT'    => 'techreport',
@@ -114,6 +117,7 @@ final class ItemMeta {
         'conference'  => [
             'secondary_title'  => 'Conference'
         ],
+        'dataset'     => [],
         'electronic'  => [],
         'generic'     => [
             'abstract'         => 'Abstract',
@@ -192,10 +196,17 @@ final class ItemMeta {
             'csl'     => 'paper-conference'
         ],
         [
+            'il'      => 'dataset',
+            'bibtex'  => 'dataset',
+            'ris'     => 'DATA',
+            'endnote' => 'Online Database',
+            'csl'     => 'dataset'
+        ],
+        [
             'il'      => 'electronic',
-            'bibtex'  => 'electronic',
+            'bibtex'  => ['online', 'electronic'],
             'ris'     => 'ELEC',
-            'endnote' => 'Electronic Source',
+            'endnote' => 'Electronic Article',
             'csl'     => 'webpage'
         ],
         [
