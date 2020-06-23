@@ -961,7 +961,16 @@ EOT;
                     foreach ($fields as $field) {
 
                         $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "% {$term} %";
+
+                        // Authors/editors have comma separators. Users may or may not provide a comma in the query.
+                        if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($term, ',') === false) {
+
+                            $columns[] = "% {$term}, %";
+
+                        } else {
+
+                            $columns[] = "% {$term} %";
+                        }
                     }
 
                     $placeholders[] = '(' . join(' OR ', $field_placeholders) . ')';
@@ -977,7 +986,16 @@ EOT;
                 foreach ($fields as $field) {
 
                     $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                    $columns[] = "% {$query} %";
+
+                    // Authors/editors have comma separators. Users may or may not provide a comma in the query.
+                    if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($query, ',') === false) {
+
+                        $columns[] = "% {$query}, %";
+
+                    } else {
+
+                        $columns[] = "% {$query} %";
+                    }
                 }
 
                 $placeholder = '(' . join(' OR ', $field_placeholders) . ')';
@@ -1597,6 +1615,12 @@ EOT;
 
                     // Placeholder.
                     $field = $fields[$search['search_type'][$key]];
+
+                    // Authors/editors have comma separators. Users may or may not provide a comma in the query.
+                    if ($search['search_type'][$key] === 'AU' && strpos($search_query, ',') === false) {
+
+                        $search_query = "{$search_query},";
+                    }
 
                     if (is_array($field)) {
 
