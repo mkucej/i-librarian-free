@@ -323,24 +323,51 @@ EOT
         $el = null;
 
         // Tags.
-        $tag_checks = '';
+        $first_letter = '';
+        $i = 0;
 
-        foreach ($tags as $id => $tag) {
+        $tag_checkboxes = '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
+
+        foreach ($tags as $tag_id => $tag) {
+
+            $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+            if ($first_letter2 !== $first_letter) {
+
+                $tag_checkboxes .= '</td></tr><tr>';
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('warning');
+                $el->addClass('d-inline-block mr-2 mb-2');
+                $el->style('width: 1.33rem');
+                $el->html($first_letter2);
+                $tag_checkboxes .= '<td>' . $el->render() . '</td><td>';
+
+                $el = null;
+
+                $first_letter = $first_letter2;
+            }
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
-            $el->id('tag-checkbox-' . $id);
-            $el->groupClass('mb-3');
+            $el->id('tag-checkbox-' . $i);
             $el->type('checkbox');
-            $el->inline(true);
+            $el->name("tags[{$i}]");
+            $el->value($tag_id);
             $el->label($tag);
-            $el->name('tags[]');
-            $el->value($id);
-            $tag_checks .= $el->render();
+            $el->inline(true);
+
+            $tag_checkboxes .= $el->render();
 
             $el = null;
+
+            $i++;
         }
+
+        $tag_checkboxes .= '</td></tr></table>';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
@@ -371,7 +398,7 @@ EOT
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
-                    $tag_checks
+                    $tag_checkboxes
                 </div>
             </div>
 BODY
@@ -822,24 +849,51 @@ EOT;
         $el = null;
 
         // Tags.
-        $tag_checks = '';
+        $first_letter = '';
+        $i = 0;
 
-        foreach ($tags as $id => $tag) {
+        $tag_checkboxes = '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
+
+        foreach ($tags as $tag_id => $tag) {
+
+            $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+            if ($first_letter2 !== $first_letter) {
+
+                $tag_checkboxes .= '</td></tr><tr>';
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('warning');
+                $el->addClass('d-inline-block mr-2 mb-2');
+                $el->style('width: 1.33rem');
+                $el->html($first_letter2);
+                $tag_checkboxes .= '<td>' . $el->render() . '</td><td>';
+
+                $el = null;
+
+                $first_letter = $first_letter2;
+            }
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
-            $el->id('tag-checkbox-' . $id);
-            $el->groupClass('mb-3');
+            $el->id('tag-checkbox-' . $i);
             $el->type('checkbox');
-            $el->inline(true);
+            $el->name("tags[]");
+            $el->value($tag_id);
             $el->label($tag);
-            $el->name('tags[]');
-            $el->value($id);
-            $tag_checks .= $el->render();
+            $el->inline(true);
+
+            $tag_checkboxes .= $el->render();
 
             $el = null;
+
+            $i++;
         }
+
+        $tag_checkboxes .= '</td></tr></table>';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
@@ -864,7 +918,7 @@ EOT;
             </div>
             <div class="collapse" id="tags">
                 $tags_ta
-                $tag_checks
+                $tag_checkboxes
             </div>
 EOT
         , null, 'pt-3');
@@ -1080,24 +1134,51 @@ EOT
         $el = null;
 
         // Tags.
-        $tag_checks = '';
+        $first_letter = '';
+        $i = 0;
 
-        foreach ($tags as $id => $tag) {
+        $tag_checkboxes = '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
+
+        foreach ($tags as $tag_id => $tag) {
+
+            $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+            if ($first_letter2 !== $first_letter) {
+
+                $tag_checkboxes .= '</td></tr><tr>';
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('warning');
+                $el->addClass('d-inline-block mr-2 mb-2');
+                $el->style('width: 1.33rem');
+                $el->html($first_letter2);
+                $tag_checkboxes .= '<td>' . $el->render() . '</td><td>';
+
+                $el = null;
+
+                $first_letter = $first_letter2;
+            }
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
-            $el->id('tag-checkbox-' . $id);
-            $el->groupClass('mb-3');
+            $el->id('tag-checkbox-' . $i);
             $el->type('checkbox');
-            $el->inline(true);
+            $el->name("tags[{$i}]");
+            $el->value($tag_id);
             $el->label($tag);
-            $el->name('tags[]');
-            $el->value($id);
-            $tag_checks .= $el->render();
+            $el->inline(true);
+
+            $tag_checkboxes .= $el->render();
 
             $el = null;
+
+            $i++;
         }
+
+        $tag_checkboxes .= '</td></tr></table>';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
@@ -1117,7 +1198,7 @@ EOT
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
-                    $tag_checks
+                    $tag_checkboxes
                 </div>
             </div>
 BODY
@@ -1271,25 +1352,51 @@ BODY
 
         $el = null;
 
-        // Tags.
-        $tag_checks = '';
+        $first_letter = '';
+        $i = 0;
 
-        foreach ($tags as $id => $tag) {
+        $tag_checkboxes = '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
+
+        foreach ($tags as $tag_id => $tag) {
+
+            $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+            if ($first_letter2 !== $first_letter) {
+
+                $tag_checkboxes .= '</td></tr><tr>';
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('warning');
+                $el->addClass('d-inline-block mr-2 mb-2');
+                $el->style('width: 1.33rem');
+                $el->html($first_letter2);
+                $tag_checkboxes .= '<td>' . $el->render() . '</td><td>';
+
+                $el = null;
+
+                $first_letter = $first_letter2;
+            }
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
-            $el->id('tag-checkbox-' . $id);
-            $el->groupClass('mb-3');
+            $el->id('tag-checkbox-' . $i);
             $el->type('checkbox');
-            $el->inline(true);
+            $el->name("tags[{$i}]");
+            $el->value($tag_id);
             $el->label($tag);
-            $el->name('tags[]');
-            $el->value($id);
-            $tag_checks .= $el->render();
+            $el->inline(true);
+
+            $tag_checkboxes .= $el->render();
 
             $el = null;
+
+            $i++;
         }
+
+        $tag_checkboxes .= '</td></tr></table>';
 
         $help = <<<HELP
             <div data-toggle="collapse" data-target="#pdf-hint" class="cursor-pointer">$chevron PDF hint</div>
@@ -1323,7 +1430,7 @@ HELP;
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
-                    $tag_checks
+                    $tag_checkboxes
                 </div>
             </div>
 BODY

@@ -145,6 +145,11 @@ h5 {
     top: 1px;
 }
 
+.tag-table td {
+    vertical-align: top;
+    padding-bottom: 0.5rem;
+}
+
 .pdfviewer-menu .dropdown-toggle {
     border: none;
 }

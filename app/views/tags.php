@@ -35,10 +35,10 @@ class TagsView extends TextView {
         $el = null;
 
         // Form.
-
         /** @var Bootstrap\Textarea $el */
         $el = $this->di->get('Textarea');
 
+        $el->id('new-tags');
         $el->name('new_tags');
         $el->label('New tags <span class="text-muted">(one per line)</span>');
         $ta = $el->render();
@@ -78,6 +78,7 @@ class TagsView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
+        $el->addClass('mb-3');
         $el->header("<b>ADD NEW ITEM TAGS</b>");
         $el->body($form);
         $form_card = $el->render();
@@ -102,37 +103,66 @@ class TagsView extends TextView {
         if (empty($tags['tags'])) {
 
             $tag_html = '<div class="text-center text-muted text-uppercase py-4">No tags</div>';
-        }
 
-        foreach ($tags['tags'] as $tag_id => $tag) {
+        } else {
 
-            /** @var Bootstrap\Input $el */
-            $el = $this->di->get('Input');
+            // First letter.
+            $first_letter = '';
 
-            $el->groupClass('tag-divs');
-            $el->addClass('tag-inputs');
-            $el->id('tag-' . $tag_id);
-            $el->type('checkbox');
-            $el->name('tag_id[]');
-            $el->value($tag_id);
-            $el->label($tag);
-            $el->inline(true);
+            $tag_html .= '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
 
-            // Make recommended tags bold.
-            if (in_array($tag, $tags['recommended_tags'])) {
+            foreach ($tags['tags'] as $tag_id => $tag) {
 
-                $el->groupClass('font-weight-bold');
+                $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+                if ($first_letter2 !== $first_letter) {
+
+                    $tag_html .= '</td></tr><tr>';
+
+                    /** @var Bootstrap\Badge $el */
+                    $el = $this->di->get('Badge');
+
+                    $el->context('warning');
+                    $el->addClass('d-inline-block mr-2 mb-2');
+                    $el->style('width: 1.33rem');
+                    $el->html($first_letter2);
+                    $tag_html .= '<td>' . $el->render() . '</td><td>';
+
+                    $el = null;
+
+                    $first_letter = $first_letter2;
+                }
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->groupClass('tag-divs');
+                $el->addClass('tag-inputs');
+                $el->id('tag-' . $tag_id);
+                $el->type('checkbox');
+                $el->name('tag_id[]');
+                $el->value($tag_id);
+                $el->label($tag);
+                $el->inline(true);
+
+                // Make recommended tags bold.
+                if (in_array($tag, $tags['recommended_tags'])) {
+
+                    $el->groupClass('font-weight-bold');
+                }
+
+                // Item tags are checked.
+                if (isset($tags['item_tags'][$tag_id])) {
+
+                    $el->checked('checked');
+                }
+
+                $tag_html .= $el->render();
+
+                $el = null;
             }
 
-            // Item tags are checked.
-            if (isset($tags['item_tags'][$tag_id])) {
-
-                $el->checked('checked');
-            }
-
-            $tag_html .= $el->render();
-
-            $el = null;
+            $tag_html .= '</td></tr></table>';
         }
 
         /** @var Bootstrap\Card $el */
