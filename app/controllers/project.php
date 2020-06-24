@@ -859,7 +859,7 @@ class ProjectController extends Controller {
         }
 
         $model = new TagsModel($this->di);
-        $tags = $model->getTags('clipboard', $this->get['filter']['tag'] ?? []);
+        $tags = $model->getTags('project', $this->get['filter']['tag'] ?? [], $this->get['id']);
 
         $view = new FilterView($this->di);
         return $view->linkList('project', 'tag', $tags);
