@@ -159,7 +159,7 @@ EOT;
         $el = $this->di->get('Card');
 
         $el->addClass('h-100');
-        $el->header('<b>ITEMS</b> <a href="#items/main">View more</a>', 'px-4 pt-3');
+        $el->header('<span><b>ITEMS</b> <a class="mx-3" href="#items/main">List</a> <a href="#items/filter">Filter</a></span>', 'px-4 pt-3');
         $el->body($last5_html, null, 'px-4 pb-4');
         $last5_card = $el->render();
 
@@ -208,7 +208,7 @@ EOT;
         $el = $this->di->get('Card');
 
         $el->addClass('h-100');
-        $el->header('<b>PROJECTS</b> <a href="#projects/main">View more</a>', 'px-4 pt-3');
+        $el->header('<span><b>PROJECTS</b> <a class="ml-3" href="#projects/main">List</a></span>', 'px-4 pt-3');
         $el->body($project_html, null, 'px-4 pb-4');
         $project_card = $el->render();
 
