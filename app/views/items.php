@@ -2003,32 +2003,63 @@ SCRIPT;
         $el->placeholder('Filter');
         $el->ariaLabel('Filter');
         $el->attr('data-targets', '#omnitool-tags .label-text');
-        $tag_html = $el->render();
+        $tag_checkboxes = $el->render();
 
         $el = null;
 
-        foreach ($tags as $id => $tag) {
+        // Tags.
+        $first_letter = '';
+        $i = 0;
+
+        $tag_checkboxes .= '<table class="tag-table"><tr><td style="width:2.25rem"></td><td>';
+
+        foreach ($tags as $tag_id => $tag) {
+
+            $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+            if ($first_letter2 !== $first_letter) {
+
+                $tag_checkboxes .= '</td></tr><tr>';
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('warning');
+                $el->addClass('d-inline-block mr-2 mb-2');
+                $el->style('width: 1.33rem');
+                $el->html($first_letter2);
+                $tag_checkboxes .= '<td>' . $el->render() . '</td><td>';
+
+                $el = null;
+
+                $first_letter = $first_letter2;
+            }
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
-            $el->id('omnitool-checkbox-tags-' . $id);
+            $el->id('omnitool-checkbox-tags-' . $i);
             $el->type('checkbox');
-            $el->name('omnitool[tags][]');
-            $el->value($id);
+            $el->name("omnitool[tags][$i]");
+            $el->value($tag_id);
             $el->label($tag);
             $el->inline(true);
-            $tag_html .= $el->render();
+
+            $tag_checkboxes .= $el->render();
 
             $el = null;
+
+            $i++;
         }
+
+        $tag_checkboxes .= '</td></tr></table>';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Element');
 
         $el->id('omnitool-tags');
         $el->addClass('mb-3 collapse');
-        $el->html($tag_html);
+        $el->html($tag_checkboxes);
         $inputs .= $el->render();
 
         $el = null;
