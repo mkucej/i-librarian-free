@@ -551,7 +551,7 @@ SQL;
         while(feof($fr) === false) {
 
             $line = fgets($fr);
-            $line = preg_replace( "/[^\p{L}\p{N}\p{P}]+/u", " ", $line);
+            $line = preg_replace( "/[^\p{L}\p{N}\p{P}\f]+/u", " ", $line);
             $line = preg_replace('/\s{2,}/u', ' ', $line);
 
             fwrite($ft, $line);
