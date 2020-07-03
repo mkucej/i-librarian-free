@@ -626,7 +626,7 @@ EOT;
                 continue;
             }
 
-            foreach ($words as $word) {
+            foreach ($words as $key => $word) {
 
                 $t = $word['marker_top'] / 10;
                 $l = $word['marker_left'] / 10;
@@ -634,6 +634,14 @@ EOT;
                 $h = $word['marker_height'] / 10;
                 $position = $word['marker_position'];
                 $text = $this->sanitation->attr($word['marker_text']);
+
+                // Adjust width to not have seams.
+                if (isset($words[($key + 1)]) &&
+                    (int) $words[($key + 1)]['marker_position'] === ((int) $position + 1) &&
+                    $words[($key + 1)]['marker_top'] === $word['marker_top']) {
+
+                    $w = ($words[($key + 1)]['marker_left'] - $word['marker_left']) / 10;
+                }
 
                 switch ($word['marker_color']) {
 
