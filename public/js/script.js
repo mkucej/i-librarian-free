@@ -3056,10 +3056,12 @@ class PdfMainView extends View {
                         $('.pdfviewer-right')[0].getBoundingClientRect()
                     );
                 });
+                // Refresh text box coordinates.
+                if (typeof This.selectable === 'object') {
+                    This.selectable.refresh();
+                }
             }, 400));
         });
-        // Initial page number.
-        this.scrollToPage($('#pdfviewer-page-input').val(), 0);
         if (typeof This.selectable === 'object') {
             This.selectable.disable();
             This.selectable.destroy();
@@ -3075,6 +3077,9 @@ class PdfMainView extends View {
             e.which = 13;
             $('#pdfviewer-search-input').val(params.get('search')).trigger(e);
         }
+        // Initial page number.
+        let initialPage = params.get('page') || $('#pdfviewer-page-input').val();
+        this.scrollToPage(initialPage, 0);
         this.getLinks();
     }
     /**
