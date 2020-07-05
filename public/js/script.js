@@ -3868,22 +3868,26 @@ class PdfMainView extends View {
     }
     createNewNote(e) {
         let This = e.data.object;
-        This.clearHighlights(e);
-        This.showNotes(e);
-        This.showLeft();
-        $('.pdfviewer-page').addClass('cursor-cross');
-        $('.pdfviewer-page').on('click.createnote', '.pdfviewer-notes', function (e) {
-            let left = Math.round(1000 * (e.pageX - $(this).offset().left)/$(this).width()),
-                top = Math.round(1000 * (e.pageY - $(this).offset().top)/$(this).height()),
-                pg = $(this).closest('.pdfviewer-page').data('page'),
-                $f = $('#new-note-form');
-            $f.removeClass('d-none').find('[name="pg"]').val(pg);
-            $f.find('[name="left"]').val(left);
-            $f.find('[name="top"]').val(top);
-            $('.pdfnote.new').remove();
-            $('<div class="pdfnote new" style="left:' + left/10 + '%;top:' + top/10 + '%;"></div>').appendTo(this);
+        if ($('.pdfviewer-page').hasClass('cursor-cross') === true) {
             This.clearNewNote();
-        });
+        } else {
+            This.clearHighlights(e);
+            This.showNotes(e);
+            This.showLeft();
+            $('.pdfviewer-page').addClass('cursor-cross');
+            $('.pdfviewer-page').on('click.createnote', '.pdfviewer-notes', function (e) {
+                let left = Math.round(1000 * (e.pageX - $(this).offset().left) / $(this).width()),
+                    top = Math.round(1000 * (e.pageY - $(this).offset().top) / $(this).height()),
+                    pg = $(this).closest('.pdfviewer-page').data('page'),
+                    $f = $('#new-note-form');
+                $f.removeClass('d-none').find('[name="pg"]').val(pg);
+                $f.find('[name="left"]').val(left);
+                $f.find('[name="top"]').val(top);
+                $('.pdfnote.new').remove();
+                $('<div class="pdfnote new" style="left:' + left / 10 + '%;top:' + top / 10 + '%;"></div>').appendTo(this);
+                This.clearNewNote();
+            });
+        }
     }
     clearNotes(e) {
         let This = e.data.object;
