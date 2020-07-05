@@ -375,6 +375,7 @@ EOT
      * Add the end of HTML to the response stream.
      *
      * @return void
+     * @throws Exception
      */
     protected function end(): void {
 
@@ -399,6 +400,11 @@ EOT
                         }
                     }
                 });
+                window.MathJax = {
+                    tex: {
+                        inlineMath: [['$', '$']]
+                    }
+                };
 EOT;
             $this->script = $csrf_script . $this->script;
         }
@@ -407,6 +413,11 @@ EOT;
         $IL_VERSION = IL_VERSION;
 
         // Add external and internal scripts, close <body> and <html>.
+        if ($this->app_settings->getGlobal('math_formatting') === '1') {
+
+            $this->scriptLink('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js', ['defer' => 'defer']);
+        }
+
         $this->stream->write(<<<EOT
                     {$this->script_links}
                     <script src="{$IL_BASE_URL}js/script.min.js?v=$IL_VERSION"></script>

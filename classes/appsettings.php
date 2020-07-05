@@ -62,6 +62,7 @@ final class AppSettings {
         'custom_bibtex'       => ['author', '-', 'year', '-', 'title'],
         'default_permissions' => 'A',
         'disallow_signup'     => '0',
+        'math_formatting'     => '0',
         'max_items'           => '10000',
         'proxy_name'          => '',
         'proxy_port'          => '',

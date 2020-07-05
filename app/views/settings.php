@@ -1495,6 +1495,46 @@ class SettingsView extends TextView {
 
         $el = null;
 
+        $options_left .= '<div class="mt-3 mb-2"><strong>Math display formatting</strong></div>';
+
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->type('radio');
+        $el->inline(true);
+        $el->id('math-formatting-allow');
+        $el->name('settings[math_formatting]');
+        $el->value('1');
+        $el->label('on');
+
+        if (isset($settings['math_formatting']) && $settings['math_formatting'] === '1') {
+
+            $el->checked('checked');
+        }
+
+        $options_left .= $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->type('radio');
+        $el->inline(true);
+        $el->id('math-formatting-disallow');
+        $el->name('settings[math_formatting]');
+        $el->value('0');
+        $el->label('off');
+
+        if (!isset($settings['math_formatting']) || isset($settings['math_formatting']) && $settings['math_formatting'] === '0') {
+
+            $el->checked('checked');
+        }
+
+        $options_left .= $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
@@ -1509,7 +1549,7 @@ class SettingsView extends TextView {
             $el->value($settings['soffice_path']);
         }
 
-        $options_left .= $el->render();
+        $options_right = $el->render();
 
         $el = null;
 
@@ -1526,7 +1566,7 @@ class SettingsView extends TextView {
             $el->value($settings['tesseract_path']);
         }
 
-        $options_left .= $el->render();
+        $options_right .= $el->render();
 
         $el = null;
 
@@ -1544,7 +1584,7 @@ class SettingsView extends TextView {
             $el->value($settings['api_crossref']);
         }
 
-        $options_right = $el->render();
+        $options_right .= $el->render();
 
         $el = null;
 

@@ -804,3 +804,31 @@ div.il-expandable-left > button {
 .dataTables_wrapper {
     margin-bottom: 1rem;
 }
+
+/* MathJAX */
+.CtxtMenu_ContextMenu {
+    border-radius: 0 !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+}
+
+.CtxtMenu_MenuItem {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+.CtxtMenu_MenuItem.CtxtMenu_MenuRule {
+    padding: 0 !important;
+}
+
+.CtxtMenu_Info.CtxtMenu_MousePost {
+    border-radius: 0 !important;
+    border: 1px solid rgba(0,10,20,0.15) !important;
+    font-family: 'Noto Sans',sans-serif  !important;
+    font-size: 1rem !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+    background-color: white !important;
+}
+
+.CtxtMenu_InfoContent {
+    border: 1px solid rgba(0,10,20,0.15) !important;
+}

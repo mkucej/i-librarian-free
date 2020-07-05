@@ -1650,6 +1650,9 @@ class View {
             // Inject HTML.
             $par.html(data.html);
             this.delegateEvents();
+            if (typeof window.MathJax.typeset === 'function') {
+                window.MathJax.typeset();
+            }
             this.afterRender(data);
         }
         // Hide modals.
@@ -1677,6 +1680,9 @@ class View {
         }
         // Form beautification.
         formStyle.init();
+        if (typeof window.MathJax.typeset === 'function') {
+            window.MathJax.typeset();
+        }
         this.afterRender();
     }
     /**
@@ -2631,6 +2637,9 @@ class SummaryMainView extends View {
                 let $f = $('#note-form');
                 $.when(model.save({url: $f.attr('action'), data: $f.serialize()})).done(function () {
                     $('#user-note').html(editor.getContent());
+                    if (typeof window.MathJax.typeset === 'function') {
+                        window.MathJax.typeset();
+                    }
                 });
             },
             image_description: false,
@@ -3801,7 +3810,13 @@ class PdfMainView extends View {
                 $con.append(boxes);
             });
             $('.pdfnote').tooltip({
+                animation: false,
                 template: '<div class="tooltip" role="tooltip"><div class="tooltip-inner bg-secondary rounded-0 text-left px-3 py-2 border border-light"></div></div>'
+            }).on('shown.bs.tooltip', function () {
+                if (typeof window.MathJax.typeset === 'function') {
+                    window.MathJax.typeset();
+                }
+                $(this).tooltip('update');
             });
             $('#pdfviewer-notes').on('click', '.note-btn', function () {
                 let noteId = $(this).data('id');
@@ -3809,7 +3824,7 @@ class PdfMainView extends View {
                 $('.note-btn').removeClass('active');
                 $(this).addClass('active');
                 $('.pdfnote').removeClass('active').tooltip('hide');
-                $('#pdfnote-' + noteId).addClass('active');//.tooltip('show');
+                $('#pdfnote-' + noteId).addClass('active');
             });
             $('.pdfnote').on('click', function () {
                 let noteId = $(this).data('id');
@@ -3818,6 +3833,9 @@ class PdfMainView extends View {
                 $('.note-btn').removeClass('active');
                 $('#pdfviewer-notes').find('.note-btn[data-id="' + noteId + '"]').addClass('active');
             });
+            if (typeof window.MathJax.typeset === 'function') {
+                window.MathJax.typeset();
+            }
         });
     }
     /**
@@ -3841,7 +3859,10 @@ class PdfMainView extends View {
                 This.showNotes(e);
             } else {
                 $f.prev().removeClass('d-none').find('button').eq(0).text(note);
-                $('#pdfnote-' + noteId).attr('title', note).attr('data-original-title', note);
+                $('#pdfnote-' + noteId).attr('data-title', note).attr('data-original-title', note);
+                if (typeof window.MathJax.typeset === 'function') {
+                    window.MathJax.typeset();
+                }
             }
         });
     }
@@ -4881,6 +4902,9 @@ class ProjectView {
                 let $f = $('#note-form');
                 $.when(model.save({url: $f.attr('action'), data: $f.serialize()})).done(function () {
                     $('#user-note').html(editor.getContent());
+                    if (typeof window.MathJax.typeset === 'function') {
+                        window.MathJax.typeset();
+                    }
                 });
             },
             image_description: false,
