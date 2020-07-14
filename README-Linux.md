@@ -19,8 +19,8 @@
     * **tesseract-ocr**: optional OCR.
     * **libreoffice**: optional import of office files.
 
-2. If you are installing from the tar.gz, login as `root` or use `sudo`, and extract files
-  into a directory underneath the web server's root directory (e.g. `/var/www/librarian`). Example:
+2. If you are installing from the tar.xz, login as `root` or use `sudo`, and extract files
+  into a directory **outside** the web server's root directory (e.g. `/var/www/librarian`). Example:
 
 ```bash
   tar -Jxf I-Librarian-*.tar.xz -C /var/www/librarian
@@ -34,7 +34,7 @@ and for Nginx, `nobody`. Example:
 
 4. Configure the web server appropriately:
 
- * Apache: Insert a setting like this example into the configuration file:
+ * **Apache.** Insert a setting like this example into the configuration file:
 
 ```apache_conf
 Alias /librarian "/var/www/librarian/public"
@@ -55,7 +55,7 @@ Alias /librarian "/var/www/librarian/public"
 
 You may wish to alter who has access (e.g. to allow access from more IP numbers or domain names) - see the Apache [Authentication and Authorization HOWTO](https://httpd.apache.org/docs/2.4/howto/auth.html) for details.
 
- * Nginx: Add a block like this example to the `server` section:  (/var/www is assumed to be the root of the web server)
+ * **Nginx.** Add a block like this example to the `server` section:  (/var/www is assumed to be the root of the web server)
 
 ```nginx.conf
 # if no directives, then access from all IPs is enabled
