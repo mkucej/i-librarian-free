@@ -2580,6 +2580,13 @@ SELECT keyword
     WHERE items_keywords.item_id = ?
 EOT;
 
+            $sql_tags = <<<EOT
+SELECT tag
+    FROM tags
+    INNER JOIN items_tags ON tags.id = items_tags.tag_id
+    WHERE items_tags.item_id = ?
+EOT;
+
             for ($i = 0; $i < $count; $i++) {
 
                 // UIDs.
@@ -2615,6 +2622,10 @@ EOT;
                 // Keywords.
                 $this->db_main->run($sql_keywords, [$output[$i]['id']]);
                 $output[$i][ItemMeta::COLUMN['KEYWORDS']] = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
+
+                // Tags.
+                $this->db_main->run($sql_tags, [$output[$i]['id']]);
+                $output[$i]['tags'] = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
 
                 // Urls.
                 $urls = explode('|', $output[$i][ItemMeta::COLUMN['URLS']]);
@@ -2881,6 +2892,9 @@ EOT;
      */
     protected function _exportZip(array $items) {
 
+        /** @var ScalarUtils $scalar_utils */
+        $scalar_utils = $this->di->getShared('ScalarUtils');
+
         $zip_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('export_') . '.zip';
         $zip = new ZipArchive();
 
@@ -2891,11 +2905,86 @@ EOT;
             throw new Exception('failed opening a ZIP archive');
         }
 
-        // Add Bootstrap to ZIP.
-        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'plugins.css', 'css/plugins.css');
-        $zip->setCompressionName('css/plugins.css', ZipArchive::CM_STORE);
-        $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'plugins.js', 'js/plugins.js');
-        $zip->setCompressionName('js/plugins.js', ZipArchive::CM_STORE);
+        // Add CSS.
+        $styles = [
+            'bootstrap.min.css'
+        ];
+
+        foreach ($styles as $style) {
+
+            $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . $style, "css/{$style}");
+            $zip->setCompressionName("css/{$style}", ZipArchive::CM_STORE);
+        }
+
+        // Add fonts.
+        $fonts = [
+            'notosansdisplay-italic-webfont.woff2',
+            'notosansdisplay-regular-webfont.woff2',
+            'notosansdisplay-semibold-webfont.woff2'
+        ];
+
+        foreach ($fonts as $font) {
+
+            $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . $font, "fonts/{$font}");
+            $zip->setCompressionName("fonts/{$font}", ZipArchive::CM_STORE);
+        }
+
+        // Add JS.
+        $scripts = [
+            'bootstrap.min.js',
+            'dexie.min.js',
+            'jquery.min.js',
+            'lunr.min.js',
+            'popper.min.js',
+            'vue.min.js'
+        ];
+
+        foreach ($scripts as $script) {
+
+            $zip->addFile(IL_PUBLIC_PATH . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $script, "js/{$script}");
+            $zip->setCompressionName("js/{$script}", ZipArchive::CM_STORE);
+        }
+
+        // Add HTML.
+        $zip->addFile(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app'  . DIRECTORY_SEPARATOR . 'media'  . DIRECTORY_SEPARATOR . 'offline_index.html', 'index.html');
+        $zip->setCompressionName('index.html', ZipArchive::CM_STORE);
+        $zip->addFile(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app'  . DIRECTORY_SEPARATOR . 'media'  . DIRECTORY_SEPARATOR . 'offline_pdf.html', 'pdf.html');
+        $zip->setCompressionName('pdf.html', ZipArchive::CM_STORE);
+
+        // Add README.
+        $zip->addFromString('README.txt', <<<README
+
+HOWTO
+
+1. This entire zip archive must be uncompressed first.
+
+2. Open the index.html file in a web browser to start.
+   Documents can take up to a minute to install,
+   depending on how many items you downloaded.
+
+ABOUT
+
+This is an entirely offline, serverless web application.
+There are no requirements, besides a recent web browser
+with a PDF plugin.
+
+All desktop browsers are supported, but you need newer
+versions to have an accent-agnostic multi-language
+search and result highlighting. These browsers are:
+
+Chrome  64
+Edge    79
+Firefox 78
+Opera   51
+Safari  11.1
+
+Mobile browsers like Chrome and Safari might work, but
+the browser will need to have access to the local file
+storage.
+
+README
+        );
+        $zip->setCompressionName('README.txt', ZipArchive::CM_STORE);
 
         $close = $zip->close();
 
@@ -2904,45 +2993,49 @@ EOT;
             throw new Exception('failed creating a ZIP archive');
         }
 
-        $html = <<<HTML
-<!DOCTYPE html>
-<html lang="en" style="width:100%;height:100%">
-    <head>
-        <title>I, Librarian</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link href="css/plugins.css" rel="stylesheet">
-        <style>
-            .content-light {
-                background-color: #f2f3f6;
-            }
-            table {
-                table-layout: fixed;
-                width: calc(100% - 30px);
-                background-color: white;
-                margin: 15px auto;
-            }
-            .abstract {
-                text-align: justify;
-                columns: 2 300px;
-                column-gap: 30px;
-            }
-        </style>
-    </head>
-    <body class="content-light">
-HTML;
+        $exported_items = [];
 
-        foreach ($items as $item) {
+        foreach ($items as $key => $item) {
 
             set_time_limit(30);
 
-            $pdf_link = 'PDF';
+            $exported_items[$key]['id'] = (int) $item['id'];
+            $exported_items[$key]['title'] = $item['title'];
+            $exported_items[$key]['title_index'] = $scalar_utils->deaccent($item['title'], false);
+            $exported_items[$key]['abstract'] = $item['abstract'];
+            $exported_items[$key]['publication_date'] = $item['publication_date'];
+            $exported_items[$key]['volume'] = $item['volume'];
+            $exported_items[$key]['issue'] = $item['issue'];
+            $exported_items[$key]['pages'] = $item['pages'];
+            $exported_items[$key]['custom1'] = $item['custom1'];
+            $exported_items[$key]['custom2'] = $item['custom2'];
+            $exported_items[$key]['custom3'] = $item['custom3'];
+            $exported_items[$key]['custom4'] = $item['custom4'];
+            $exported_items[$key]['custom5'] = $item['custom5'];
+            $exported_items[$key]['custom6'] = $item['custom6'];
+            $exported_items[$key]['custom7'] = $item['custom7'];
+            $exported_items[$key]['custom8'] = $item['custom8'];
+            $exported_items[$key]['bibtex_id'] = $item['bibtex_id'];
+            $exported_items[$key]['primary_title'] = $item['primary_title'];
+            $exported_items[$key]['secondary_title'] = $item['secondary_title'];
+            $exported_items[$key]['tertiary_title'] = $item['tertiary_title'];
+            $exported_items[$key]['author_last_name'] = $item['author_last_name'] ?? [];
+            $exported_items[$key]['author_first_name'] = $item['author_first_name'] ?? [];
+            $exported_items[$key]['editor_last_name'] = $item['editor_last_name'] ?? [];
+            $exported_items[$key]['editor_first_name'] = $item['editor_first_name'] ?? [];
+            $exported_items[$key]['keywords'] = $item['keywords'];
+            $exported_items[$key]['notes'] = $this->sanitation->lmth($item['notes']);
+            $exported_items[$key]['other_notes'] = $this->sanitation->lmth($item['other_notes']);
+            $exported_items[$key]['pdf_notes'] = $item['pdf_notes'];
+            $exported_items[$key]['other_pdf_notes'] = $item['other_pdf_notes'];
+            $exported_items[$key]['tags'] = $item['tags'] ?? [];
+
+            $exported_items[$key]['pdf'] = '';
             clearstatcache($zip_file);
 
-            if (!empty($item['file']) && filesize($zip_file) <= 250000000) {
+            // Add PDFs.
+            if (!empty($item['file']) && filesize($zip_file) <= 500000000) {
 
-                // Add PDF to ZIP.
                 $open = $zip->open($zip_file);
 
                 if ($open === false) {
@@ -2952,6 +3045,7 @@ HTML;
 
                 $zip->addFile(IL_DATA_PATH . DIRECTORY_SEPARATOR . $item['file'], $item['file']);
                 $zip->setCompressionName($item['file'], ZipArchive::CM_STORE);
+
                 $close = $zip->close();
 
                 if ($close === false) {
@@ -2959,66 +3053,11 @@ HTML;
                     throw new Exception('failed modifying a ZIP archive');
                 }
 
-                $pdf_link = "<a href=\"{$item['file']}\">PDF</a>";
+                $exported_items[$key]['pdf'] = $item['file'];
             }
-
-            // Abstract.
-            $abstract = empty($item['abstract']) ? 'No abstract' : $item['abstract'];
-
-            // Rich-text notes.
-            $notes_arr = [];
-            $notes_arr[] = $this->sanitation->lmth($item['notes']);
-            $notes_arr[] = join('<br>', $this->sanitation->lmth($item['other_notes']));
-            $notes_arr = array_filter($notes_arr);
-            $notes = empty($notes_arr) ? 'No notes' : join('<hr>', $notes_arr);
-
-            // PDF annotations.
-            $pdf_notes_arr = [];
-            $pdf_notes_arr[] = join('<br><br>', $item['pdf_notes']);
-            $pdf_notes_arr[] = join('<br><br>', $item['other_pdf_notes']);
-            $pdf_notes_arr = array_filter($pdf_notes_arr);
-            $pdf_notes = empty($pdf_notes_arr) ? 'No notes' : join('<hr>', $pdf_notes_arr);
-
-            $html .= <<<EOT
-                <table data-id="{$item['id']}">
-                    <tbody>
-                        <tr>
-                            <td class="px-3 pt-3" style="width:4.5em;vertical-align: top" rowspan="3">
-                                $pdf_link
-                            </td>
-                            <td class="pt-3 pr-3">
-                                <h5>{$item['title']}</a></h5>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="pt-0 pb-3 pr-5">
-                                <div class="abstract">{$abstract}</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="row pt-0 pb-3 pr-5">
-                                <div class="col-md-6">
-                                    <p><span class="badge badge-secondary rounded-0">Notes</span></p>
-                                    {$notes}
-                                </div>
-                                <div class="col-md-6">
-                                    <p><span class="badge badge-secondary rounded-0">PDF Notes</span></p>
-                                    {$pdf_notes}
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-EOT;
         }
 
-        $html .= <<<HTML
-        <script src="js/plugins.js"></script>
-    </body>
-</html>
-HTML;
-
-        // Add HTML.
+        // Items JSON data.
         $open = $zip->open($zip_file);
 
         if ($open === false) {
@@ -3026,8 +3065,12 @@ HTML;
             throw new Exception('failed opening an existing ZIP archive');
         }
 
-        $zip->addFromString('index.html', $html);
-        $zip->setCompressionName('index.html', ZipArchive::CM_STORE);
+        $json_file = "window.created = '" . time() . "';\n";
+        $json_file .= 'window.jsonItems = ' . \Librarian\Http\Client\json_encode($exported_items) . ';';
+
+        $zip->addFromString('data/items.js', $json_file);
+        $zip->setCompressionName('data/items.js', ZipArchive::CM_STORE);
+
         $close = $zip->close();
 
         if ($close === false) {
@@ -3038,7 +3081,6 @@ HTML;
         $zip = null;
 
         clearstatcache($zip_file);
-
         $zp = fopen($zip_file, 'rb');
 
         return stream_for($zp);

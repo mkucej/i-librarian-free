@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>I, Librarian Offline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Noto Sans';
+            src: url('fonts/notosansdisplay-regular-webfont.woff2') format('woff2');
+            font-style: normal;
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            src: url('fonts/notosansdisplay-semibold-webfont.woff2') format('woff2');
+            font-style: normal;
+            font-weight: bold;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            src: url('fonts/notosansdisplay-italic-webfont.woff2') format('woff2');
+            font-style: italic;
+            font-weight: normal;
+        }
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 15px;
+        }
+        select:disabled {
+            opacity: 0.66;
+        }
+        .card {
+            box-shadow: 0 1px 20px rgba(0, 0, 0, 0.02), 0 1px 10px rgba(0, 0, 0, 0.04);
+        }
+        mark {
+            padding: 0;
+            font-weight: inherit;
+            color: inherit;
+            background-color: transparent;
+            border-bottom: 3px solid rgba(255, 193, 7, 1);
+        }
+        .btn {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            border-radius: 5px;
+            box-shadow: none !important;
+        }
+        .btn-nav {
+            width: 2.75rem;
+            font-size: 1.25rem;
+            line-height: 1.5rem;
+        }
+        .modal {
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            background-color: rgba(55, 60, 65, 0.33);
+        }
+        .close {
+            text-shadow: none;
+            color: inherit;
+        }
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        .tooltip.show {
+            opacity: 1;
+        }
+        .card-footer {
+            background-color: #fbfcfd !important;
+            border-color: rgba(0,10,30,0.1) !important;
+        }
+        #loader {
+            position: fixed;
+            top: calc(40% + 3.5rem);
+            left: calc(50% - 20px);
+            border: 10px solid #788389;
+            border-radius: 50%;
+            border-top: 10px solid #9AA0A6;
+            border-right: 10px solid #BCC0C6;
+            border-bottom: 10px solid #DEE0E3;
+            width: 40px;
+            height: 40px;
+            -webkit-animation: spin 1.25s linear infinite;
+            animation: spin 1.25s linear infinite;
+        }
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div id="install" class="position-fixed w-100 text-center text-secondary" style="top:40%;font-size:2rem">Loading documents</div>
+<div id="loader"></div>
+<div id="item-list" class="mb-5" style="display: none">
+    <!--Top navigation bar.-->
+    <nav class="bg-light py-2 mb-1">
+        <div class="container d-flex align-items-center justify-content-between" style="min-height: 2rem">
+            <div>
+                <span class="navbar-brand text-secondary d-none"><b>I, Librarian Offline</b></span>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Search term tag" v-if="searchTerm !== ''">
+                    <button type="button" class="btn btn-dark text-truncate rounded-0" style="max-width: 40vw;" disabled>{{ searchTerm }}</button>
+                    <button type="button" class="btn btn-dark" style="width:2rem" v-on:click="resetSearch()">&times;</button>
+                </div>
+            </div>
+            <div>
+                <small v-if="items.length > 0">Page {{ intlNum(1 + Math.floor(from / pageSize)) }}</small>
+                <small class="d-none d-md-inline ml-2" v-if="items.length > 0">Items {{ intlNum(from) }} &ndash; {{ intlNum(Math.min((from + pageSize - 1), total)) }} of {{ intlNum(total) }}</small>
+            </div>
+        </div>
+    </nav>
+    <!--Content.-->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div v-if="items.length === 0" class="alert alert-info rounded-0 text-center mt-0 mb-4" role="alert">
+                    &#9785; No items found, try another search.
+                </div>
+                <!--Cards.-->
+                <div class="card rounded-0 border-0 mb-3" v-for="item in items" v-bind:key="item.id">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <!--Title.-->
+                            <a href="" class="d-block" style="font-size: 1.1rem" v-if="item.pdf !== ''" v-on:click.prevent="openPdf(item)" v-html="item.title"></a>
+                            <div style="font-size: 1.1rem" v-else v-html="item.title"></div>
+                            <!--Authors, year, pub title.-->
+                            <span v-html="author(item)"></span> <span v-html="year(item.publication_date)"></span> <i v-html="pubTitle(item)"></i>
+                            <!--Tags.-->
+                            <div v-if="display > 0">
+                                <small class="d-inline-block border border-primary text-primary rounded-lg px-2 py-1 mt-2 mr-1" v-for="tag in item.tags" v-html="tag"></small>
+                            </div>
+                            <!--Abstract.-->
+                            <div class="mt-2" style="text-align:justify;columns: 2 300px;column-gap: 24px;" v-html="abstr(item.abstract)" v-if="display > 0"></div>
+                            <!--Notes.-->
+                            <div class="row" v-if="display > 0">
+                                <div class="col-lg-6">
+                                    <span class="badge badge-dark rounded-0 my-3">Notes</span>
+                                    <div v-html="item.notes" v-bind:id="'notes-' + item.id"></div>
+                                    <div v-html="otherRichNotes(item.other_notes)"></div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <span class="badge badge-dark rounded-0 my-3">PDF annotations</span>
+                                    <div v-html="pdfNotes(item)"></div>
+                                    <div v-html="pdfHighlights(item)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer rounded-0 text-muted" v-if="display === 2">
+                        <dl class="row mt-3">
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Citation ID</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.bibtex_id || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Authors</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="authors(item)"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Editors</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="editors(item)"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Publication date</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="date(item.publication_date)"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Primary title</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.primary_title || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Secondary title</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.secondary_title || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Tertiary title</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.tertiary_title || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Volume</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.volume || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Issue</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.issue || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Pages</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.pages || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 1</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom1 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 2</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom2 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 3</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom3 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 4</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom4 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 5</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom5 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 6</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom6 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 7</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom7 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 8</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom8 || '&nbsp;'"></dd>
+
+                            <dt class="col-sm-4 col-md-3 col-lg-2">Keywords</dt>
+                            <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.keywords.length > 0 ? item.keywords.join('; ') : '&nbsp;'"></dd>
+                        </dl>
+                    </div>
+                </div>
+                <!--Cards.-->
+            </div>
+        </div>
+        <div class="mb-5 pb-4"><small>Downloaded on {{ created }}</small></div>
+    </div>
+    <!--Tool bar.-->
+    <nav class="fixed-bottom bg-secondary text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-auto text-center text-lg-left py-2">
+                    <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#search-modal">Search</button>
+                    <div class="d-inline-block mr-2 pt-1">
+                        <label for="select-order" class="d-none d-md-inline">Order by</label>
+                        <select id="select-order"
+                                class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
+                                style="width:auto !important;" v-on:change="firstOffset()"
+                                v-bind:disabled="searchTerm !== ''"
+                                v-model="orderBy">
+                            <option value="id">id</option>
+                            <option value="title">title</option>
+                            <option value="publication_date">year</option>
+                        </select>
+                    </div>
+                    <div class="d-inline-block mr-2">
+                        <label for="select-pagesize" class="d-none d-md-inline">Page size</label>
+                        <select id="select-pagesize"
+                                class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
+                                style="width:auto !important;" v-on:change="firstOffset()"
+                                v-model.number="pageSize">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="d-inline-block mr-2">
+                        <label for="select-display" class="d-none d-md-inline">Display</label>
+                        <select id="select-display"
+                                class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
+                                style="width:auto !important;" v-model.number="display">
+                            <option value="0">title</option>
+                            <option value="1">summary</option>
+                            <option value="2">details</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg text-center text-lg-right pt-0 pt-lg-2 pb-2">
+                    <button class="btn btn-secondary ml-1 btn-nav" v-on:click="firstOffset()">&laquo;</button>
+                    <button class="btn btn-secondary ml-1 btn-nav" v-on:click="prevOffset()">&lsaquo;</button>
+                    <button class="btn btn-secondary ml-1 btn-nav" v-on:click="nextOffset()">&rsaquo;</button>
+                    <button class="btn btn-secondary ml-1 btn-nav" v-on:click="lastOffset()">&raquo;</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+<div id="search-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-0">
+            <div class="modal-header">
+                <h5 class="modal-title">Search</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="search-form" method="GET" action="#">
+                    <div class="form-group">
+                        <input type="text" class="form-control rounded-0" id="search-text" aria-label="Terms">
+                    </div>
+                    <div class="mb-2">
+                        <div class="form-check form-check-inline mb-2 ">
+                            <input id="search-sort-relevance" class="form-check-input" type="radio" name="search_sort" value="relevance" checked="checked">
+                            <label for="search-sort-relevance" class="form-check-label">sort by relevance</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-2 ">
+                            <input id="search-sort-publication-date" class="form-check-input" type="radio" name="search_sort" value="publication_date">
+                            <label for="search-sort-publication-date" class="form-check-label">sort by publication year</label>
+                        </div>
+                        <div id="search-error" class="alert alert-danger rounded-0 d-none" role="alert">
+                            <div><b>SEARCH ERROR</b></div>
+                            <span id="search-error-message"></span>
+                        </div>
+                        <span class="form-text text-muted text-justify">
+								<b>Boolean search.</b> To indicate that all terms must be present in matching documents, join the terms with an
+								<i>AND</i> operator: <code>blue AND red</code>. To indicate that any one of the terms must be present, join the terms with an
+								<i>OR</i> operator: <code>blue OR red</code>. Exclude a term from search using a <i>NOT</i> operator: <code>blue NOT red</code>.
+								If no operators are used, it is assumed that all terms must be present in matching documents, as if they were joined by <i>AND</i> operators.
+								<br>
+								<b>Field search.</b> By default, search is performed in all
+								<span class="text-primary" data-toggle="tooltip" data-placement="top"
+                                      title="title, abstract, authors, year, tags, highlights, primarytitle, secondarytitle, tertiarytitle, keywords, custom1, custom2, custom3, custom4, custom5, custom6, custom7, custom8">
+								document fields</span>. To restrict a term to a specific field, prefix the term with the name of the field, followed by a <i>colon</i>:
+								<code>title:green</code>.
+								<br>
+								<b>Wildcards.</b> Wildcards can be used when performing searches. A wildcard is represented as an <i>asterisk</i> at the end of
+								a search term. For example, the following will match all documents with words beginning with <i>cell</i>: <code>cell*</code>.
+                        </span>
+                    </div>
+                    <button style="position: fixed; top: 0;left: -500px" type="submit">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="search-button" class="btn btn-primary">Search</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/dexie.min.js"></script>
+<script src="js/lunr.min.js"></script>
+<script src="data/items.js"></script>
+<script>
+    /**
+     * Dexie IndexedDb wrapper.
+     */
+    class Database {
+        constructor(dbName) {
+            this.db = new Dexie(dbName);
+        }
+        /**
+         * Table object getter.
+         */
+        table(table) {
+            return this.db[table];
+        }
+        /**
+         * Create tables from tables JSON object {table: 'indexes'}.
+         */
+        createTables(tables) {
+            this.db.version(10).stores(tables);
+            return true;
+        }
+        /**
+         * If table empty, insert documents from JSON documents.
+         */
+        insert(table, documents) {
+            let db = this.db;
+            return new Dexie.Promise(function (resolve, reject) {
+                db[table].count().then(function (count) {
+                    if (count === 0) {
+                        db[table].bulkAdd(documents, {allKeys: true}).then(function (ids) {
+                            resolve(ids.length);
+                        }).catch(function (e) {
+                            reject(e);
+                        });
+                    } else {
+                        resolve(count);
+                    }
+                }).catch(function (e) {
+                    reject(e);
+                });
+            });
+        }
+    }
+    /**
+     * Vue app wrapper.
+     */
+    class App {
+        constructor() {
+            this.app = {};
+        }
+        get vue() {
+            return this.app;
+        }
+        /**
+         * Init Vue.
+         */
+        init(count) {
+            this.app = new Vue({
+                el: '#item-list',
+                data: {
+                    created: new Intl.DateTimeFormat(undefined, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric'
+                    }).format(new Date(window.created * 1000)),
+                    total: 0,
+                    from: 1,
+                    pageSize: 10,
+                    display: 1,
+                    orderBy: 'publication_date',
+                    items: [],
+                    itemCount: count,
+                    searchTerm: '',
+                    resultSet: [],
+                    rankBy: 'relevance'
+                },
+                mounted: function () {
+                    this.loadItems();
+                    this._keyListener = function (e) {
+                        // Hotkeys.
+                        if (document.activeElement !== document.getElementById("search-text") && (e.key === "d" || e.key === "ArrowRight")) {
+                            this.nextOffset();
+                        }
+                        if (document.activeElement !== document.getElementById("search-text") && (e.key === "a" || e.key === "ArrowLeft")) {
+                            this.prevOffset();
+                        }
+                    };
+                    document.addEventListener('keydown', this._keyListener.bind(this));
+                    document.getElementById('install').innerHTML = 'Rendering page';
+                },
+                updated: function () {
+                    document.getElementById('install').style.display = 'none';
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('item-list').style.display = 'block';
+                },
+                methods: {
+                    changeOffset: function (from) {
+                        this.from = from;
+                        this.loadItems();
+                    },
+                    loadItems: function () {
+                        let This = this;
+                        window.scrollTo(0, 0);
+                        if (this.resultSet.length === 0 && this.searchTerm === '') {
+                            this.total = this.itemCount;
+                            // Browsing.
+                            switch (this.orderBy) {
+                                case 'title':
+                                    db.table('items').orderBy('title_index').offset(this.from - 1).limit(this.pageSize).toArray(function (items) {
+                                        This.items = items;
+                                    });
+                                    break;
+                                case 'publication_date':
+                                    db.table('items').orderBy('publication_date').reverse().offset(this.from - 1).limit(this.pageSize).toArray(function (items) {
+                                        This.items = items;
+                                    });
+                                    break;
+                                case 'id':
+                                    db.table('items').orderBy('id').reverse().offset(this.from - 1).limit(this.pageSize).toArray(function (items) {
+                                        This.items = items;
+                                    });
+                                    break;
+                            }
+                        } else if (this.searchTerm !== '' && this.resultSet.length === 0) {
+                            // Empty search.
+                            this.items = [];
+                            this.total = 0;
+                        } else {
+                            // Searching.
+                            this.total = this.resultSet.length;
+                            switch (this.rankBy) {
+                                case 'relevance':
+                                    // Offset, limit on array.
+                                    let ids = this.resultSet.slice(this.from - 1, this.from - 1 + this.pageSize);
+                                    db.table('items').bulkGet(ids).then(function (items) {
+                                        This.items = This.highlight(items);
+                                    });
+                                    break;
+                                case 'publication_date':
+                                    db.table('items').bulkGet(this.resultSet).then(function (items) {
+                                        items.sort(function (a, b) {
+                                            return a.publication_date < b.publication_date ? 1 : -1;
+                                        });
+                                        items = items.slice(This.from - 1, This.from - 1 + This.pageSize);
+                                        This.items = This.highlight(items);
+                                    });
+                                    break;
+                            }
+                        }
+                    },
+                    highlight: function (items) {
+                        let This = this;
+                        return items.map(function (o) {
+                            Object.keys(o).forEach(function (key) {
+                                if (typeof o[key] === 'string' && o[key] !== '') {
+                                    o[key] = This.addMarks(o[key]);
+                                } else if (typeof o[key] === 'object') {
+                                    Object.keys(o[key]).forEach(function (subkey) {
+                                        if (typeof o[key][subkey] === 'string' && o[key][subkey] !== '') {
+                                            o[key][subkey] = This.addMarks(o[key][subkey]);
+                                        }
+                                    });
+                                }
+                            });
+                            return o;
+                        });
+                    },
+                    addMarks: function (input) {
+                        // Try matching. Older browsers do not support unicode properties.
+                        try {
+                            // Normalize search term.
+                            let str = this.searchTerm
+                                // Remove field name.
+                                .replace(/[a-zA-Z0-9_]*?:/gu, '')
+                                // Remove everything except letters, numbers, spaces, and wildcard.
+                                .replace(/[^\p{L}\p{N}\p{Z}*]/gu, ' ')
+                                // Remove booleans.
+                                .replace(/( AND | OR | NOT )/gui, ' ')
+                                // Replace wildcards for unicode properties.
+                                .replace(/\*/gu, '[\\p{L}\\p{N}]*')
+                                // Remove extra spaces.
+                                .replace(/\s{2,}/gu, ' ').trim()
+                                // Replace every space with an OR.
+                                .replace(/\s/gu, '|');
+                            let patt = new RegExp(str, 'gui');
+                            input = input.replace(patt, function (match, offset, original) {
+                                if (
+                                    /[\p{L}\p{N}]/ui.test(original.substring(offset + match.length, offset + match.length + 1)) === false &&
+                                    /[\p{L}\p{N}]/ui.test(original.substring(offset - 1, offset)) === false
+                                ) {
+                                    // Test for unicode word boundary passed.
+                                    return '<mark>' + match + '</mark>';
+                                } else {
+                                    return match;
+                                }
+                            });
+                            // Deaccented search. Make a string copy and replace in the copy. Add offset based on match tag length.
+                            let input2 = input, cumulativeOffset = 0;
+                            input.normalize('NFKD').replace(/\p{M}/gu, '').replace(patt, function (match, offset) {
+                                if (match === input.substring(offset, offset + match.length)) {
+                                    // There are no accents in the word, ignore.
+                                    return match;
+                                } else if (
+                                    /[\p{L}\p{N}]/ui.test(input.substring(offset + match.length, offset + match.length + 1)) === false &&
+                                    /[\p{L}\p{N}]/ui.test(input.substring(offset - 1, offset)) === false
+                                ) {
+                                    // Test for unicode word boundary passed.
+                                    offset = offset + cumulativeOffset;
+                                    // Replace the match in the input2 copy.
+                                    input2 = input2.substring(0, offset) + '<mark>' + input2.substring(offset, offset + match.length) + '</mark>' + input2.substring(offset + match.length);
+                                    // Increase offset by the tag length.
+                                    cumulativeOffset = cumulativeOffset + '<mark></mark>'.length;
+                                    return match;
+                                } else {
+                                    return match;
+                                }
+                            });
+                            return input2;
+                        } catch(e) {
+                            console.log(e.message);
+                            console.info('Please upgrade your browser to enable accent-agnostic search.');
+                            return input;
+                        }
+                    },
+                    firstOffset: function () {
+                        this.changeOffset(1);
+                    },
+                    prevOffset: function () {
+                        let from = Math.max(this.from - this.pageSize, 1);
+                        this.changeOffset(from);
+                    },
+                    nextOffset: function () {
+                        let maxPage = this.total % this.pageSize === 0 ? -1 : 0,
+                            from = Math.min(this.from + this.pageSize, 1 + this.pageSize * (Math.floor(this.total / this.pageSize) + maxPage));
+                        this.changeOffset(from);
+                    },
+                    lastOffset: function () {
+                        let maxPage = this.total % this.pageSize === 0 ? -1 : 0,
+                            from = 1 + this.pageSize * (Math.floor(this.total / this.pageSize) + maxPage);
+                        this.changeOffset(from);
+                    },
+                    openPdf: function (item) {
+                        window.open('pdf.html?path=' + item.pdf + '&title=' + encodeURI(item.title.replace(/<mark>|<\/mark>/gu, '')));
+                    },
+                    author: function (item) {
+                        return item.author_last_name !== undefined && item.author_last_name[0] !== undefined ? item.author_last_name[0] : 'No authors';
+                    },
+                    authors: function (item) {
+                        let authors = '';
+                        item.author_last_name.forEach(function (v, i) {
+                            authors += '; ' + v + (item.author_first_name[i] !== '' ? ', ' + item.author_first_name[i] : '')
+                        });
+                        return authors.substring(2) || '&nbsp;';
+                    },
+                    editors: function (item) {
+                        let editors = '';
+                        item.editor_last_name.forEach(function (v, i) {
+                            editors += '; ' + v + (item.editor_first_name[i] !== '' ? ', ' + item.editor_first_name[i] : '')
+                        });
+                        return editors.substring(2) || '&nbsp;';
+                    },
+                    year: function (publication_date) {
+                        if (/^\d{4}-/u.test(publication_date) === true) {
+                            // Unmarked date.
+                            return '(' + publication_date.substr(0, 4) + ')';
+                        } else if (/^<mark/u.test(publication_date) === true) {
+                            // Marked date.
+                            return '(' + publication_date.substr(0, 17) + ')';
+                        } else {
+                            return '(No date)';
+                        }
+                    },
+                    date: function (publication_date) {
+                        let re = new RegExp('<mark>|</mark>', 'gui'), ipd = publication_date.replace(re, ''),
+                            d = new Date(Date.UTC(ipd.substring(0, 4), ipd.substring(5, 7), ipd.substring(8, 10), 12, 0, 0));
+                        return new Intl.DateTimeFormat(undefined, {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        }).format(d);
+                    },
+                    pubTitle: function (item) {
+                        return item.primary_title || item.secondary_title || item.tertiary_title || 'No publication title';
+                    },
+                    abstr: function (abstract) {
+                        return this.escapeHTML(abstract) || 'No abstract';
+                    },
+                    otherRichNotes: function (other_notes) {
+                        return other_notes.length === 0 ? '' : other_notes.join('<br>');
+                    },
+                    pdfNotes: function (item) {
+                        return (item.pdf_notes.length > 0 ? this.escapeHTML(item.pdf_notes.join('<br>')) : '') + (item.other_pdf_notes.length > 0 ? this.escapeHTML(item.other_pdf_notes.join('<br>')) : '');
+                    },
+                    pdfHighlights: function (item) {
+                        if (typeof item.highlights === 'undefined' || item.highlights.length === 0) {
+                            return '';
+                        }
+                        let This = this, html = '<br>', colorClass;
+                        Object.keys(item.highlights).forEach(function (color) {
+                            switch (color) {
+                                case 'Y':
+                                    colorClass = 'warning';
+                                    break;
+                                case 'R':
+                                    colorClass = 'danger';
+                                    break;
+                                case 'G':
+                                    colorClass = 'success';
+                                    break;
+                                case 'B':
+                                    colorClass = 'primary';
+                                    break;
+                            }
+                            html += '<div class="border-left border-' + colorClass + ' px-3 py-2" style="border-width: 4px !important">' + This.escapeHTML(item.highlights[color]) + '</div>';
+                        });
+                        return html;
+                    },
+                    resetSearch: function () {
+                        this.searchTerm = '';
+                        this.resultSet = [];
+                        this.changeOffset(1);
+                    },
+                    intlNum: function (num) {
+                        return new Intl.NumberFormat().format(num);
+                    },
+                    escapeHTML: function (unsafe) {
+                        let div = document.createElement('div');
+                        div.innerText = unsafe;
+                        return div.innerHTML.split('&lt;mark&gt;').join('<mark>').split('&lt;/mark&gt;').join('</mark>');
+                    }
+                }
+            });
+        }
+    }
+    /**
+     * Lunr wrapper.
+     */
+    class Fts {
+        constructor(db) {
+            this.db = db;
+            this.lunr = undefined;
+        }
+        /**
+         * Init index.
+         */
+        init(documents) {
+            let This = this;
+            return new Dexie.Promise(function (resolve) {
+                This.loadIndex().then(function (loaded) {
+                    if (loaded === false) {
+                        This.createIndex(documents);
+                        This.saveIndex();
+                        resolve();
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        }
+        /**
+         * Create index.
+         */
+        createIndex(documents) {
+            let This = this;
+            this.lunr = lunr(function () {
+                // Do not use stemmer at all.
+                this.pipeline.remove(lunr.stemmer);
+                this.pipeline.remove(lunr.stopWordFilter);
+                this.pipeline.remove(lunr.trimmer);
+                this.searchPipeline.remove(lunr.stemmer);
+                // trimmer is buggy with UTF-8 chars.
+                this.searchPipeline.remove(lunr.trimmer);
+                // Add stop word filter to search pipeline. This is buggy.
+                //this.searchPipeline.add(lunr.stopWordFilter);
+                // Map doc fields.
+                this.ref('id');
+                this.field('title');
+                this.field('abstract');
+                this.field('authors');
+                this.field('primarytitle');
+                this.field('secondarytitle');
+                this.field('tertiarytitle');
+                this.field('year');
+                this.field('tags');
+                this.field('keywords');
+                this.field('highlights');
+                for (let i = 1; i <= 8; i++) {
+                    this.field('custom' + i);
+                }
+                // Index docs.
+                documents.forEach(function (doc) {
+                    let doc2 = {};
+                    // Deaccent.
+                    doc2.id = doc.id;
+                    doc2.title = This.deaccent(doc.title);
+                    doc2.abstract = This.deaccent(doc.abstract);
+                    doc2.authors = '';
+                    if (typeof doc.author_last_name === 'object') {
+                        doc.author_last_name.forEach(function (v) {
+                            doc2.authors += ' ' + This.deaccent(v);
+                        });
+                    }
+                    if (typeof doc.editor_last_name === 'object') {
+                        doc.editor_last_name.forEach(function (v) {
+                            doc2.authors += ' ' + This.deaccent(v);
+                        });
+                    }
+                    doc2.primarytitle   = This.deaccent(doc.primary_title);
+                    doc2.secondarytitle = This.deaccent(doc.secondary_title);
+                    doc2.tertiarytitle  = This.deaccent(doc.tertiary_title);
+                    doc2.year = doc.publication_date.substring(0, 4);
+                    for (let i = 1; i <= 8; i++) {
+                        doc2['custom' + i] = doc['custom' + i];
+                    }
+                    doc2.tags = This.deaccent(doc.tags.join(' '));
+                    doc2.keywords = doc.keywords.join(' ');
+                    doc2.highlights = typeof doc.highlights === 'object' ? This.deaccent(Object.values(doc.highlights).join(' ')) : '';
+                    this.add(doc2);
+                }, this);
+            });
+        }
+        /**
+         * Load from IndexedDB.
+         */
+        loadIndex() {
+            let This = this;
+            return new Dexie.Promise(function (resolve) {
+                This.db.table('ftsIndex').get(1).then(function (ftsIndex) {
+                    if (ftsIndex !== undefined) {
+                        This.lunr = lunr.Index.load(JSON.parse(ftsIndex));
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                });
+            });
+        }
+        /**
+         * Save to IndexedDB.
+         */
+        saveIndex() {
+            this.db.table('ftsIndex').put(JSON.stringify(this.lunr), 1).catch(function (e) {
+                console.error(e);
+                alert(e.message);
+            });
+        }
+        /**
+         * Translate boolean query to Lunr syntax.
+         */
+        translateQuery(query) {
+            let lunrTerms = '', tempTerms;
+            try {
+                tempTerms = query.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}\p{Z}:*]/gui, ' ').replace(/\s{2,}/gu, ' ').trim();
+            } catch (e) {
+                tempTerms = query.replace(/\s{2,}/gu, ' ').trim();
+                console.info('Please upgrade your browser to enable accent-agnostic search.');
+            }
+            if (/ AND | OR | NOT /gui.test(' ' + query + ' ') === false) {
+                // No booleans, default to AND/+.
+                lunrTerms = tempTerms.replace(/(^|\s)(\S)/gu, '$1+$2');
+            } else {
+                // Translate booleans to Lunr syntax.
+                let tempArr = tempTerms.split(' ');
+                // Query cannot start with operator.
+                if (/^(AND|OR|NOT)$/ui.test(tempArr[0]) === true) {
+                    throw new Error('Search query cannot start with a boolean operator.');
+                }
+                // Silently pop trailing operator.
+                if (/^(AND|OR|NOT)$/ui.test(tempArr[tempArr.length - 1]) === true) {
+                    tempArr.pop();
+                }
+                // First term presence.
+                if (tempArr.length >= 2 && /^OR$/ui.test(tempArr[1]) === true) {
+                    lunrTerms += tempArr[0];
+                } else {
+                    lunrTerms += '+' + tempArr[0];
+                }
+                // The rest.
+                let skipTo = 1;
+                tempArr.forEach(function (v, i) {
+                    if (i > 0 && i === skipTo) {
+                        switch (v) {
+                            case 'AND':
+                            case 'and':
+                                skipTo = i + 2;
+                                lunrTerms += ' +' + tempArr[i + 1];
+                                break;
+                            case 'NOT':
+                            case 'not':
+                                skipTo = i + 2;
+                                lunrTerms += ' -' + tempArr[i + 1];
+                                break;
+                            case 'OR':
+                            case 'or':
+                                skipTo = i + 2;
+                                lunrTerms += ' ' + tempArr[i + 1];
+                                break;
+                            default:
+                                skipTo = i + 1;
+                                lunrTerms += ' +' + tempArr[i];
+                        }
+                    }
+                });
+            }
+            return lunrTerms;
+        }
+        /**
+         * Search Lunr index with a query.
+         */
+        search(query) {
+            try {
+                let results = this.lunr.search(this.translateQuery(query));
+                return results.map(x => parseInt(x['ref']));
+            } catch (e) {
+                throw new Error(e.message);
+            }
+        }
+        /**
+         * Try deaccenting a string.
+         */
+        deaccent(text) {
+            try {
+                return text.normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}\p{Z}]/gui, ' ').replace(/\s{2,}/gu, ' ').trim();
+            } catch (e) {
+                console.info('Please upgrade your browser to enable accent-agnostic search.');
+                return text;
+            }
+        }
+    }
+
+    // Objects.
+    let db = new Database('ILDatabase');
+    let app = new App();
+    let fts = new Fts(db);
+
+    document.getElementById('install').innerHTML = 'Installing documents and search index';
+    // Load documents, start the app.
+    db.createTables({
+        'items': '&id, title_index, publication_date',
+        'ftsIndex': ''
+    });
+    db.insert('items', window.jsonItems).then(function (count) {
+        // Init fts index.
+        fts.init(window.jsonItems).then(function () {
+            delete window.jsonItems;
+            // Vue app init.
+            app.init(count);
+        });
+    }).catch(function (e) {
+        alert(e.message);
+        console.error(e);
+    });
+
+    // On ready.
+    $(function () {
+        // HTML.
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#search-button').on('click', function () {
+            $('#search-form').trigger('submit');
+        });
+        $('#search-form').on('submit', function (e) {
+            e.preventDefault();
+            let terms = $(e.target).find(':text').val().trim();
+            if (terms === '') {
+                return false;
+            }
+            try {
+                app.vue.resultSet = fts.search(terms);
+                app.vue.searchTerm = terms;
+                app.vue.rankBy = $(this).find('[name="search_sort"]:checked').val();
+                app.vue.changeOffset(1);
+                $('#search-modal').modal('hide');
+                $('#search-error').addClass('d-none');
+                $('#search-error-message').text('');
+            } catch (e) {
+                $('#search-error').removeClass('d-none');
+                $('#search-error-message').text(e.message.charAt(0).toUpperCase() + e.message.slice(1));
+            }
+        });
+        window.onbeforeunload = function () {
+            return 'Are you sure you want to leave?';
+        };
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, null, document.URL);
+        });
+    });
+</script>
+</body>
+</html>

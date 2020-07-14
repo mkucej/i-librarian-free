@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>I, Librarian Offline</title>
+	<style>
+		html {
+			height: 100%;
+		}
+		body {
+			height: 100%;
+			margin: 0;
+		}
+		iframe {
+			display: block;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			border: 0
+		}
+	</style>
+</head>
+<body>
+<iframe src=""></iframe>
+<script>
+	let searchParts = location.search.substring(1).split('&').map(x => x.split('='));
+	searchParts.forEach(function (v, i) {
+		if (v[0] === 'title') {
+			document.title = 'PDF - ' + decodeURI(searchParts[i][1]);
+		}
+		if (v[0] === 'path') {
+			document.getElementsByTagName('iframe')[0].setAttribute('src', searchParts[i][1]);
+		}
+	});
+</script>
+</body>
+</html>

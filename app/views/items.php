@@ -1801,7 +1801,7 @@ SCRIPT;
             $el->type('radio');
             $el->name('export');
             $el->value('zip');
-            $el->label('zipped HTML <span class="text-secondary">(incl. 250 MB PDFs)</span>');
+            $el->label('offline app <span class="text-secondary">(up to 500 MB of PDFs)</span>');
             $inputs .= $el->render();
 
             $el = null;
