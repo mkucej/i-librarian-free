@@ -95,6 +95,13 @@ final class ErrorView extends TextView {
         // Check, if the request is AJAX.
         if ($this->contentType() === 'json') {
 
+            // HTML unauthenticated.
+            if ($this->response->getStatusCode() === 401) {
+
+                $this->session->start();
+                $this->session->destroy();
+            }
+
             $this->append([
                 'error' => $message
             ]);
