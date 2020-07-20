@@ -304,7 +304,6 @@ final class Image {
         getimagesize($filename, $info);
         $iptc = iptcparse($info['APP13']);
 
-        return $iptc['2#230'][0] ?? null;
+        return $iptc['2#230'][0] ?? '';
     }
-
 }
