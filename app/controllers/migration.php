@@ -56,17 +56,15 @@ final class MigrationController extends Controller {
         $model = new MainModel($this->di);
         $num_users = (integer) $model->numUsers();
 
-        $view = new DefaultView($this->di);
-
         if ($num_users > 0) {
 
-            return $view->main(['info' => 'Cannot upgrade, because the database already contains data.']);
+            throw new Exception('cannot upgrade, because the database already contains data');
         }
 
         // Requires library location.
         if (empty($this->get['directory'])) {
 
-            return $view->main(['info' => 'Missing library location']);
+            throw new Exception('Missing library location', 400);
         }
 
         // Normalize the dirname.
@@ -79,6 +77,7 @@ final class MigrationController extends Controller {
         $model = new MigrationModel($this->di);
         $response = $model->legacyupgrade($this->get['directory']);
 
+        $view = new DefaultView($this->di);
         return $view->main($response);
     }
 }
