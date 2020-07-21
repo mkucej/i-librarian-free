@@ -157,6 +157,11 @@ final class Factory {
             return new \Librarian\Media\Binary($this->di);
         });
 
+        $this->di->set('FileTools', function () {
+
+            return new \Librarian\Media\FileTools();
+        });
+
         $this->di->set('Pdf', function (string $file) {
 
             return new \Librarian\Media\Pdf($this->di, $file);

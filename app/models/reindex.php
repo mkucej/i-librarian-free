@@ -456,7 +456,7 @@ EOT;
             $pdf_file = $this->idToPdfPath($id);
 
             // Not a PDF.
-            if (mime_content_type($pdf_file) !== 'application/pdf') {
+            if ($this->file_tools->getMime($pdf_file) !== 'application/pdf') {
 
                 continue;
             }

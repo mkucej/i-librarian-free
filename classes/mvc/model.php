@@ -10,6 +10,7 @@ use Librarian\Http\Client\Psr7;
 use Librarian\Http\Client\Psr7\Stream;
 use Librarian\Http\Message\StreamInterface;
 use Librarian\Media\Binary;
+use Librarian\Media\FileTools;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
 use Librarian\Security\Validation;
@@ -47,6 +48,11 @@ abstract class Model {
      * @var Database logs
      */
     protected $db_logs;
+
+    /**
+     * @var FileTools
+     */
+    protected $file_tools;
 
     /**
      * @var string User permissions G|U|A.
@@ -93,6 +99,7 @@ abstract class Model {
 
         $this->di           = $di;
         $this->app_settings = $this->di->getShared('AppSettings');
+        $this->file_tools   = $this->di->get('FileTools');
         $this->sanitation   = $this->di->getShared('Sanitation');
         $this->validation   = $this->di->getShared('Validation');
         $this->session      = $this->di->getShared('Session');
@@ -395,50 +402,6 @@ EOT;
         }
 
         return true;
-    }
-
-    /**
-     * Get MIME type from provided filename, or Stream object.
-     *
-     * @param  string|Stream $file
-     * @return string
-     */
-    protected function mimeType($file): string {
-
-        $mime = '';
-
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-
-        if (is_string($file)) {
-
-            // Argument is a pathname.
-
-            if (is_readable($file)) {
-
-                $mime = $finfo->file($file);
-            }
-
-        } elseif (is_object($file)) {
-
-            $chunk = '';
-
-            // Argument is a Stream object.
-
-            if ($file->isSeekable() === true) {
-
-                // Seakable stream: rewind and read the top.
-
-                $file->rewind();
-                $chunk = $file->read(1024);
-                $file->rewind();
-            }
-
-            $mime = $chunk === '' ? '' : $finfo->buffer($chunk);
-        }
-
-        $finfo = null;
-
-        return $mime;
     }
 
     /**

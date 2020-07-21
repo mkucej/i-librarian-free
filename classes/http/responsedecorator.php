@@ -94,6 +94,7 @@ final class ResponseDecorator {
         'txt' => 'text/plain',
         'wav' => 'audio/x-wav',
         'webm' => 'video/webm',
+        'webma' => 'audio/webm',
         'wma' => 'audio/x-ms-wma',
         'wmv' => 'video/x-ms-wmv',
         'woff' => 'application/x-font-woff',

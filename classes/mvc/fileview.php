@@ -5,6 +5,7 @@ namespace Librarian\Mvc;
 use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Http\Message\StreamInterface;
+use Librarian\Media\FileTools;
 
 /**
  * File View class.
@@ -15,6 +16,11 @@ abstract class FileView extends View {
      * @var string Custom filename.
      */
     public $filename;
+
+    /**
+     * @var FileTools
+     */
+    private $file_tools;
 
     /**
      * @var StreamInterface
@@ -32,6 +38,7 @@ abstract class FileView extends View {
 
         $this->stream = $stream;
         parent::__construct($di);
+        $this->file_tools = $di->get('FileTools');
     }
 
     /**
@@ -115,6 +122,7 @@ abstract class FileView extends View {
      * Set content type header.
      *
      * @return void
+     * @throws Exception
      */
     protected function setMime(): void {
 
@@ -125,7 +133,7 @@ abstract class FileView extends View {
         switch ($metadata['wrapper_type']) {
 
             case 'plainfile':
-                $content_type = mime_content_type($metadata['uri']);
+                $content_type = $this->file_tools->getMime($metadata['uri']);
                 break;
 
             case 'http':

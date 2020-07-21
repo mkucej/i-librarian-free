@@ -108,7 +108,7 @@ class SupplementsModel extends AppModel {
         $this->writeFile($filepath, $stream);
 
         // Check if image.
-        $mime = $this->mimeType($filepath);
+        $mime = $this->file_tools->mimeType($filepath);
 
         if ($mime !== 'image/png' && $mime !== 'image/jpg' && $mime !== 'image/jpeg') {
 
@@ -203,7 +203,7 @@ EOT;
 
             $output['files'][] = [
                 'name' => rawurldecode(substr(basename($filename), 9)),
-                'mime' => mime_content_type($filename)
+                'mime' => $this->file_tools->getMime($filename)
             ];
         }
 
@@ -263,7 +263,7 @@ EOT;
 
         foreach ($files as $filename) {
 
-            if (in_array(mime_content_type($filename), ['image/png', 'image/jpeg', 'image/jpg']) === false) {
+            if (in_array($this->file_tools->getMime($filename), ['image/png', 'image/jpeg', 'image/jpg']) === false) {
 
                 continue;
             }

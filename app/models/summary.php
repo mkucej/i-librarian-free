@@ -349,8 +349,7 @@ EOT;
             foreach ($files as $filename) {
 
                 $output['files'][] = [
-                    'name' => rawurldecode(substr(basename($filename), 9)),
-                    'mime' => mime_content_type($filename)
+                    'name' => rawurldecode(substr(basename($filename), 9))
                 ];
             }
 

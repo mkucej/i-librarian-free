@@ -216,7 +216,7 @@ EOT;
         // File not a PDF?
         setlocale(LC_ALL,'en_US.UTF-8');
 
-        $mime = $this->mimeType($filepath);
+        $mime = $this->file_tools->getMime($filepath);
 
         if ($mime !== 'application/pdf') {
 
@@ -375,7 +375,7 @@ SQL;
         $pdf_file = $this->idToPdfPath($item_id);
 
         // Not a PDF.
-        if (mime_content_type($pdf_file) !== 'application/pdf') {
+        if ($this->file_tools->getMime($pdf_file) !== 'application/pdf') {
 
             return;
         }
