@@ -432,8 +432,7 @@ GRAPHICAL;
             <p>
                 $download_button
                 <a href="{$IL_BASE_URL}index.php/supplements/download?id={$item['id']}&filename={$file_attr}"
-                    target="_blank"
-                    class="filename-link">
+                    target="_blank">
                     {$file['name']}
                 </a>
             </p>
