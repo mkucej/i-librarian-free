@@ -61,7 +61,7 @@ class ItemView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('view-list');
+        $el->icon('text-box');
         $summary_icon = $el->render();
 
         $el = null;
@@ -79,7 +79,7 @@ class ItemView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('settings');
+        $el->icon('cog');
         $edit_icon = $el->render();
 
         $el = null;
@@ -88,7 +88,7 @@ class ItemView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('pen');
+        $el->icon('pencil');
         $notes_icon = $el->render();
 
         $el = null;

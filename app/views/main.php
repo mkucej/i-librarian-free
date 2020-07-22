@@ -276,7 +276,7 @@ EOT
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('library-books');
+        $el->icon('text-box-multiple');
         $library = $el->render();
 
         $el = null;

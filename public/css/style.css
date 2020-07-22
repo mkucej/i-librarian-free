@@ -602,7 +602,7 @@ small {
 .breadcrumb-item + .breadcrumb-item::before {
     font-family: "Material Design Icons", monospace;
     display: inline;
-    content: "\F142";
+    content: "\F0142";
     padding-right: 0.25rem;
 }
 

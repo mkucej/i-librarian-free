@@ -69,7 +69,7 @@ class ProjectView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('format-list-checkbox');
+        $el->icon('text-box-multiple');
         $browse_icon = $el->render();
 
         $el = null;
@@ -78,7 +78,7 @@ class ProjectView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('settings');
+        $el->icon('cog');
         $edit_icon = $el->render();
 
         $el = null;
@@ -87,7 +87,7 @@ class ProjectView extends TextView {
         $el = $this->di->get('Icon');
 
         $el->addClass('mdi-24px mr-2');
-        $el->icon('pen');
+        $el->icon('pencil');
         $notes_icon = $el->render();
 
         $el = null;
