@@ -4,7 +4,6 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Html\Bootstrap;
-use Librarian\Html\Element;
 use Librarian\Mvc\TextView;
 
 class SupplementsView extends TextView {
@@ -192,8 +191,8 @@ class SupplementsView extends TextView {
         $el = $this->di->get('Row');
 
         $el->column($bc, 'col-12');
-        $el->column($upload_card, 'col-md-4 mb-3');
-        $el->column($table, 'col-md-8 mb-3');
+        $el->column($upload_card, 'col-xl-4 mb-3');
+        $el->column($table, 'col-xl-8 mb-3');
         $row = $el->render();
 
         $el = null;
@@ -220,7 +219,6 @@ class SupplementsView extends TextView {
 
         /** @var Bootstrap\ListGroup $el */
         $li = $this->di->get('ListGroup');
-        $li->addClass('mb-3');
 
         foreach ($files as $file) {
 
@@ -233,7 +231,7 @@ class SupplementsView extends TextView {
             $el = $this->di->get('IconButton');
 
             $el->elementName('a');
-            $el->addClass('btn-round btn-secondary mr-2 download');
+            $el->addClass('btn-round btn-secondary mr-2 my-2 download');
             $el->href(IL_BASE_URL . "index.php/supplements/download?id={$item_id}&disposition=attachment&filename={$encoded_filename}");
             $el->icon('download');
             $download_button = $el->render();
@@ -247,7 +245,8 @@ class SupplementsView extends TextView {
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
-                $el->addClass('btn-sm btn-outline-primary rename-file mt-3');
+                $el->addClass('btn-sm btn-outline-primary rename-file my-2');
+                $el->style('width: 5rem');
                 $el->name('rename');
                 $el->html('Rename');
                 $rename_button = $el->render();
@@ -262,7 +261,8 @@ class SupplementsView extends TextView {
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
-                $el->addClass('btn-sm btn-outline-danger delete-file mt-3');
+                $el->addClass('btn-sm btn-outline-danger delete-file my-2');
+                $el->style('width: 5rem');
                 $el->name('delete');
                 $el->dataBody('Do you want to delete this file?');
                 $el->dataButton('Delete');
@@ -280,28 +280,20 @@ class SupplementsView extends TextView {
                     {$file}
                 </a>
 EOT;
+            $filename_input =  <<<EOT
+<input type="text" name="filename" value="" class="d-none form-control rounded-0 w-75 p-0">
+EOT;
 
-            /** @var Element $el */
-            $el = $this->di->get('Element');
+            /** @var Bootstrap\Row $el */
+            $r = $this->di->get('Row');
 
-            $el->elementName('input');
-            $el->type('text');
-            $el->addClass('d-none form-control rounded-0 w-75 p-0');
-            $el->name('filename');
-            $filename_input = $el->render();
+            $r->column("$download_button $link $filename_input", 'col text-truncate');
+            $r->column("$rename_button $delete_button", 'col-sm-auto');
+            $row = $r->render();
 
             $el = null;
 
-            $li->div(<<<EOT
-                <div class="text-truncate" style="width:95%">
-                    $download_button $link $filename_input
-                </div>
-                $rename_button
-                $delete_button
-EOT
-            );
-
-
+            $li->li($row);
         }
 
         $list = $li->render();

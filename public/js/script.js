@@ -2912,7 +2912,7 @@ class SupplementsMainView extends View {
         // Delete file button.
         $('.delete-file').confirmable({
             submit: function () {
-                let file = $.trim($(this).parent().find('.filename-link').text()),
+                let file = $(this).closest('li').find('.filename-link').text().trim(),
                     itemId = $('body').data('id');
                 $.when(model.save({
                     url: window.IL_BASE_URL + 'index.php/supplements/delete',
@@ -2927,9 +2927,8 @@ class SupplementsMainView extends View {
         });
     }
     renameFile() {
-        let $l = $(this).parent().find('.filename-link'),
-            $i = $(this).parent().find('input'),
-            $dl = $(this).parent().find('.download');
+        let $l = $(this).closest('li').find('.filename-link'),
+            $i = $(this).closest('li').find('input');
         if ($l.hasClass('d-none')) {
             // Submit.
             let filename = $.trim($l.text()), newname = $.trim($i.val());

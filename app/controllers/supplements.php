@@ -137,6 +137,16 @@ class SupplementsController extends Controller {
             throw new Exception("id parameter {$this->validation->error}", 422);
         }
 
+        if ($this->validation->dirname($this->post['filename']) === false) {
+
+            throw new Exception("filename parameter {$this->validation->error}", 400);
+        }
+
+        if ($this->validation->dirname($this->post['newname']) === false) {
+
+            throw new Exception("filename parameter {$this->validation->error}", 400);
+        }
+
         // Save the file.
         $model = new SupplementsModel($this->di);
         $model->rename($this->post['id'], $this->post['filename'], $this->post['newname']);
@@ -162,6 +172,11 @@ class SupplementsController extends Controller {
             throw new Exception("id parameter {$this->validation->error}", 422);
         }
 
+        if ($this->validation->dirname($this->post['filename']) === false) {
+
+            throw new Exception("filename parameter {$this->validation->error}", 400);
+        }
+
         // Delete the file.
         $model = new SupplementsModel($this->di);
         $model->delete($this->post['id'], $this->post['filename']);
@@ -182,6 +197,11 @@ class SupplementsController extends Controller {
         if ($this->validation->id($this->get['id']) === false) {
 
             throw new Exception("id parameter {$this->validation->error}", 422);
+        }
+
+        if ($this->validation->dirname($this->get['filename']) === false) {
+
+            throw new Exception("filename parameter {$this->validation->error}", 400);
         }
 
         // Get file from model.
