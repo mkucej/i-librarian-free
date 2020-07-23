@@ -309,6 +309,11 @@ SQL;
 
         $db->close();
 
+        if (is_null($page_count)) {
+
+            $page_count = 0;
+        }
+
         return $page_count;
     }
 
