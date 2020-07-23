@@ -3011,6 +3011,10 @@ class PdfMainView extends View {
         }, 500, {leading: true, trailing: true});
     }
     afterRender(data) {
+        // No PDF.
+        if ($('#pdfviewer-pages').length === 0) {
+            return;
+        }
         let This = this;
         formStyle.init();
         $('#content-col').find('[data-toggle="tooltip"]').tooltip();

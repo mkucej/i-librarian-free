@@ -21,6 +21,36 @@ class PdfViewerView extends TextView {
 
         $this->title('PDF - ' . $info['title']);
 
+        // No PDF.
+        if (array_key_exists('page_count', $info['info']) === false) {
+
+            /** @var Bootstrap\Alert $el */
+            $el = $this->di->get('Alert');
+
+            $el->style('margin: 5rem 25%');
+            $el->context('primary');
+            $el->html('There is no PDF.');
+            $alert = $el->render();
+
+            $el = null;
+
+            if ($this->contentType() === 'html') {
+
+                $this->styleLink('css/plugins.css');
+                $this->head();
+                $this->append($alert);
+                $this->scriptLink('js/plugins.js');
+                $this->end();
+
+            } elseif ($this->contentType() === 'json') {
+
+                $this->head();
+                $this->append(['html' => $alert]);
+            }
+
+            return $this->send();
+        }
+
         // Left panel toggle.
 
         /** @var Bootstrap\IconButton $el */

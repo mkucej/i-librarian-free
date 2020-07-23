@@ -61,6 +61,12 @@ class PdfController extends Controller {
         $model = new PdfModel($this->di);
         $info = $model->info($this->get['id']);
 
+        // Corrupt PDFs with 0 page count throw error.
+        if (isset($info['info']['page_count']) && $info['info']['page_count'] === 0) {
+
+            throw new Exception('invalid PDF file');
+        }
+
         // PDF viewer setting.
         $viewer = $this->app_settings->getUser('pdf_viewer');
 
@@ -68,7 +74,7 @@ class PdfController extends Controller {
         if ($viewer === 'external') {
 
             $view = new PdfView($this->di);
-            return $view->external($this->get['id'], ['title' => $info['title']]);
+            return $view->external($this->get['id'], $info);
         }
 
         $view = new PdfViewerView($this->di);
@@ -371,6 +377,12 @@ class PdfController extends Controller {
         $pdf_model = new PdfModel($this->di);
         $info = $pdf_model->info($this->post['id']);
         $page_count = $info['info']['page_count'] ?? 0;
+
+        if ($page_count === 0) {
+
+            $view = new DefaultView($this->di);
+            return $view->main(['info' => 'Invalid PDF.']);
+        }
 
         /** @var TesseractOcr $ocr_obj */
         $ocr_obj = $this->di->get('TesseractOcr');

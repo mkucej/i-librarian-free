@@ -152,12 +152,6 @@ EOT;
             throw new Exception('this item does not exist', 404);
         }
 
-        // Does PDF exist?
-        if ($this->isPdf($item_id) === false) {
-
-            return $output;
-        }
-
         // Select title.
         $sql = <<<'EOT'
 SELECT title
@@ -173,6 +167,12 @@ EOT;
         $output['title'] = $this->db_main->getResult();
 
         $this->db_main->commit();
+
+        // Does PDF exist?
+        if ($this->isPdf($item_id) === false) {
+
+            return $output;
+        }
 
         $pdfpath = $this->idToPdfPath($item_id);
 
@@ -332,6 +332,7 @@ EOT;
         // Delete PDF.
         $filepath = $this->idToPdfPath($item_id);
         $this->deleteFile($filepath);
+        $this->deleteFile($filepath . '.db');
 
         // Delete file hash in items.
         $sql = <<<SQL
@@ -538,6 +539,12 @@ EOT;
         $pdfpath = $this->idToPdfPath($item_id);
         $this->pdf_object = $this->di->get('Pdf', $pdfpath);
         $page_count = $this->pdf_object->pageCount();
+
+        if ($page_count === 0) {
+
+            return $output;
+        }
+
         $output['boxes'] = $this->pdf_object->getBoxes(range($min_page, min($page + 3, $page_count), 1));
 
         return $output;
@@ -552,9 +559,19 @@ EOT;
      */
     protected function _annotations(int $item_id): array {
 
+        $output = [
+            'highlights' => [],
+            'notes' => []
+        ];
+
         $pdfpath = $this->idToPdfPath($item_id);
         $this->pdf_object = $this->di->get('Pdf', $pdfpath);
         $page_count = $this->pdf_object->pageCount();
+
+        if ($page_count === 0) {
+
+            return $output;
+        }
 
         // Empty page array.
         $pages = array_fill_keys(range(1, $page_count, 1), []);

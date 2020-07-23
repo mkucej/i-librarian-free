@@ -35,37 +35,79 @@ class PdfView extends TextView {
 
         if ($this->contentType() === 'html') {
 
-            $this->styleLink('css/plugins.css');
+            // HTML response.
 
+            $this->styleLink('css/plugins.css');
             $this->head();
 
-            // HTML response.
-            $iframe = <<<EOT
+            if (array_key_exists('page_count', $item['info']) === false) {
+
+                // No PDF.
+
+                /** @var Bootstrap\Alert $el */
+                $el = $this->di->get('Alert');
+
+                $el->style('margin: 5rem 25%');
+                $el->context('primary');
+                $el->html('There is no PDF.');
+                $alert = $el->render();
+
+                $el = null;
+
+                $iframe = '<iframe style="display: none"></iframe>';
+
+                $this->append($alert . $iframe);
+
+            } else {
+
+                $iframe = <<<EOT
                 <iframe
                     style="display: block;width: 100%;height: 100%; border: 0"
                     src="{$IL_BASE_URL}index.php/pdf/file?id={$item_id}#zoom=page-width&pagemode=none">
                 </iframe>
 EOT;
 
-            $this->append($iframe);
+                $this->append($iframe);
+            }
 
             $this->scriptLink('js/plugins.js');
-
             $this->end();
 
         } elseif ($this->contentType() === 'json') {
 
+            // JSON response.
+
             $this->head();
 
-            // JSON response.
-            $iframe = <<<EOT
+            if (array_key_exists('page_count', $item['info']) === false) {
+
+                /** @var Bootstrap\Alert $el */
+                $el = $this->di->get('Alert');
+
+                $el->style('margin: 5rem 25%');
+                $el->context('primary');
+                $el->html('There is no PDF.');
+                $alert = $el->render();
+
+                $el = null;
+
+                $iframe = '<iframe style="display: none"></iframe>';
+
+                // No PDF.
+                $this->append(['html' => $alert . $iframe]);
+
+            } else {
+
+                // JSON response.
+                $iframe = <<<EOT
                 <iframe
                     style="display: block;margin: 0 -15px;width: calc(100% + 30px);height: 100%; border: 0"
                     src="{$IL_BASE_URL}index.php/pdf/file?id={$item_id}#zoom=page-width&pagemode=none">
                 </iframe>
 EOT;
 
-            $this->append(['html' => $iframe]);
+                $this->append(['html' => $iframe]);
+            }
         }
 
         return $this->send();

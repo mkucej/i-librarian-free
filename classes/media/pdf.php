@@ -288,9 +288,9 @@ UPDATE metadata
 SQL;
 
         $db->run($sql_select);
-        $page_count = $db->getResult();
+        $page_count = (int) $db->getResult();
 
-        if (empty($page_count)) {
+        if ($page_count === 0) {
 
             exec($this->binary->pdfinfo() . ' -enc "UTF-8" -f 1 -l 1 ' . escapeshellarg($this->file), $raw);
 
@@ -873,6 +873,11 @@ EOT;
         // Get PDF info.
         $info = $this->info(true);
 
+        if ($info['page_count'] === 0) {
+
+            return;
+        }
+
         $chunk = 50;
         $page_end = min($page_from + $chunk - 1, $info['page_count']);
 
@@ -1020,6 +1025,11 @@ EOT;
 
         // Get PDF info.
         $info = $this->info(true);
+
+        if ($info['page_count'] === 0) {
+
+            return;
+        }
 
         $page_end = min($page_from + $chunk - 1, $info['page_count']);
 
