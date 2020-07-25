@@ -12,11 +12,20 @@ use NumberFormatter;
 
 final class ScalarUtils {
 
+    /**
+     * @var DependencyInjector
+     */
     private $di;
 
-    public function __construct(DependencyInjector $di) {
+    /**
+     * @var Language
+     */
+    protected $lang;
 
-        $this->di = $di;
+    public function __construct(DependencyInjector $di, Language $lang) {
+
+        $this->di   = $di;
+        $this->lang = $lang;
     }
 
     public function versionToInteger(string $version) {
@@ -178,7 +187,7 @@ TBODY
         }
 
         $fmt = new NumberFormatter(
-            IL_LANGUAGE,
+            $this->lang->getLanguage(),
             NumberFormatter::DECIMAL
         );
 
@@ -466,7 +475,7 @@ TBODY
      */
     public function utf8Collation(string $string_a, string $string_b): int {
 
-        $collator = new Collator(IL_LANGUAGE);
+        $collator = new Collator($this->lang->getLanguage());
 
         return $collator->compare($string_a, $string_b);
     }

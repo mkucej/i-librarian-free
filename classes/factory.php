@@ -120,6 +120,11 @@ final class Factory {
             return new \Librarian\Security\Authorization($session);
         });
 
+        $this->di->set('Language', function () {
+
+            return new \Librarian\Media\Language();
+        });
+
         $this->di->set('ErrorView', function () {
 
             return new \Librarian\ErrorView($this->di);
@@ -144,7 +149,9 @@ final class Factory {
 
         $this->di->set('ScalarUtils', function () {
 
-            return new \Librarian\Media\ScalarUtils($this->di);
+            $lang = $this->di->getShared('Language');
+
+            return new \Librarian\Media\ScalarUtils($this->di, $lang);
         });
 
         $this->di->set('Xml', function () {
@@ -192,8 +199,9 @@ final class Factory {
         $this->di->set('Temporal', function () {
 
             $app_settings = $this->di->get('AppSettings');
+            $lang = $this->di->getShared('Language');
 
-            return new \Librarian\Media\Temporal($app_settings);
+            return new \Librarian\Media\Temporal($app_settings, $lang);
         });
 
         $this->di->set('FileCache', function () {
@@ -387,7 +395,9 @@ final class Factory {
 
         $this->di->set('Modal', function () {
 
-            return new \Librarian\Html\Bootstrap\Modal();
+            $lang = $this->di->getShared('Language');
+
+            return new \Librarian\Html\Bootstrap\Modal($lang);
         });
 
         $this->di->set('Nav', function () {

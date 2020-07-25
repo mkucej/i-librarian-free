@@ -56,7 +56,7 @@ final class ErrorView extends TextView {
         /*
          * Status code.
          */
-        $code = is_numeric($exc->getCode()) ? $exc->getCode() : 500;
+        $code = (int) $exc->getCode() === 0 ? 500 : $exc->getCode();
         $code = $code < 400 ? 500 : $code;
 
         $this->response = $this->response->withStatus($code);
@@ -65,8 +65,11 @@ final class ErrorView extends TextView {
          * Message.
          */
 
+        // I18n.
+        $message = $this->lang->t9n($exc->getMessage());
+
         // Remove Guzzle backticks from error messages.
-        $message = str_replace("`", "'", $exc->getMessage());
+        $message = str_replace("`", "'", $message);
 
         if (get_class($exc) === 'PDOException') {
 
@@ -140,7 +143,7 @@ final class ErrorView extends TextView {
                 $message .= $scalar_utils->arrayToTable(['PHP'     => ini_get_all(null, false)]);
             }
 
-            $this->title("Error {$exc->getCode()}");
+            $this->title("Error {$code}");
 
             $this->styleLink('css/plugins.css');
 
@@ -162,7 +165,11 @@ final class ErrorView extends TextView {
             $el = $this->di->get('Row');
 
             $el->addClass("h-100 text-center $center_class pt-2");
-            $el->column("<h1>{$alert_icon}Oops!</h1>$message", 'col col-xl-8 offset-xl-2 pb-5');
+            $el->column(
+                <<<I18N
+<h1>{$alert_icon}{$this->lang->t9n('Oops')}!</h1>$message
+I18N
+                , 'col col-xl-8 offset-xl-2 pb-5');
             $row = $el->render();
 
             $el = null;

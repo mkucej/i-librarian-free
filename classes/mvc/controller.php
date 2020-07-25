@@ -7,6 +7,7 @@ use Librarian\AppSettings;
 use Librarian\Container\DependencyInjector;
 use Librarian\Http\Client\Psr7\ServerRequest;
 use Librarian\Http\Client\Psr7\UploadedFile;
+use Librarian\Media\Language;
 use Librarian\Security\Authorization;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
@@ -29,6 +30,11 @@ abstract class Controller {
      * @var Authorization
      */
     protected $authorization;
+
+    /**
+     * @var Language
+     */
+    protected $lang;
 
     /**
      * @var ServerRequest
@@ -85,6 +91,7 @@ abstract class Controller {
         $this->di            = $di;
         $this->app_settings  = $this->di->getShared('AppSettings');
         $this->authorization = $this->di->getShared('Authorization');
+        $this->lang          = $this->di->getShared('Language');
         $this->request       = $this->di->getShared('ServerRequest');
         $this->sanitation    = $this->di->getShared('Sanitation');
         $this->session       = $this->di->getShared('Session');
@@ -99,18 +106,20 @@ abstract class Controller {
         // Set locale. Must have php-intl, the client header, and user must allow custom locales.
         $language = 'en_US';
 
-        if (extension_loaded('intl') === true &&
-            isset($this->server['HTTP_ACCEPT_LANGUAGE']) === true &&
-            $this->session->data('user_id') !== null &&
-            $this->app_settings->getUser('use_en_language') === '0') {
+        if (extension_loaded('intl') === true && isset($this->server['HTTP_ACCEPT_LANGUAGE']) === true) {
 
             $language = locale_accept_from_http($this->server['HTTP_ACCEPT_LANGUAGE']);
         }
 
-        if (defined('IL_LANGUAGE') === false) {
+        if ($this->session->data('user_id') !== null && $this->app_settings->getUser('use_en_language') === '1') {
 
-            define('IL_LANGUAGE', $language);
+            $language = 'en_US';
         }
+
+        // Debug.
+//        $language = 'de';
+
+        $this->lang->setLanguage($language);
 
         // All POST requests must contain CSRF token.
         if ($this->request->getMethod() === 'POST') {

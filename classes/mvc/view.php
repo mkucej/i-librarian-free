@@ -6,6 +6,7 @@ use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Http\Client\Psr7\Response;
 use Librarian\Http\Client\Psr7\ServerRequest;
+use Librarian\Media\Language;
 
 /**
  * Base View class.
@@ -16,6 +17,11 @@ abstract class View {
      * @var DependencyInjector
      */
     protected $di;
+
+    /**
+     * @var Language
+     */
+    protected $lang;
 
     /**
      * @var ServerRequest
@@ -43,6 +49,7 @@ abstract class View {
         $this->di       = $di;
         $this->request  = $this->di->getShared('ServerRequest');
         $this->response = $this->di->getShared('Response');
+        $this->lang     = $this->di->getShared('Language');
 
         // Default cache settings.
         $this->cache_settings = [

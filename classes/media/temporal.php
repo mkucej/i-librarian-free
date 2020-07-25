@@ -10,11 +10,20 @@ use Librarian\AppSettings;
 
 final class Temporal {
 
+    /**
+     * @var AppSettings
+     */
     private $app_settings;
 
-    public function __construct(AppSettings $app_settings) {
+    /**
+     * @var Language
+     */
+    private $lang;
+
+    public function __construct(AppSettings $app_settings, Language $lang) {
 
         $this->app_settings = $app_settings;
+        $this->lang         = $lang;
     }
 
     /**
@@ -44,7 +53,7 @@ final class Temporal {
         }
 
         $date = new IntlDateFormatter(
-            IL_LANGUAGE,
+            $this->lang->getLanguage(),
             IntlDateFormatter::MEDIUM,
             IntlDateFormatter::SHORT,
             $tz_obj
@@ -80,7 +89,7 @@ final class Temporal {
         }
 
         $date = new IntlDateFormatter(
-            IL_LANGUAGE,
+            $this->lang->getLanguage(),
             IntlDateFormatter::MEDIUM,
             IntlDateFormatter::NONE,
             $tz_obj
@@ -112,7 +121,7 @@ final class Temporal {
         }
 
         $fmt = new IntlDateFormatter(
-            IL_LANGUAGE,
+            $this->lang->getLanguage(),
             IntlDateFormatter::MEDIUM,
             IntlDateFormatter::NONE,
             new DateTimeZone('UTC')
