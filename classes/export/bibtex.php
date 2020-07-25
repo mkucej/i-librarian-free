@@ -161,18 +161,22 @@ class Bibtex {
                 $output .= $this->prettyTag('year') . '{' . $year . '},' . PHP_EOL;
 
                 $month = (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 5, 2);
-                $output .= $this->prettyTag('month') . '{' . $month . '},' . PHP_EOL;
+
+                if ($month > 0 && $month <= 12) {
+
+                    $output .= $this->prettyTag('month') . '{' . $month . '},' . PHP_EOL;
+                }
             }
 
             // Publisher.
             if (!empty($item[ItemMeta::COLUMN['PUBLISHER']])) {
 
-                $output .= $this->prettyTag('publisher') . '{' . $item[ItemMeta::COLUMN['PUBLISHER']] . '},' . PHP_EOL;
+                $output .= $this->prettyTag('publisher') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['PUBLISHER']]) . '},' . PHP_EOL;
             }
 
             if (!empty($item[ItemMeta::COLUMN['PLACE_PUBLISHED']])) {
 
-                $output .= $this->prettyTag('address') . '{' . $item[ItemMeta::COLUMN['PLACE_PUBLISHED']] . '},' . PHP_EOL;
+                $output .= $this->prettyTag('address') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['PLACE_PUBLISHED']]) . '},' . PHP_EOL;
             }
 
             // URLs.
