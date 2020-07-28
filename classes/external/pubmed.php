@@ -532,6 +532,10 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
                         $date .= '-01';
                     }
+
+                } else {
+
+                    $date .= '-01';
                 }
 
                 if (!empty($date) && isset($pub_date->Day)) {
@@ -546,6 +550,10 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
                         $date .= '-01';
                     }
+
+                } else {
+
+                    $date .= '-01';
                 }
 
             } elseif (isset($pub_date->MedlineDate)) {

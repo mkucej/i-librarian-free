@@ -383,8 +383,8 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             if (!empty($pub_date)) {
 
                 $year = (string) $pub_date->year;
-                $month = (string) $pub_date->month;
-                $day = (string) $pub_date->day;
+                $month = empty((string) $pub_date->month) ? '1' : (string) $pub_date->month;
+                $day = empty((string) $pub_date->day) ? '1' : (string) $pub_date->day;
 
                 $date = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . str_pad($day, 2, '0', STR_PAD_LEFT);
             }
