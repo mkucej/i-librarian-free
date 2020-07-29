@@ -10,7 +10,7 @@ use Librarian\Html\Element;
 class Component extends Element {
 
     protected $context = 'default';
-    protected $size;
+    protected $size = '';
 
     /**
      * Bootstrap's context.

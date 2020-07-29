@@ -18,7 +18,7 @@ final class Alert extends Component {
 
         parent::__construct();
 
-        $this->addClass('alert bg-transparent rounded-0 d-flex align-items-center justify-content-between py-4');
+        $this->addClass('alert xbg-transparent rounded-0 d-flex align-items-center justify-content-between py-3');
     }
 
     /**
@@ -75,7 +75,7 @@ final class Alert extends Component {
         }
 
         $this->html(<<<EOT
-            <span class="d-inline-block mr-3 mdi mdi-alert-decagram-outline mdi-36px pb-1"></span>
+            <span class="d-inline-block mdi mdi-alert-decagram-outline mdi-24px mr-2"></span>
             <div class="alert-content w-100">{$heading}{$this->html()}</div>
 EOT
         );

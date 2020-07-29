@@ -588,8 +588,7 @@ mark {
 }
 
 .alert {
-    border-width: 3px;
-    font-size: 1.1rem;
+    border-width: 2px;
     font-weight: bold;
 }
 
