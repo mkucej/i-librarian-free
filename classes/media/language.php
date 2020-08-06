@@ -120,10 +120,10 @@ final class Language {
         return preg_replace_callback(
             '/{T% (.*) %T}/u',
             function ($matches) use ($tokens) {
-                if (isset($this->tokens[$matches[1]]) === false || $this->tokens[$matches[1]] === '') {
+                if (isset($tokens[$matches[1]]) === false || $tokens[$matches[1]] === '') {
                     return $this->textToEnglish($matches[1]);
                 }
-                return $this->tokens[$matches[1]];
+                return $tokens[$matches[1]];
             },
             $input
         );
