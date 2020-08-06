@@ -2896,6 +2896,10 @@ EOT;
         $scalar_utils = $this->di->getShared('ScalarUtils');
 
         $zip_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('export_') . '.zip';
+
+        // Delete the file when client is done.
+        register_shutdown_function('unlink', $zip_file);
+
         $zip = new ZipArchive();
 
         $open = $zip->open($zip_file, ZipArchive::CREATE);
