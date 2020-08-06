@@ -93,7 +93,12 @@ final class Language {
             return $this->toEnglish($token);
         }
 
-        return $this->tokens[$token] ?? $this->toEnglish($token);
+        if (isset($this->tokens[$token]) === false || $this->tokens[$token] === '') {
+
+            return $this->toEnglish($token);
+        }
+
+        return $this->tokens[$token];
     }
 
     /**
@@ -107,15 +112,18 @@ final class Language {
 
         if ($this->language === 'en') {
 
-            return $input;
+            return $this->textToEnglish($input);
         }
 
         $tokens = $this->tokens;
 
         return preg_replace_callback(
-            '\{T% (.*) %T\}/u',
+            '/{T% (.*) %T}/u',
             function ($matches) use ($tokens) {
-                return $tokens[$matches[1]] ?? $this->toEnglish($matches[1]);
+                if (isset($this->tokens[$matches[1]]) === false || $this->tokens[$matches[1]] === '') {
+                    return $this->textToEnglish($matches[1]);
+                }
+                return $this->tokens[$matches[1]];
             },
             $input
         );
@@ -135,5 +143,10 @@ final class Language {
         }
 
         return $token;
+    }
+
+    private function textToEnglish(string $text): string {
+
+        return str_replace(['{T%', '%T}'], '', $text);
     }
 }
