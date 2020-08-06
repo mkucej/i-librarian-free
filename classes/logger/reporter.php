@@ -67,10 +67,10 @@ SQL;
             case 12:
 
                 // Create an array with date range.
-                $start = new DateTime('13 months ago', new DateTimeZone('UTC'));
+                $start = new DateTime('12 months ago', new DateTimeZone('UTC'));
                 $start->modify('first day of this month');
                 $end = new DateTime('now', new DateTimeZone('UTC'));
-                $end->modify('first day of this month');
+                $end->modify('first day of next month');
                 $interval = new DateInterval('P1M');
                 $period = new DatePeriod($start, $interval, $end);
                 break;
@@ -78,8 +78,9 @@ SQL;
             default:
 
                 // Create an array with date range.
-                $start = new DateTime('31 days ago', new DateTimeZone('UTC'));
+                $start = new DateTime('30 days ago', new DateTimeZone('UTC'));
                 $end = new DateTime('now', new DateTimeZone('UTC'));
+                $end->modify('tomorrow');
                 $interval = new DateInterval('P1D');
                 $period = new DatePeriod($start, $interval, $end);
                 break;
