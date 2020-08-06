@@ -542,8 +542,8 @@ SESSION;
         $this->append([
             'html'       => $content,
             'id_list'    => $id_list,
-            'activity'   => $data['activity'],
-            'pages_read' => $data['pages_read']
+            'activity'   => [$this->lang->t9n('Items added') => $data['activity']],
+            'pages_read' => [$this->lang->t9n('Pages read') => $data['pages_read']]
         ]);
 
         return $this->send();
