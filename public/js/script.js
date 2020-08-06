@@ -1413,11 +1413,11 @@ class ILChart {
                     type: 'time',
                     time: {
                         displayFormats: {
-                            'hour': 'MMM D',
-                            'day': 'MMM D',
-                            'week': 'MMM D',
-                            'month': 'MMM \'YY',
-                            'quarter': 'MMM \'YY',
+                            'hour': 'M/D',
+                            'day': 'M/D',
+                            'week': 'M/D',
+                            'month': 'YYYY/M',
+                            'quarter': 'YYYY/M',
                             'year': 'YYYY'
                         },
                         unit: labels.length > 13 ? 'day' : 'month'
@@ -1739,13 +1739,13 @@ class DashboardMainView extends View {
         quicksearch.init();
         advancedsearch.init();
         let pages_read = typeof data.pages_read === 'undefined' ||
-            data.pages_read.length === 0 ? null : _.values(data.pages_read),
-            pages_read_label = pages_read === null ? null : 'Pages read';
+            data.pages_read.length === 0 ? null : Object.values(Object.values(data.pages_read)[0]),
+            pages_read_label = pages_read === null ? null : Object.keys(data.pages_read);
         chart.draw(
             'myChart',
-            _.keys(data.activity),
-            'Items added',
-            _.values(data.activity),
+            Object.keys(Object.values(data.activity)[0]),
+            Object.keys(data.activity),
+            Object.values(Object.values(data.activity)[0]),
             pages_read_label,
             pages_read
         );
