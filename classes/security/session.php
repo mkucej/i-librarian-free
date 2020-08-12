@@ -54,6 +54,7 @@ final class Session {
         ini_set('session.cookie_path', parse_url(IL_BASE_URL, PHP_URL_PATH));
         ini_set('session.cookie_secure', (integer) $cookie_secure);
         ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_samesite', 'Strict');
         ini_set('session.use_strict_mode', 1);
         ini_set('session.cache_limiter', '');
 
@@ -126,8 +127,8 @@ final class Session {
     /**
      * Get or set session data for a resource path.
      *
-     * @param  string $name
-     * @param  string|array $value
+     * @param string|null $name
+     * @param string|array|null $value
      * @return string|array
      */
     public function data(string $name = null, $value = null) {
