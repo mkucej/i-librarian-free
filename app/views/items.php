@@ -361,11 +361,16 @@ class ItemsView extends TextView {
                     continue;
                 }
 
-                $tags_html .= <<<EOT
-                <span class="bg-dark text-white d-inline-block mr-1 mb-2 px-3 py-1" style="font-size: 0.85rem">
-                    <b>{$this->type_to_readable[$type]}</b> &mdash; {$get['search_query'][$i]}
-                </span>
-EOT;
+                /** @var Bootstrap\Button $el */
+                $el = $this->di->get('Button');
+
+                $el->context("dark");
+                $el->componentSize("small");
+                $el->addClass("d-inline-block mr-1 mb-2 rounded-0");
+                $el->html("<b>{$this->type_to_readable[$type]}</b> &mdash; {$get['search_query'][$i]}");
+                $tags_html .= $el->render();
+
+                $el = null;
             }
         }
 
