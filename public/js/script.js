@@ -502,7 +502,7 @@ $.widget("il.saveable", {
         let $f = this.element, saveParams = [], params = this.element.serializeArray();
         // Ignore hidden inputs.
         _.forEach(params, function (v, i) {
-            if ($f.find('input[name="' + v.name + '"').attr('type') !== 'hidden') {
+            if ($f.find('input[name="' + v.name + '"]').attr('type') !== 'hidden') {
                 saveParams.push({
                     name: v.name,
                     value: v.value
