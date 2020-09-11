@@ -161,8 +161,9 @@ class Bibtex {
                 $output .= $this->prettyTag('year') . '{' . $year . '},' . PHP_EOL;
 
                 $month = (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 5, 2);
+                $day = (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 8, 2);
 
-                if ($month > 0 && $month <= 12) {
+                if ($month > 0 && $month <= 12 && ($month != 1 || $day != 1)) {
 
                     $output .= $this->prettyTag('month') . '{' . $month . '},' . PHP_EOL;
                 }
