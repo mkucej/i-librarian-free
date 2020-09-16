@@ -2,6 +2,8 @@
 
 namespace Librarian\Security;
 
+
+
 use Exception;
 use Librarian\AppSettings;
 
@@ -49,7 +51,6 @@ final class Ldap {
      * @throws Exception
      */
     public function authenticate(string $username, string $password): array {
-
         // Prevent LDAP injection attack.
         if ($this->validation->ldap($username) === false) {
 
@@ -110,14 +111,20 @@ final class Ldap {
             throw new Exception('failed to bind proxy user', 500);
         }
 
+
         /*
          * Lookup user.
          * Users matching the following criteria are eligible:
          * - must be a person object of class user or iNetOrgPerson
          * - username must match the CN attribute specified in INI file
          * - must be situated below the base search DN
+         * - the default user filter can be redefined with the ldap_user_filter setting
          */
-        $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}={$username}))";
+        if (!array_key_exists('ldap_user_filter', $this->settings)) {
+            $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}={$username}))";
+        } else {
+            $ldap_lookup ="(&".$this->settings['ldap_user_filter']."({$this->settings['ldap_username_attr']}={$username}))";
+        }
 
         $ldap_sr = ldap_search(
             $this->ldap_connect,
@@ -130,6 +137,7 @@ final class Ldap {
 
             throw new Exception('user search failed', 500);
         }
+
 
         // Get the user's DN.
         $ldap_num_entries = ldap_count_entries($this->ldap_connect, $ldap_sr);
@@ -147,16 +155,32 @@ final class Ldap {
         $replace_chars = ["\\2a", "\\28", "\\29", "\\5c", "\\2f"];
         $ldap_user_dn  = str_replace($search_chars,$replace_chars, $ldap_user_dn);
 
-        /*
-         * Optional authorization. If there are no groups, all users are admins.
-         */
-        if (!empty($this->settings['ldap_admingroup_cn']) || !empty($this->settings['ldap_admingroup_dn'])) {
+        // If the ldap_admin_users config is set, use them for selecting the admins.
 
-            $permissions = $this->authorize($ldap_user_dn);
+        if (array_key_exists('ldap_admin_users', $this->settings)) {
 
+            $admins = explode(',',$this->settings['ldap_admin_users']);
+
+            $permissions = 'U';
+
+
+            for ($i = 0; $i < count($admins); $i++) {
+                if ($username == trim($admins[$i]) ) {
+                    $permissions = 'A';
+                }
+            }
         } else {
+            /*
+             * Optional authorization. If there are no groups, all users are admins.
+             */
 
-            $permissions = 'A';
+            if (!empty($this->settings['ldap_admingroup_cn']) || !empty($this->settings['ldap_admingroup_dn'])) {
+
+                $permissions = $this->authorize($ldap_user_dn);
+
+            } else {
+                $permissions = 'A';
+            }
         }
 
         /*
@@ -173,9 +197,13 @@ final class Ldap {
 
         $usersattributes = ldap_get_entries($this->ldap_connect, $ldap_sr_all_user_attributes);
 
-        // Try to connect to ldap using the given attribute and the password.
-        $ldap_bind_check_pass = ldap_bind($this->ldap_connect, $usersattributes[0]['dn'], $password);
 
+        // Try to connect to ldap using the given attribute and the password.
+        try {
+            $ldap_bind_check_pass = ldap_bind($this->ldap_connect, $usersattributes[0]['dn'], $password);
+        } catch ( Exception $e ) {
+            $ldap_bind_check_pass = false;
+        }
         ldap_close($this->ldap_connect);
 
         if ($ldap_bind_check_pass === false) {
