@@ -210,7 +210,7 @@ class Bibtex {
 
                     $tag = strtolower(str_replace(' ', '-', $this->app_settings->getGlobal('custom' . $i)));
 
-                    $output .= $this->prettyTag($tag) . '{' . $item[ItemMeta::COLUMN['CUSTOM' . $i]] . '},' . PHP_EOL;
+                    $output .= $this->prettyTag($tag) . '{' . $this->prettyValue($item[ItemMeta::COLUMN['CUSTOM' . $i]]) . '},' . PHP_EOL;
                 }
             }
 
