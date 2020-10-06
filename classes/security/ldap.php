@@ -51,15 +51,12 @@ final class Ldap {
     public function authenticate(string $username, string $password): array {
 
         // Prevent LDAP injection attack.
-        if ($this->validation->ldap($username) === false) {
-
-            return ['info' => 'Invalid LDAP username.'];
-        }
+        $this->validation->ldap($username);
 
         // Verify if ldap was enabled within php.
         if (function_exists("ldap_connect") === false) {
 
-            throw new Exception('PHP LDAP extension is not installed.', 500);
+            throw new Exception('PHP LDAP extension is not installed', 500);
         }
 
         // Set LDAP debug level
@@ -114,10 +111,18 @@ final class Ldap {
          * Lookup user.
          * Users matching the following criteria are eligible:
          * - must be a person object of class user or iNetOrgPerson
+         * - however, the default user filter can be redefined with the ldap_user_filter setting
          * - username must match the CN attribute specified in INI file
          * - must be situated below the base search DN
          */
-        $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}={$username}))";
+        if (isset($this->settings['ldap_user_filter']) === false || $this->settings['ldap_user_filter'] === '') {
+
+            $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}={$username}))";
+
+        } else {
+
+            $ldap_lookup ="(&" . $this->settings['ldap_user_filter'] . "({$this->settings['ldap_username_attr']}={$username}))";
+        }
 
         $ldap_sr = ldap_search(
             $this->ldap_connect,
@@ -136,7 +141,7 @@ final class Ldap {
 
         if ($ldap_num_entries !== 1) {
 
-            return ['info' => 'User does not exist.'];
+            throw new Exception('account does not exist', 403);
         }
 
         $ldap_user_sr = ldap_first_entry($this->ldap_connect, $ldap_sr);
@@ -148,11 +153,25 @@ final class Ldap {
         $ldap_user_dn  = str_replace($search_chars,$replace_chars, $ldap_user_dn);
 
         /*
-         * Optional authorization. If there are no groups, all users are admins.
+         * Optional authorization. If there are no groups, or list of admins, all users will be admins.
          */
         if (!empty($this->settings['ldap_admingroup_cn']) || !empty($this->settings['ldap_admingroup_dn'])) {
 
             $permissions = $this->authorize($ldap_user_dn);
+
+        } elseif (isset($this->settings['ldap_admin_users']) === true && $this->settings['ldap_admin_users'] !== '') {
+
+            $admins = explode(',', $this->settings['ldap_admin_users']);
+
+            $permissions = 'U';
+
+            for ($i = 0; $i < count($admins); $i++) {
+
+                if ($username == trim($admins[$i]) ) {
+
+                    $permissions = 'A';
+                }
+            }
 
         } else {
 
@@ -174,13 +193,20 @@ final class Ldap {
         $usersattributes = ldap_get_entries($this->ldap_connect, $ldap_sr_all_user_attributes);
 
         // Try to connect to ldap using the given attribute and the password.
-        $ldap_bind_check_pass = ldap_bind($this->ldap_connect, $usersattributes[0]['dn'], $password);
+        try {
+
+            $ldap_bind_check_pass = ldap_bind($this->ldap_connect, $usersattributes[0]['dn'], $password);
+
+        } catch ( Exception $e ) {
+
+            $ldap_bind_check_pass = false;
+        }
 
         ldap_close($this->ldap_connect);
 
         if ($ldap_bind_check_pass === false) {
 
-            return ['info' => 'Incorrect username or password.'];
+            throw new Exception('incorrect password', 403);
         }
 
         // First name.
