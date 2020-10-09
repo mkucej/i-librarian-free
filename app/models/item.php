@@ -1498,6 +1498,14 @@ EOT;
                     $stream = stream_for($fp);
 
                     $pdf_object->save($item['item_id'], $stream);
+
+                    $stream = null;
+
+                    // Delete PDF when done.
+                    if (is_writable($pdf_file)) {
+
+                        unlink($pdf_file);
+                    }
                 }
             }
 
