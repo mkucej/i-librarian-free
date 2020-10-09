@@ -20,7 +20,7 @@ class SupplementsView extends TextView {
      */
     public function main(int $item_id, array $files): string {
 
-        $this->title('Supplements - ' . $files['title']);
+        $this->title("{$this->lang->t9n('Supplements')} - {$files['title']}");
 
         $this->head();
 
@@ -31,7 +31,7 @@ class SupplementsView extends TextView {
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$files['title']}", '#summary?id=' . $item_id);
-        $el->item('Supplements');
+        $el->item($this->lang->t9n('Supplements'));
         $bc = $el->render();
 
         $el = null;
@@ -57,7 +57,7 @@ class SupplementsView extends TextView {
         $el->type('checkbox');
         $el->name('graphical_abstract');
         $el->value('1');
-        $el->label('graphical abstract');
+        $el->label($this->lang->t9n('graphical abstract'));
         $graphical_abstract = $el->render();
 
         $el = null;
@@ -80,7 +80,7 @@ class SupplementsView extends TextView {
         $el->addClass('mt-3');
         $el->type('submit');
         $el->context('danger');
-        $el->html('Upload');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
@@ -100,7 +100,7 @@ class SupplementsView extends TextView {
         $el = $this->di->get('Card');
 
         $el->id('upload-card');
-        $el->header('<b>UPLOAD FILES</b>', 'px-4 pt-3');
+        $el->header("<b>{$this->lang->t9n('Upload files')}</b>", 'px-4 pt-3 text-uppercase');
         $el->body($form, null, 'px-4 pb-4');
         $upload_card = $el->render();
 
@@ -112,7 +112,7 @@ class SupplementsView extends TextView {
             /** @var Bootstrap\ListGroup $el */
             $el = $this->di->get('ListGroup');
 
-            $el->div('NO FILES FOUND', 'text-muted text-center p-4');
+            $el->div($this->lang->t9n('No files'), 'text-muted text-center text-uppercase p-4');
             $table = $el->render();
 
             $el = null;
@@ -164,7 +164,7 @@ class SupplementsView extends TextView {
 
         if (!empty($images)) {
 
-            $table .= $this->fileList($item_id, $images, 'images');
+            $table .= $this->fileList($item_id, $images, $this->lang->t9n('images'));
         }
 
         if (!empty($pdfs)) {
@@ -174,17 +174,17 @@ class SupplementsView extends TextView {
 
         if (!empty($videos)) {
 
-            $table .= $this->fileList($item_id, $videos, 'videos');
+            $table .= $this->fileList($item_id, $videos, $this->lang->t9n('videos'));
         }
 
         if (!empty($audios)) {
 
-            $table .= $this->fileList($item_id, $audios, 'audio');
+            $table .= $this->fileList($item_id, $audios, $this->lang->t9n('audio'));
         }
 
         if (!empty($misc)) {
 
-            $table .= $this->fileList($item_id, $misc, 'miscellaneous');
+            $table .= $this->fileList($item_id, $misc, $this->lang->t9n('miscellaneous'));
         }
 
         /** @var Bootstrap\Row $el */
@@ -246,9 +246,9 @@ class SupplementsView extends TextView {
                 $el = $this->di->get('Button');
 
                 $el->addClass('btn-sm btn-outline-primary rename-file my-2');
-                $el->style('width: 5rem');
+                $el->style('min-width: 5rem');
                 $el->name('rename');
-                $el->html('Rename');
+                $el->html($this->lang->t9n('Rename'));
                 $rename_button = $el->render();
 
                 $el = null;
@@ -262,11 +262,12 @@ class SupplementsView extends TextView {
                 $el = $this->di->get('Button');
 
                 $el->addClass('btn-sm btn-outline-danger delete-file my-2');
-                $el->style('width: 5rem');
+                $el->style('min-width: 5rem');
                 $el->name('delete');
-                $el->dataBody('Do you want to delete this file?');
-                $el->dataButton('Delete');
-                $el->html('Delete');
+                $el->dataBody($this->lang->t9n('Do you want to delete this file?'));
+                $el->dataButton($this->lang->t9n('Delete'));
+                $el->dataTitle($this->lang->t9n('Delete'));
+                $el->html($this->lang->t9n('Delete'));
                 $delete_button = $el->render();
 
                 $el = null;

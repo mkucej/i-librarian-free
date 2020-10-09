@@ -53,10 +53,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new PdfModel($this->di);
         $info = $model->info($this->get['id']);
@@ -97,10 +94,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Custom filename.
         $model = new ItemModel($this->di);
@@ -160,10 +154,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Model.
         $model = new PdfModel($this->di);
@@ -198,10 +189,7 @@ class PdfController extends Controller {
             throw new Exception("Id required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         $stream = null;
         $client_name = null;
@@ -213,10 +201,7 @@ class PdfController extends Controller {
         if (!empty($this->post['remote_url'])) {
 
             // Safe link?
-            if ($this->validation->ssrfLink($this->post['remote_url']) === false) {
-
-                throw new Exception("this link is invalid", 422);
-            }
+            $this->validation->ssrfLink($this->post['remote_url']);
 
             $client = $this->di->get('HttpClient', [
                 [
@@ -248,14 +233,14 @@ class PdfController extends Controller {
 
         if ($stream === null) {
 
-            return $view->main(['info' => 'No PDF provided.']);
+            return $view->main();
         }
 
         // Save the file.
         $model = new PdfModel($this->di);
         $model->save($this->post['id'], $stream, $client_name);
 
-        return $view->main(['info' => 'New PDF saved.']);
+        return $view->main(['info' => 'new PDF was saved']);
     }
 
     /**
@@ -283,10 +268,7 @@ class PdfController extends Controller {
             throw new Exception("Id required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Delete the file.
         $model = new PdfModel($this->di);
@@ -294,11 +276,11 @@ class PdfController extends Controller {
 
         if ($deleted === false) {
 
-            throw new Exception("file was not deleted", 500);
+            throw new Exception('file was not deleted', 500);
         }
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'File was deleted.']);
+        return $view->main(['info' => 'file was deleted']);
     }
 
     /**
@@ -326,17 +308,14 @@ class PdfController extends Controller {
         }
 
         // Check id.
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Re-extract text from the PDF.
         $model = new PdfModel($this->di);
         $model->extract($this->post['id'], true);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Text was extracted.']);
+        return $view->main(['info' => 'text was extracted']);
     }
 
     /**
@@ -368,10 +347,7 @@ class PdfController extends Controller {
             throw new Exception("Id required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("Id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Get page count.
         $pdf_model = new PdfModel($this->di);
@@ -381,7 +357,7 @@ class PdfController extends Controller {
         if ($page_count === 0) {
 
             $view = new DefaultView($this->di);
-            return $view->main(['info' => 'Invalid PDF.']);
+            return $view->main(['info' => 'invalid PDF file']);
         }
 
         /** @var TesseractOcr $ocr_obj */
@@ -415,7 +391,7 @@ class PdfController extends Controller {
         unlink($text_file);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'PDF OCR has finished.']);
+        return $view->main(['info' => 'OCR has finished']);
     }
 
     /**
@@ -434,10 +410,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new PdfModel($this->di);
         $bookmarks = $model->bookmarks($this->get['id']);
@@ -462,20 +435,14 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         if (!isset($this->get['page'])) {
 
             throw new Exception("the parameter page is required", 400);
         }
 
-        if ($this->validation->id($this->get['page']) === false) {
-
-            throw new Exception("the parameter page {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 100000);
 
         $model = new PdfModel($this->di);
         $boxes = $model->boxes($this->get['id'], $this->get['page']);
@@ -500,10 +467,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new PdfModel($this->di);
         $boxes = $model->annotations($this->get['id']);
@@ -533,14 +497,11 @@ class PdfController extends Controller {
             throw new Exception("item id is required", 400);
         }
 
-        if (isset($this->post['id']) && $this->validation->id($this->post['id']) === false) {
+        $this->validation->id($this->post['id']);
 
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        if (isset($this->post['annotation_id']) === true) {
 
-        if (isset($this->post['annotation_id']) && $this->validation->id($this->post['annotation_id']) === false) {
-
-            throw new Exception("the parameter annotation id {$this->validation->error}", 422);
+            $this->validation->id($this->post['annotation_id']);
         }
 
         $note_pg = isset($this->post['pg']) ? $this->post['pg'] : null;
@@ -552,7 +513,7 @@ class PdfController extends Controller {
         $model->saveNote($this->post['id'], $this->post['note'], $note_pg, $note_t, $note_l, $note_id);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'PDF note was saved.']);
+        return $view->main(['info' => 'PDF note was saved']);
     }
 
     /**
@@ -571,10 +532,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new PdfModel($this->di);
         $boxes = $model->annotations($this->get['id']);
@@ -599,10 +557,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Boxes come as JSON.
         $boxes = \Librarian\Http\Client\json_decode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
@@ -630,10 +585,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Boxes come as JSON.
         $boxes = \Librarian\Http\Client\json_decode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
@@ -661,10 +613,7 @@ class PdfController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         if (!isset($this->get['query'])) {
 
@@ -755,20 +704,14 @@ HTML;
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         if (isset($this->get['page']) === false) {
 
             throw new Exception("page parameter is required", 400);
         }
 
-        if ($this->validation->intRange($this->get['page'], 1, 10000) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         // Log model.
         $model = new PdfModel($this->di);
@@ -776,7 +719,7 @@ HTML;
 
         // Render view.
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 
     /**
@@ -795,10 +738,7 @@ HTML;
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new PdfModel($this->di);
         $info = $model->info($this->get['id']);

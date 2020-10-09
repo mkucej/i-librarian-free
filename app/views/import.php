@@ -24,7 +24,7 @@ class ImportView extends TextView {
      */
     public function wizard() {
 
-        $this->title('Import wizard');
+        $this->title($this->lang->t9n('Import wizard'));
 
         $this->head();
 
@@ -34,7 +34,7 @@ class ImportView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Import wizard");
+        $el->item($this->lang->t9n('Import wizard'));
         $bc = $el->render();
 
         $el = null;
@@ -45,7 +45,7 @@ class ImportView extends TextView {
         $el->elementName('a');
         $el->context('primary');
         $el->href('#import/uid');
-        $el->html('Import');
+        $el->html($this->lang->t9n('Import-VERB'));
         $link_uid = $el->render();
 
         $el = null;
@@ -70,7 +70,7 @@ EOT
         $el->elementName('a');
         $el->context('primary');
         $el->href('#import/file');
-        $el->html('Import');
+        $el->html($this->lang->t9n('Import-VERB'));
         $link_file = $el->render();
 
         $el = null;
@@ -80,7 +80,8 @@ EOT
 
         $el->addClass('h-100');
         $el->body(<<<EOT
-            <h4>Published PDFs containing a DOI</h4>
+            <h4>{$this->lang->t9n('Published PDFs')}</h4>
+            <span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
             <span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
             <span class="text-secondary">+ 10.2234/265489.225</span>
 EOT
@@ -96,7 +97,7 @@ EOT
         $el->elementName('a');
         $el->context('primary');
         $el->href('#import/text');
-        $el->html('Import');
+        $el->html($this->lang->t9n('Import-VERB'));
         $link_text = $el->render();
 
         $el = null;
@@ -106,7 +107,7 @@ EOT
 
         $el->addClass('h-100');
         $el->body(<<<EOT
-            <h4>RIS, BibTex, or Endnote XML</h4>
+            <h4>RIS, BibTex, {$this->lang->t9n('or')} Endnote XML</h4>
             <span class="text-secondary">@article{Smith2011Foobar</span>
 EOT
             , null, 'text-center py-5');
@@ -123,6 +124,7 @@ EOT
         $el->column($card_uid, 'col-xl-4 mb-3');
         $el->column($card_file, 'col-xl-4 mb-3');
         $el->column($card_text, 'col-xl-4 mb-3');
+        $el->column('<a href="#import/manual">' . $this->lang->t9n('None of the above') . '</a>', 'col-12 my-5 text-center');
         $content = $el->render();
 
         $el = null;
@@ -142,7 +144,7 @@ EOT
      */
     public function uid(array $projects, array $tags) {
 
-        $this->title('Import UID');
+        $this->title($this->lang->t9n('Import UID'));
 
         $this->head();
 
@@ -152,8 +154,8 @@ EOT
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Import wizard", '#import/wizard');
-        $el->item("Import UID");
+        $el->item($this->lang->t9n('Import wizard'), '#import/wizard');
+        $el->item($this->lang->t9n('Import UID'));
         $bc = $el->render();
 
         $el = null;
@@ -166,7 +168,7 @@ EOT
 
         $el->name('uid');
         $el->label('DOI, Pubmed ID, NASA bibcode...');
-        $el->hint('Example: PMID: 20133854');
+        $el->hint($this->lang->t9n('Example') . ': PMID: 20133854');
         $uid_input = $el->render();
 
         $el = null;
@@ -198,7 +200,7 @@ EOT
 
         $el->id('fetch-record');
         $el->context('primary');
-        $el->html('Fetch record');
+        $el->html($this->lang->t9n('Fetch record'));
         $fetch_button = $el->render();
 
         $el = null;
@@ -209,7 +211,7 @@ EOT
         $el->type('submit');
         $el->context('danger');
         $el->addClass('d-none');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
@@ -219,7 +221,7 @@ EOT
 
         $el->name('uid_types[]');
         $el->id('new-uid-type');
-        $el->label('UID type');
+        $el->label($this->lang->t9n('UID type'));
         $el->option('', '');
 
         if ($this->app_settings->getUser('connect_arxiv') === '1') {
@@ -283,7 +285,7 @@ EOT
         $el->groupClass('mb-3');
         $el->type('checkbox');
         $el->inline(true);
-        $el->label('Clipboard');
+        $el->label($this->lang->t9n('Clipboard'));
         $el->name('clipboard');
         $el->value('1');
         $clipboard_check = $el->render();
@@ -316,7 +318,7 @@ EOT
 
         $el->id('tags-new');
         $el->type('checkbox');
-        $el->label('New tags (one per line)');
+        $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
 
@@ -382,19 +384,19 @@ EOT
             </div>
             <div id="phase-2" class="d-none mt-3">
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#more-metadata">
-                    {$chevron}Add PDF
+                    {$chevron}{$this->lang->t9n('Add PDF')}
                 </div>
                 <div class="collapse ml-3" id="more-metadata">
                     $file_input
                 </div>
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#collections">
-                    {$chevron}Add to
+                    {$chevron}{$this->lang->t9n('Add to')}
                 </div>
                 <div class="collapse ml-3" id="collections">
                     $clipboard_check $project_checks
                 </div>
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#tags">
-                    {$chevron}Tag with
+                    {$chevron}{$this->lang->t9n('Tag with')}
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
@@ -448,9 +450,9 @@ BODY
         $this->item_meta = $this->di->getShared('ItemMeta');
 
         // Item labels for this ref type.
-        $item_labels = $this->item_meta->getLabels('unpublished');
+        $item_labels = $this->item_meta->getLabels($this->lang, 'unpublished');
 
-        $this->title('Manual import');
+        $this->title($this->lang->t9n('Manual import'));
 
         $this->head();
 
@@ -460,7 +462,7 @@ BODY
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Manual import");
+        $el->item($this->lang->t9n('Manual import'));
         $bc = $el->render();
 
         $el = null;
@@ -475,7 +477,7 @@ BODY
         $el->name('title');
         $el->required('required');
         $el->style('height: 4rem');
-        $el->label('Title');
+        $el->label($this->lang->t9n('Title'));
         $title = $el->render();
 
         $el = null;
@@ -489,7 +491,7 @@ BODY
         $el->addClass("input-typeahead");
         $el->groupClass('col');
         $el->name('author_last_name[]');
-        $el->label('Author last name');
+        $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/author");
         $new_last_name = $el->render();
 
@@ -501,7 +503,7 @@ BODY
         $el->id('new-author-first');
         $el->groupClass('col');
         $el->name('author_first_name[]');
-        $el->label('Author first name');
+        $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
         $el = null;
@@ -518,6 +520,7 @@ BODY
         $el = null;
 
         $author_row = <<<EOT
+            <p><b>{$this->lang->t9n('Authors')}</b></p>
             <div id="new-author-container" class="form-row">
                 $new_last_name
                 $new_first_name
@@ -534,7 +537,7 @@ EOT;
         $el->addClass("input-typeahead");
         $el->groupClass('col');
         $el->name('editor_last_name[]');
-        $el->label('Editor last name');
+        $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/editor");
         $new_last_name = $el->render();
 
@@ -546,7 +549,7 @@ EOT;
         $el->id('new-editor-first');
         $el->groupClass('col');
         $el->name('editor_first_name[]');
-        $el->label('Editor first name');
+        $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
         $el = null;
@@ -563,6 +566,7 @@ EOT;
         $el = null;
 
         $editor_row = <<<EOT
+            <p><b>{$this->lang->t9n('Editors')}</b></p>
             <div id="new-editor-container" class="form-row">
                 $new_last_name
                 $new_first_name
@@ -578,7 +582,7 @@ EOT;
         $el->groupClass('col-sm-3');
         $el->name('uid_types[]');
         $el->id('new-uid-type');
-        $el->label('UID type');
+        $el->label($this->lang->t9n('UID type'));
         $el->option('', '');
 
         foreach (ItemMeta::UID_TYPE as $option => $label) {
@@ -624,6 +628,7 @@ EOT;
 
         foreach ($select_names as $name) {
 
+            /** @var Bootstrap\Select $el */
             $el = $this->di->get('Select');
 
             $el->name($name);
@@ -787,7 +792,7 @@ EOT;
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
@@ -809,7 +814,7 @@ EOT;
         $el->groupClass('mb-3');
         $el->type('checkbox');
         $el->inline(true);
-        $el->label('Clipboard');
+        $el->label($this->lang->t9n('Clipboard'));
         $el->name('clipboard');
         $el->value('1');
         $clipboard_check = $el->render();
@@ -842,7 +847,7 @@ EOT;
 
         $el->id('tags-new');
         $el->type('checkbox');
-        $el->label('New tags (one per line)');
+        $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
 
@@ -904,17 +909,17 @@ EOT;
             $file_input
             $title
             <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#more-metadata">
-                {$chevron}More metadata
+                {$chevron}{$this->lang->t9n('More metadata')}
             </div>
             <div class="collapse" id="more-metadata">$other_metadata</div>
             <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#collections">
-                {$chevron}Add to
+                {$chevron}{$this->lang->t9n('Add to')}
             </div>
             <div class="collapse" id="collections">
                 $clipboard_check $project_checks
             </div>
             <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#tags">
-                {$chevron}Tag with
+                {$chevron}{$this->lang->t9n('Tag with')}
             </div>
             <div class="collapse" id="tags">
                 $tags_ta
@@ -961,7 +966,7 @@ EOT
      */
     public function file(array $projects, array $tags) {
 
-        $this->title('Import PDFs');
+        $this->title($this->lang->t9n('Import PDFs'));
 
         $this->head();
 
@@ -971,8 +976,8 @@ EOT
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Import wizard", '#import/wizard');
-        $el->item("Import PDFs");
+        $el->item($this->lang->t9n('Import wizard'), '#import/wizard');
+        $el->item($this->lang->t9n('Import PDFs'));
         $bc = $el->render();
 
         $el = null;
@@ -997,13 +1002,13 @@ EOT
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
 
         // Repositories.
-        $repositories = '<div class="mb-1"><b>Fetch metadata from:</b></div>';
+        $repositories = "<div class=\"mb-1\"><b>{$this->lang->t9n('Fetch metadata from')}:</b></div>";
 
         if ($this->app_settings->getUser('connect_xplore') === '1') {
 
@@ -1072,7 +1077,7 @@ EOT
         $el->type('radio');
         $el->readonly('readonly');
         $el->checked('checked');
-        $el->label('Crossref (fallback)');
+        $el->label('Crossref');
         $repositories .= $el->render();
 
         $el = null;
@@ -1094,7 +1099,7 @@ EOT
         $el->groupClass('mb-3');
         $el->type('checkbox');
         $el->inline(true);
-        $el->label('Clipboard');
+        $el->label($this->lang->t9n('Clipboard'));
         $el->name('clipboard');
         $el->value('1');
         $clipboard_check = $el->render();
@@ -1127,7 +1132,7 @@ EOT
 
         $el->id('tags-new');
         $el->type('checkbox');
-        $el->label('New tags (one per line)');
+        $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
 
@@ -1188,13 +1193,13 @@ EOT
             $repositories
             <div id="phase-2" class="mt-3">
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#collections">
-                    {$chevron}Add all to
+                    {$chevron}{$this->lang->t9n('Add to')}
                 </div>
                 <div class="collapse ml-3" id="collections">
                     $clipboard_check $project_checks
                 </div>
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#tags">
-                    {$chevron}Tag all with
+                    {$chevron}{$this->lang->t9n('Tag with')}
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
@@ -1242,7 +1247,7 @@ BODY
      */
     public function text(array $projects, array $tags) {
 
-        $this->title('Import metadata');
+        $this->title($this->lang->t9n('Import metadata'));
 
         $this->head();
 
@@ -1252,8 +1257,8 @@ BODY
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Import wizard", '#import/wizard');
-        $el->item("Import metadata");
+        $el->item($this->lang->t9n('Import wizard'), '#import/wizard');
+        $el->item($this->lang->t9n('Import metadata'));
         $bc = $el->render();
 
         $el = null;
@@ -1264,8 +1269,8 @@ BODY
         $el->id('text');
         $el->name('text');
         $el->style('height: 10rem');
-        $el->label('RIS, BibTex, or Endnote XML');
-        $el->placeholder('Paste here...');
+        $el->label("RIS, BibTex, {$this->lang->t9n('or')} Endnote XML");
+        $el->placeholder($this->lang->t9n('Paste here'));
         $ta = $el->render();
 
         $el = null;
@@ -1291,7 +1296,7 @@ BODY
         $el->type('submit');
         $el->context('danger');
         $el->addClass('mb-4');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
@@ -1313,7 +1318,7 @@ BODY
         $el->groupClass('mb-3');
         $el->type('checkbox');
         $el->inline(true);
-        $el->label('Clipboard');
+        $el->label($this->lang->t9n('Clipboard'));
         $el->name('clipboard');
         $el->value('1');
         $clipboard_check = $el->render();
@@ -1346,7 +1351,7 @@ BODY
 
         $el->id('tags-new');
         $el->type('checkbox');
-        $el->label('New tags (one per line)');
+        $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
 
@@ -1399,10 +1404,10 @@ BODY
         $tag_checkboxes .= '</td></tr></table>';
 
         $help = <<<HELP
-            <div data-toggle="collapse" data-target="#pdf-hint" class="cursor-pointer">$chevron PDF hint</div>
+            <div data-toggle="collapse" data-target="#pdf-hint" class="cursor-pointer">{$chevron} PDF {$this->lang->t9n('hint')}</div>
             <div class="collapse" id="pdf-hint"><br>
-                PDFs can be imported with RIS and bib files, if they are found in the data import directory.
-                A relative path in the metadata will be used to find these files, if specified as follows:<br><br>
+                {$this->lang->t9n('PDFs can be imported with RIS and bib files, if they are found in the data import directory')}.
+                {$this->lang->t9n('A relative path in the metadata will be used to find these files, if specified as follows')}:<br><br>
                 RIS<br>
                 <code>L1  - relative/path/in/import/file.pdf</code><br>
                 Bibtex<br>
@@ -1416,17 +1421,17 @@ HELP;
 
         $el->body(<<<BODY
             $ta
-            <p>&mdash;OR&mdash;</p>
+            <p>&mdash;{$this->lang->t9n('OR')}&mdash;</p>
             $file_input
             <div class="mt-3">
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#collections">
-                    {$chevron}Add all to
+                    {$chevron}{$this->lang->t9n('Add to')}
                 </div>
                 <div class="collapse ml-3" id="collections">
                     $clipboard_check $project_checks
                 </div>
                 <div class="mb-3 cursor-pointer" data-toggle="collapse" data-target="#tags">
-                    {$chevron}Tag all with
+                    {$chevron}{$this->lang->t9n('Tag with')}
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta

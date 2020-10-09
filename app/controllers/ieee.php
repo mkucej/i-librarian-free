@@ -79,7 +79,7 @@ class IEEEController extends Controller {
         if ($terms === []) {
             
             $view = new DefaultView($this->di);
-            return $view->main(['info' => 'No search terms provided.']);
+            return $view->main();
         }
 
         // Add filters.

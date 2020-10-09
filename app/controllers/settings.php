@@ -121,6 +121,6 @@ class SettingsController extends Controller {
         // Send the view.
         $view = new DefaultView($this->di);
 
-        return $view->main(['info' => 'New settings were saved.']);
+        return $view->main(['info' => 'new settings were saved']);
     }
 }

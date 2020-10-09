@@ -6,6 +6,7 @@ use Exception;
 use Librarian\Cache\FileCache;
 use Librarian\Http\Client\Psr7\Stream;
 use Librarian\ItemMeta;
+use Librarian\Media\Language;
 use Librarian\Media\ScalarUtils;
 use Librarian\Security\Sanitation;
 use PDO;
@@ -15,7 +16,7 @@ use function Librarian\Http\Client\Psr7\stream_for;
 /**
  * @method array clipboardAdd(array $items)
  * @method void  clipboardDelete(array $items)
- * @method Stream exportZip(array $items)
+ * @method Stream exportZip(array $items, string $locale = 'en_US')
  * @method array maxId()
  * @method array projectAdd(array $item_ids, int $project_id)
  * @method void  projectDelete(array $item_ids, int $project_id)
@@ -605,8 +606,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['tag', 'tag'],
-                        'value' => [$id, $value]
+                        'tag' => [$id, $value]
                     ];
                 }
             }
@@ -630,8 +630,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['author', 'author'],
-                        'value' => [$id, $value]
+                        'author' => [$id, $value]
                     ];
                 }
             }
@@ -655,8 +654,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['editor', 'editor'],
-                        'value' => [$id, $value]
+                        'editor' => [$id, $value]
                     ];
                 }
             }
@@ -680,8 +678,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['keyword', 'keyword'],
-                        'value' => [$id, $value]
+                        'keyword' => [$id, $value]
                     ];
                 }
             }
@@ -705,8 +702,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['primary_title', 'primary title'],
-                        'value' => [$id, $value]
+                        'primary_title' => [$id, $value]
                     ];
                 }
             }
@@ -730,8 +726,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['secondary_title', 'secondary title'],
-                        'value' => [$id, $value]
+                        'secondary_title' => [$id, $value]
                     ];
                 }
             }
@@ -755,8 +750,7 @@ EOT;
                 if (!empty($value)) {
 
                     $output[] = [
-                        'name'  => ['tertiary_title', 'tertiary title'],
-                        'value' => [$id, $value]
+                        'tertiary_title' => [$id, $value]
                     ];
                 }
             }
@@ -768,8 +762,7 @@ EOT;
             foreach ($filters['added_time'] as $id) {
 
                 $output[] = [
-                    'name'  => ['added_time', 'added'],
-                    'value' => [$id, strtotime($id)]
+                    'added_time' => [$id, strtotime($id)]
                 ];
             }
         }
@@ -782,8 +775,7 @@ EOT;
                 foreach ($filters['custom' . $i] as $id) {
 
                     $output[] = [
-                        'name'  => ['custom' . $i, 'custom' . $i],
-                        'value' => [$id, $id]
+                        'custom' . $i => [$id, $id]
                     ];
                 }
             }
@@ -813,8 +805,7 @@ EOT;
                 }
 
                 $output[] = [
-                    'name'  => ['misc', 'miscellaneous'],
-                    'value' => [$id, $value]
+                    'misc' => [$id, $value]
                 ];
             }
         }
@@ -2314,7 +2305,7 @@ EOT;
 
                 $publication = !empty($row['primary_title']) ? $row['primary_title'] : $row['secondary_title'];
                 $publication = !empty($publication) ? $publication : $row['tertiary_title'];
-                $publication = !empty($publication) ? $publication : 'No publication title';
+                $publication = !empty($publication) ? $publication : '';
 
                 // Add row to the items array.
                 $output[] = [
@@ -2347,7 +2338,7 @@ EOT;
 
                 if (empty($first_author)) {
 
-                    $output[$i]['authors'] = ['No authors'];
+                    $output[$i]['authors'] = [];
 
                 } elseif (empty($last_author)) {
 
@@ -2398,7 +2389,7 @@ EOT;
 
                 $publication = !empty($row['primary_title']) ? $row['primary_title'] : $row['secondary_title'];
                 $publication = !empty($publication) ? $publication : $row['tertiary_title'];
-                $publication = !empty($publication) ? $publication : 'No publication title';
+                $publication = !empty($publication) ? $publication : '';
 
                 // Add row to the items array.
                 $output[] = [
@@ -2408,7 +2399,7 @@ EOT;
                     'publication_title' => $publication,
                     'publication_date'  => substr($row['publication_date'], 0, 4),
                     'has_pdf'  => !empty($row['file_hash']),
-                    'snippet' => $item_rows[$i]['snippet'] ?? ''
+                    'snippet'  => $item_rows[$i]['snippet'] ?? ''
                 ];
 
                 $i++;
@@ -2432,7 +2423,7 @@ EOT;
 
                 if (empty($first_author)) {
 
-                    $output[$i]['authors'] = ['No authors'];
+                    $output[$i]['authors'] = [];
 
                 } elseif (empty($last_author)) {
 
@@ -2886,14 +2877,19 @@ EOT;
     /**
      * Create an HTML export + PDFs in a ZIP file and send the Stream to the controller.
      *
-     * @param $items
+     * @param array $items
+     * @param string $locale
      * @return Stream
      * @throws Exception
      */
-    protected function _exportZip(array $items) {
+    protected function _exportZip(array $items, $locale = 'en_US') {
 
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
+
+        /** @var Language $lang */
+        $lang = $this->di->getShared('Language');
+        $lang->setLanguage($locale);
 
         $zip_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('export_') . '.zip';
 
@@ -2950,7 +2946,15 @@ EOT;
         }
 
         // Add HTML.
-        $zip->addFile(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app'  . DIRECTORY_SEPARATOR . 'media'  . DIRECTORY_SEPARATOR . 'offline_index.html', 'index.html');
+        $in = IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app'  . DIRECTORY_SEPARATOR . 'media'  . DIRECTORY_SEPARATOR . 'offline_index.html';
+        $out = IL_TEMP_PATH . DIRECTORY_SEPARATOR . "translated-index.html";
+
+        // Translate.
+        /** @var array $tokens */
+        $translated = $lang->t9nText(file_get_contents($in));
+        file_put_contents($out, $translated);
+
+        $zip->addFile($out, 'index.html');
         $zip->setCompressionName('index.html', ZipArchive::CM_STORE);
         $zip->addFile(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app'  . DIRECTORY_SEPARATOR . 'media'  . DIRECTORY_SEPARATOR . 'offline_pdf.html', 'pdf.html');
         $zip->setCompressionName('pdf.html', ZipArchive::CM_STORE);

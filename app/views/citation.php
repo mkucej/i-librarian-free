@@ -15,13 +15,17 @@ class CitationView extends TextView {
      */
     public function main(array $data): string {
 
+        $this->title("{$this->lang->t9n('Citation styles')} - I, Librarian");
+
+        $this->head();
+
         /** @var Bootstrap\Breadcrumb $el */
         $el = $this->di->get('Breadcrumb');
 
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Citation styles');
+        $el->item($this->lang->t9n('Citation styles'));
         $bc = $el->render();
 
         $el = null;
@@ -32,8 +36,13 @@ class CitationView extends TextView {
         $el = $this->di->get('Textarea');
 
         $el->name('csl');
-        $el->label('Citation style as CSL');
-        $el->hint('<a href="https://github.com/citation-style-language/styles" target="_blank">CSL repository</a> (Dependent styles are not supported.)');
+        $el->label("{$this->lang->t9n('Citation style')} (CSL)");
+        $el->hint(
+<<<HTML
+<a href="https://github.com/citation-style-language/styles" target="_blank">CSL {$this->lang->t9n('repository')}</a>
+({$this->lang->t9n('Dependent styles are not supported')})
+HTML
+        );
         $ta = $el->render();
 
         $el = null;
@@ -43,7 +52,7 @@ class CitationView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $save = $el->render();
 
         $el = null;
@@ -61,7 +70,7 @@ class CitationView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>ADD/REPLACE CITATION STYLE</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('add or replace citation style')}</b>");
         $el->body($form);
         $csl_card = $el->render();
 
@@ -84,12 +93,21 @@ class CitationView extends TextView {
 
         $el = null;
 
+        /** @var Bootstrap\Card $el */
+        $el = $this->di->get('Card');
+
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Citation styles')}</b>");
+        $el->body($table);
+        $table_card = $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
 
         $el->action(IL_BASE_URL . 'index.php/citation/new');
         $el->column($csl_card, 'col-xl-4');
-        $el->column($table, 'col-xl-8');
+        $el->column($table_card, 'col-xl-8');
         $row = $el->render();
 
         $el = null;

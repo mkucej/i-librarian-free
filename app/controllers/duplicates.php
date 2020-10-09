@@ -85,10 +85,7 @@ class DuplicatesController extends Controller {
         // Validate.
         foreach ($this->post['ids'] as $id) {
 
-            if ($this->validation->id($id) === false) {
-
-                throw new Exception('parameter ids ' . $this->validation->error, 400);
-            }
+            $this->validation->id($id);
         }
 
         // Merge duplicates.
@@ -107,6 +104,6 @@ class DuplicatesController extends Controller {
         $model = null;
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => "Items were merged into ID $first_id."]);
+        return $view->main(['info' => "items were merged"]);
     }
 }

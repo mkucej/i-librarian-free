@@ -18,7 +18,7 @@ class FilterView extends TextView {
     /**
      * Typeahead menu.
      *
-     * @param array $input
+     * @param array|null $input
      * @return string
      * @throws Exception
      */
@@ -83,9 +83,15 @@ class FilterView extends TextView {
         $trimmed_get = $this->sanitation->trim($get);
         $sanitized_get = $this->sanitation->urlquery($trimmed_get);
         $sanitized_get = $this->sanitation->html($sanitized_get);
+        // Links start a new filter, so we are resetting to page #1.
+        unset($sanitized_get['page']);
+        // Remove filter search query.
+        unset($sanitized_get['q']);
+
+        $total_count = count($items);
 
         // Empty list.
-        if (count($items) === 0) {
+        if ($total_count === 0) {
 
             // Custom.
             if (strpos($type, 'custom') === 0) {
@@ -97,7 +103,7 @@ class FilterView extends TextView {
             $el = $this->di->get('ListGroup');
 
             $el->addClass('list-group-flush');
-            $el->div("no " . str_replace('_', ' ', $type) . ' found', 'border-0 text-center text-uppercase');
+            $el->div($this->lang->t9n('no items'), 'border-0 text-center text-uppercase text-secondary');
             $list = $el->render();
 
             $el = null;
@@ -126,14 +132,6 @@ class FilterView extends TextView {
         }
 
         // Populated lists.
-        $total_count = count($items);
-        $half_count = (integer) ceil($total_count / 2);
-
-        // Links start a new filter, so we are resetting to page #1.
-        unset($sanitized_get['page']);
-        // Remove filter search query.
-        unset($sanitized_get['q']);
-
         switch ($collection) {
 
             case 'library':
@@ -153,54 +151,44 @@ class FilterView extends TextView {
         }
 
         /** @var Bootstrap\ListGroup $el */
-        $el = $this->di->get('ListGroup');
-
-        $el->addClass('list-group-flush');
-
-        // List #1.
-        for ($i = 0; $i < $half_count; $i++) {
-
-            // Add.
-            $new_get = $sanitized_get;
-
-            // Add filter to _GET.
-            $new_get['filter'][$type][] = key($items);
-
-            $get_query = '?'. http_build_query($new_get);
-
-            $el->link("#{$controller}/filter{$get_query}", current($items), 'border-0');
-
-            next($items);
-        }
-
-        $list_1 = $el->render();
-
-        $el = null;
+        $el1 = $this->di->get('ListGroup');
 
         /** @var Bootstrap\ListGroup $el */
-        $el = $this->di->get('ListGroup');
+        $el2 = $this->di->get('ListGroup');
 
-        $el->addClass('list-group-flush');
+        $el1->addClass('list-group-flush');
+        $el2->addClass('list-group-flush');
 
-        // List #2.
-        for ($i = $half_count; $i < $total_count; $i++) {
-
-            // Add.
-            $new_get = $sanitized_get;
+        for ($i = 0; $i < min($total_count, 99); $i++) {
 
             // Add filter to _GET.
+            $new_get = $sanitized_get;
             $new_get['filter'][$type][] = key($items);
-
             $get_query = '?'. http_build_query($new_get);
 
-            $el->link("#{$controller}/filter{$get_query}", current($items), 'border-0');
+            if ($i % 2 === 0) {
+
+                $el1->link("#{$controller}/filter{$get_query}", current($items), 'border-0');
+
+            } else {
+
+                $el2->link("#{$controller}/filter{$get_query}", current($items), 'border-0');
+            }
 
             next($items);
         }
 
-        $list_2 = $el->render();
+        // Add ellipses.
+        if ($total_count > 99) {
 
-        $el = null;
+            $el2->link('#', '&hellip;', 'border-0');
+        }
+
+        $list_1 = $el1->render();
+        $list_2 = $el2->render();
+
+        $el1 = null;
+        $el2 = null;
 
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');

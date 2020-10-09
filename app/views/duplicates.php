@@ -14,7 +14,7 @@ class DuplicatesView extends TextView {
      */
     public function main(): string {
 
-        $this->title('Duplicates');
+        $this->title($this->lang->t9n('Duplicates'));
 
         $this->head();
 
@@ -24,7 +24,7 @@ class DuplicatesView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Duplicates', '#duplicates');
+        $el->item($this->lang->t9n('Duplicates'), '#duplicates');
         $bc = $el->render();
 
         $el = null;
@@ -35,7 +35,7 @@ class DuplicatesView extends TextView {
         $el->elementName('a');
         $el->context('primary');
         $el->href('#duplicates/find?mode=similar');
-        $el->html('Find duplicates');
+        $el->html($this->lang->t9n('Find duplicates'));
         $link1 = $el->render();
 
         $el = null;
@@ -46,7 +46,7 @@ class DuplicatesView extends TextView {
         $el->elementName('a');
         $el->context('primary');
         $el->href('#duplicates/find?mode=identical');
-        $el->html('Find duplicates');
+        $el->html($this->lang->t9n('Find duplicates'));
         $link2 = $el->render();
 
         $el = null;
@@ -57,40 +57,38 @@ class DuplicatesView extends TextView {
         $el->elementName('a');
         $el->context('primary');
         $el->href('#duplicates/find?mode=files');
-        $el->html('Find duplicates');
+        $el->html($this->lang->t9n('Find duplicates'));
         $link3 = $el->render();
 
         $el = null;
-
-        $animation1 = <<<EOT
-            <div class="py-2" style="height: 4rem;font-family: monospace">
-                <div class="div1" style="position: relative;height: 1.75rem"><span class="align-middle">Lorem Ipsum Dolor?</span></div>
-                <div class="div2" style="position: relative;height: 1.75rem"><span class="align-middle">Lorem ipsum dolor!</span></div>
-            </div>
-EOT;
-
-        $animation2 = <<<EOT
-            <div class="py-2" style="height: 4rem;font-family: monospace">
-                <div class="div1" style="position: relative;height: 1.75rem"><span class="align-middle">Lorem ipsum dolor</span></div>
-                <div class="div2" style="position: relative;height: 1.75rem"><span class="align-middle">Lorem ipsum dolor</span></div>
-            </div>
-EOT;
-
-        $animation3 = <<<EOT
-            <div class="py-2" style="height: 4rem;font-family: monospace">
-                <div class="div1" style="position: relative;height: 1.75rem"><span class="mdi mdi-file-pdf-box align-middle"> f16a15f5dad16df5</span></div>
-                <div class="div2" style="position: relative;height: 1.75rem"><span class="mdi mdi-file-pdf-box align-middle"> f16a15f5dad16df5</span></div>
-            </div>
-EOT;
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
         $el->id('duplicate-mode1');
         $el->addClass('duplicate-mode mb-3 text-center');
-        $el->header('<div class="w-100 text-center"><b>SIMILAR TITLES</b></div>');
-        $el->body("<p><span class=\"text-secondary\">slow</span><br><span class=\"text-success\">high detection rate</span><br><span class=\"text-secondary\">high false positives</span></p>$link1");
-        $el->footer($animation1);
+        $el->header(
+<<<HTML
+<div class="w-100 text-center text-uppercase"><b>{$this->lang->t9n('similar titles')}</b></div>
+HTML
+        );
+        $el->body(
+<<<HTML
+<p>
+    <span class="text-success">{$this->lang->t9n('high detection rate')}</span><br>
+    <span class="text-secondary">{$this->lang->t9n('high false positives')}</span>
+</p>
+$link1
+HTML
+        );
+        $el->footer(
+<<<HTML
+<div class="py-2 text-monospace text-center">
+    Lorem Ipsum Dolor?<br>
+    Lorem ipsum dolor!
+</div>
+HTML
+);
         $card1 = $el->render();
 
         $el = null;
@@ -100,10 +98,37 @@ EOT;
 
         $el->id('duplicate-mode2');
         $el->addClass('duplicate-mode mb-3 text-center');
-        $el->header('<div class="w-100 text-center"><b>IDENTICAL TITLES</b></div>');
-        $el->body("<p><span class=\"text-success\">fast</span><br><span class=\"text-secondary\">low detection rate</span><br><span class=\"text-success\">low false positives</span></p>$link2");
-        $el->footer($animation2);
+        $el->header(
+<<<HTML
+<div class="w-100 text-center text-uppercase"><b>{$this->lang->t9n('identical titles')}</b></div>
+HTML
+        );
+        $el->body(
+<<<HTML
+<p>
+    <span class="text-secondary">{$this->lang->t9n('low detection rate')}</span><br>
+    <span class="text-success">{$this->lang->t9n('low false positives')}</span>
+</p>
+$link2
+HTML
+        );
+        $el->footer(
+<<<HTML
+<div class="py-2 text-monospace text-center">
+    Lorem Ipsum Dolor<br>
+    Lorem ipsum dolor
+</div>
+HTML
+        );
         $card2 = $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Icon $el */
+        $el = $this->di->get('Icon');
+
+        $el->icon('file-pdf-box');
+        $pdf_icon = $el->render();
 
         $el = null;
 
@@ -112,9 +137,28 @@ EOT;
 
         $el->id('duplicate-mode3');
         $el->addClass('duplicate-mode mb-3 text-center');
-        $el->header('<div class="w-100 text-center"><b>IDENTICAL PDFS</b></div>');
-        $el->body("<p><span class=\"text-success\">fast</span><br><span class=\"text-success\">high detection rate</span><br><span class=\"text-success\">no false positives</span></p>$link3");
-        $el->footer($animation3);
+        $el->header(
+<<<HTML
+<div class="w-100 text-center text-uppercase"><b>{$this->lang->t9n('identical PDFs')}</b></div>
+HTML
+        );
+        $el->body(
+<<<HTML
+<p>
+    <span class="text-success">{$this->lang->t9n('high detection rate')}</span><br>
+    <span class="text-success">{$this->lang->t9n('no false positives')}</span>
+</p>
+$link3
+HTML
+        );
+        $el->footer(
+<<<HTML
+<div class="py-2 text-monospace text-center">
+    {$pdf_icon} f16a15f5dad16df5<br>
+    {$pdf_icon} f16a15f5dad16df5
+</div>
+HTML
+        );
         $card3 = $el->render();
 
         $el = null;
@@ -139,7 +183,7 @@ EOT;
      */
     public function similar(array $duplicates): string {
 
-        $this->title('Similar titles - Duplicates');
+        $this->title("{$this->lang->t9n('Similar titles')} - {$this->lang->t9n('Duplicates')}");
 
         $this->head();
 
@@ -149,8 +193,8 @@ EOT;
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Duplicates', '#duplicates/main');
-        $el->item('Similar titles');
+        $el->item($this->lang->t9n('Duplicates'), '#duplicates/main');
+        $el->item($this->lang->t9n('Similar titles'));
         $bc = $el->render();
 
         $el = null;
@@ -168,18 +212,19 @@ EOT;
 
             if ($pdf_count > 1) {
 
-                /** @var Bootstrap\Icon $el */
-                $el = $this->di->get('Icon');
+                /** @var Bootstrap\Alert $el */
+                $el = $this->di->get('Alert');
 
-                $el->icon('alert');
-                $alert = $el->render();
+                $el->context('danger');
+                $el->html(
+<<<HTML
+{$this->lang->t9n('These items do not have identical PDFs')}.
+{$this->lang->t9n('To prevent data loss, verify whether the PDFs can be merged safely')}.
+HTML
+                );
+                $warning = $el->render();
 
                 $el = null;
-
-                $warning = <<<WARNING
-<span class="text-danger ml-2">$alert Warning! These items do not appear to have identical PDFs. To prevent data loss,
-they should not be merged here. Verify that the PDF are identical before merging.</span>
-WARNING;
             }
 
             foreach ($items as $item) {
@@ -195,7 +240,7 @@ WARNING;
 
                 $el = null;
 
-                $body .= "<h5>$badge <a href='{$IL_BASE_URL}index.php/item/#summary?id={$item['id']}'>{$item['title']}</a></h5>";
+                $body .= "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$item['id']}\" target=\"_blank\">{$item['title']}</a></h5>";
 
                 /** @var Bootstrap\Input $el */
                 $el = $this->di->get('Input');
@@ -208,12 +253,20 @@ WARNING;
                 $el = null;
             }
 
+            /** @var Bootstrap\Icon $el */
+            $el = $this->di->get('Icon');
+
+            $el->icon('arrow-up-circle');
+            $arrow = $el->render();
+
+            $el = null;
+
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html('&#8593;Merge');
+            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
             $merge = $el->render();
 
             $el = null;
@@ -225,7 +278,6 @@ WARNING;
             $el->action($IL_BASE_URL . 'index.php/duplicates/merge');
             $el->append($hidden);
             $el->append($merge);
-            $el->append($warning);
             $form = $el->render();
 
             $el = null;
@@ -234,7 +286,7 @@ WARNING;
             $el = $this->di->get('Card');
 
             $el->addClass('mb-3');
-            $el->body($body, null, 'pt-3 pb-0');
+            $el->body($warning . $body, null, 'pt-3 pb-0');
             $el->footer($form);
             $cards .= $el->render();
 
@@ -260,7 +312,7 @@ WARNING;
      */
     public function identical(array $duplicates): string {
 
-        $this->title('Identical titles - Duplicates');
+        $this->title("{$this->lang->t9n('Identical titles')} - {$this->lang->t9n('Duplicates')}");
 
         $this->head();
 
@@ -270,8 +322,8 @@ WARNING;
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Duplicates', '#duplicates/main');
-        $el->item('Identical titles');
+        $el->item($this->lang->t9n('Duplicates'), '#duplicates/main');
+        $el->item($this->lang->t9n('Identical titles'));
         $bc = $el->render();
 
         $el = null;
@@ -289,18 +341,19 @@ WARNING;
 
             if ($pdf_count > 1) {
 
-                /** @var Bootstrap\Icon $el */
-                $el = $this->di->get('Icon');
+                /** @var Bootstrap\Alert $el */
+                $el = $this->di->get('Alert');
 
-                $el->icon('alert');
-                $alert = $el->render();
+                $el->context('danger');
+                $el->html(
+                    <<<HTML
+{$this->lang->t9n('These items do not have identical PDFs')}.
+{$this->lang->t9n('To prevent data loss, verify whether the PDFs can be merged safely')}.
+HTML
+                );
+                $warning = $el->render();
 
                 $el = null;
-
-                $warning = <<<WARNING
-<span class="text-danger ml-2">$alert Warning! These items do not appear to have identical PDFs. To prevent data loss,
-they should not be merged here. Verify that the PDF are identical before merging.</span>
-WARNING;
             }
 
             foreach ($items as $ids) {
@@ -316,7 +369,7 @@ WARNING;
 
                 $el = null;
 
-                $body .= "<h5>$badge <a href='{$IL_BASE_URL}index.php/item/#summary?id={$ids['id']}'>{$title}</a></h5>";
+                $body .= "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$ids['id']}\" target=\"_blank\">{$title}</a></h5>";
 
                 /** @var Bootstrap\Input $el */
                 $el = $this->di->get('Input');
@@ -329,12 +382,20 @@ WARNING;
                 $el = null;
             }
 
+            /** @var Bootstrap\Icon $el */
+            $el = $this->di->get('Icon');
+
+            $el->icon('arrow-up-circle');
+            $arrow = $el->render();
+
+            $el = null;
+
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html('&#8593;Merge');
+            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
             $merge = $el->render();
 
             $el = null;
@@ -346,7 +407,6 @@ WARNING;
             $el->action($IL_BASE_URL . 'index.php/duplicates/merge');
             $el->append($hidden);
             $el->append($merge);
-            $el->append($warning);
             $form = $el->render();
 
             $el = null;
@@ -355,7 +415,7 @@ WARNING;
             $el = $this->di->get('Card');
 
             $el->addClass('mb-3');
-            $el->body($body, null, 'pt-3 pb-0');
+            $el->body($warning . $body, null, 'pt-3 pb-0');
             $el->footer($form);
             $cards .= $el->render();
 
@@ -381,7 +441,7 @@ WARNING;
      */
     public function pdfs(array $duplicates): string {
 
-        $this->title('Identical PDFs - Duplicates');
+        $this->title("{$this->lang->t9n('Identical PDFs')} - {$this->lang->t9n('Duplicates')}");
 
         $this->head();
 
@@ -391,24 +451,25 @@ WARNING;
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Duplicates', '#duplicates/main');
-        $el->item('Duplicate PDFs');
+        $el->item($this->lang->t9n('Duplicates'), '#duplicates/main');
+        $el->item($this->lang->t9n('Identical PDFs'));
         $bc = $el->render();
 
         $el = null;
 
-        /** @var Bootstrap\Icon $el */
-        $el = $this->di->get('Icon');
+        /** @var Bootstrap\Alert $el */
+        $el = $this->di->get('Alert');
 
-        $el->icon('alert');
-        $alert = $el->render();
+        $el->context('danger');
+        $el->html(
+            <<<HTML
+{$this->lang->t9n('Duplicate PDFs can be assigned to unrelated items by mistake')}.
+{$this->lang->t9n('Do not merge such items, instead, upload the correct PDFs')}.
+HTML
+        );
+        $warning = $el->render();
 
         $el = null;
-
-        $warning = <<<WARNING
-<p class="text-danger">$alert Be warned that duplicate PDFs can be assigned to unrelated items by mistake. Such items should not be merged here.
-A correct PDF should be uploaded instead.</p>
-WARNING;
 
         $cards = '';
         $IL_BASE_URL = IL_BASE_URL;
@@ -444,12 +505,20 @@ WARNING;
                 $el = null;
             }
 
+            /** @var Bootstrap\Icon $el */
+            $el = $this->di->get('Icon');
+
+            $el->icon('arrow-up-circle');
+            $arrow = $el->render();
+
+            $el = null;
+
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html('&#8593;Merge');
+            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
             $merge = $el->render();
 
             $el = null;

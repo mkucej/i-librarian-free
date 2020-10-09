@@ -55,7 +55,7 @@ class CitationController extends Controller {
 
         // View.
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'New style saved.']);
+        return $view->main(['info' => 'new citation style was saved']);
     }
 
     /**
@@ -83,6 +83,7 @@ class CitationController extends Controller {
 
     /**
      * Create db from Github files in import/csl.
+     *
      * @return string
      * @throws Exception
      */
@@ -100,6 +101,6 @@ class CitationController extends Controller {
 
         // View.
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 }

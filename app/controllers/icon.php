@@ -37,10 +37,7 @@ class IconController extends Controller {
             throw new Exception("the parameter <kbd>id</kbd> is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter <kbd>id</kbd> {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Get icon.
         $model = new IconModel($this->di);

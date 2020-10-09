@@ -49,7 +49,7 @@ trait SharedHtmlView {
 
         $el->name('search_query[]');
         $el->ariaLabel('Search query');
-        $el->placeholder('Search query');
+        $el->placeholder($this->lang->t9n('Search query'));
         $el->required('required');
         $el->appendButton($search_button);
         $search_input = $el->render();
@@ -65,7 +65,11 @@ trait SharedHtmlView {
         $el->name('search_boolean[]');
         $el->value('AND');
         $el->checked('checked');
-        $el->label('AND');
+        $el->label(
+<<<HTML
+<span class="text-uppercase">{$this->lang->t9n('and')}</span>
+HTML
+        );
         $search_boolean = $el->render();
 
         $el = null;
@@ -78,7 +82,11 @@ trait SharedHtmlView {
         $el->id('search_boolean_or');
         $el->name('search_boolean[]');
         $el->value('OR');
-        $el->label('OR');
+        $el->label(
+<<<HTML
+<span class="text-uppercase">{$this->lang->t9n('or')}</span>
+HTML
+        );
         $search_boolean .= $el->render();
 
         $el = null;
@@ -91,7 +99,11 @@ trait SharedHtmlView {
         $el->id('search_boolean_phrase');
         $el->name('search_boolean[]');
         $el->value('PHRASE');
-        $el->label('PHRASE');
+        $el->label(
+<<<HTML
+<span class="text-uppercase">{$this->lang->t9n('phrase')}</span>
+HTML
+        );
         $search_boolean .= $el->render();
 
         $el = null;
@@ -99,15 +111,15 @@ trait SharedHtmlView {
         /** @var Bootstrap\Select $el */
         $el = $this->di->get('Select');
 
-        $el->addClass('mt-3');
+        $el->addClass('mt-2');
         $el->name('search_type[]');
         $el->ariaLabel('Search in');
-        $el->option('Metadata + PDFs', 'anywhere');
-        $el->option('Metadata', 'metadata');
+        $el->option("{$this->lang->t9n('Metadata')} + PDFs", 'anywhere');
+        $el->option($this->lang->t9n('Metadata'), 'metadata');
         $el->option('PDFs', 'FT');
-        $el->option('PDF notes', 'pdfnotes');
-        $el->option('Notes', 'itemnotes');
-        $el->option('Item ID', 'itemid');
+        $el->option($this->lang->t9n('PDF notes'), 'pdfnotes');
+        $el->option($this->lang->t9n('Notes'), 'itemnotes');
+        $el->option("{$this->lang->t9n('Item')} ID", 'itemid');
         $search_type = $el->render();
 
         $el = null;
@@ -120,7 +132,7 @@ trait SharedHtmlView {
         $el->id('save-search-quick');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -159,15 +171,15 @@ trait SharedHtmlView {
             $el->addClass('fields');
             $el->name("search_type[{$i}]");
             $el->ariaLabel('Search in');
-            $el->option('Title', 'TI');
-            $el->option('Title or abstract', 'AB', $i === 0);
-            $el->option('PDF fulltext', 'FT');
-            $el->option('Author or editor', 'AU', $i === 1);
-            $el->option('Affiliation', 'AF');
-            $el->option('Primary title', 'T1');
-            $el->option('Secondary title', 'T2');
-            $el->option('Tertiary title', 'T3');
-            $el->option('Keyword', 'KW');
+            $el->option($this->lang->t9n('Title'), 'TI');
+            $el->option("{$this->lang->t9n('Title')} {$this->lang->t9n('or')} {$this->lang->t9n('abstract')}", 'AB', $i === 0);
+            $el->option("PDF {$this->lang->t9n('fulltext')}", 'FT');
+            $el->option("{$this->lang->t9n('Author')} {$this->lang->t9n('or')} {$this->lang->t9n('editor')}", 'AU', $i === 1);
+            $el->option($this->lang->t9n('Affiliation'), 'AF');
+            $el->option($this->lang->t9n('Primary title'), 'T1');
+            $el->option($this->lang->t9n('Secondary title'), 'T2');
+            $el->option($this->lang->t9n('Tertiary title'), 'T3');
+            $el->option($this->lang->t9n('Keyword'), 'KW');
 
             /** @var AppSettings $app_settings */
             $app_settings = $this->app_settings;
@@ -188,7 +200,7 @@ trait SharedHtmlView {
             $el->groupClass('my-2');
             $el->name("search_query[{$i}]");
             $el->ariaLabel('Search query');
-            $el->placeholder('Search query');
+            $el->placeholder($this->lang->t9n('Search query'));
             $search_input = $el->render();
 
             $el = null;
@@ -202,7 +214,7 @@ trait SharedHtmlView {
             $el->name("search_boolean[$i]");
             $el->value('AND');
             $el->checked('checked');
-            $el->label('AND');
+            $el->label($this->lang->t9n('AND'));
             $search_boolean = $el->render();
 
             $el = null;
@@ -215,7 +227,7 @@ trait SharedHtmlView {
             $el->inline(true);
             $el->name("search_boolean[$i]");
             $el->value('OR');
-            $el->label('OR');
+            $el->label($this->lang->t9n('OR'));
             $search_boolean .= $el->render();
 
             $el = null;
@@ -228,7 +240,7 @@ trait SharedHtmlView {
             $el->inline(true);
             $el->name("search_boolean[$i]");
             $el->value('PHRASE');
-            $el->label('PHRASE');
+            $el->label($this->lang->t9n('PHRASE'));
             $search_boolean .= $el->render();
 
             $el = null;
@@ -241,9 +253,9 @@ trait SharedHtmlView {
             $el->style('width: 5rem');
             $el->name("search_glue[{$i}]");
             $el->ariaLabel('AND/OR/NOT');
-            $el->option('AND', 'AND');
-            $el->option('OR', 'OR');
-            $el->option('NOT', 'NOT');
+            $el->option($this->lang->t9n('AND'), 'AND');
+            $el->option($this->lang->t9n('OR'), 'OR');
+            $el->option($this->lang->t9n('NOT'), 'NOT');
             $glue = $el->render();
 
             $el = null;
@@ -301,15 +313,15 @@ trait SharedHtmlView {
 
         $el = null;
 
-        $tag_html = "<div class=\"my-3 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#search-tags\">$arrow<b>Tagged by</b></div>";
+        $tag_html = "<div class=\"my-3 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#search-tags\">$arrow<b>{$this->lang->t9n('Tags')}</b></div>";
 
         // Filter input.
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
         $el->id('tag-filter-search');
-        $el->placeholder('Filter');
-        $el->ariaLabel('Filter');
+        $el->placeholder($this->lang->t9n('Filter-NOUN'));
+        $el->ariaLabel($this->lang->t9n('Filter-NOUN'));
         $el->attr('data-targets', '#search-tags .label-text');
         $tag_filter = $el->render();
 
@@ -381,7 +393,7 @@ trait SharedHtmlView {
         $el->id('save-search-advanced');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -429,7 +441,11 @@ trait SharedHtmlView {
 
         $el->addClass('uploadable-select mt-2');
         $el->context('secondary');
-        $el->html('+ Select local file' . $affix);
+        $el->html(
+<<<HTML
++ {$this->lang->t9n('Select local file' . $affix)}
+HTML
+        );
         $file_button = $el->render();
 
         $el = null;
@@ -439,7 +455,7 @@ trait SharedHtmlView {
 
         $el->addClass('uploadable-clear mt-2 d-none');
         $el->context('danger');
-        $el->html('Clear');
+        $el->html($this->lang->t9n('Clear'));
         $clear_button = $el->render();
 
         $el = null;
@@ -481,11 +497,17 @@ trait SharedHtmlView {
 
         $el = null;
 
-        $sanitized_link = '';
+        // Remove invalid link.
+        if (!empty($web_link)) {
 
-        if (isset($web_link) === true && $this->validation->ssrfLink($web_link) === true) {
+            try {
 
-            $sanitized_link = $web_link;
+                $this->validation->ssrfLink($web_link);
+
+            } catch (Exception $exc) {
+
+                $web_link = '';
+            }
         }
 
         /** @var Bootstrap\Input $el Remote URL input. */
@@ -493,9 +515,9 @@ trait SharedHtmlView {
 
         $el->id('uploadable-url-' . uniqid());
         $el->name('remote_url');
-        $el->value($sanitized_link);
+        $el->value($web_link);
         $el->addClass('uploadable-url');
-        $el->label('Upload file from a URL');
+        $el->label($this->lang->t9n('Upload file from a URL'));
         $url_input = $el->render();
 
         return "$file_button $clear_button $file_input $list $url_input";
@@ -518,7 +540,11 @@ trait SharedHtmlView {
 
         if (empty($searches)) {
 
-            $el->div('<small>NO SAVED SEARCHES</small>', 'py-3 text-secondary');
+            $el->div(
+<<<HTML
+<small>{$this->lang->t9n('No saved searches')}</small>
+HTML
+            , 'py-3 text-secondary text-uppercase');
         }
 
         // Saved searches.
@@ -534,8 +560,8 @@ trait SharedHtmlView {
                 $btn->addClass('edit-search my-1');
                 $btn->context('outline-primary');
                 $btn->componentSize('small');
-                $btn->style('width: 4rem');
-                $btn->html('Edit');
+                $btn->style('min-width: 4rem');
+                $btn->html($this->lang->t9n('Edit'));
                 $edit = $btn->render();
 
                 $btn = null;
@@ -547,7 +573,7 @@ trait SharedHtmlView {
             $btn->addClass('delete-search my-1');
             $btn->context('outline-danger');
             $btn->componentSize('small');
-            $btn->html('Delete');
+            $btn->html($this->lang->t9n('Delete'));
             $btn->attr('data-id', $search['id']);
             $btn->attr('data-url', IL_BASE_URL . 'index.php/search/delete');
             $delete = $btn->render();
@@ -559,16 +585,17 @@ trait SharedHtmlView {
             $last_search = $temporal->toUserTime($search['changed_time']);
             $diff = $temporal->diff($search['changed_time']);
 
-            $searches_html = <<<SEARCH
-                <div class="mr-3">
-                    <a href="{$search['search_url']}">{$search['search_name']}</a><br>
-                    Last search: {$last_search} <span class="text-muted">&mdash; {$diff}</span>
-                </div>
-                <div style="white-space: nowrap">
-                    $edit
-                    $delete
-                </div>
-SEARCH;
+            $searches_html =
+<<<HTML
+<div class="mr-3">
+    <a href="{$search['search_url']}">{$search['search_name']}</a><br>
+    {$this->lang->t9n('Last search')}: {$last_search} <span class="text-muted">&mdash; {$diff}</span>
+</div>
+<div style="white-space: nowrap">
+    $edit
+    $delete
+</div>
+HTML;
 
             $el->div($searches_html, 'd-flex justify-content-between align-items-center border-0');
         }

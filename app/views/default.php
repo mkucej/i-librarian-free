@@ -19,6 +19,12 @@ class DefaultView extends TextView {
      */
     public function main($input = null) {
 
+        // Translate and format info lines.
+        if (isset($input['info'])) {
+            $input['info'] = $this->lang->t9n($input['info']);
+            $input['info'] = mb_strtoupper(mb_substr($input['info'], 0, 1)) . mb_substr($input['info'], 1)  . '.';
+        }
+
         $this->write($input);
 
         return $this->send();

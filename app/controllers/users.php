@@ -60,13 +60,10 @@ class UsersController extends Controller {
         // Verify email.
         if (empty($this->post['user']['email']) === true) {
 
-            throw new Exception("Email is required", 400);
+            throw new Exception("email is required", 400);
         }
 
-        if ($this->validation->email($this->post['user']['email']) === false) {
-
-            throw new Exception("Email {$this->validation->error}", 400);
-        }
+        $this->validation->email($this->post['user']['email']);
 
         // Username.
         if (empty($this->post['user']['username']) === true) {
@@ -80,13 +77,7 @@ class UsersController extends Controller {
         $this->post['user']['password'] = $enc->getRandomKey(12);
 
         $model = new UsersModel($this->di);
-        $result = $model->adminCreateUser($this->post['user']);
-
-        if (!empty($result['info'])) {
-
-            $view = new DefaultView($this->di);
-            return $view->main(['info' => $result['info']]);
-        }
+        $model->adminCreateUser($this->post['user']);
 
         // Send the view.
         $view = new UsersView($this->di);
@@ -123,7 +114,7 @@ class UsersController extends Controller {
 
         // Send the view.
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'User was updated.']);
+        return $view->main(['info' => 'user was updated']);
     }
 
     /**

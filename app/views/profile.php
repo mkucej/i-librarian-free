@@ -17,7 +17,7 @@ class ProfileView extends TextView {
      */
     public function main(array $user_profile): string {
 
-        $this->title('Profile');
+        $this->title($this->lang->t9n('User profile'));
 
         $this->head();
 
@@ -27,13 +27,13 @@ class ProfileView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Profile");
+        $el->item($this->lang->t9n('User profile'));
         $bc = $el->render();
 
         $el = null;
 
         /*
-         * LDAP view.
+         * SSO view.
          */
 
         if ($this->app_settings->getIni('ldap', 'ldap_active') === '1') {
@@ -46,13 +46,13 @@ class ProfileView extends TextView {
             /** @var Bootstrap\Descriptionlist $el */
             $el = $this->di->get('Descriptionlist');
 
-            $el->term('Username', 'col-sm-3');
+            $el->term("<b>{$this->lang->t9n('Username')}</b>", 'col-sm-3');
             $el->description($username, 'col-sm-9');
-            $el->term('First name', 'col-sm-3');
+            $el->term("<b>{$this->lang->t9n('First name')}</b>", 'col-sm-3');
             $el->description($first_name, 'col-sm-9');
-            $el->term('Last name', 'col-sm-3');
+            $el->term("<b>{$this->lang->t9n('Last name')}</b>", 'col-sm-3');
             $el->description($last_name, 'col-sm-9');
-            $el->term('Email', 'col-sm-3');
+            $el->term("<b>{$this->lang->t9n('Email')}</b>", 'col-sm-3');
             $el->description($email, 'col-sm-9');
             $profile = $el->render();
 
@@ -61,7 +61,7 @@ class ProfileView extends TextView {
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
-            $el->header('<b>LDAP PROFILE</b>');
+            $el->header("<b>{$this->lang->t9n('User profile')}</b>", 'text-uppercase');
             $el->body($profile);
             $card = $el->render();
 
@@ -92,7 +92,7 @@ class ProfileView extends TextView {
         $el->value($user_profile['username']);
         $el->required('required');
         $el->maxlength('256');
-        $el->label('Username');
+        $el->label($this->lang->t9n('Username'));
         $inputs = $el->render();
 
         $el = null;
@@ -105,7 +105,7 @@ class ProfileView extends TextView {
         $el->required('required');
         $el->value($user_profile['email']);
         $el->maxlength('256');
-        $el->label('Email');
+        $el->label($this->lang->t9n('Email'));
         $inputs .= $el->render();
 
         $el = null;
@@ -117,7 +117,7 @@ class ProfileView extends TextView {
         $el->name('profile[first_name]');
         $el->value($user_profile['first_name']);
         $el->maxlength('256');
-        $el->label('First name');
+        $el->label($this->lang->t9n('First name'));
         $inputs .= $el->render();
 
         $el = null;
@@ -129,7 +129,7 @@ class ProfileView extends TextView {
         $el->name('profile[last_name]');
         $el->value($user_profile['last_name']);
         $el->maxlength('256');
-        $el->label('Last name');
+        $el->label($this->lang->t9n('Last name'));
         $inputs .= $el->render();
 
         $el = null;
@@ -139,7 +139,7 @@ class ProfileView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;
@@ -147,7 +147,7 @@ class ProfileView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header('<b>UPDATE PROFILE</b>');
+        $el->header("<b>{$this->lang->t9n('Update profile')}</b>", 'text-uppercase');
         $el->body($inputs);
         $el->footer($submit);
         $card = $el->render();
@@ -174,7 +174,7 @@ class ProfileView extends TextView {
         $el->id('old-password');
         $el->name('profile[old_password]');
         $el->type('password');
-        $el->label('Current password');
+        $el->label($this->lang->t9n('Current password'));
         $el->required('required');
         $el->maxlength('256');
         $inputs = $el->render();
@@ -187,8 +187,8 @@ class ProfileView extends TextView {
         $el->id('new-password1');
         $el->name('profile[new_password]');
         $el->type('password');
-        $el->label('New password');
-        $el->tooltip('Password must be at least 8 characters long.');
+        $el->label($this->lang->t9n('New password'));
+        $el->tooltip($this->lang->t9n('Password must be at least 8 characters long'));
         $el->required('required');
         $el->maxlength('256');
         $inputs .= $el->render();
@@ -201,7 +201,7 @@ class ProfileView extends TextView {
         $el->id('new-password2');
         $el->name('profile[new_password2]');
         $el->type('password');
-        $el->label('Retype new password');
+        $el->label($this->lang->t9n('Re-type new password'));
         $el->required('required');
         $el->maxlength('256');
         $inputs .= $el->render();
@@ -214,7 +214,7 @@ class ProfileView extends TextView {
         $el->type('reset');
         $el->addClass('ml-2');
         $el->context('secondary');
-        $el->html('Reset');
+        $el->html($this->lang->t9n('Clear'));
         $reset = $el->render();
 
         $el = null;
@@ -223,7 +223,7 @@ class ProfileView extends TextView {
         $el = $this->di->get('Card');
 
         $el->addClass('h-100');
-        $el->header('<b>UPDATE PASSWORD</b>');
+        $el->header("<b>{$this->lang->t9n('Update password')}</b>", 'text-uppercase');
         $el->body($inputs);
         $el->footer($submit . $reset);
         $card = $el->render();

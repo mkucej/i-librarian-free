@@ -53,15 +53,13 @@ class ReindexController extends Controller {
         $model = new ReindexModel($this->di);
         $result = $model->checkDb();
 
-        $message = empty($result) ? 'Database is OK.' : 'Oops! Errors were found:<br>' . join('<br>', $result);
-
         if (empty($result) === false) {
 
-            throw new Exception($message, 500);
+            throw new Exception(sprintf($this->lang->t9n('Some errors were found: %s'), join(', ', $result)), 500);
         }
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => $message]);
+        return $view->main(['info' => 'database is OK']);
     }
 
     /**
@@ -79,7 +77,7 @@ class ReindexController extends Controller {
         $model->vacuum();
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Database was defragmented.']);
+        return $view->main(['info' => 'database was defragmented']);
     }
 
     /**
@@ -97,7 +95,7 @@ class ReindexController extends Controller {
         $model->reindex();
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Database was reindexed.']);
+        return $view->main(['info' => 'database was indexed']);
     }
 
     /**

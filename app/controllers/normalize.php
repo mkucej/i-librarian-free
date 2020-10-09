@@ -246,6 +246,6 @@ class NormalizeController extends Controller {
 
         // View.
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'New data saved.']);
+        return $view->main(['info' => 'new data were saved']);
     }
 }

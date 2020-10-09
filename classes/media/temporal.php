@@ -162,15 +162,15 @@ final class Temporal {
 
         if ($diff === '0') {
 
-            return 'today';
+            return $this->lang->t9n('today');
 
         } elseif ($diff === '1') {
 
-            return 'yesterday';
+            return $this->lang->t9n('yesterday');
 
         } else {
 
-            return $diff . ' days ago';
+            return "{$diff} {$this->lang->t9n('days ago')}";
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace LibrarianApp;
 
 use Exception;
+use Librarian\Container\DependencyInjector;
 use Librarian\Export\Bibtex;
 use Librarian\Export\Endnote;
 use Librarian\Export\Ris;
@@ -30,23 +31,30 @@ class ItemsView extends TextView {
     /**
      * @var array Search type to human readable.
      */
-    private $type_to_readable = [
-        'anywhere'  => 'Metadata & PDFs',
-        'metadata'  => 'Metadata',
-        'FT'        => 'PDFs',
-        'pdfnotes'  => 'PDF notes',
-        'itemnotes' => 'Notes',
-        'itemid'    => 'Item #',
-        'TI'        => 'Titles',
-        'AB'        => 'Titles & abstracts',
-        'AU'        => 'Authors & editors',
-        'AF'        => 'Affiliations',
-        'T1'        => 'Primary titles',
-        'T2'        => 'Secondary titles',
-        'T3'        => 'Tertiary titles',
-        'KW'        => 'Keywords',
-        'YR'        => 'Years'
-    ];
+    private $type_to_readable;
+
+    public function __construct(DependencyInjector $di) {
+
+        parent::__construct($di);
+
+        $this->type_to_readable = [
+            'anywhere'  => "{$this->lang->t9n('Metadata')} {$this->lang->t9n('and')} {$this->lang->t9n('PDF')}",
+            'metadata'  => $this->lang->t9n('Metadata'),
+            'FT'        => $this->lang->t9n('PDF'),
+            'pdfnotes'  => $this->lang->t9n('PDF notes'),
+            'itemnotes' => $this->lang->t9n('Notes'),
+            'itemid'    => $this->lang->t9n('Item') . ' ID',
+            'TI'        => $this->lang->t9n('Title'),
+            'AB'        => "{$this->lang->t9n('Title')} {$this->lang->t9n('or')} {$this->lang->t9n('Abstract')}",
+            'AU'        => "{$this->lang->t9n('Author')} {$this->lang->t9n('or')} {$this->lang->t9n('Editor')}",
+            'AF'        => $this->lang->t9n('Affiliation'),
+            'T1'        => $this->lang->t9n('Primary title'),
+            'T2'        => $this->lang->t9n('Secondary title'),
+            'T3'        => $this->lang->t9n('Tertiary title'),
+            'KW'        => $this->lang->t9n('Keyword'),
+            'YR'        => $this->lang->t9n('Year')
+        ];
+    }
 
     /**
      * Assemble item browsing page and send it.
@@ -67,19 +75,19 @@ class ItemsView extends TextView {
         switch ($collection) {
 
             case 'clipboard':
-                $title = "Page {$page} - Clipboard";
+                $title = "{$this->lang->t9n('Page')} {$page} - {$this->lang->t9n('Clipboard')}";
                 break;
 
             case 'project':
-                $title = "Page {$page} - Project - {$input['project']}";
+                $title = "{$this->lang->t9n('Page')} {$page} - {$this->lang->t9n('Project')} - {$input['project']}";
                 break;
 
             case 'catalog':
-                $title = "Page {$page} - Catalog";
+                $title = "{$this->lang->t9n('Page')} {$page} - {$this->lang->t9n('Catalog')}";
                 break;
 
             default:
-                $title = "Page {$page} - Library";
+                $title = "{$this->lang->t9n('Page')} {$page} - {$this->lang->t9n('Library')}";
                 break;
         }
 
@@ -173,7 +181,7 @@ class ItemsView extends TextView {
         $el->attr('data-dismiss', 'modal');
         $el->attr('data-toggle', 'modal');
         $el->dataTarget('#modal-searches');
-        $el->html('Previous searches');
+        $el->html($this->lang->t9n('Previous searches'));
         $searches_button = $el->render();
 
         $el = null;
@@ -185,7 +193,7 @@ class ItemsView extends TextView {
         $el->attr('data-dismiss', 'modal');
         $el->attr('data-toggle', 'modal');
         $el->dataTarget('#modal-advanced-search');
-        $el->html('Advanced search');
+        $el->html($this->lang->t9n('Advanced search'));
         $advanced_button = $el->render();
 
         $el = null;
@@ -194,7 +202,7 @@ class ItemsView extends TextView {
         $el = $this->di->get('Modal');
 
         $el->id('modal-quick-search');
-        $el->header('Search ' . $modal_header);
+        $el->header($this->lang->t9n('Search ' . $modal_header));
         $el->button($searches_button);
         $el->button($advanced_button);
         $el->body($this->sharedQuickSearch($action), 'bg-darker-5');
@@ -211,7 +219,7 @@ class ItemsView extends TextView {
         $el->attr('data-dismiss', 'modal');
         $el->attr('data-toggle', 'modal');
         $el->dataTarget('#modal-quick-search');
-        $el->html('Quick search');
+        $el->html($this->lang->t9n('Quick search'));
         $button = $el->render();
 
         $el = null;
@@ -221,7 +229,7 @@ class ItemsView extends TextView {
 
         $el->addClass('search-submit');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search_button = $el->render();
 
         $el = null;
@@ -280,7 +288,7 @@ class ItemsView extends TextView {
         switch ($collection) {
 
             case 'clipboard':
-                $bc_title = "Clipboard";
+                $bc_title = $this->lang->t9n('Clipboard');
                 break;
 
             case 'project':
@@ -288,12 +296,12 @@ class ItemsView extends TextView {
                 break;
 
             case 'catalog':
-                $bc_title = "Items {$get['from_id']} - " .
+                $bc_title = "{$this->lang->t9n('Items')} {$get['from_id']} - " .
                     ($this->scalar_utils->formatNumber(-1 + $get['from_id'] + $this->app_settings->getGlobal('max_items')));
                 break;
 
             default:
-                $bc_title = "Library";
+                $bc_title = $this->lang->t9n('Library');
         }
 
         /** @var Bootstrap\Breadcrumb $el */
@@ -305,12 +313,12 @@ class ItemsView extends TextView {
 
         if ($collection === 'project') {
 
-            $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
+            $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
         }
 
         if ($collection === 'catalog') {
 
-            $el->item('Catalog', IL_BASE_URL . 'index.php/#items/catalog');
+            $el->item($this->lang->t9n('Catalog'), IL_BASE_URL . 'index.php/#items/catalog');
         }
 
         $el->item("{$bc_title}");
@@ -322,7 +330,7 @@ class ItemsView extends TextView {
 
         if (empty($input['total_count'])) {
 
-            $item_count = "<div class=\"text-muted w-100 pb-3 pb-lg-0\">No items</div>";
+            $item_count = "<div class=\"text-muted w-100 pb-3 pb-lg-0\">{$this->lang->t9n('No items')}</div>";
 
         } else {
 
@@ -341,7 +349,8 @@ class ItemsView extends TextView {
             $total_count = $this->scalar_utils->formatNumber((int) $input['total_count']);
 
             // Put together the item counter.
-            $item_count = "<div class=\"text-muted w-100 pb-3 pb-lg-0\">Items $from - $last of {$total_count}</div>";
+            $item_count = '<div class="text-muted w-100 pb-3 pb-lg-0">' .
+                sprintf($this->lang->t9n('Items %s of %s'), $from . ' - ' . $last, $total_count) . '</div>';
         }
 
         $tags_html = '';
@@ -375,6 +384,26 @@ class ItemsView extends TextView {
         }
 
         // Filter tags.
+        $facet_fields = [
+            'added_time'       => $this->lang->t9n('Added date'),
+            'author'           => $this->lang->t9n('Author'),
+            'custom1'          => $this->lang->t9n($this->app_settings->getGlobal('custom1')),
+            'custom2'          => $this->lang->t9n($this->app_settings->getGlobal('custom2')),
+            'custom3'          => $this->lang->t9n($this->app_settings->getGlobal('custom3')),
+            'custom4'          => $this->lang->t9n($this->app_settings->getGlobal('custom4')),
+            'custom5'          => $this->lang->t9n($this->app_settings->getGlobal('custom5')),
+            'custom6'          => $this->lang->t9n($this->app_settings->getGlobal('custom6')),
+            'custom7'          => $this->lang->t9n($this->app_settings->getGlobal('custom7')),
+            'custom8'          => $this->lang->t9n($this->app_settings->getGlobal('custom8')),
+            'editor'           => $this->lang->t9n('Editor'),
+            'keyword'          => $this->lang->t9n('Keyword'),
+            'misc'             => $this->lang->t9n('Miscellaneous'),
+            'primary_title'    => $this->lang->t9n('Primary title'),
+            'secondary_title'  => $this->lang->t9n('Secondary title'),
+            'tag'              => $this->lang->t9n('Tag'),
+            'tertiary_title'   => $this->lang->t9n('Tertiary title')
+        ];
+
         if (!empty($input['filters'])) {
 
             /** @var Bootstrap\Icon $el Close icon. */
@@ -387,16 +416,19 @@ class ItemsView extends TextView {
 
             foreach ($input['filters'] as $filter) {
 
-                if (empty($filter)) {
+                $key = key($filter);
+                $values = current($filter);
+
+                if (empty($values)) {
 
                     continue;
                 }
 
                 // Format dates to local format.
-                if ($filter['name'][0] === 'added_time') {
+                if ($key === 'added_time') {
 
                     $this->temporal_obj = $this->di->get('Temporal');
-                    $filter['value'][1] = $this->temporal_obj->toUserDate($filter['value'][1]);
+                    $values[1] = $this->temporal_obj->toUserDate($values[1]);
                 }
 
                 // Construct a URL for the Remove filter button.
@@ -406,8 +438,8 @@ class ItemsView extends TextView {
                 unset ($removed_get['page']);
 
                 // Remove this tag URL.
-                $remove_key = array_search($filter['value'][0], $removed_get['filter'][$filter['name'][0]]);
-                unset($removed_get['filter'][$filter['name'][0]][$remove_key]);
+                $remove_key = array_search($values[0], $removed_get['filter'][$key]);
+                unset($removed_get['filter'][$key][$remove_key]);
 
                 // Build query.
                 $get_query = http_build_query($removed_get);
@@ -415,10 +447,12 @@ class ItemsView extends TextView {
 
                 $close_url = '#' . IL_PATH_URL . $get_query;
 
+                $name = $facet_fields[$key] ?? $this->lang->t9n('Filter-NOUN');
+
                 $tags_html .= <<<EOT
                     <div class="btn-group mr-1 mb-2" role="group" aria-label="Filter button">
                         <button type="button" class="btn btn-sm btn-dark rounded-0">
-                            <b>{$filter['name'][1]}</b> &mdash; {$filter['value'][1]}
+                            <b>{$name}</b> &mdash; {$values[1]}
                         </button>
                         <a href="{$close_url}" class="btn btn-sm btn-secondary">{$close}</a>
                     </div>
@@ -478,7 +512,7 @@ EOT;
         $el->dataToggle('modal');
         $el->dataTarget('#modal-quick-search');
         $el->addClass('border-0 shadow-none');
-        $el->html("<span class=\"d-none d-xl-inline-block\" style='width:3.5rem'>Search</span>$search_icon");
+        $el->html("<span class=\"d-none d-xl-inline-block\" style='min-width:3.5rem'>{$this->lang->t9n('Search-NOUN')}</span>$search_icon");
         $search_toggle = $el->render();
 
         $el = null;
@@ -507,7 +541,7 @@ EOT;
         $el->context($btn_class_a);
         $el->addClass('border-0 shadow-none');
         $el->href($filter_url);
-        $el->html("<span class=\"d-none d-xl-inline-block\" style='width:3.5rem'>Filter</span>$filter_icon");
+        $el->html("<span class=\"d-none d-xl-inline-block\" style='min-width:3.5rem'>{$this->lang->t9n('Filter-NOUN')}</span>$filter_icon");
         $filter_toggle = $el->render();
 
         $el = null;
@@ -541,7 +575,7 @@ EOT;
         $el->dataToggle('modal');
         $el->dataTarget('#modal-export');
         $el->attr('data-export-url', IL_BASE_URL . 'index.php/' . IL_PATH_URL . $first_page_q);
-        $el->html("<span class=\"d-none d-xl-inline\">Export</span>$export_icon");
+        $el->html("<span class=\"d-none d-xl-inline\">{$this->lang->t9n('Export-NOUN')}</span>$export_icon");
         $export_button = $el->render();
 
         $el = null;
@@ -564,7 +598,7 @@ EOT;
         $el->dataToggle('modal');
         $el->dataTarget('#modal-omnitool');
         $el->attr('data-omnitool-url', IL_BASE_URL . 'index.php/' . IL_PATH_URL . $first_page_q);
-        $el->html("<span class=\"d-none d-xl-inline\">Omnitool</span>$omnitool_icon");
+        $el->html("<span class=\"d-none d-xl-inline\">{$this->lang->t9n('Omnitool')}</span>$omnitool_icon");
         $omnitool_button = $el->render();
 
         $el = null;
@@ -586,7 +620,7 @@ EOT;
         $el->addClass('border-0');
         $el->dataToggle('modal');
         $el->dataTarget('#modal-settings');
-        $el->html("<span class=\"d-none d-xl-inline\">Display</span>$sort_icon");
+        $el->html("<span class=\"d-none d-xl-inline\">{$this->lang->t9n('Display')}</span>$sort_icon");
         $display_button = $el->render();
 
         $el = null;
@@ -845,7 +879,7 @@ EOT;
 
             $el->type('checkbox');
             $el->inline(true);
-            $el->label('Clipboard');
+            $el->label($this->lang->t9n('Clipboard'));
             $el->name('clipboard');
             $el->addClass('clipboard mb-3');
             $el->id('clipboard-' . $item['id']);
@@ -866,12 +900,12 @@ EOT;
             $el->addClass('px-0 py-0 pr-1 mb-3 mr-3 projects-button');
             $el->dataToggle('collapse');
             $el->dataTarget("#projects-{$item['id']}");
-            $el->html("{$chevron}Projects");
+            $el->html("{$chevron}{$this->lang->t9n('Projects')}");
             $button = $el->render();
 
             $el = null;
 
-            $project_html = empty($item['projects']) ? '<span class="text-secondary">No projects yet.</span>' : '';
+            $project_html = empty($item['projects']) ? "<span class=\"text-secondary\">{$this->lang->t9n('No projects')}</span>" : '';
 
             if (!empty($item['projects'])) {
 
@@ -900,10 +934,10 @@ EOT;
             }
 
             // Authors.
-            $authors = join('<span class="ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
+            $authors = $item['authors'] === [] ? $this->lang->t9n('No authors') : join('<span class="ml-0"> &hellip;</span>', $item['authors']);
 
             // Publication.
-            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : '';
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $this->lang->t9n('No publication title');
             $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
 
             // Top HTML structure.
@@ -1007,7 +1041,7 @@ EOT;
             $el->type('checkbox');
             $el->inline(true);
             $el->addClass('clipboard');
-            $el->label('Clipboard');
+            $el->label($this->lang->t9n('Clipboard'));
             $el->name('clipboard');
             $el->id('clipboard-' . $item['id']);
 
@@ -1027,12 +1061,12 @@ EOT;
             $el->addClass('px-0 py-0 pr-1 mr-3 projects-button');
             $el->dataToggle('collapse');
             $el->dataTarget("#projects-{$item['id']}");
-            $el->html("{$chevron}Projects");
+            $el->html("{$chevron}{$this->lang->t9n('Projects')}");
             $button = $el->render();
 
             $el = null;
 
-            $project_html = empty($item['projects']) ? '<span class="text-secondary">No projects yet.</span>' : '';
+            $project_html = empty($item['projects']) ? "<span class=\"text-secondary\">{$this->lang->t9n('No projects')}</span>" : '';
 
             if (!empty($item['projects'])) {
 
@@ -1209,7 +1243,7 @@ EOT;
 
             $el->type('checkbox');
             $el->inline(true);
-            $el->label('Clipboard');
+            $el->label($this->lang->t9n('Clipboard'));
             $el->name('clipboard');
             $el->addClass('clipboard');
             $el->id('clipboard-' . $item['id']);
@@ -1230,12 +1264,12 @@ EOT;
             $el->addClass('px-0 py-0 pr-1 mr-3 projects-button');
             $el->dataToggle('collapse');
             $el->dataTarget("#projects-{$item['id']}");
-            $el->html("{$chevron}Projects");
+            $el->html("{$chevron}{$this->lang->t9n('Projects')}");
             $button = $el->render();
 
             $el = null;
 
-            $project_html = empty($item['projects']) ? '<span class="text-secondary">No projects yet.</span>' : '';
+            $project_html = empty($item['projects']) ? "<span class=\"text-secondary\">{$this->lang->t9n('No projects')}</span>" : '';
 
             if (!empty($item['projects'])) {
 
@@ -1264,27 +1298,27 @@ EOT;
             }
 
             // Abstract.
-            $abstract = empty($item['abstract']) ? 'No abstract' : $item['abstract'];
+            $abstract = empty($item['abstract']) ? $this->lang->t9n('No abstract') : $item['abstract'];
 
             // Rich-text notes.
             $notes_arr = [];
             $notes_arr[] = $this->sanitation->lmth($item['notes']);
             $notes_arr[] = join('<br>', $this->sanitation->lmth($item['other_notes']));
             $notes_arr = array_filter($notes_arr);
-            $notes = empty($notes_arr) ? 'No notes' : join('<hr>', $notes_arr);
+            $notes = empty($notes_arr) ? $this->lang->t9n('No notes') : join('<hr>', $notes_arr);
 
             // PDF annotations.
             $pdf_notes_arr = [];
             $pdf_notes_arr[] = join('<br><br>', $item['pdf_notes']);
             $pdf_notes_arr[] = join('<br><br>', $item['other_pdf_notes']);
             $pdf_notes_arr = array_filter($pdf_notes_arr);
-            $pdf_notes = empty($pdf_notes_arr) ? 'No notes' : join('<hr>', $pdf_notes_arr);
+            $pdf_notes = empty($pdf_notes_arr) ? $this->lang->t9n('No notes') : join('<hr>', $pdf_notes_arr);
 
             // Authors.
-            $authors = join('<span class="text-secondary ml-0"> &hellip;</span>', $item['authors'] ?? ['No authors']);
+            $authors = $item['authors'] === [] ? $this->lang->t9n('No authors') : join('<span class="ml-0"> &hellip;</span>', $item['authors']);
 
             // Publication.
-            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : '';
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $this->lang->t9n('No publication title');
             $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
 
             // Tags.
@@ -1334,11 +1368,11 @@ EOT;
                         <tr>
                             <td class="row pb-4 pr-5">
                                 <div class="col-md-6">
-                                    <p><span class="badge badge-secondary rounded-0">Notes</span></p>
+                                    <p><span class="badge badge-secondary rounded-0">{$this->lang->t9n('Notes')}</span></p>
                                     {$notes}
                                 </div>
                                 <div class="col-md-6">
-                                    <p><span class="badge badge-secondary rounded-0">PDF Notes</span></p>
+                                    <p><span class="badge badge-secondary rounded-0">{$this->lang->t9n('PDF notes')}</span></p>
                                     {$pdf_notes}
                                 </div>
                             </td>
@@ -1420,22 +1454,22 @@ EOT;
 
         // Add filter buttons.
         $action_to_name = [
-            'tags' => 'Tags',
-            'authors' => 'Authors',
-            'editors' => 'Editors',
-            'addedtime' => 'Added dates',
-            'primarytitles' => 'Primary titles',
-            'secondarytitles' => 'Secondary titles',
-            'tertiarytitles' => 'Tertiary titles',
-            'keywords' => 'Keywords',
-            'custom1' =>  $this->app_settings->getGlobal('custom1'),
-            'custom2' =>  $this->app_settings->getGlobal('custom2'),
-            'custom3' =>  $this->app_settings->getGlobal('custom3'),
-            'custom4' =>  $this->app_settings->getGlobal('custom4'),
-            'custom5' =>  $this->app_settings->getGlobal('custom5'),
-            'custom6' =>  $this->app_settings->getGlobal('custom6'),
-            'custom7' =>  $this->app_settings->getGlobal('custom7'),
-            'custom8' =>  $this->app_settings->getGlobal('custom8')
+            'tags' => $this->lang->t9n('Tag'),
+            'authors' => $this->lang->t9n('Author'),
+            'editors' => $this->lang->t9n('Editor'),
+            'addedtime' => $this->lang->t9n('Added date'),
+            'primarytitles' => $this->lang->t9n('Primary title'),
+            'secondarytitles' => $this->lang->t9n('Secondary title'),
+            'tertiarytitles' => $this->lang->t9n('Tertiary title'),
+            'keywords' => $this->lang->t9n('Keyword'),
+            'custom1' =>  $this->lang->t9n($this->app_settings->getGlobal('custom1')),
+            'custom2' =>  $this->lang->t9n($this->app_settings->getGlobal('custom2')),
+            'custom3' =>  $this->lang->t9n($this->app_settings->getGlobal('custom3')),
+            'custom4' =>  $this->lang->t9n($this->app_settings->getGlobal('custom4')),
+            'custom5' =>  $this->lang->t9n($this->app_settings->getGlobal('custom5')),
+            'custom6' =>  $this->lang->t9n($this->app_settings->getGlobal('custom6')),
+            'custom7' =>  $this->lang->t9n($this->app_settings->getGlobal('custom7')),
+            'custom8' =>  $this->lang->t9n($this->app_settings->getGlobal('custom8'))
         ];
 
         // Limit to 3 tags.
@@ -1454,7 +1488,9 @@ EOT;
 
         if ($collection === 'library') {
 
-            $el->button('Miscellaneous', $classes, "data-title=\"Miscellaneous\" data-src=\"{$IL_BASE_URL}index.php/items/misc{$get_query}\"");
+            $name = $this->lang->t9n('Miscellaneous');
+
+            $el->button($name, $classes, "data-title=\"{$name}\" data-src=\"{$IL_BASE_URL}index.php/items/misc{$get_query}\"");
         }
 
         $list = $el->render();
@@ -1694,7 +1730,7 @@ SCRIPT;
      */
     public function catalog($count) {
 
-        $this->title('Catalog');
+        $this->title($this->lang->t9n('Catalog'));
         $this->head();
 
         /** @var Bootstrap\Breadcrumb $el */
@@ -1703,7 +1739,7 @@ SCRIPT;
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-        $el->item("Catalog");
+        $el->item($this->lang->t9n('Catalog'));
         $bc = $el->render();
 
         $el = null;
@@ -1734,7 +1770,7 @@ SCRIPT;
             /** @var Bootstrap\Card $el */
             $crd = $this->di->get('Card');
 
-            $crd->body("<a href=\"$link{$value}\">Items<br> {$val_formatted} - {$end_formatted}</a>", null, 'py-4');
+            $crd->body("<a href=\"$link{$value}\">{$this->lang->t9n('Items')}<br> {$val_formatted} - {$end_formatted}</a>", null, 'py-4');
             $el->column($crd->render(), 'col-xl-3 col-lg-4 col-md-6 mb-3 text-center');
 
             $crd = null;
@@ -1758,7 +1794,7 @@ SCRIPT;
      */
     public function exportForm($single = false): string {
 
-        $inputs = '<div class="mb-2"><b>Format</b></div>';
+        $inputs = "<div class=\"mb-2\"><b>{$this->lang->t9n('Format-NOUN')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1806,7 +1842,7 @@ SCRIPT;
             $el->type('radio');
             $el->name('export');
             $el->value('zip');
-            $el->label('offline app <span class="text-secondary">(up to 500 MB of PDFs)</span>');
+            $el->label("{$this->lang->t9n('offline app')} <span class=\"text-secondary\">({$this->lang->t9n('up to 500 MB')})</span>");
             $inputs .= $el->render();
 
             $el = null;
@@ -1819,7 +1855,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('export');
         $el->value('citation');
-        $el->label('citation style');
+        $el->label($this->lang->t9n('citation style'));
         $inputs .= $el->render();
 
         $el = null;
@@ -1831,12 +1867,12 @@ SCRIPT;
         $el->name('style');
         $el->attr('data-source', IL_BASE_URL . 'index.php/filter/citation');
         $el->attr('data-minLength', '1');
-        $el->placeholder('Search styles');
+        $el->placeholder($this->lang->t9n('Search styles'));
         $inputs .= $el->render();
 
         $el = null;
 
-        $inputs .= '<div class="mt-3 mb-2"><b>Output options</b></div>';
+        $inputs .= "<div class=\"mt-3 mb-2\"><b>{$this->lang->t9n('Output options')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1846,7 +1882,7 @@ SCRIPT;
         $el->name('disposition');
         $el->value('inline');
         $el->checked('checked');
-        $el->label('display in browser');
+        $el->label($this->lang->t9n('display in browser'));
         $inputs .= $el->render();
 
         $el = null;
@@ -1858,7 +1894,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('disposition');
         $el->value('attachment');
-        $el->label('download a file');
+        $el->label($this->lang->t9n('download file'));
         $inputs .= $el->render();
 
         $el = null;
@@ -1898,7 +1934,7 @@ SCRIPT;
 
         $el = null;
 
-        $inputs = '<div class="mb-2"><b>Clipboard</b></div>';
+        $inputs = "<div class=\"mb-2\"><b>{$this->lang->t9n('Clipboard')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1907,7 +1943,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[clipboard]');
         $el->value('add');
-        $el->label('add');
+        $el->label($this->lang->t9n('add'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -1920,7 +1956,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[clipboard]');
         $el->value('remove');
-        $el->label('remove');
+        $el->label($this->lang->t9n('remove'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -1934,7 +1970,7 @@ SCRIPT;
         $el->name('omnitool[clipboard]');
         $el->value('');
         $el->checked('checked');
-        $el->label('no action');
+        $el->label($this->lang->t9n('no action'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -1952,7 +1988,7 @@ SCRIPT;
             $el->option($project['project'], $project['id']);
         }
 
-        $el->label('Project');
+        $el->label($this->lang->t9n('Project'));
         $inputs .= $el->render();
 
         $el = null;
@@ -1964,7 +2000,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[project]');
         $el->value('add');
-        $el->label('add');
+        $el->label($this->lang->t9n('add'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -1977,7 +2013,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[project]');
         $el->value('remove');
-        $el->label('remove');
+        $el->label($this->lang->t9n('remove'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -1991,13 +2027,13 @@ SCRIPT;
         $el->name('omnitool[project]');
         $el->value('');
         $el->checked('checked');
-        $el->label('no action');
+        $el->label($this->lang->t9n('no action'));
         $el->inline(true);
         $inputs .= $el->render();
 
         $el = null;
 
-        $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#omnitool-tags\">$arrow<b>Tags</b></div>";
+        $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer\" data-toggle=\"collapse\" data-target=\"#omnitool-tags\">$arrow<b>{$this->lang->t9n('Tags')}</b></div>";
 
         // Filter input.
         /** @var Bootstrap\Input $el */
@@ -2005,8 +2041,8 @@ SCRIPT;
 
         $el->id('tag-filter-omnitool');
         $el->name('tag_filter');
-        $el->placeholder('Filter');
-        $el->ariaLabel('Filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
         $el->attr('data-targets', '#omnitool-tags .label-text');
         $tag_checkboxes = $el->render();
 
@@ -2076,7 +2112,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[tag]');
         $el->value('add');
-        $el->label('add');
+        $el->label($this->lang->t9n('add'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -2089,7 +2125,7 @@ SCRIPT;
         $el->type('radio');
         $el->name('omnitool[tag]');
         $el->value('remove');
-        $el->label('remove');
+        $el->label($this->lang->t9n('remove'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -2103,7 +2139,7 @@ SCRIPT;
         $el->name('omnitool[tag]');
         $el->value('');
         $el->checked('checked');
-        $el->label('no action');
+        $el->label($this->lang->t9n('no action'));
         $el->inline(true);
         $inputs .= $el->render();
 
@@ -2112,7 +2148,7 @@ SCRIPT;
         // Only admin can delete.
         if ($this->session->data('permissions') === 'A') {
 
-            $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer text-danger\" data-toggle=\"collapse\" data-target=\"#delete-all\">$arrow<b>Delete all</b></div>";
+            $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer text-danger\" data-toggle=\"collapse\" data-target=\"#delete-all\">$arrow<b>{$this->lang->t9n('Delete all')}</b></div>";
 
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
@@ -2121,7 +2157,7 @@ SCRIPT;
             $el->type('checkbox');
             $el->name('omnitool[delete]');
             $el->value('1');
-            $el->label('permanently delete all items');
+            $el->label($this->lang->t9n('permanently delete all items'));
             $inputs .= '<div class="collapse" id="delete-all">' . $el->render() . '</div>';
 
             $el = null;
@@ -2161,7 +2197,7 @@ SCRIPT;
             // Custom customN names.
             for ($i = 1; $i <= 8; $i++) {
 
-                $this->type_to_readable["C{$i}"] = $this->app_settings->getGlobal("custom{$i}");
+                $this->type_to_readable["C{$i}"] = $this->lang->t9n($this->app_settings->getGlobal("custom{$i}"));
             }
 
             foreach ($get['search_type'] as $i => $type) {

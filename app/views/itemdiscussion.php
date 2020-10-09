@@ -24,7 +24,7 @@ class ItemdiscussionView extends TextView {
      */
     public function main($item_id, array $messages) {
 
-        $this->title("Discussion - {$messages['title']}");
+        $this->title("{$this->lang->t9n('Discussion')} - {$messages['title']}");
 
         $this->head();
 
@@ -35,7 +35,7 @@ class ItemdiscussionView extends TextView {
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$messages['title']}", '#summary?id=' . $item_id);
-        $el->item('Discussion');
+        $el->item($this->lang->t9n('Discussion'));
         $bc = $el->render();
 
         $el = null;
@@ -46,7 +46,7 @@ class ItemdiscussionView extends TextView {
         $el = $this->di->get('Textarea');
 
         $el->name('message');
-        $el->label('New message');
+        $el->label($this->lang->t9n('New post'));
         $ta = $el->render();
 
         $el = null;
@@ -66,7 +66,7 @@ class ItemdiscussionView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Send');
+        $el->html($this->lang->t9n('Send'));
         $submit = $el->render();
 
         $el = null;
@@ -142,7 +142,7 @@ class ItemdiscussionView extends TextView {
 
         if (empty($messages['messages'])) {
 
-            $el->div('No messages', 'text-center text-secondary text-uppercase py-4');
+            $el->div($this->lang->t9n('No posts'), 'text-center text-secondary text-uppercase py-4');
         }
 
         foreach ($messages['messages'] as $message) {

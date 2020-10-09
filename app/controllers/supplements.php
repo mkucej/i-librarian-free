@@ -41,10 +41,12 @@ class SupplementsController extends Controller {
         $this->authorization->permissions('U');
 
         // Check id.
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new SupplementsModel($this->di);
         $list = $model->list($this->get['id']);
@@ -66,19 +68,18 @@ class SupplementsController extends Controller {
         $this->authorization->permissions('U');
 
         // Check id.
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
+
+        $this->validation->id($this->post['id']);
 
         // Remote URL?
         if (!empty($this->post['remote_url'])) {
 
             // Safe link?
-            if ($this->validation->ssrfLink($this->post['remote_url']) === false) {
-
-                throw new Exception("this link is invalid", 422);
-            }
+            $this->validation->ssrfLink($this->post['remote_url']);
 
             $this->client = $this->di->get('HttpClient', [
                 [
@@ -132,27 +133,33 @@ class SupplementsController extends Controller {
         $this->authorization->permissions('U');
 
         // Check id.
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
 
-        if ($this->validation->dirname($this->post['filename']) === false) {
+        $this->validation->id($this->post['id']);
 
-            throw new Exception("filename parameter {$this->validation->error}", 400);
+        if (isset($this->post['filename']) === false) {
+
+            throw new Exception('filename parameter required', 400);
         }
 
-        if ($this->validation->dirname($this->post['newname']) === false) {
+        $this->validation->dirname($this->post['filename']);
 
-            throw new Exception("filename parameter {$this->validation->error}", 400);
+        if (isset($this->post['newname']) === false) {
+
+            throw new Exception('newname parameter required', 400);
         }
+
+        $this->validation->dirname($this->post['newname']);
 
         // Save the file.
         $model = new SupplementsModel($this->di);
         $model->rename($this->post['id'], $this->post['filename'], $this->post['newname']);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'File was renamed.']);
+        return $view->main();
     }
 
     /**
@@ -167,22 +174,26 @@ class SupplementsController extends Controller {
         $this->authorization->permissions('A');
 
         // Check id.
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
 
-        if ($this->validation->dirname($this->post['filename']) === false) {
+        $this->validation->id($this->post['id']);
 
-            throw new Exception("filename parameter {$this->validation->error}", 400);
+        if (isset($this->post['filename']) === false) {
+
+            throw new Exception('filename parameter required', 400);
         }
+
+        $this->validation->dirname($this->post['filename']);
 
         // Delete the file.
         $model = new SupplementsModel($this->di);
         $model->delete($this->post['id'], $this->post['filename']);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'File was deleted.']);
+        return $view->main();
     }
 
     /**
@@ -194,15 +205,19 @@ class SupplementsController extends Controller {
     public function downloadAction(): string {
 
         // Check id.
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
 
-        if ($this->validation->dirname($this->get['filename']) === false) {
+        $this->validation->id($this->get['id']);
 
-            throw new Exception("filename parameter {$this->validation->error}", 400);
+        if (isset($this->get['filename']) === false) {
+
+            throw new Exception('filename parameter required', 400);
         }
+
+        $this->validation->dirname($this->get['filename']);
 
         // Get file from model.
         $model = new SupplementsModel($this->di);
@@ -229,10 +244,12 @@ class SupplementsController extends Controller {
     public function imagelistAction(): string {
 
         // Check id.
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         // Get file from model.
         $model = new SupplementsModel($this->di);

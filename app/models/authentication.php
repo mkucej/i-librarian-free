@@ -88,26 +88,26 @@ EOT;
         if(empty($row) || $row['status'] === 'D') {
 
             $this->db_main->rollBack();
-            return ['info' => 'Account does not exist.'];
+            throw new Exception('account does not exist', 403);
         }
 
         if ($row['status'] === 'S') {
 
             $this->db_main->rollBack();
-            return ['info' => 'Account is suspended.'];
+            throw new Exception('account is suspended', 403);
         }
 
         // LDAP users have blank password.
         if($row['password'] === '') {
 
             $this->db_main->rollBack();
-            return ['info' => 'This is an LDAP account. Password must be reset.'];
+            throw new Exception('this is an external account, password must be reset', 403);
         }
 
         if($this->encryption->verifyPassword($password, $row['password']) === false) {
 
             $this->db_main->rollBack();
-            return ['info' => 'Incorrect password.'];
+            throw new Exception('incorrect password', 403);
         }
 
         // Rehash password, if necessary.
@@ -200,6 +200,20 @@ EOT;
 
         $user_id = $this->db_main->getResult();
 
+        // Username might have changed. Look for existing email. Is this user saved already?
+        if (empty($user_id) && !empty($data['email'])) {
+
+            $sql = <<<'EOT'
+SELECT id
+    FROM users
+    WHERE email = ?
+EOT;
+
+            $this->db_main->run($sql, [$data['email']]);
+
+            $user_id = $this->db_main->getResult();
+        }
+
         if (empty($user_id)) {
 
             $id_hash = $this->encryption->getRandomKey(32);
@@ -286,7 +300,7 @@ EOT;
 
         // Save session id to db.
         $sql_session = <<<'EOT'
-INSERT INTO sessions
+INSERT OR REPLACE INTO sessions
     (session_id, user_id, added_time) 
     VALUES (?, ?, CURRENT_TIMESTAMP)
 EOT;

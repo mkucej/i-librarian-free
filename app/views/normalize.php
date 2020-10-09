@@ -16,7 +16,7 @@ class NormalizeView extends TextView {
      */
     public function main(): string {
 
-        $this->title("Normalize data");
+        $this->title($this->lang->t9n('Normalize data'));
 
         $this->head();
 
@@ -26,7 +26,7 @@ class NormalizeView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Normalize data");
+        $el->item($this->lang->t9n('Normalize data'));
         $bc = $el->render();
 
         $el = null;
@@ -35,13 +35,13 @@ class NormalizeView extends TextView {
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>LIST POSSIBLE DUPLICATES IN:</b>');
+        $el->header("<b>{$this->lang->t9n('list possible duplicates')}</b>", 'text-uppercase');
         $el->body(<<<LINKS
-            <p><a href="#normalize/authors">Authors</a></p>
-            <p><a href="#normalize/editors">Editors</a></p>
-            <p><a href="#normalize/primary">Primary titles</a></p>
-            <p><a href="#normalize/secondary">Secondary titles</a></p>
-            <p><a href="#normalize/tertiary">Tertiary titles</a></p>
+            <p><a href="#normalize/authors">{$this->lang->t9n('Authors')}</a></p>
+            <p><a href="#normalize/editors">{$this->lang->t9n('Editors')}</a></p>
+            <p><a href="#normalize/primary">{$this->lang->t9n('Primary titles')}</a></p>
+            <p><a href="#normalize/secondary">{$this->lang->t9n('Secondary titles')}</a></p>
+            <p><a href="#normalize/tertiary">{$this->lang->t9n('Tertiary titles')}</a></p>
 LINKS
         );
         $card = $el->render();
@@ -52,12 +52,12 @@ LINKS
         $el = $this->di->get('Select');
 
         $el->id('select-metadata');
-        $el->label('Column type');
-        $el->option('Authors', 'authors');
-        $el->option('Editors', 'editors');
-        $el->option('Primary titles', 'primarytitles');
-        $el->option('Secondary titles', 'secondarytitles');
-        $el->option('Tertiary titles', 'tertiarytitles');
+        $el->label($this->lang->t9n('Field'));
+        $el->option($this->lang->t9n('Authors'), 'authors');
+        $el->option($this->lang->t9n('Editors'), 'editors');
+        $el->option($this->lang->t9n('Primary titles'), 'primarytitles');
+        $el->option($this->lang->t9n('Secondary titles'), 'secondarytitles');
+        $el->option($this->lang->t9n('Tertiary titles'), 'tertiarytitles');
         $select = $el->render();
 
         $el = null;
@@ -66,7 +66,7 @@ LINKS
         $el = $this->di->get('Input');
 
         $el->id('search-metadata');
-        $el->label('Search data to edit');
+        $el->label($this->lang->t9n('Terms'));
         $el->name('filter');
         $el->attr('data-source', IL_BASE_URL . 'index.php/normalize/searchauthors');
         $el->attr('data-container', '#results');
@@ -78,7 +78,7 @@ LINKS
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>SEARCH METADATA</b>');
+        $el->header("<b>{$this->lang->t9n('Search metadata')}</b>", 'text-uppercase');
         $el->body($select . $input . '<div id="results"></div>');
         $card2 = $el->render();
 
@@ -111,37 +111,37 @@ LINKS
         switch ($type) {
 
             case 'authors';
-                $title = 'Authors';
+                $title = $this->lang->t9n('Authors');
                 $column = 'author';
                 $param = 'filter[author][]';
                 break;
 
             case 'editors';
-                $title = 'Editors';
+                $title = $this->lang->t9n('Editors');
                 $column = 'editor';
                 $param = 'filter[editor][]';
                 break;
 
             case 'primary';
-                $title = 'Primary titles';
+                $title = $this->lang->t9n('Primary titles');
                 $column = 'primary_title';
                 $param = 'filter[primary_title][]';
                 break;
 
             case 'secondary';
-                $title = 'Secondary titles';
+                $title = $this->lang->t9n('Secondary titles');
                 $column = 'secondary_title';
                 $param = 'filter[secondary_title][]';
                 break;
 
             case 'tertiary';
-                $title = 'Tertiary titles';
+                $title = $this->lang->t9n('Tertiary titles');
                 $column = 'tertiary_title';
                 $param = 'filter[tertiary_title][]';
                 break;
         }
 
-        $this->title("{$title} - Normalize data");
+        $this->title("{$title} - {$this->lang->t9n('Normalize data')}");
 
         $this->head();
 
@@ -151,14 +151,11 @@ LINKS
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item('Normalize data', '#normalize/main');
+        $el->item($this->lang->t9n('Normalize data'), '#normalize/main');
         $el->item($title);
         $bc = $el->render();
 
         $el = null;
-
-        $count = count($data) === 0 ? 'no' : count($data);
-        $header = "<h4>Found $count cases of possible duplication.</h4>";
 
         /** @var Bootstrap\IconButton $el */
         $btn = $this->di->get('IconButton');
@@ -189,7 +186,7 @@ LINKS
                     $el2->id('input-' . $item[0]);
                     $el2->name("{$column}[{$item[0]}][last_name]");
                     $el2->value($item[2]);
-                    $el2->label('Last name');
+                    $el2->label($this->lang->t9n('Last name'));
                     $input1 = $el2->render();
 
                     $el2 = null;
@@ -200,7 +197,7 @@ LINKS
                     $el2->id('input-' . $item[0]);
                     $el2->name("{$column}[{$item[0]}][first_name]");
                     $el2->value($item[1]);
-                    $el2->label('First name');
+                    $el2->label($this->lang->t9n('First name'));
                     $el2->appendButton($save);
                     $input2 = $el2->render();
 
@@ -232,7 +229,7 @@ LINKS
 
                 $link = <<<LINK
 <div style="transform: translateY(-6px)">
-    <a href='{$IL_BASE_URL}index.php/#items/filter?{$param}={$item[0]}'>Items with this metadata</a>
+    <a href='{$IL_BASE_URL}index.php/#items/filter?{$param}={$item[0]}'>{$this->lang->t9n('Items with this metadata')}</a>
 </div>
 LINK;
 
@@ -269,7 +266,7 @@ LINK;
 
         $el = null;
 
-        $this->append(['html' => $bc . $header . $row]);
+        $this->append(['html' => $bc . $row]);
 
         return $this->send();
     }
@@ -340,7 +337,7 @@ LINK;
                 $el2->id('input-' . $id);
                 $el2->name("{$column}[{$id}][last_name]");
                 $el2->value($last_name);
-                $el2->label('Last name');
+                $el2->label($this->lang->t9n('Last name'));
                 $input1 = $el2->render();
 
                 $el2 = null;
@@ -351,7 +348,7 @@ LINK;
                 $el2->id('input-' . $id);
                 $el2->name("{$column}[{$id}][first_name]");
                 $el2->value($first_name);
-                $el2->label('First name');
+                $el2->label($this->lang->t9n('First name'));
                 $el2->appendButton($save);
                 $input2 = $el2->render();
 
@@ -383,7 +380,7 @@ LINK;
 
             $link = <<<LINK
 <div style="transform: translateY(-6px)">
-<a href='{$IL_BASE_URL}index.php/#items/filter?{$param}={$id}'>Items with this metadata</a>
+<a href='{$IL_BASE_URL}index.php/#items/filter?{$param}={$id}'>{$this->lang->t9n('Items with this metadata')}</a>
 </div>
 LINK;
 

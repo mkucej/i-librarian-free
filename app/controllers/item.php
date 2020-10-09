@@ -66,10 +66,7 @@ class ItemController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -80,7 +77,7 @@ class ItemController extends Controller {
 
         // Render view.
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Item was deleted.']);
+        return $view->main(['info' => 'item was deleted']);
     }
 
     /**
@@ -102,10 +99,7 @@ class ItemController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         if (isset($this->post['type']) === false) {
 
@@ -166,7 +160,6 @@ class ItemController extends Controller {
 
         } else {
 
-            // Fetch data from Internet.
             switch ($this->post['type']) {
 
                 case 'DOI':
@@ -228,6 +221,6 @@ class ItemController extends Controller {
 
         // Render view.
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Item was updated.']);
+        return $view->main(['info' => 'item was updated']);
     }
 }

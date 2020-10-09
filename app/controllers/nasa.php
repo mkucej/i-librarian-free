@@ -77,7 +77,7 @@ class NasaController extends Controller {
         if ($terms === []) {
 
             $view = new DefaultView($this->di);
-            return $view->main(['info' => 'No search terms provided.']);
+            return $view->main();
         }
 
         // Add filters.
@@ -101,10 +101,9 @@ class NasaController extends Controller {
         $items = $this->nasa->search($terms, $from, 10, $filters, $this->get['sort']);
 
         // Search URL to save.
-        $get = $this->get;
-        unset($get['from']);
-        unset($get['save_search']);
-        $search_url = '#' . IL_PATH_URL . '?' . http_build_query($get);
+        unset($this->get['from']);
+        unset($this->get['save_search']);
+        $search_url = '#' . IL_PATH_URL . '?' . http_build_query($this->get);
 
         // Model.
         $model = new SearchModel($this->di);

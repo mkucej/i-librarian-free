@@ -16,7 +16,7 @@ class ScopusView extends TextView {
      */
     public function main() {
 
-        $this->title("Scopus search");
+        $this->title("Scopus {$this->lang->t9n('Search-NOUN')}");
 
         $this->head();
 
@@ -26,7 +26,7 @@ class ScopusView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Scopus search");
+        $el->item("Scopus {$this->lang->t9n('Search-NOUN')}");
         $bc = $el->render();
 
         $el = null;

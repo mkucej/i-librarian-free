@@ -58,13 +58,13 @@ class MigrationModel extends AppModel {
         // Is there a database?
         if (!is_readable($this->legacy_dir . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'library.sq3')) {
 
-            return ['info' => 'Could not find the database.'];
+            throw new Exception('database not found');
         }
 
         // Parent folder must be writable.
         if (!is_writable($this->legacy_dir . DIRECTORY_SEPARATOR . 'database')) {
 
-            return ['info' => 'The directory "database" containing the sq3 files must be writable.'];
+            throw new Exception('the directory containing the sq3 files must be writable');
         }
 
         // Verify legacy version.
@@ -85,7 +85,7 @@ class MigrationModel extends AppModel {
         // Check version.
         if ($version < 36) {
 
-            return ['info' => 'This library version is too old, please upgrade it to the 4.10 first.'];
+            throw new Exception('your library version is too old, please upgrade it to version 4.10 first');
         }
 
         // OK, we can upgrade.

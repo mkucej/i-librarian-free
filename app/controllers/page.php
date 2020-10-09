@@ -44,20 +44,14 @@ class PageController extends Controller {
             throw new Exception("the parameter <kbd>id</kbd> is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter <kbd>id</kbd> {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         if (!isset($this->get['number'])) {
 
             throw new Exception("the parameter <kbd>number</kbd> is required", 400);
         }
 
-        if ($this->validation->num($this->get['number']) === false || $this->get['number'] > 100000) {
-
-            throw new Exception("invalid parameter <kbd>number</kbd>", 422);
-        }
+        $this->validation->intRange($this->get['number'], 1, 100000);
 
         // Get icon.
         $model = new PageModel($this->di);
@@ -110,60 +104,42 @@ class PageController extends Controller {
             throw new Exception("Id required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("Id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         if (!isset($this->get['page'])) {
 
             throw new Exception("the parameter <kbd>page</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->get['page'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>page</kbd>", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         if (!isset($this->get['x'])) {
 
             throw new Exception("the parameter <kbd>x</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->get['x'], 0, 10000) === false) {
+        $this->validation->intRange($this->get['x'], 0, 10000);
 
-            throw new Exception("invalid parameter <kbd>x</kbd>", 422);
+        if (!isset($this->get['y'])) {
+
+            throw new Exception("the parameter <kbd>y</kbd> is required", 400);
         }
 
-        if (!isset($this->get['x'])) {
-
-            throw new Exception("the parameter <kbd>x</kbd> is required", 400);
-        }
-
-        if ($this->validation->intRange($this->get['y'], 0, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>y</kbd>", 422);
-        }
+        $this->validation->intRange($this->get['y'], 0, 10000);
 
         if (!isset($this->get['width'])) {
 
             throw new Exception("the parameter <kbd>width</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->get['width'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>width</kbd>", 422);
-        }
+        $this->validation->intRange($this->get['width'], 1, 10000);
 
         if (!isset($this->get['height'])) {
 
             throw new Exception("the parameter <kbd>height</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->get['height'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>height</kbd>", 422);
-        }
+        $this->validation->intRange($this->get['height'], 1, 10000);
 
         $model = new PageModel($this->di);
 
@@ -195,60 +171,42 @@ class PageController extends Controller {
             throw new Exception("Id required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("Id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         if (!isset($this->post['page'])) {
 
             throw new Exception("the parameter <kbd>page</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->post['page'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>page</kbd>", 422);
-        }
+        $this->validation->intRange($this->post['page'], 1, 10000);
 
         if (!isset($this->post['x'])) {
 
             throw new Exception("the parameter <kbd>x</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->post['x'], 0, 10000) === false) {
+        $this->validation->intRange($this->post['x'], 0, 10000);
 
-            throw new Exception("invalid parameter <kbd>x</kbd>", 422);
+        if (!isset($this->post['y'])) {
+
+            throw new Exception("the parameter <kbd>y</kbd> is required", 400);
         }
 
-        if (!isset($this->post['x'])) {
-
-            throw new Exception("the parameter <kbd>x</kbd> is required", 400);
-        }
-
-        if ($this->validation->intRange($this->post['y'], 0, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>y</kbd>", 422);
-        }
+        $this->validation->intRange($this->post['y'], 0, 10000);
 
         if (!isset($this->post['width'])) {
 
             throw new Exception("the parameter <kbd>width</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->post['width'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>width</kbd>", 422);
-        }
+        $this->validation->intRange($this->post['width'], 1, 10000);
 
         if (!isset($this->post['height'])) {
 
             throw new Exception("the parameter <kbd>height</kbd> is required", 400);
         }
 
-        if ($this->validation->intRange($this->post['height'], 1, 10000) === false) {
-
-            throw new Exception("invalid parameter <kbd>height</kbd>", 422);
-        }
+        $this->validation->intRange($this->post['height'], 1, 10000);
 
         $model = new PageModel($this->di);
 
@@ -270,6 +228,6 @@ class PageController extends Controller {
         );
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Image was saved as a supplement.']);
+        return $view->main(['info' => 'image was saved as a supplement']);
     }
 }

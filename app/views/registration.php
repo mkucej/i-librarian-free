@@ -22,7 +22,7 @@ class RegistrationView extends TextView {
          * Head.
          */
 
-        $this->title('Registration');
+        $this->title($this->lang->t9n('Registration'));
 
         $this->styleLink('css/plugins.css');
 
@@ -37,21 +37,22 @@ class RegistrationView extends TextView {
             // Welcome.
 
             $IL_BASE_URL = IL_BASE_URL;
+            $info1 = sprintf($this->lang->t9n('If you used %s before, you can migrate your library to the current version'), '<i>I, Librarian</i>');
 
             /** @var Bootstrap\Alert $el */
             $el = $this->di->get('Alert');
 
             $el->addClass('my-4');
             $el->context('success');
-            $el->html(<<<EOT
-                <h4>Welcome to <i>I,&nbsp;Librarian</i>!</h4>
-                <div class="text-justify">
-                    If you used <i>I,&nbsp;Librarian</i> before, you can
-                    <a href="{$IL_BASE_URL}index.php/migration">upgrade</a>
-                    your library to the current version. Otherwise, create
-                    the first user account below.
-                </div>
-EOT
+            $el->html(
+<<<HTML
+<h4>{$this->lang->t9n('Welcome to')} <i>I,&nbsp;Librarian</i>!</h4>
+<div class="text-justify">
+    {$info1}.
+    {$this->lang->t9n('Otherwise, create the first user account below')}.
+    <a href="{$IL_BASE_URL}index.php/migration">{$this->lang->t9n('Migrate now')}</a>
+</div>
+HTML
             );
             $welcome = $el->render();
 
@@ -88,7 +89,7 @@ EOT
 
             $el->style('margin: 0 -15px');
             $el->item('IL', IL_BASE_URL);
-            $el->item("Create account");
+            $el->item($this->lang->t9n('Create account'));
             $bc = $el->render();
 
             $el = null;
@@ -102,7 +103,7 @@ EOT
         $el = $this->di->get('Input');
 
         $el->name('username');
-        $el->label('Username');
+        $el->label($this->lang->t9n('Username'));
         $el->required('required');
         $el->maxlength('256');
         $username = $el->render();
@@ -114,9 +115,9 @@ EOT
 
         $el->type('password');
         $el->name('password');
-        $el->label('Password');
+        $el->label($this->lang->t9n('Password'));
         $el->required('required');
-        $el->tooltip('Password must be at least 8 characters long.');
+        $el->tooltip($this->lang->t9n('Password must be at least 8 characters long'));
         $el->maxlength('256');
         $password = $el->render();
 
@@ -127,7 +128,7 @@ EOT
 
         $el->type('password');
         $el->name('password2');
-        $el->label('Re-type password');
+        $el->label($this->lang->t9n('Re-type password'));
         $el->maxlength('256');
         $el->required('required');
         $password2 = $el->render();
@@ -139,18 +140,20 @@ EOT
 
         $el->name('email');
         $el->type('email');
-        $el->label('Email');
+        $el->label($this->lang->t9n('Email'));
         $el->maxlength('256');
         $el->required('required');
         $email = $el->render();
 
         $el = null;
 
+        $optional = "<h5>{$this->lang->t9n('Optional')}</h5>";
+
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
         $el->name('first_name');
-        $el->label('First name');
+        $el->label($this->lang->t9n('First name'));
         $el->maxlength('256');
         $first_name = $el->render();
 
@@ -160,7 +163,7 @@ EOT
         $el = $this->di->get('Input');
 
         $el->name('last_name');
-        $el->label('Last name');
+        $el->label($this->lang->t9n('Last name'));
         $el->maxlength('256');
         $last_name = $el->render();
 
@@ -171,7 +174,7 @@ EOT
 
         $el->context('primary');
         $el->type('submit');
-        $el->html('Create account');
+        $el->html($this->lang->t9n('Create account'));
         $sign_button = $el->render();
 
         $el = null;
@@ -182,7 +185,7 @@ EOT
         $el->addClass('ml-1');
         $el->context('secondary');
         $el->type('reset');
-        $el->html('Reset');
+        $el->html($this->lang->t9n('Clear'));
         $reset_button = $el->render();
 
         $el = null;
@@ -197,7 +200,7 @@ EOT
                 . $password
                 . $password2
                 . $email
-                . '<h5>Optional</h5>'
+                . $optional
                 . $first_name
                 . $last_name
                 . $sign_button
@@ -210,7 +213,7 @@ EOT
         $el = $this->di->get('Card');
 
         $el->addClass('bg-white mt-4 mb-3');
-        $el->header('<b>CREATE ACCOUNT</b>');
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Create account')}</b>");
         $el->body($form);
         $card = $el->render();
 

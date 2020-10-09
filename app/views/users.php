@@ -25,7 +25,7 @@ class UsersView extends TextView {
 
         $this->temporal = $this->di->get('Temporal');
 
-        $this->title('User list');
+        $this->title($this->lang->t9n('User management'));
 
         $this->head();
 
@@ -35,8 +35,17 @@ class UsersView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("User list");
+        $el->item($this->lang->t9n('User management'));
         $bc = $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Alert $el */
+        $el = $this->di->get('Alert');
+
+        $el->context('danger');
+        $el->html($this->lang->t9n('Users whose data you change will be logged out, potentially loosing their work in progress'));
+        $warning = $el->render();
 
         $el = null;
 
@@ -47,15 +56,15 @@ class UsersView extends TextView {
 
         $el->head([
             [' '],
-            ['Username'],
-            ['First&nbsp;name'],
-            ['Last&nbsp;name'],
-            ['Email<span class="text-danger">*</span>'],
-            ['Permissions'],
-            ['Status'],
+            [$this->lang->t9n('Username')],
+            [$this->lang->t9n('First name')],
+            [$this->lang->t9n('Last name')],
+            ["{$this->lang->t9n('Email')}<span class=\"text-danger\">*</span>"],
+            [$this->lang->t9n('Permissions')],
+            [$this->lang->t9n('Status')],
             [' '],
             [' '],
-            ['Created']
+            [$this->lang->t9n('Created')]
         ]);
 
         /** @var Bootstrap\Input $in */
@@ -64,7 +73,7 @@ class UsersView extends TextView {
         $in->groupClass('m-0');
         $in->addClass("username");
         $in->style('min-width: 6rem');
-        $in->placeholder('Username');
+        $in->placeholder($this->lang->t9n('Username'));
         $username = $in->render();
 
         $in = null;
@@ -72,10 +81,10 @@ class UsersView extends TextView {
         /** @var Bootstrap\Input $in */
         $in = $this->di->get('Input');
 
+        $in->style('max-width: 10rem;min-width: 6rem');
         $in->groupClass('m-0');
         $in->addClass("first-name");
-        $in->style('min-width: 6rem');
-        $in->placeholder('First name');
+        $in->placeholder($this->lang->t9n('First name'));
         $first = $in->render();
 
         $in = null;
@@ -83,10 +92,10 @@ class UsersView extends TextView {
         /** @var Bootstrap\Input $in */
         $in = $this->di->get('Input');
 
+        $in->style('max-width: 10rem;min-width: 6rem');
         $in->groupClass('m-0');
         $in->addClass("last-name");
-        $in->style('min-width: 6rem');
-        $in->placeholder('Last name');
+        $in->placeholder($this->lang->t9n('Last name'));
         $last = $in->render();
 
         $in = null;
@@ -97,7 +106,7 @@ class UsersView extends TextView {
         $in->groupClass('m-0');
         $in->addClass("email");
         $in->style('min-width: 6rem');
-        $in->placeholder('Email');
+        $in->placeholder($this->lang->t9n('Email'));
         $email = $in->render();
 
         $in = null;
@@ -109,7 +118,7 @@ class UsersView extends TextView {
         $sel->style('min-width: 6rem');
         $sel->addClass("permissions");
 
-        foreach (['A' => 'admin', 'U' => 'user', 'G' => 'guest'] as $short => $long) {
+        foreach (['A' => $this->lang->t9n('admin'), 'U' => $this->lang->t9n('user'), 'G' => $this->lang->t9n('guest')] as $short => $long) {
 
             $selected = $this->app_settings->getGlobal('default_permissions') === $short ? true : false;
 
@@ -127,7 +136,7 @@ class UsersView extends TextView {
         $sel->style('min-width: 6rem');
         $sel->disabled('disabled');
 
-        foreach (['P' => 'pending', 'A' => 'active', 'S' => 'suspended', 'D' => 'deleted'] as $short => $long) {
+        foreach (['P' => $this->lang->t9n('pending'), 'A' => $this->lang->t9n('active'), 'S' => $this->lang->t9n('suspended'), 'D' => $this->lang->t9n('deleted')] as $short => $long) {
 
             $selected = 'A' === $short ? true : false;
 
@@ -143,7 +152,7 @@ class UsersView extends TextView {
 
         $btn->context('danger');
         $btn->id('create-user');
-        $btn->html('Save');
+        $btn->html($this->lang->t9n('Save'));
         $save = $btn->render();
 
         $btn = null;
@@ -184,10 +193,11 @@ class UsersView extends TextView {
             /** @var Bootstrap\Input $in */
             $in = $this->di->get('Input');
 
+            $in->style('max-width: 10rem');
             $in->groupClass('m-0');
             $in->addClass("first-name");
             $in->value($first_name);
-            $in->placeholder('First name');
+            $in->placeholder($this->lang->t9n('First name'));
             $first = $in->render();
 
             $in = null;
@@ -197,10 +207,11 @@ class UsersView extends TextView {
             /** @var Bootstrap\Input $in */
             $in = $this->di->get('Input');
 
+            $in->style('max-width: 10rem');
             $in->groupClass('m-0');
             $in->addClass("last-name");
             $in->value($last_name);
-            $in->placeholder('Last name');
+            $in->placeholder($this->lang->t9n('Last name'));
             $last = $in->render();
 
             $in = null;
@@ -213,7 +224,7 @@ class UsersView extends TextView {
             $in->groupClass('m-0');
             $in->addClass("email");
             $in->value($email);
-            $in->placeholder('Email');
+            $in->placeholder($this->lang->t9n('Email'));
             $email = $in->render();
 
             $in = null;
@@ -224,7 +235,7 @@ class UsersView extends TextView {
             $sel->groupClass('m-0');
             $sel->addClass("permissions");
 
-            foreach (['A' => 'admin', 'U' => 'user', 'G' => 'guest'] as $short => $long) {
+            foreach (['A' => $this->lang->t9n('admin'), 'U' => $this->lang->t9n('user'), 'G' => $this->lang->t9n('guest')] as $short => $long) {
 
                 $selected = $user['permissions'] === $short ? true : false;
 
@@ -241,7 +252,7 @@ class UsersView extends TextView {
             $sel->groupClass('m-0');
             $sel->addClass("status");
 
-            foreach (['A' => 'active', 'S' => 'suspended', 'D' => 'deleted'] as $short => $long) {
+            foreach (['A' => $this->lang->t9n('active'), 'S' => $this->lang->t9n('suspended'), 'D' => $this->lang->t9n('deleted')] as $short => $long) {
 
                 $selected = $user['status'] === $short ? true : false;
 
@@ -257,7 +268,7 @@ class UsersView extends TextView {
 
             $btn->context('danger');
             $btn->addClass('update-user');
-            $btn->html('Save');
+            $btn->html($this->lang->t9n('Save'));
 
             if ($user['id_hash'] === $this->session->data('user_id')) {
 
@@ -273,9 +284,10 @@ class UsersView extends TextView {
 
             $btn->context('danger');
             $btn->addClass('reset-password');
-            $btn->dataTitle('Reset password?');
-            $btn->dataBody('Are you sure you want to reset this user\'s password?');
-            $btn->html('Reset&nbsp;password');
+            $btn->dataTitle($this->lang->t9n('Reset password'));
+            $btn->dataBody($this->lang->t9n('Are you sure you want to reset this user\'s password?'));
+            $btn->dataButton($this->lang->t9n('Yes-NOUN'));
+            $btn->html($this->lang->t9n('Reset password'));
 
             if ($user['id_hash'] === $this->session->data('user_id')) {
 
@@ -320,16 +332,6 @@ class UsersView extends TextView {
 
         $el = null;
 
-        /** @var Bootstrap\Icon $el */
-        $el = $this->di->get('Icon');
-
-        $el->icon('alert');
-        $icon = $el->render();
-
-        $el = null;
-
-        $warning = "<p class=\"text-danger\">$icon Users, whose data you change, will be logged out, potentially loosing their work in progress.</p>";
-
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
 
@@ -352,36 +354,35 @@ class UsersView extends TextView {
      */
     public function userCreated(array $user): string {
 
-        // Email message.
-        $IL_BASE_URL = IL_BASE_URL;
+        $first_line = sprintf($this->lang->t9n('Your account at %s was created with a username'), IL_BASE_URL);
 
-        $subject = rawurlencode("New account at $IL_BASE_URL");
+        $subject = rawurlencode($this->lang->t9n('New I, Librarian account'));
 
         $body = rawurlencode(<<<MESSAGE
-Hello {$user['username']}:
+{$this->lang->t9n('Hello')} {$user['username']}:
 
-Your account at $IL_BASE_URL was created with a username:
+{$first_line}:
 
 {$user['username']}
  
-Your temporary password is:
+{$this->lang->t9n('Your temporary password is')}:
 
 {$user['password']}
 
-Please login and change your password as soon as possible.
+{$this->lang->t9n('Please login and change your password as soon as possible')}.
 
-Best regards,
-Administrator
+{$this->lang->t9n('Best regards')},
+{$this->lang->t9n('Administrator')}
 MESSAGE
         );
 
         $msg = <<<MESSAGE
-New user's temporary password is:<br>
+{$this->lang->t9n('New user\'s temporary password is')}:<br>
 {$user['password']}<br>
-<a href="mailto:{$user['email']}?subject=$subject&body=$body">Click here to send an email.</a>
+<a href="mailto:{$user['email']}?subject=$subject&body=$body">{$this->lang->t9n('Click here to send an email')}.</a>
 MESSAGE;
 
-        $this->append(['info' => 'New user was created.', 'password' => $msg]);
+        $this->append(['info' => $this->lang->t9n('New user was created'), 'password' => $msg]);
 
         return $this->send();
     }
@@ -398,29 +399,31 @@ MESSAGE;
         // Email message.
         $IL_BASE_URL = IL_BASE_URL;
 
-        $subject = rawurlencode("Password reset at $IL_BASE_URL");
+        $first_line = sprintf($this->lang->t9n('Your account password at %s was reset to'), IL_BASE_URL);
+
+        $subject = rawurlencode($this->lang->t9n('I, Librarian password reset'));
 
         $body = rawurlencode(<<<MESSAGE
-Hello {$user['username']}:
+{$this->lang->t9n('Hello')} {$user['username']}:
 
-Your account password at $IL_BASE_URL was reset to:
+{$first_line}:
 
 {$user['password']}
 
-Please login and change your password as soon as possible.
+{$this->lang->t9n('Please login and change your password as soon as possible')}.
 
-Best regards,
-Administrator
+{$this->lang->t9n('Best regards')},
+{$this->lang->t9n('Administrator')}
 MESSAGE
         );
 
         $msg = <<<MESSAGE
-User's new temporary password is:<br>
+{$this->lang->t9n('User\'s temporary password is')}:<br>
 {$user['password']}<br>
-<a href="mailto:{$user['email']}?subject=$subject&body=$body">Click here to send an email.</a>
+<a href="mailto:{$user['email']}?subject=$subject&body=$body">{$this->lang->t9n('Click here to send an email')}.</a>
 MESSAGE;
 
-        $this->append(['info' => 'New user was created.', 'password' => $msg]);
+        $this->append(['info' => $this->lang->t9n('Password was reset'), 'password' => $msg]);
 
         return $this->send();
     }

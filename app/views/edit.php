@@ -24,7 +24,7 @@ class EditView extends TextView {
         // We need ItemMeta().
         $this->item_meta = $this->di->get('ItemMeta');
 
-        $this->title('Edit item - ' . $item['title']);
+        $this->title("{$this->lang->t9n('Edit item')} - {$item['title']}");
 
         $this->head();
 
@@ -35,13 +35,13 @@ class EditView extends TextView {
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$item['title']}", '#summary?id=' . $item['id']);
-        $el->item('Edit item');
+        $el->item($this->lang->t9n('Edit item'));
         $bc = $el->render();
 
         $el = null;
 
         // Item labels for this ref type.
-        $item_labels = $this->item_meta->getLabels($item['reference_type']);
+        $item_labels = $this->item_meta->getLabels($this->lang, $item['reference_type']);
 
         // Authors.
         $author_inputs = '';
@@ -59,7 +59,7 @@ class EditView extends TextView {
                 $el->groupClass('col');
                 $el->name('author_last_name[]');
                 $el->value($value);
-                $el->label('Last name');
+                $el->label($this->lang->t9n('Last name'));
                 $el->source(IL_BASE_URL . "index.php/filter/author");
                 $last_name = $el->render();
 
@@ -72,7 +72,7 @@ class EditView extends TextView {
                 $el->groupClass('col');
                 $el->name('author_first_name[]');
                 $el->value($item[ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][$key]);
-                $el->label('First name');
+                $el->label($this->lang->t9n('First name'));
                 $first_name = $el->render();
 
                 $el = null;
@@ -95,7 +95,7 @@ EOT;
         $el->addClass("input-typeahead");
         $el->groupClass('col');
         $el->name('author_last_name[]');
-        $el->label('Last name');
+        $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/author");
         $new_last_name = $el->render();
 
@@ -107,7 +107,7 @@ EOT;
         $el->id('new-author-first');
         $el->groupClass('col');
         $el->name('author_first_name[]');
-        $el->label('First name');
+        $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
         $el = null;
@@ -137,7 +137,7 @@ EOT;
         $el->addClass('mt-2 mb-3');
         $el->style('max-height: 50vh;overflow: auto');
         $el->body($author_inputs, null, 'pt-3');
-        $author_card = '<b>Authors</b><br>' . $el->render();
+        $author_card = "<b>{$this->lang->t9n($item_labels['authors'])}</b><br>" . $el->render();
 
         $el = null;
 
@@ -157,7 +157,7 @@ EOT;
                 $el->groupClass('col');
                 $el->name('editor_last_name[]');
                 $el->value($value);
-                $el->label('Last name');
+                $el->label($this->lang->t9n('Last name'));
                 $el->source(IL_BASE_URL . "index.php/filter/editor");
                 $last_name = $el->render();
 
@@ -170,7 +170,7 @@ EOT;
                 $el->groupClass('col');
                 $el->name('editor_first_name[]');
                 $el->value($item[ItemMeta::COLUMN['EDITOR_FIRST_NAME']][$key]);
-                $el->label('First name');
+                $el->label($this->lang->t9n('First name'));
                 $first_name = $el->render();
 
                 $el = null;
@@ -193,7 +193,7 @@ EOT;
         $el->addClass("input-typeahead");
         $el->groupClass('col');
         $el->name('editor_last_name[]');
-        $el->label('Last name');
+        $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/editor");
         $new_last_name = $el->render();
 
@@ -205,7 +205,7 @@ EOT;
         $el->id('new-editor-first');
         $el->groupClass('col');
         $el->name('editor_first_name[]');
-        $el->label('First name');
+        $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
         $el = null;
@@ -235,7 +235,7 @@ EOT;
         $el->addClass('mt-2 mb-3');
         $el->style('max-height: 50vh;overflow: auto');
         $el->body($editor_inputs, null, 'pt-3');
-        $editor_card = '<b>Editors</b><br>' . $el->render();
+        $editor_card = "<b>{$this->lang->t9n($item_labels['editors'])}</b><br>" . $el->render();
 
         $el = null;
 
@@ -256,7 +256,7 @@ EOT;
             $el->groupClass('col-sm-3');
             $el->name('uid_types[]');
             $el->id('uid-type-' . $key);
-            $el->label('UID type');
+            $el->label("UID {$this->lang->t9n('type-NOUN')}");
             $el->option('', '');
 
             foreach (ItemMeta::UID_TYPE as $option => $label) {
@@ -293,7 +293,7 @@ EOT;
         $el->groupClass('col-sm-3');
         $el->name('uid_types[]');
         $el->id('new-uid-type');
-        $el->label('UID type');
+        $el->label("UID {$this->lang->t9n('type-NOUN')}");
         $el->option('', '');
 
         foreach (ItemMeta::UID_TYPE as $option => $label) {
@@ -478,7 +478,7 @@ EOT;
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;

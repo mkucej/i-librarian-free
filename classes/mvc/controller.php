@@ -117,7 +117,7 @@ abstract class Controller {
         }
 
         // Debug.
-//        $language = 'de';
+        $language = 'de';
 
         $this->lang->setLanguage($language);
 

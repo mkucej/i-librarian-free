@@ -19,7 +19,7 @@ class NasaView extends TextView {
      */
     public function main(array $searches): string {
 
-        $this->title("NASA ADS search");
+        $this->title('NASA ADS ' . $this->lang->t9n('search-NOUN'));
 
         $this->head();
 
@@ -29,20 +29,20 @@ class NasaView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("NASA ADS search");
+        $el->item('NASA ADS ' . $this->lang->t9n('search-NOUN'));
         $bc = $el->render();
 
         $el = null;
 
         $parameters = [
-            'abs'     => 'Title + abstract',
-            'author'  => 'Author',
+            'abs'     => "{$this->lang->t9n('Title')} {$this->lang->t9n('or')} {$this->lang->t9n('abstract')}",
+            'author'  => $this->lang->t9n('Author'),
             'bibcode' => 'Bibcode',
-            'full'    => 'Full text',
+            'full'    => $this->lang->t9n('Full text'),
             'doi'     => 'DOI',
-            'object'  => 'Object',
-            'title'   => 'Title',
-            'year'    => 'Year'
+            'object'  => $this->lang->t9n('Object'),
+            'title'   => $this->lang->t9n('Title'),
+            'year'    => $this->lang->t9n('Year')
         ];
 
         $preselections = [
@@ -61,7 +61,7 @@ class NasaView extends TextView {
 
             $el->groupClass('col-sm-3');
             $el->name('search_type[' . ($row_number - 1) . ']');
-            $el->label('Field');
+            $el->label($this->lang->t9n('Field'));
             $el->id('parameter-' . $row_number);
 
             foreach ($parameters as $parameter => $description) {
@@ -80,7 +80,7 @@ class NasaView extends TextView {
             $el->id('value-' . $row_number);
             $el->groupClass('col-sm-9');
             $el->name('search_query[' . ($row_number - 1) . ']');
-            $el->label('Terms');
+            $el->label($this->lang->t9n('Terms'));
             $input = $el->render();
 
             $el = null;
@@ -131,7 +131,7 @@ EOT;
 
         $el->id('boolean-ta');
         $el->name('search_query[boolean]');
-        $el->label('Tagged search <a target="_blank" href="https://adsabs.github.io/help/search/search-syntax">?</a>');
+        $el->label($this->lang->t9n('Tagged search') . ' <a target="_blank" href="https://adsabs.github.io/help/search/search-syntax">?</a>');
         $boolean = $el->render();
 
         $el = null;
@@ -146,7 +146,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('');
-        $el->label('relevance');
+        $el->label($this->lang->t9n('relevance'));
         $el->checked('checked');
         $sorting = $el->render();
 
@@ -160,7 +160,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('entry_date desc');
-        $el->label('last added');
+        $el->label($this->lang->t9n('last added'));
         $sorting .= $el->render();
 
         $el = null;
@@ -173,7 +173,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('pubdate desc');
-        $el->label('last published');
+        $el->label($this->lang->t9n('last published'));
         $sorting .= $el->render();
 
         $el = null;
@@ -186,7 +186,7 @@ EOT;
         $el->maxlength('3');
         $el->pattern('\d{1,3}');
         $el->name('search_filter[0][last_added]');
-        $el->label('Added in last (1-365) days');
+        $el->label(sprintf($this->lang->t9n('Added in last %s days'), '(1-365)'));
         $last_days = $el->render();
 
         $el = null;
@@ -197,7 +197,7 @@ EOT;
         $el->type('submit');
         $el->addClass('my-2 mr-3');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search = $el->render();
 
         $el = null;
@@ -210,7 +210,7 @@ EOT;
         $el->id('save-search');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;

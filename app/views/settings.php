@@ -17,7 +17,7 @@ class SettingsView extends TextView {
      */
     public function main(array $user_settings): string {
 
-        $this->title('Settings');
+        $this->title($this->lang->t9n('User settings'));
 
         $this->head();
 
@@ -27,12 +27,12 @@ class SettingsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Settings");
+        $el->item($this->lang->t9n('User settings'));
         $bc = $el->render();
 
         $el = null;
 
-        $radios_l = '<div class="mt-3"><b>Theme</b></div>';
+        $radios_l = "<div class=\"mt-3\"><b>{$this->lang->t9n('Theme')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -42,7 +42,7 @@ class SettingsView extends TextView {
         $el->id('theme_light');
         $el->name('settings[theme]');
         $el->value('light');
-        $el->label('light');
+        $el->label($this->lang->t9n('light'));
 
         if ($user_settings['theme'] === 'light') {
 
@@ -61,7 +61,7 @@ class SettingsView extends TextView {
         $el->id('theme_dark');
         $el->name('settings[theme]');
         $el->value('dark');
-        $el->label('dark');
+        $el->label($this->lang->t9n('dark'));
 
         if ($user_settings['theme'] === 'dark') {
 
@@ -76,7 +76,7 @@ class SettingsView extends TextView {
          * Sorting.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>Order items by</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Order items by')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -86,7 +86,7 @@ class SettingsView extends TextView {
         $el->id('sorting_id');
         $el->name('settings[sorting]');
         $el->value('id');
-        $el->label('addition date');
+        $el->label($this->lang->t9n('added date'));
 
         if ($user_settings['sorting'] === 'id') {
 
@@ -105,7 +105,7 @@ class SettingsView extends TextView {
         $el->id('sorting_pubdate');
         $el->name('settings[sorting]');
         $el->value('pubdate');
-        $el->label('publication date');
+        $el->label($this->lang->t9n('published date'));
 
         if ($user_settings['sorting'] === 'pubdate') {
 
@@ -124,7 +124,7 @@ class SettingsView extends TextView {
         $el->id('sorting_title');
         $el->name('settings[sorting]');
         $el->value('title');
-        $el->label('title');
+        $el->label($this->lang->t9n('title'));
 
         if ($user_settings['sorting'] === 'title') {
 
@@ -139,7 +139,7 @@ class SettingsView extends TextView {
          * Items per page.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>Items per page</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Items per page')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -259,7 +259,7 @@ class SettingsView extends TextView {
          * Display type.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>Display items as</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Display items as')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -269,7 +269,7 @@ class SettingsView extends TextView {
         $el->id('display_title');
         $el->name('settings[display_type]');
         $el->value('title');
-        $el->label('titles');
+        $el->label($this->lang->t9n('title'));
 
         if ($user_settings['display_type'] === 'title') {
 
@@ -288,7 +288,7 @@ class SettingsView extends TextView {
         $el->id('display_summary');
         $el->name('settings[display_type]');
         $el->value('summary');
-        $el->label('summaries');
+        $el->label($this->lang->t9n('summary'));
 
         if ($user_settings['display_type'] === 'summary') {
 
@@ -307,7 +307,7 @@ class SettingsView extends TextView {
         $el->id('display_icons');
         $el->name('settings[display_type]');
         $el->value('icon');
-        $el->label('icons');
+        $el->label($this->lang->t9n('icon'));
 
         if ($user_settings['display_type'] === 'icon') {
 
@@ -322,7 +322,7 @@ class SettingsView extends TextView {
          * Icons per row.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>Icons per row</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Icons per row')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -408,7 +408,7 @@ class SettingsView extends TextView {
         $el->id('icons_per_row5');
         $el->name('settings[icons_per_row]');
         $el->value('auto');
-        $el->label('auto');
+        $el->label($this->lang->t9n('auto'));
 
         if ($user_settings['icons_per_row'] === 'auto') {
 
@@ -423,7 +423,7 @@ class SettingsView extends TextView {
          * PDF viewer.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>PDF viewer</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('PDF viewer')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -433,7 +433,7 @@ class SettingsView extends TextView {
         $el->id('pdf_viewer_internal');
         $el->name('settings[pdf_viewer]');
         $el->value('internal');
-        $el->label('<i>I, Librarian</i> PDF viewer');
+        $el->label("<i>I, Librarian</i> {$this->lang->t9n('PDF viewer')}");
 
         if ($user_settings['pdf_viewer'] === 'internal') {
 
@@ -452,7 +452,7 @@ class SettingsView extends TextView {
         $el->id('pdf_viewer_external');
         $el->name('settings[pdf_viewer]');
         $el->value('external');
-        $el->label('web browser PDF plugin');
+        $el->label($this->lang->t9n('web browser PDF plugin'));
 
         if ($user_settings['pdf_viewer'] === 'external') {
 
@@ -474,7 +474,7 @@ class SettingsView extends TextView {
         $el->name('settings[timezone]');
         $el->value($user_settings['timezone']);
         $el->groupClass('my-3');
-        $el->label('Timezone');
+        $el->label($this->lang->t9n('Timezone'));
         $el->source(IL_BASE_URL . 'index.php/filter/timezone');
         $radios_l .= $el->render();
 
@@ -484,7 +484,7 @@ class SettingsView extends TextView {
          * Always use en_US locale.
          */
 
-        $radios_l .= '<div class="mt-3"><strong>Always use English localization</strong></div>';
+        $radios_l .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Use English localization')}?</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -494,7 +494,7 @@ class SettingsView extends TextView {
         $el->id('use_en_language_yes');
         $el->name('settings[use_en_language]');
         $el->value('1');
-        $el->label('yes');
+        $el->label($this->lang->t9n('yes-NOUN'));
 
         if ($user_settings['use_en_language'] === '1') {
 
@@ -513,7 +513,7 @@ class SettingsView extends TextView {
         $el->id('use_en_language_no');
         $el->name('settings[use_en_language]');
         $el->value('0');
-        $el->label('no');
+        $el->label("{$this->lang->t9n('no-NOUN')}, {$this->lang->t9n('use the OS default localization')}");
 
         if ($user_settings['use_en_language'] === '0') {
 
@@ -528,9 +528,17 @@ class SettingsView extends TextView {
          * Custom PDF name.
          */
 
-        $radios_l .= '<div class="mt-3 mb-2"><strong>Custom PDF download name</strong></div>';
+        $radios_l .= "<div class=\"mt-3 mb-2\"><b>{$this->lang->t9n('Custom PDF download name')}</b></div>";
 
-        $name_columns = ['', 'author', 'id', 'publication', 'title', 'year'];
+        $name_columns = [
+            '' => '',
+            'author' => $this->lang->t9n('author'),
+            'id' => 'Id',
+            'publication' => $this->lang->t9n('publication'),
+            'title' => $this->lang->t9n('title'),
+            'year' => $this->lang->t9n('year')
+        ];
+
         $separators = ["", "' '", "-", "_"];
 
         /** @var Bootstrap\Select $el */
@@ -539,9 +547,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_filename][0]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $user_settings['custom_filename'][0] === $value);
+            $el->option($label, $value, $user_settings['custom_filename'][0] === $value);
         }
 
         $filename1 = $el->render();
@@ -569,9 +577,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_filename][2]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $user_settings['custom_filename'][2] === $value);
+            $el->option($label, $value, $user_settings['custom_filename'][2] === $value);
         }
 
         $filename3 = $el->render();
@@ -599,9 +607,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_filename][4]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $user_settings['custom_filename'][4] === $value);
+            $el->option($label, $value, $user_settings['custom_filename'][4] === $value);
         }
 
         $filename5 = $el->render();
@@ -624,7 +632,7 @@ class SettingsView extends TextView {
          * Customize dashboard.
          */
 
-        $radios_l .= '<div class="mt-3 mb-2"><strong>Hide dashboard panels</strong></div>';
+        $radios_l .= "<div class=\"mt-3 mb-2\"><b>{$this->lang->t9n('Hide dashboard panels')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -633,7 +641,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-search');
         $el->name('settings[dashboard_remove_search]');
         $el->value('1');
-        $el->label('search');
+        $el->label($this->lang->t9n('Search-NOUN'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_search']) && $user_settings['dashboard_remove_search'] === '1') {
@@ -652,7 +660,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-stats');
         $el->name('settings[dashboard_remove_stats]');
         $el->value('1');
-        $el->label('stats');
+        $el->label($this->lang->t9n('Logs'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_stats']) && $user_settings['dashboard_remove_stats'] === '1') {
@@ -671,7 +679,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-items');
         $el->name('settings[dashboard_remove_items]');
         $el->value('1');
-        $el->label('items');
+        $el->label($this->lang->t9n('Items'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_items']) && $user_settings['dashboard_remove_items'] === '1') {
@@ -690,7 +698,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-item-notes');
         $el->name('settings[dashboard_remove_item_notes]');
         $el->value('1');
-        $el->label('item notes');
+        $el->label($this->lang->t9n('Item notes'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_item_notes']) && $user_settings['dashboard_remove_item_notes'] === '1') {
@@ -709,7 +717,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-item-discussions');
         $el->name('settings[dashboard_remove_item_discussions]');
         $el->value('1');
-        $el->label('item discussions');
+        $el->label($this->lang->t9n('Item discussions'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_item_discussions']) && $user_settings['dashboard_remove_item_discussions'] === '1') {
@@ -728,7 +736,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-projects');
         $el->name('settings[dashboard_remove_projects]');
         $el->value('1');
-        $el->label('projects');
+        $el->label($this->lang->t9n('Projects'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_projects']) && $user_settings['dashboard_remove_projects'] === '1') {
@@ -747,7 +755,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-project-notes');
         $el->name('settings[dashboard_remove_project_notes]');
         $el->value('1');
-        $el->label('project notes');
+        $el->label($this->lang->t9n('Project notes'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_project_notes']) && $user_settings['dashboard_remove_project_notes'] === '1') {
@@ -766,7 +774,7 @@ class SettingsView extends TextView {
         $el->id('dashboard-project-discussions');
         $el->name('settings[dashboard_remove_project_discussions]');
         $el->value('1');
-        $el->label('project discussions');
+        $el->label($this->lang->t9n('Project discussions'));
         $el->inline(true);
 
         if (isset($user_settings['dashboard_remove_project_discussions']) && $user_settings['dashboard_remove_project_discussions'] === '1') {
@@ -782,7 +790,7 @@ class SettingsView extends TextView {
          * Connect to databases.
          */
 
-        $radios_r = '<div class="mt-3 mb-2"><strong>Connect to external databases</strong></div>';
+        $radios_r = "<div class=\"mt-3 mb-2\"><b>{$this->lang->t9n('Connect to external databases')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -988,7 +996,7 @@ class SettingsView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;
@@ -1039,7 +1047,7 @@ class SettingsView extends TextView {
          * Sorting.
          */
 
-        $output = '<strong>Order items by</strong><br>';
+        $output = "<b>{$this->lang->t9n('Order items by')}</b><br>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1049,7 +1057,7 @@ class SettingsView extends TextView {
         $el->id('sorting_id');
         $el->name('settings[sorting]');
         $el->value('id');
-        $el->label('addition date');
+        $el->label($this->lang->t9n('added date'));
 
         if ($user_settings['sorting'] === 'id') {
 
@@ -1068,7 +1076,7 @@ class SettingsView extends TextView {
         $el->id('sorting_pubdate');
         $el->name('settings[sorting]');
         $el->value('pubdate');
-        $el->label('publication date');
+        $el->label($this->lang->t9n('published date'));
 
         if ($user_settings['sorting'] === 'pubdate') {
 
@@ -1087,7 +1095,7 @@ class SettingsView extends TextView {
         $el->id('sorting_title');
         $el->name('settings[sorting]');
         $el->value('title');
-        $el->label('title');
+        $el->label($this->lang->t9n('title'));
 
         if ($user_settings['sorting'] === 'title') {
 
@@ -1102,7 +1110,7 @@ class SettingsView extends TextView {
          * Items per page.
          */
 
-        $output .= '<div class="mt-3"><strong>Items per page</strong></div>';
+        $output .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Items per page')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1222,7 +1230,7 @@ class SettingsView extends TextView {
          * Display type.
          */
 
-        $output .= '<div class="mt-3"><strong>Display items as</strong></div>';
+        $output .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Display items as')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1232,7 +1240,7 @@ class SettingsView extends TextView {
         $el->id('display_title');
         $el->name('settings[display_type]');
         $el->value('title');
-        $el->label('titles');
+        $el->label($this->lang->t9n('title'));
 
         if ($user_settings['display_type'] === 'title') {
 
@@ -1251,7 +1259,7 @@ class SettingsView extends TextView {
         $el->id('display_summary');
         $el->name('settings[display_type]');
         $el->value('summary');
-        $el->label('summaries');
+        $el->label($this->lang->t9n('summary'));
 
         if ($user_settings['display_type'] === 'summary') {
 
@@ -1270,7 +1278,7 @@ class SettingsView extends TextView {
         $el->id('display_icons');
         $el->name('settings[display_type]');
         $el->value('icon');
-        $el->label('icons');
+        $el->label($this->lang->t9n('icon'));
 
         if ($user_settings['display_type'] === 'icon') {
 
@@ -1285,7 +1293,7 @@ class SettingsView extends TextView {
          * Icons per row.
          */
 
-        $output .= '<div class="mt-3"><strong>Icons per row</strong></div>';
+        $output .= "<div class=\"mt-3\"><b>{$this->lang->t9n('Icons per row')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1371,7 +1379,7 @@ class SettingsView extends TextView {
         $el->id('icons_per_row5');
         $el->name('settings[icons_per_row]');
         $el->value('auto');
-        $el->label('auto');
+        $el->label($this->lang->t9n('auto'));
 
         if ($user_settings['icons_per_row'] === 'auto') {
 
@@ -1406,7 +1414,7 @@ class SettingsView extends TextView {
      */
     public function global(array $settings): string {
 
-        $this->title('Global settings');
+        $this->title($this->lang->t9n('Global settings'));
 
         $this->head();
 
@@ -1416,7 +1424,7 @@ class SettingsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Global settings");
+        $el->item($this->lang->t9n('Global settings'));
         $bc = $el->render();
 
         $el = null;
@@ -1425,7 +1433,7 @@ class SettingsView extends TextView {
          * Allow user registration.
          */
 
-        $options_left = '<div class="pt-3"><b>User self-registration</b></div>';
+        $options_left = "<div class=\"pt-3\"><b>{$this->lang->t9n('User self-registration')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1435,7 +1443,7 @@ class SettingsView extends TextView {
         $el->id('registration-allow');
         $el->name('settings[disallow_signup]');
         $el->value('0');
-        $el->label('allow');
+        $el->label($this->lang->t9n('allow'));
 
         if ($settings['disallow_signup'] === '0') {
 
@@ -1454,7 +1462,7 @@ class SettingsView extends TextView {
         $el->id('registration-disallow');
         $el->name('settings[disallow_signup]');
         $el->value('1');
-        $el->label('disallow');
+        $el->label($this->lang->t9n('disallow'));
 
         if ($settings['disallow_signup'] === '1') {
 
@@ -1469,7 +1477,7 @@ class SettingsView extends TextView {
          * Default permissions.
          */
 
-        $options_left .= '<div class="mt-2"><strong>Default user permissions</strong></div>';
+        $options_left .= "<div class=\"pt-3\"><b>{$this->lang->t9n('Default user permissions')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1478,7 +1486,12 @@ class SettingsView extends TextView {
         $el->id('default-admin');
         $el->name('settings[default_permissions]');
         $el->value('A');
-        $el->label('administrator <span class="text-secondary">(adds, edits, deletes items; manages users)</span>');
+        $el->label(
+<<<HTML
+{$this->lang->t9n('administrator')}
+<span class="text-secondary">({$this->lang->t9n('adds, edits, deletes items')}; {$this->lang->t9n('manages users')})</span>
+HTML
+        );
 
         if ($settings['default_permissions'] === 'A') {
 
@@ -1496,7 +1509,12 @@ class SettingsView extends TextView {
         $el->id('default-user');
         $el->name('settings[default_permissions]');
         $el->value('U');
-        $el->label('user <span class="text-secondary">(adds, edits items; cannot delete items)</span>');
+        $el->label(
+<<<HTML
+{$this->lang->t9n('user')}
+<span class="text-secondary">({$this->lang->t9n('adds, edits items')}; {$this->lang->t9n('cannot delete items')})</span>
+HTML
+        );
 
         if ($settings['default_permissions'] === 'U') {
 
@@ -1515,7 +1533,12 @@ class SettingsView extends TextView {
         $el->groupClass('mb-3');
         $el->name('settings[default_permissions]');
         $el->value('G');
-        $el->label('guest <span class="text-secondary">(cannot add, edit, or delete items)</span>');
+        $el->label(
+<<<HTML
+{$this->lang->t9n('guest')}
+<span class="text-secondary">({$this->lang->t9n('cannot add, edit, or delete items')})</span>
+HTML
+        );
 
         if ($settings['default_permissions'] === 'G') {
 
@@ -1533,7 +1556,7 @@ class SettingsView extends TextView {
 
             $el->id('custom' . $i);
             $el->name('settings[custom' . $i . ']');
-            $el->label('Custom ' . $i . ' name');
+            $el->label(sprintf($this->lang->t9n('Custom %s name'), $i));
 
             if (!empty($settings['custom' . $i])) {
 
@@ -1549,10 +1572,18 @@ class SettingsView extends TextView {
          * Custom Bibtex id.
          */
 
-        $name_columns = ['', 'author', 'id', 'publication', 'title', 'year'];
+        $name_columns = [
+            '' => '',
+            'author' => $this->lang->t9n('author'),
+            'id' => 'Id',
+            'publication' => $this->lang->t9n('publication'),
+            'title' => $this->lang->t9n('title'),
+            'year' => $this->lang->t9n('year')
+        ];
+
         $separators = ['', '-', '_'];
 
-        $options_left .= '<div class="mt-2 mb-2"><b>Custom citation/B<span style="font-size: 0.85rem">IB</span>T</b><div class="d-inline-block" style="transform: translateY(2px)"><b>E</b></div><b>X keys</b></div>';
+        $options_left .= "<div class=\"mt-2 mb-2\"><b>{$this->lang->t9n('Custom citation/Bibtex keys')}</b></div>";
 
         /** @var Bootstrap\Select $el */
         $el = $this->di->get('Select');
@@ -1560,9 +1591,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_bibtex][0]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $settings['custom_bibtex'][0] === $value);
+            $el->option($label, $value, $settings['custom_bibtex'][0] === $value);
         }
 
         $filename1 = $el->render();
@@ -1590,9 +1621,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_bibtex][2]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $settings['custom_bibtex'][2] === $value);
+            $el->option($label, $value, $settings['custom_bibtex'][2] === $value);
         }
 
         $filename3 = $el->render();
@@ -1620,9 +1651,9 @@ class SettingsView extends TextView {
         $el->name('settings[custom_bibtex][4]');
         $el->style('width: 8rem');
 
-        foreach ($name_columns as $value) {
+        foreach ($name_columns as $value => $label) {
 
-            $el->option($value, $value, $settings['custom_bibtex'][4] === $value);
+            $el->option($label, $value, $settings['custom_bibtex'][4] === $value);
         }
 
         $filename5 = $el->render();
@@ -1648,12 +1679,12 @@ class SettingsView extends TextView {
         $el->id('replace-bibtex-keys');
         $el->name('replace_bibtex_keys');
         $el->value('1');
-        $el->label('replace existing keys');
+        $el->label($this->lang->t9n('replace existing keys'));
         $options_left .= $el->render();
 
         $el = null;
 
-        $options_left .= '<div class="mt-3 mb-2"><strong>Math display formatting</strong></div>';
+        $options_left .= "<div class=\"mt-2 mb-2\"><b>{$this->lang->t9n('Math display formatting')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1663,7 +1694,7 @@ class SettingsView extends TextView {
         $el->id('math-formatting-allow');
         $el->name('settings[math_formatting]');
         $el->value('1');
-        $el->label('on');
+        $el->label($this->lang->t9n('on-NOUN'));
 
         if (isset($settings['math_formatting']) && $settings['math_formatting'] === '1') {
 
@@ -1682,7 +1713,7 @@ class SettingsView extends TextView {
         $el->id('math-formatting-disallow');
         $el->name('settings[math_formatting]');
         $el->value('0');
-        $el->label('off');
+        $el->label($this->lang->t9n('off-NOUN'));
 
         if (!isset($settings['math_formatting']) || isset($settings['math_formatting']) && $settings['math_formatting'] === '0') {
 
@@ -1699,8 +1730,8 @@ class SettingsView extends TextView {
         $el->id('soffice-path');
         $el->groupClass('mt-3');
         $el->name('settings[soffice_path]');
-        $el->label('LibreOffice path');
-        $el->hint('Provide LibreOffice path, if it is not set in the Windows environment.');
+        $el->label("LibreOffice {$this->lang->t9n('path')}");
+        $el->hint($this->lang->t9n('If it is not set in the OS environment'));
 
         if (!empty($settings['soffice_path'])) {
 
@@ -1716,8 +1747,8 @@ class SettingsView extends TextView {
 
         $el->id('tesseract-path');
         $el->name('settings[tesseract_path]');
-        $el->label('Tesseract OCR path');
-        $el->hint('Provide Tesseract path, if it is not set in the Windows environment.');
+        $el->label("Tesseract OCR {$this->lang->t9n('path')}");
+        $el->hint($this->lang->t9n('If it is not set in the OS environment'));
 
         if (!empty($settings['tesseract_path'])) {
 
@@ -1797,7 +1828,7 @@ class SettingsView extends TextView {
 
         $el = null;
 
-        $options_right .= '<div class="mt-3 mb-2"><strong>Proxy server for outgoing requests</strong></div>';
+        $options_right .= "<div class=\"mt-3 mb-2\"><b>{$this->lang->t9n('Proxy server for outgoing requests')}</b></div>";
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
@@ -1807,7 +1838,7 @@ class SettingsView extends TextView {
         $el->groupClass('mb-4');
         $el->name('settings[connection]');
         $el->value('direct');
-        $el->label('direct connection to the Internet');
+        $el->label($this->lang->t9n('direct connection to the Internet'));
 
         if ($settings['connection'] === 'direct') {
 
@@ -1877,7 +1908,7 @@ class SettingsView extends TextView {
         $el->id('connection-manual');
         $el->name('settings[connection]');
         $el->value('manual');
-        $el->label('manual configuration');
+        $el->label($this->lang->t9n('manual configuration'));
 
         if ($settings['connection'] === 'manual') {
 
@@ -1990,7 +2021,7 @@ class SettingsView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;

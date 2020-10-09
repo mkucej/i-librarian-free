@@ -16,7 +16,7 @@ class PatentsView extends TextView {
      */
     public function main() {
 
-        $this->title("Patent search");
+        $this->title($this->lang->t9n('Patent search'));
 
         $this->head();
 
@@ -26,7 +26,7 @@ class PatentsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Patent search");
+        $el->item($this->lang->t9n('Patent search'));
         $bc = $el->render();
 
         $el = null;

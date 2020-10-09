@@ -17,7 +17,7 @@ class ArxivView extends TextView {
      */
     public function main(array $searches) {
 
-        $this->title("arXiv search");
+        $this->title('arXiv ' . $this->lang->t9n('search-NOUN'));
 
         $this->head();
 
@@ -27,21 +27,21 @@ class ArxivView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("arXiv search");
+        $el->item('arXiv ' . $this->lang->t9n('search-NOUN'));
         $bc = $el->render();
 
         $el = null;
 
         $parameters = [
-            'abs'     => 'Abstract',
-            'all'     => 'Anywhere',
-            'au'      => 'Author',
+            'abs'     => $this->lang->t9n('Abstract'),
+            'all'     => $this->lang->t9n('Anywhere'),
+            'au'      => $this->lang->t9n('Author'),
             'id'      => 'Id',
-            'cat'     => 'Subject Category',
-            'jr'      => 'Journal Reference',
-            'rn'      => 'Report Number',
-            'ti'      => 'Title',
-            'co'      => 'Comment'
+            'cat'     => $this->lang->t9n('Subject Category'),
+            'jr'      => $this->lang->t9n('Journal Reference'),
+            'rn'      => $this->lang->t9n('Report Number'),
+            'ti'      => $this->lang->t9n('Title'),
+            'co'      => $this->lang->t9n('Comment')
         ];
 
         $preselections = [
@@ -61,7 +61,7 @@ class ArxivView extends TextView {
             $el->id('parameter-' . $row_number);
             $el->groupClass('col-sm-3');
             $el->name('search_type[' . ($row_number - 1) . ']');
-            $el->label('Field');
+            $el->label($this->lang->t9n('Field'));
 
             foreach ($parameters as $parameter => $description) {
 
@@ -79,7 +79,7 @@ class ArxivView extends TextView {
             $el->id('value-' . $row_number);
             $el->groupClass('col-sm-9');
             $el->name('search_query[' . ($row_number - 1) . ']');
-            $el->label('Terms');
+            $el->label($this->lang->t9n('Terms'));
             $input = $el->render();
 
             $el = null;
@@ -120,7 +120,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('relevance');
-        $el->label('relevance');
+        $el->label($this->lang->t9n('relevance'));
         $el->checked('checked');
         $sorting = $el->render();
 
@@ -134,7 +134,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('added');
-        $el->label('last added');
+        $el->label($this->lang->t9n('last added'));
         $sorting .= $el->render();
 
         $el = null;
@@ -147,7 +147,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('updated');
-        $el->label('last updated');
+        $el->label($this->lang->t9n('last updated'));
         $sorting .= $el->render();
 
         $el = null;
@@ -160,7 +160,7 @@ EOT;
         $el->maxlength('3');
         $el->pattern('\d{1,3}');
         $el->name('search_filter[0][last_added]');
-        $el->label('Added in last (1-365) days');
+        $el->label(sprintf($this->lang->t9n('Added in last %s days'), '(1-365)'));
         $last_days = $el->render();
 
         $el = null;
@@ -171,7 +171,7 @@ EOT;
         $el->type('submit');
         $el->addClass('my-2 mr-3');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search = $el->render();
 
         $el = null;
@@ -184,7 +184,7 @@ EOT;
         $el->id('save-search');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -201,7 +201,7 @@ EOT;
             $clone
             $clone_remove
             <div class="mb-3">
-                <b>Sorting</b><br>
+                <b>{$this->lang->t9n('Sorting')}</b><br>
                 $sorting
             </div>
             $last_days

@@ -17,7 +17,7 @@ class CrossrefView extends TextView {
      */
     public function main(array $searches) {
 
-        $this->title("Crossref search");
+        $this->title('Crossref ' . $this->lang->t9n('search-NOUN'));
 
         $this->head();
 
@@ -27,15 +27,15 @@ class CrossrefView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Crossref search");
+        $el->item('Crossref ' . $this->lang->t9n('search-NOUN'));
         $bc = $el->render();
 
         $el = null;
 
         $parameters = [
-            'bibliographic'   => 'Title',
-            'contributor'     => 'Author',
-            'container-title' => 'Publication name',
+            'bibliographic'   => $this->lang->t9n('Title'),
+            'contributor'     => $this->lang->t9n('Author'),
+            'container-title' => $this->lang->t9n('Publication name'),
             'doi'             => 'DOI'
         ];
 
@@ -52,7 +52,7 @@ class CrossrefView extends TextView {
             $el->groupClass('col-sm-3');
             $el->name("search_type[{$i}]");
             $el->readonly('readonly');
-            $el->label('Field');
+            $el->label($this->lang->t9n('Field'));
             $el->option($label, $column, true);
 
             $select = $el->render();
@@ -65,7 +65,7 @@ class CrossrefView extends TextView {
             $el->id('value-' . $column);
             $el->groupClass('col-sm-9');
             $el->name("search_query[{$i}]");
-            $el->label('Terms');
+            $el->label($this->lang->t9n('Terms'));
             $input = $el->render();
 
             $el = null;
@@ -85,7 +85,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('relevance');
-        $el->label('relevance');
+        $el->label($this->lang->t9n('relevance'));
         $el->checked('checked');
         $sorting = $el->render();
 
@@ -99,7 +99,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('published');
-        $el->label('last published');
+        $el->label($this->lang->t9n('last published'));
         $sorting .= $el->render();
 
         $el = null;
@@ -112,7 +112,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('updated');
-        $el->label('last updated');
+        $el->label($this->lang->t9n('last updated'));
         $sorting .= $el->render();
 
         $el = null;
@@ -125,7 +125,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('is-referenced-by-count');
-        $el->label('most cited');
+        $el->label($this->lang->t9n('most cited'));
         $sorting .= $el->render();
 
         $el = null;
@@ -138,7 +138,7 @@ EOT;
         $el->maxlength('3');
         $el->pattern('\d{1,3}');
         $el->name('search_filter[0][last_added]');
-        $el->label('Added in last (1-365) days');
+        $el->label(sprintf($this->lang->t9n('Added in last %s days'), '(1-365)'));
         $last_days = $el->render();
 
         $el = null;
@@ -149,7 +149,7 @@ EOT;
         $el->type('submit');
         $el->addClass('my-2 mr-3');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search = $el->render();
 
         $el = null;
@@ -162,7 +162,7 @@ EOT;
         $el->id('save-search');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -177,7 +177,7 @@ EOT;
         $el->html(<<<EOT
             $uid_rows
             <div class="mb-3">
-                <b>Sorting</b><br>
+                <b>{$this->lang->t9n('Sorting')}</b><br>
                 $sorting
             </div>
             $last_days

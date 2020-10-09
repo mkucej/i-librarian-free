@@ -75,18 +75,14 @@ class ProfileController extends Controller {
             throw new Exception('email is required', 400);
         }
 
-        // Validate email.
-        if (!empty($this->post['profile']['email']) && $this->validation->email($this->post['profile']['email']) === false) {
-
-            return $view->main(['info' => "Email {$this->validation->error}."]);
-        }
+        $this->validation->email($this->post['profile']['email']);
 
         // Save user profile.
         $model = new AccountModel($this->di);
         $model->updateProfile($this->post['profile']);
         $model = null;
 
-        return $view->main(['info' => 'User profile was saved.']);
+        return $view->main(['info' => 'user profile was saved']);
     }
 
     /**
@@ -129,14 +125,11 @@ class ProfileController extends Controller {
         // Check for typos.
         if ($this->post['profile']['new_password'] !== $this->post['profile']['new_password2']) {
 
-            return $view->main(['info' => 'The new password was mistyped.']);
+            throw new Exception('new password was mistyped', 400);
         }
 
         // Validate password.
-        if ($this->validation->password($this->post['profile']['new_password']) === false) {
-
-            return $view->main(['info' => "Password {$this->validation->error}."]);
-        }
+        $this->validation->password($this->post['profile']['new_password']);
 
         // Save user profile.
         $model = new AccountModel($this->di);
@@ -144,6 +137,6 @@ class ProfileController extends Controller {
         $model->updatePassword($this->post['profile']);
         $model = null;
 
-        return $view->main(['info' => 'New password was saved.']);
+        return $view->main(['info' => 'new password was saved']);
     }
 }

@@ -21,7 +21,7 @@ class MigrationView extends TextView {
          * Head.
          */
 
-        $this->title('Upgrade');
+        $this->title($this->lang->t9n('Migration'));
 
         $this->styleLink('css/plugins.css');
 
@@ -36,7 +36,7 @@ class MigrationView extends TextView {
 
         $el->style('margin: 0 -15px');
         $el->item('IL', IL_BASE_URL);
-        $el->item("Upgrade");
+        $el->item($this->lang->t9n('Migration'));
         $bc = $el->render();
 
         $el = null;
@@ -55,16 +55,16 @@ class MigrationView extends TextView {
         $el = $this->di->get('Input');
 
         $el->name('directory');
-        $el->label('The location of "library" directory');
+        $el->label(sprintf($this->lang->t9n('The location of %s directory'), '"library"'));
         $el->required('required');
-        $el->hint(<<<EOT
-            <p>
-                Enter a path to your library directory, e.g.
-                <code>{$example_path}</code>. Requires version >3.6.
-                Make sure you have enough free space on your hard drive,
-                because the legacy library files are copied to the new location.
-            </p>
-EOT
+        $el->hint(
+<<<HTML
+<p>
+{$this->lang->t9n('Enter a path to your library directory, e.g.')} <code>{$example_path}</code>.
+{$this->lang->t9n('Version 3.6 is required')}.
+{$this->lang->t9n('Make sure you have enough free space on your hard drive, because the legacy library files are copied to the new location')}.
+</p>
+HTML
             );
         $location = $el->render();
 
@@ -75,7 +75,7 @@ EOT
 
         $el->context('danger');
         $el->type('submit');
-        $el->html('Upgrade');
+        $el->html($this->lang->t9n('Migrate'));
         $upgrade_button = $el->render();
 
         $el = null;
@@ -95,7 +95,11 @@ EOT
         $el = $this->di->get('Card');
 
         $el->addClass('bg-white mt-4');
-        $el->header('<b>UPGRADE LEGACY I,&nbsp;LIBRARIAN</b>');
+        $el->header(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('Migrate legacy I, Librarian')}</b>
+HTML
+        );
         $el->body($card_content);
         $card = $el->render();
 

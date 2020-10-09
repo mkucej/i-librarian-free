@@ -19,7 +19,7 @@ class PubmedView extends TextView {
      */
     public function main(array $searches): string {
 
-        $this->title("Pubmed search");
+        $this->title("Pubmed {$this->lang->t9n('Search-NOUN')}");
 
         $this->head();
 
@@ -29,25 +29,25 @@ class PubmedView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Pubmed search");
+        $el->item("Pubmed {$this->lang->t9n('Search-NOUN')}");
         $bc = $el->render();
 
         $el = null;
 
         $parameters = [
-            'TIAB'   => 'Abstract',
-            'AD'     => 'Affiliation',
-            'ALL'    => 'Anywhere',
-            'AU'     => 'Author',
+            'TIAB'   => $this->lang->t9n('Abstract'),
+            'AD'     => $this->lang->t9n('Affiliation'),
+            'ALL'    => $this->lang->t9n('Anywhere'),
+            'AU'     => $this->lang->t9n('Author'),
             'AID'    => 'DOI',
-            '1AU'    => 'First Author',
-            'PG'     => 'First Page',
-            'TA'     => 'Journal Abbreviation',
-            'LASTAU' => 'Last Author',
+            '1AU'    => $this->lang->t9n('First author'),
+            'PG'     => $this->lang->t9n('First page'),
+            'TA'     => $this->lang->t9n('Journal abbreviation'),
+            'LASTAU' => $this->lang->t9n('Last author'),
             'PMID'   => 'PMID',
-            'TI'     => 'Title',
-            'VI'     => 'Volume',
-            'DP'     => 'Year'
+            'TI'     => $this->lang->t9n('Title'),
+            'VI'     => $this->lang->t9n('Volume'),
+            'DP'     => $this->lang->t9n('Year')
         ];
 
         $preselections = [
@@ -66,7 +66,7 @@ class PubmedView extends TextView {
 
             $el->groupClass('col-sm-3');
             $el->name('search_type[' . ($row_number - 1) . ']');
-            $el->label('Field');
+            $el->label($this->lang->t9n('Field'));
             $el->id('parameter-' . $row_number);
 
             foreach ($parameters as $parameter => $description) {
@@ -85,7 +85,7 @@ class PubmedView extends TextView {
             $el->id('value-' . $row_number);
             $el->groupClass('col-sm-9');
             $el->name('search_query[' . ($row_number - 1) . ']');
-            $el->label('Terms');
+            $el->label($this->lang->t9n('Terms'));
             $input = $el->render();
 
             $el = null;
@@ -136,7 +136,7 @@ EOT;
 
         $el->id('boolean-ta');
         $el->name('search_query[boolean]');
-        $el->label('Boolean search <a target="_blank" href="https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.Combining_search_terms_with_B">?</a>');
+        $el->label("{$this->lang->t9n('Boolean search')} <a target=\"_blank\" href=\"https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.Combining_search_terms_with_B\">?</a>");
         $boolean = $el->render();
 
         $el = null;
@@ -151,7 +151,7 @@ EOT;
         $el->name('search_filter[0][language]');
         $el->inline(true);
         $el->value('english');
-        $el->label('written in English');
+        $el->label($this->lang->t9n('written in English'));
         $el->checked('checked');
         $filters = $el->render();
 
@@ -165,7 +165,7 @@ EOT;
         $el->name('search_filter[0][pubtype]');
         $el->inline(true);
         $el->value('review');
-        $el->label('reviews only');
+        $el->label($this->lang->t9n('reviews only'));
         $filters .= $el->render();
 
         $el = null;
@@ -178,7 +178,7 @@ EOT;
         $el->name('search_filter[0][links]');
         $el->inline(true);
         $el->value('free full text');
-        $el->label('free full text');
+        $el->label($this->lang->t9n('free full text'));
         $filters .= $el->render();
 
         $el = null;
@@ -193,7 +193,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('relevance');
-        $el->label('relevance');
+        $el->label($this->lang->t9n('relevance'));
         $el->checked('checked');
         $sorting = $el->render();
 
@@ -207,7 +207,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('pubsolr12');
-        $el->label('last added');
+        $el->label($this->lang->t9n('last added'));
         $sorting .= $el->render();
 
         $el = null;
@@ -220,7 +220,7 @@ EOT;
         $el->name('sort');
         $el->inline(true);
         $el->value('pub date');
-        $el->label('last published');
+        $el->label($this->lang->t9n('last published'));
         $sorting .= $el->render();
 
         $el = null;
@@ -233,7 +233,7 @@ EOT;
         $el->maxlength('3');
         $el->pattern('\d{1,3}');
         $el->name('search_filter[0][last_added]');
-        $el->label('Added in last (1-365) days');
+        $el->label(sprintf($this->lang->t9n('Added in last %s days'), '(1-365)'));
         $last_days = $el->render();
 
         $el = null;
@@ -244,7 +244,7 @@ EOT;
         $el->type('submit');
         $el->addClass('my-2 mr-3');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search = $el->render();
 
         $el = null;
@@ -257,7 +257,7 @@ EOT;
         $el->id('save-search');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -276,11 +276,11 @@ EOT;
             $hidden
             $boolean
             <div class="mb-3">
-                <b>Filters</b><br>
+                <b>{$this->lang->t9n('Filters')}</b><br>
                 $filters
             </div>
             <div class="mb-3">
-                <b>Sorting</b><br>
+                <b>{$this->lang->t9n('Sorting')}</b><br>
                 $sorting
             </div>
             $last_days

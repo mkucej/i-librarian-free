@@ -18,7 +18,7 @@ class NotesView extends TextView {
      */
     public function main(int $item_id, array $notes): string {
 
-        $this->title("Notes - {$notes['title']} - Library");
+        $this->title("{$this->lang->t9n('Notes')} - {$notes['title']}");
 
         $this->head();
 
@@ -29,7 +29,7 @@ class NotesView extends TextView {
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$notes['title']}", '#summary?id=' . $item_id);
-        $el->item('Notes');
+        $el->item($this->lang->t9n('Notes'));
         $bc = $el->render();
 
         $el = null;
@@ -38,7 +38,7 @@ class NotesView extends TextView {
 
         $user_note = isset($notes['user']['note']) ?
             $this->sanitation->lmth($notes['user']['note']) :
-            '<span class="text-muted mt-4">No notes found.</span>';
+            '<div class="text-muted mb-1">' . $this->lang->t9n('No notes') . '</div>';
 
         /** @var Bootstrap\Button $el */
         $el = $this->di->get('Button');
@@ -46,7 +46,7 @@ class NotesView extends TextView {
         $el->context('link');
         $el->addClass('open-notes px-1 py-0 border-0');
         $el->dataId($item_id);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $note_button = $el->render();
 
         $el = null;
@@ -54,7 +54,7 @@ class NotesView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>YOUR NOTES</b> $note_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('My notes')}</b> $note_button");
         $el->body("<div id=\"user-note\">$user_note</div>");
         $user_card = $el->render();
 
@@ -78,7 +78,7 @@ class NotesView extends TextView {
 
         if (empty($notes['others'])) {
 
-            $el->li('<span class="text-muted">No notes found.</span>', 'pt-0 pb-4');
+            $el->li("<span class=\"text-muted\">{$this->lang->t9n('No notes')}</span>", 'pt-0 pb-4');
         }
 
         foreach ($notes['others'] as $others_note) {
@@ -100,7 +100,7 @@ EOT;
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>OTHERS' NOTES</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Others\' notes')}</b> $note_button");
         $el->listGroup($notes_list);
         $others_card = $el->render();
 

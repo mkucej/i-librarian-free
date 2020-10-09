@@ -3,6 +3,7 @@
 namespace Librarian;
 
 use Exception;
+use Librarian\Media\Language;
 
 final class ItemMeta {
 
@@ -138,9 +139,9 @@ final class ItemMeta {
             'issue'            => 'Issue',
             'keywords'         => 'Keywords',
             'pages'            => 'Pages',
-            'place_published'  => 'Placed published',
+            'place_published'  => 'Place published',
             'primary_title'    => 'Journal abbreviation',
-            'publication_date' => 'Published date (YYYY-MM-DD)',
+            'publication_date' => 'Published date as YYYY-MM-DD',
             'publisher'        => 'Publisher',
             'reference_type'   => 'Reference type',
             'secondary_title'  => 'Secondary title',
@@ -152,7 +153,7 @@ final class ItemMeta {
         ],
         'manual'      => [],
         'patent'      => [
-            'affiliation'      => 'Assignee/applicant',
+            'affiliation'      => 'Assignee or applicant',
             'authors'          => 'Inventors'
         ],
         'report'      => [],
@@ -313,11 +314,12 @@ final class ItemMeta {
     /**
      * Get input labels for an item type.
      *
-     * @param  string $type Item type.
+     * @param Language $lang
+     * @param string $type Item type.
      * @return array
      * @throws Exception
      */
-    public function getLabels(string $type): array {
+    public function getLabels(Language $lang, string $type): array {
 
         if (isset($this->labels[$type]) === false) {
 
@@ -331,6 +333,14 @@ final class ItemMeta {
         }
 
         // Merge labels of the type with generic labels.
-        return array_merge($this->labels['generic'], $this->labels[$type]);
+        $output = array_merge($this->labels['generic'], $this->labels[$type]);
+
+        // Translate.
+        foreach ($output as $key => $value) {
+
+            $output[$key] = $lang->t9n($value);
+        }
+
+        return $output;
     }
 }

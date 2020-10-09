@@ -32,10 +32,12 @@ class ItemdiscussionController extends Controller {
      */
     public function mainAction(): string {
 
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception("id parameter required", 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new ItemdiscussionModel($this->di);
         $messages = $model->load($this->get['id']);
@@ -58,20 +60,20 @@ class ItemdiscussionController extends Controller {
             throw new Exception("request method must be POST", 405);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception("id parameter required", 400);
         }
+
+        $this->validation->id($this->post['id']);
 
         $trimmed_post = $this->sanitation->trim($this->post);
 
-        if ($trimmed_post['message'] === '') {
+        if ($trimmed_post['message'] !== '') {
 
-            throw new Exception("message is empty", 400);
+            $model = new ItemdiscussionModel($this->di);
+            $model->save($trimmed_post);
         }
-
-        $model = new ItemdiscussionModel($this->di);
-        $model->save($trimmed_post);
 
         $view = new DefaultView($this->di);
         return $view->main();
@@ -85,10 +87,12 @@ class ItemdiscussionController extends Controller {
      */
     public function messagesAction(): string {
 
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception("id parameter required", 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new ItemdiscussionModel($this->di);
         $messages = $model->load($this->get['id']);

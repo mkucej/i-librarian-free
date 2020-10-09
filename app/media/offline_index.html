@@ -119,8 +119,8 @@
                 </div>
             </div>
             <div>
-                <small v-if="items.length > 0">Page {{ intlNum(1 + Math.floor(from / pageSize)) }}</small>
-                <small class="d-none d-md-inline ml-2" v-if="items.length > 0">Items {{ intlNum(from) }} &ndash; {{ intlNum(Math.min((from + pageSize - 1), total)) }} of {{ intlNum(total) }}</small>
+                <small v-if="items.length > 0">{T% Page %T} {{ intlNum(1 + Math.floor(from / pageSize)) }}</small>
+                <small class="d-none d-md-inline ml-2" v-if="items.length > 0">{T% Items %T} {{ intlNum(from) }} &ndash; {{ intlNum(Math.min((from + pageSize - 1), total)) }} {T% of %T} {{ intlNum(total) }}</small>
             </div>
         </div>
     </nav>
@@ -129,7 +129,7 @@
         <div class="row">
             <div class="col-12">
                 <div v-if="items.length === 0" class="alert alert-info rounded-0 text-center mt-0 mb-4" role="alert">
-                    &#9785; No items found, try another search.
+                    &#9785; {T% No items found, try another search %T}.
                 </div>
                 <!--Cards.-->
                 <div class="card rounded-0 border-0 mb-3" v-for="item in items" v-bind:key="item.id">
@@ -149,12 +149,12 @@
                             <!--Notes.-->
                             <div class="row" v-if="display > 0">
                                 <div class="col-lg-6">
-                                    <span class="badge badge-dark rounded-0 my-3">Notes</span>
+                                    <span class="badge badge-dark rounded-0 my-3">{T% Notes %T}</span>
                                     <div v-html="item.notes" v-bind:id="'notes-' + item.id"></div>
                                     <div v-html="otherRichNotes(item.other_notes)"></div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <span class="badge badge-dark rounded-0 my-3">PDF annotations</span>
+                                    <span class="badge badge-dark rounded-0 my-3">{T% PDF annotations %T}</span>
                                     <div v-html="pdfNotes(item)"></div>
                                     <div v-html="pdfHighlights(item)"></div>
                                 </div>
@@ -163,61 +163,61 @@
                     </div>
                     <div class="card-footer rounded-0 text-muted" v-if="display === 2">
                         <dl class="row mt-3">
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Citation ID</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Citation ID %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.bibtex_id || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Authors</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Authors %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="authors(item)"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Editors</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Editors %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="editors(item)"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Publication date</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Publication date %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="date(item.publication_date)"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Primary title</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Primary title %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.primary_title || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Secondary title</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Secondary title %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.secondary_title || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Tertiary title</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Tertiary title %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.tertiary_title || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Volume</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Volume %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.volume || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Issue</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Issue %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.issue || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Pages</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Pages %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.pages || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 1</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 1</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom1 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 2</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 2</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom2 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 3</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 3</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom3 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 4</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 4</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom4 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 5</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 5</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom5 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 6</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 6</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom6 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 7</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 7</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom7 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Custom 8</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Custom %T} 8</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.custom8 || '&nbsp;'"></dd>
 
-                            <dt class="col-sm-4 col-md-3 col-lg-2">Keywords</dt>
+                            <dt class="col-sm-4 col-md-3 col-lg-2">{T% Keywords %T}</dt>
                             <dd class="col-sm-8 col-md-9 col-lg-10" v-html="item.keywords.length > 0 ? item.keywords.join('; ') : '&nbsp;'"></dd>
                         </dl>
                     </div>
@@ -232,21 +232,21 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-auto text-center text-lg-left py-2">
-                    <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#search-modal">Search</button>
+                    <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#search-modal">{T% Search-VERB %T}</button>
                     <div class="d-inline-block mr-2 pt-1">
-                        <label for="select-order" class="d-none d-md-inline">Order by</label>
+                        <label for="select-order" class="d-none d-md-inline">{T% Order by %T}</label>
                         <select id="select-order"
                                 class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
                                 style="width:auto !important;" v-on:change="firstOffset()"
                                 v-bind:disabled="searchTerm !== ''"
                                 v-model="orderBy">
                             <option value="id">id</option>
-                            <option value="title">title</option>
-                            <option value="publication_date">year</option>
+                            <option value="title">{T% title %T}</option>
+                            <option value="publication_date">{T% year %T}</option>
                         </select>
                     </div>
                     <div class="d-inline-block mr-2">
-                        <label for="select-pagesize" class="d-none d-md-inline">Page size</label>
+                        <label for="select-pagesize" class="d-none d-md-inline">{T% Page size %T}</label>
                         <select id="select-pagesize"
                                 class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
                                 style="width:auto !important;" v-on:change="firstOffset()"
@@ -260,13 +260,13 @@
                         </select>
                     </div>
                     <div class="d-inline-block mr-2">
-                        <label for="select-display" class="d-none d-md-inline">Display</label>
+                        <label for="select-display" class="d-none d-md-inline">{T% Display %T}</label>
                         <select id="select-display"
                                 class="custom-select custom-select-sm rounded-0 bg-secondary text-white"
                                 style="width:auto !important;" v-model.number="display">
-                            <option value="0">title</option>
-                            <option value="1">summary</option>
-                            <option value="2">details</option>
+                            <option value="0">{T% title %T}</option>
+                            <option value="1">{T% summary %T}</option>
+                            <option value="2">{T% details %T}</option>
                         </select>
                     </div>
                 </div>
@@ -284,7 +284,7 @@
     <div class="modal-dialog">
         <div class="modal-content rounded-0">
             <div class="modal-header">
-                <h5 class="modal-title">Search</h5>
+                <h5 class="modal-title">{T% Search-NOUN %T}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -297,29 +297,29 @@
                     <div class="mb-2">
                         <div class="form-check form-check-inline mb-2 ">
                             <input id="search-sort-relevance" class="form-check-input" type="radio" name="search_sort" value="relevance" checked="checked">
-                            <label for="search-sort-relevance" class="form-check-label">sort by relevance</label>
+                            <label for="search-sort-relevance" class="form-check-label">{T% sort by relevance %T}</label>
                         </div>
                         <div class="form-check form-check-inline mb-2 ">
                             <input id="search-sort-publication-date" class="form-check-input" type="radio" name="search_sort" value="publication_date">
-                            <label for="search-sort-publication-date" class="form-check-label">sort by publication year</label>
+                            <label for="search-sort-publication-date" class="form-check-label">{T% sort by publication year %T}</label>
                         </div>
                         <div id="search-error" class="alert alert-danger rounded-0 d-none" role="alert">
-                            <div><b>SEARCH ERROR</b></div>
+                            <div><b>{T% Search error %T}</b></div>
                             <span id="search-error-message"></span>
                         </div>
                         <span class="form-text text-muted text-justify">
-								<b>Boolean search.</b> To indicate that all terms must be present in matching documents, join the terms with an
+								<b>{T% Boolean search %T}.</b> To indicate that all terms must be present in matching documents, join the terms with an
 								<i>AND</i> operator: <code>blue AND red</code>. To indicate that any one of the terms must be present, join the terms with an
 								<i>OR</i> operator: <code>blue OR red</code>. Exclude a term from search using a <i>NOT</i> operator: <code>blue NOT red</code>.
 								If no operators are used, it is assumed that all terms must be present in matching documents, as if they were joined by <i>AND</i> operators.
 								<br>
-								<b>Field search.</b> By default, search is performed in all
+								<b>{T% Field search %T}.</b> By default, search is performed in all
 								<span class="text-primary" data-toggle="tooltip" data-placement="top"
                                       title="title, abstract, authors, year, tags, highlights, primarytitle, secondarytitle, tertiarytitle, keywords, custom1, custom2, custom3, custom4, custom5, custom6, custom7, custom8">
 								document fields</span>. To restrict a term to a specific field, prefix the term with the name of the field, followed by a <i>colon</i>:
 								<code>title:green</code>.
 								<br>
-								<b>Wildcards.</b> Wildcards can be used when performing searches. A wildcard is represented as an <i>asterisk</i> at the end of
+								<b>{T% Wildcards %T}.</b> Wildcards can be used when performing searches. A wildcard is represented as an <i>asterisk</i> at the end of
 								a search term. For example, the following will match all documents with words beginning with <i>cell</i>: <code>cell*</code>.
                         </span>
                     </div>
@@ -327,8 +327,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" id="search-button" class="btn btn-primary">Search</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="search-button" class="btn btn-primary">{T% Search-VERB %T}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{T% Close %T}</button>
             </div>
         </div>
     </div>
@@ -588,7 +588,7 @@
                         window.open('pdf.html?path=' + item.pdf + '&title=' + encodeURI(item.title.replace(/<mark>|<\/mark>/gu, '')));
                     },
                     author: function (item) {
-                        return item.author_last_name !== undefined && item.author_last_name[0] !== undefined ? item.author_last_name[0] : 'No authors';
+                        return item.author_last_name !== undefined && item.author_last_name[0] !== undefined ? item.author_last_name[0] : '';
                     },
                     authors: function (item) {
                         let authors = '';
@@ -605,30 +605,29 @@
                         return editors.substring(2) || '&nbsp;';
                     },
                     year: function (publication_date) {
-                        if (/^\d{4}-/u.test(publication_date) === true) {
+                        if (/^\d{4}/u.test(publication_date) === true) {
                             // Unmarked date.
                             return '(' + publication_date.substr(0, 4) + ')';
                         } else if (/^<mark/u.test(publication_date) === true) {
                             // Marked date.
                             return '(' + publication_date.substr(0, 17) + ')';
                         } else {
-                            return '(No date)';
+                            return '';
                         }
                     },
                     date: function (publication_date) {
+                        if (publication_date === '') {
+                            return '';
+                        }
                         let re = new RegExp('<mark>|</mark>', 'gui'), ipd = publication_date.replace(re, ''),
-                            d = new Date(Date.UTC(ipd.substring(0, 4), ipd.substring(5, 7), ipd.substring(8, 10), 12, 0, 0));
-                        return new Intl.DateTimeFormat(undefined, {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        }).format(d);
+                            d = new Date(ipd.substring(0, 4), (parseInt(ipd.substring(5, 7) || 1) - 1), ipd.substring(8, 10) || 1, 12, 0, 0);
+                        return d.toLocaleDateString(navigator.language, {year: 'numeric', month: 'long', day: 'numeric'});
                     },
                     pubTitle: function (item) {
-                        return item.primary_title || item.secondary_title || item.tertiary_title || 'No publication title';
+                        return item.primary_title || item.secondary_title || item.tertiary_title || '';
                     },
                     abstr: function (abstract) {
-                        return this.escapeHTML(abstract) || 'No abstract';
+                        return this.escapeHTML(abstract) || '';
                     },
                     otherRichNotes: function (other_notes) {
                         return other_notes.length === 0 ? '' : other_notes.join('<br>');
@@ -808,7 +807,7 @@
                 let tempArr = tempTerms.split(' ');
                 // Query cannot start with operator.
                 if (/^(AND|OR|NOT)$/ui.test(tempArr[0]) === true) {
-                    throw new Error('Search query cannot start with a boolean operator.');
+                    throw new Error('{T% Search query cannot start with a boolean operator %T}.');
                 }
                 // Silently pop trailing operator.
                 if (/^(AND|OR|NOT)$/ui.test(tempArr[tempArr.length - 1]) === true) {
@@ -878,7 +877,7 @@
     let app = new App();
     let fts = new Fts(db);
 
-    document.getElementById('install').innerHTML = 'Installing documents and search index';
+    document.getElementById('install').innerHTML = '{T% Installing documents and search index %T}';
     // Load documents, start the app.
     db.createTables({
         'items': '&id, title_index, publication_date',

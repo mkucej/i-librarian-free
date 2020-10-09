@@ -37,7 +37,7 @@ class ExternalView extends TextView {
         $trimmed_get = $this->sanitation->trim($get);
         $sanitized_get = $this->sanitation->html($trimmed_get);
 
-        $this->title("$database search");
+        $this->title("$database {$this->lang->t9n('search-NOUN')}");
 
         $this->head();
 
@@ -51,7 +51,7 @@ class ExternalView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("{$database} search {$search_name}");
+        $el->item("{$database} {$this->lang->t9n('search-NOUN')} {$search_name}");
         $bc = $el->render();
 
         $el = null;
@@ -62,11 +62,11 @@ class ExternalView extends TextView {
 
         if ($found === '0') {
 
-            $item_count = '<div class="text-muted w-100 pb-3 pb-lg-0">No results found.</div>';
+            $item_count = "<div class=\"text-muted w-100 pb-3 pb-lg-0\">{$this->lang->t9n('No results found')}.</div>";
 
         } else {
 
-            $item_count = "<div class=\"text-muted w-100 pb-3 pb-xl-0\">Results $page_from - $page_to of $found</div>";
+            $item_count = "<div class=\"text-muted w-100 pb-3 pb-xl-0\">{$this->lang->t9n('Results')} $page_from - $page_to of $found</div>";
         }
 
         /** @var Bootstrap\Button $el */
@@ -75,7 +75,7 @@ class ExternalView extends TextView {
         $el->type('submit');
         $el->addClass('my-2');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $save = $el->render();
 
         $el = null;
@@ -98,7 +98,7 @@ class ExternalView extends TextView {
 
         $el->context('warning');
         $el->addClass('mb-2');
-        $el->html('IN LIBRARY');
+        $el->html("<span class=\"text-uppercase\">{$this->lang->t9n('in library')}</span>");
         $exists_badge = $el->render();
 
         $el = null;
@@ -136,7 +136,7 @@ class ExternalView extends TextView {
                 $boundary = mb_strrpos($part, '*') === mb_strlen($part) - 1 ? '' : '\b';
                 $part = str_replace('*', '', $part);
 
-                // Skip if nothign left.
+                // Skip if nothing left.
                 if (empty($part)) {
 
                     continue;
@@ -181,18 +181,18 @@ class ExternalView extends TextView {
                 }
             }
 
-            $author = empty($author) ? 'No authors' : $author;
+            $author = empty($author) ? $this->lang->t9n('No authors') : $author;
 
             // Year.
             $year = $this->sanitation->html($article[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? null);
-            $year = empty($year) ? 'No date' : substr($year, 0, 4);
+            $year = empty($year) ? $this->lang->t9n('No date') : substr($year, 0, 4);
 
             // Publication name.
             $publication = !empty($article[ItemMeta::COLUMN['TERTIARY_TITLE']]) ? $article[ItemMeta::COLUMN['TERTIARY_TITLE']] : '';
             $publication = !empty($article[ItemMeta::COLUMN['SECONDARY_TITLE']]) ? $article[ItemMeta::COLUMN['SECONDARY_TITLE']] : $publication;
             $publication = !empty($article[ItemMeta::COLUMN['PRIMARY_TITLE']]) ? $article[ItemMeta::COLUMN['PRIMARY_TITLE']] : $publication;
 
-            $publication = empty($publication) ? 'No publication title' : $publication;
+            $publication = empty($publication) ? $this->lang->t9n('No publication title') : $publication;
 
             // Abstract with search tern highlighting.
             $abstract = preg_replace($patterns, '<mark>$1</mark>', $this->sanitation->html($article[ItemMeta::COLUMN['ABSTRACT']] ?? ''));
@@ -208,7 +208,7 @@ class ExternalView extends TextView {
             $el->addClass('cursor-pointer d-inline-block mb-2 add-pdf-btn');
             $el->dataToggle('collapse');
             $el->dataTarget("#pdf-form-{$i}");
-            $el->html("{$chevron}Add PDF");
+            $el->html("{$chevron}{$this->lang->t9n('Add PDF')}");
             $pdf_button = $el->render();
 
             $el = null;

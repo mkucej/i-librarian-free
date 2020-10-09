@@ -15,7 +15,7 @@ class DetailsView extends TextView {
      */
     public function main(array $details): string {
 
-        $this->title("Software details");
+        $this->title($this->lang->t9n('Software details'));
 
         $this->head();
 
@@ -25,7 +25,7 @@ class DetailsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Software details");
+        $el->item($this->lang->t9n('Software details'));
         $bc = $el->render();
 
         $el = null;
@@ -44,10 +44,15 @@ class DetailsView extends TextView {
         $el = $this->di->get('ListGroup');
 
         $el->addClass('mb-3');
-        $el->div("<b>SOFWTARE VERSION</b> <i>Installed version</i>", 'd-flex justify-content-between py-2');
+        $el->div(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('software version')}</b>
+<i class="text-capitalize">{$this->lang->t9n('installed')}</i>
+HTML
+        , 'd-flex justify-content-between py-2');
         $el->div("I, Librarian <span>{$details['I, Librarian']['present']}</span>", 'd-flex justify-content-between py-2');
-        $el->div("PHP ({$details['PHP']['required']} required) $php_required", 'd-flex justify-content-between py-2');
-        $el->div("SQLite ({$details['SQLite']['required']} required) $sqlite_required", 'd-flex justify-content-between py-2');
+        $el->div("PHP ({$details['PHP']['required']}+) $php_required", 'd-flex justify-content-between py-2');
+        $el->div("SQLite ({$details['SQLite']['required']}+) $sqlite_required", 'd-flex justify-content-between py-2');
         $versions = $el->render();
 
         $el = null;
@@ -57,13 +62,18 @@ class DetailsView extends TextView {
         $el = $this->di->get('ListGroup');
 
         $el->addClass('mb-3');
-        $el->div("<b>PHP EXTENSIONS</b> <i>Installed/missing</i>", 'd-flex justify-content-between py-2');
+        $el->div(
+<<<HTML
+<b class="text-uppercase">PHP {$this->lang->t9n('extensions')}</b>
+<i class="text-capitalize">{$this->lang->t9n('installed')}/{$this->lang->t9n('missing')}</i>
+HTML
+        , 'd-flex justify-content-between py-2');
 
         foreach ($details['loaded_extensions'] as $ext => $bool) {
 
             $installed = $bool === true ?
-                '<span class="text-success">installed</span>' :
-                '<span class="text-danger">missing</span>';
+                "<span class=\"text-success\">{$this->lang->t9n('installed')}</span>" :
+                "<span class=\"text-danger\">{$this->lang->t9n('missing')}</span>";
 
             $el->div("{$ext} {$installed}", 'd-flex justify-content-between py-2');
         }
@@ -77,7 +87,12 @@ class DetailsView extends TextView {
         $el = $this->di->get('ListGroup');
 
         $el->addClass('mb-3');
-        $el->div("<b>PHP.INI SETTINGS</b> <i>Current setting</i>", 'd-flex justify-content-between py-2');
+        $el->div(
+<<<HTML
+<b class="text-uppercase">PHP.INI {$this->lang->t9n('settings')}</b>
+<i>{$this->lang->t9n('Current setting')}</i>
+HTML
+        , 'd-flex justify-content-between py-2');
 
         foreach ($details['ini'] as $key => $val) {
 
@@ -97,13 +112,18 @@ class DetailsView extends TextView {
         $el = $this->di->get('ListGroup');
 
         $el->addClass('mb-3');
-        $el->div("<b>BINARY EXECUTABLES</b> <i>Installed/missing</i>", 'd-flex justify-content-between py-2');
+        $el->div(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('binary executables')}</b>
+<i class="text-capitalize">{$this->lang->t9n('installed')}/{$this->lang->t9n('missing')}</i>
+HTML
+        , 'd-flex justify-content-between py-2');
 
         foreach ($details['binaries'] as $key => $val) {
 
             $comp = $val === 'installed' ?
-                "<span class=\"text-success\">installed</span>" :
-                "<span class=\"text-danger\">missing</span>";
+                "<span class=\"text-success\">{$this->lang->t9n('installed')}</span>" :
+                "<span class=\"text-danger\">{$this->lang->t9n('missing')}</span>";
 
             $el->div("{$key} $comp", 'd-flex justify-content-between py-2');
         }

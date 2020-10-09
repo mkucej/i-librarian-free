@@ -64,7 +64,7 @@ final class MigrationController extends Controller {
         // Requires library location.
         if (empty($this->get['directory'])) {
 
-            throw new Exception('Missing library location', 400);
+            throw new Exception('missing library location', 400);
         }
 
         // Normalize the dirname.

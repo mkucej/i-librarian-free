@@ -28,7 +28,7 @@ class ProjectView extends TextView {
 
         $first_name = isset($data['first_name']) ? $data['first_name'] : 'Who are you?';
 
-        $this->title("Project - Library");
+        $this->title('Project');
 
         $this->styleLink('css/plugins.css');
 
@@ -134,50 +134,72 @@ class ProjectView extends TextView {
                 'link'    => '#',
                 'submenu' => [
                     [
-                        'label' => 'User profile',
+                        'label' => $this->lang->t9n('User profile'),
                         'link'  => '#profile/main'
                     ],
                     [
-                        'label' => 'User settings',
+                        'label' => $this->lang->t9n('User settings'),
                         'link'  => '#settings/main'
                     ],
                     [
-                        'label' => '<div id="sign-out">Sign out</div>',
+                        'label' => '<div id="sign-out">' . $this->lang->t9n('Sign out') . '</div>',
                         'link'  => '#'
                     ]
                 ]
             ],
             [
-                'label' => "{$dashboard_icon}Dashboard",
-                'link'  => IL_BASE_URL . 'index.php#dashboard/main'
+                'label' =>
+<<<HTML
+{$dashboard_icon}{$this->lang->t9n('Dashboard')}
+HTML
+                , 'link'  => IL_BASE_URL . 'index.php#dashboard/main'
             ],
             [
-                'label' => "{$projects_icon}Projects",
-                'link'  => IL_BASE_URL . 'index.php#projects/main'
+                'label' =>
+<<<HTML
+{$projects_icon}{$this->lang->t9n('Projects')}
+HTML
+                , 'link'  => IL_BASE_URL . 'index.php#projects/main'
             ],
             [
-                'label' => "{$browse_icon}Project items",
+                'label' =>
+<<<HTML
+{$browse_icon}{$this->lang->t9n('Project items')}
+HTML
+                ,
                 'link'  => '#project/browse?id=',
                 'attrs' => 'class="add-id-link"'
             ],
             [
-                'label' => "{$notes_icon}Project notes",
-                'link'  => '#project/notes?id=',
+                'label' =>
+<<<HTML
+{$notes_icon}{$this->lang->t9n('Project notes')}
+HTML
+                , 'link'  => '#project/notes?id=',
                 'attrs' => 'class="add-id-link"'
             ],
             [
-                'label' => "{$comp_icon}Note compilation",
-                'link'  => '#project/compilenotes?id=',
+                'label' =>
+<<<HTML
+{$comp_icon}{$this->lang->t9n('Note compilation')}
+HTML
+                , 'link'  => '#project/compilenotes?id=',
                 'attrs' => 'class="add-id-link"'
             ],
             [
-                'label' => "{$discuss_icon}Discussion",
-                'link'  => '#project/discussion?id=',
+                'label' =>
+<<<HTML
+{$discuss_icon}{$this->lang->t9n('Discussion')}
+HTML
+                , 'link'  => '#project/discussion?id=',
                 'attrs' => 'class="add-id-link"'
             ],
             [
-                'label' => "{$edit_icon}Edit",
-                'link'  => '#project/edit?id=',
+                'label' =>
+<<<HTML
+{$edit_icon}{$this->lang->t9n('Edit')}
+HTML
+                , 'link'  => '#project/edit?id=',
                 'attrs' => 'class="add-id-link"'
             ],
 //            [
@@ -186,8 +208,11 @@ class ProjectView extends TextView {
 //                'attrs' => 'class="add-id-link"'
 //            ],
             [
-                'label'   => "{$keyboard}Extended keyboard",
-                'link'    => '#',
+                'label'   =>
+<<<HTML
+{$keyboard}{$this->lang->t9n('Extended keyboard')}
+HTML
+                , 'link'    => '#',
                 'attrs'   => 'id="keyboard-toggle" class="d-none d-lg-block"'
             ]
         ];
@@ -249,8 +274,8 @@ class ProjectView extends TextView {
 
         $el->id('notes-window');
         $el->addClass('d-none');
-        $el->header(<<<'EOT'
-            Notes
+        $el->header(<<<EOT
+            {$this->lang->t9n('Notes')}
             <button type="button" class="close" aria-label="Close">
                 <span aria-hidden="true" class="mdi mdi-close"></span>
             </button>
@@ -267,7 +292,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Yes');
+        $el->html($this->lang->t9n('Yes'));
         $button = $el->render();
 
         $el = null;
@@ -276,7 +301,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-confirm');
-        $el->header('Confirmation');
+        $el->header($this->lang->t9n('Confirmation'));
         $el->body('Confirm?');
         $el->button($button);
         $confirm = $el->render();
@@ -289,7 +314,7 @@ EOT
         $el = $this->di->get('Input');
 
         $el->name('filter');
-        $el->placeholder('Search');
+        $el->placeholder($this->lang->t9n('Search-VERB'));
         $filter = $el->render();
 
         $el = null;
@@ -317,7 +342,7 @@ EOT
 
         $el->componentSize('large');
         $el->id('modal-filters');
-        $el->header("Filter");
+        $el->header($this->lang->t9n('Filter-NOUN'));
         $el->body("$filter_cont $result_cont", 'p-0');
         $modal_filters = $el->render();
 
@@ -330,7 +355,7 @@ EOT
 
         $el->id('modal-searches');
         $el->componentSize('large');
-        $el->header('Previous searches');
+        $el->header($this->lang->t9n('Previous searches'));
         $el->body('', 'p-0 border-top border-bottom border-darker-5');
         $searches = $el->render();
 
@@ -342,7 +367,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Export');
+        $el->html($this->lang->t9n('Export-VERB'));
         $button = $el->render();
 
         $el = null;
@@ -351,7 +376,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-export');
-        $el->header('Export');
+        $el->header($this->lang->t9n('Export-NOUN'));
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $export = $el->render();
@@ -364,7 +389,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Submit');
+        $el->html($this->lang->t9n('Submit'));
         $button = $el->render();
 
         $el = null;
@@ -373,7 +398,11 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-omnitool');
-        $el->header('Omnitool - apply actions to all displayed items.');
+        $el->header(
+<<<HTML
+{$this->lang->t9n('Omnitool')} - {$this->lang->t9n('apply actions to all displayed items')}.
+HTML
+        );
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $omnitool = $el->render();
@@ -386,7 +415,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $button = $el->render();
 
         $el = null;
@@ -395,7 +424,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-settings');
-        $el->header('Display settings');
+        $el->header($this->lang->t9n('Display settings'));
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $settings = $el->render();
@@ -450,7 +479,7 @@ EOT
 
         if (empty($project)) {
 
-            $this->title("Editing not authorized - Project");
+            $this->title("{$this->lang->t9n('Edit')} - {$this->lang->t9n('Project')}");
 
             $this->head();
 
@@ -460,8 +489,8 @@ EOT
             $el->style('margin: 0 -15px');
             $el->addClass('bg-transparent');
             $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-            $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
-            $el->item("Edit project");
+            $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
+            $el->item($this->lang->t9n('Edit'));
             $bc = $el->render();
 
             $el = null;
@@ -470,7 +499,7 @@ EOT
             $el = $this->di->get('Alert');
 
             $el->context('danger');
-            $el->html('You are not authorized to edit this project.');
+            $el->html($this->lang->t9n('You are not authorized to edit this project'));
             $alert = $el->render();
 
             $el = null;
@@ -488,7 +517,7 @@ EOT
             return $this->send();
         }
 
-        $this->title("Edit - Project - {$project['project']}");
+        $this->title("{$this->lang->t9n('Edit')} - {$this->lang->t9n('Project')} - {$project['project']}");
 
         $this->head();
 
@@ -498,9 +527,9 @@ EOT
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-        $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
+        $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
         $el->item($project['project'], '#project/browse?id=' . $project['id']);
-        $el->item("Edit project");
+        $el->item($this->lang->t9n('Edit'));
         $bc = $el->render();
 
         $el = null;
@@ -509,7 +538,7 @@ EOT
         $el = $this->di->get('Input');
 
         $el->name('name');
-        $el->label('Project name');
+        $el->label($this->lang->t9n('Project name'));
         $el->required('required');
         $el->value($this->sanitation->attr($this->sanitation->lmth($project['project'])));
         $proj_name = $el->render();
@@ -521,7 +550,7 @@ EOT
 
         $el->context('info');
         $el->icon('help-circle');
-        $el->tooltip('Users can join this project freely.');
+        $el->tooltip($this->lang->t9n('Users can join this project freely'));
         $help = $el->render();
 
         $el = null;
@@ -534,7 +563,7 @@ EOT
         $el->inline(true);
         $el->name('access');
         $el->value('open');
-        $el->label("open access");
+        $el->label($this->lang->t9n('open access'));
         $el->html("&nbsp;$help");
 
         if ($project['is_restricted'] === 'N') {
@@ -551,7 +580,7 @@ EOT
 
         $el->context('info');
         $el->icon('help-circle');
-        $el->tooltip('You select users joining this project.');
+        $el->tooltip($this->lang->t9n('You select members of this project'));
         $help = $el->render();
 
         $el = null;
@@ -564,7 +593,7 @@ EOT
         $el->inline(true);
         $el->name('access');
         $el->value('restricted');
-        $el->label('restricted access');
+        $el->label($this->lang->t9n('restricted access'));
         $el->html("&nbsp;$help");
 
         if ($project['is_restricted'] === 'Y') {
@@ -604,7 +633,7 @@ EOT
                 $el = null;
             }
 
-            $users_card = '<div class="my-2"><b>Users with access</b></div>';
+            $users_card = "<div class=\"my-2\"><b>{$this->lang->t9n('Users with access')}</b></div>";
 
             /** @var Element $el */
             $el = $this->di->get('Element');
@@ -623,7 +652,7 @@ EOT
         $el->addClass('mt-3');
         $el->type('submit');
         $el->context('danger');
-        $el->html('Update');
+        $el->html($this->lang->t9n('Save'));
         $update = $el->render();
 
         $el = null;
@@ -652,7 +681,7 @@ EOT
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header('<b>EDIT PROJECT SETTINGS</b>');
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Edit project settings')}</b>");
         $el->body($form);
         $card = $el->render();
 
@@ -681,7 +710,7 @@ EOT
      */
     public function discussion($project_id, array $messages): string {
 
-        $this->title("Discussion - Project - {$messages['title']}");
+        $this->title("{$this->lang->t9n('Discussion')} - {$this->lang->t9n('Project')} - {$messages['title']}");
 
         $this->head();
 
@@ -691,9 +720,9 @@ EOT
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-        $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
+        $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
         $el->item($messages['title'], '#project/browse?id=' . $project_id);
-        $el->item('Discussion');
+        $el->item($this->lang->t9n('Discussion'));
         $bc = $el->render();
 
         $el = null;
@@ -704,7 +733,7 @@ EOT
         $el = $this->di->get('Textarea');
 
         $el->name('message');
-        $el->label('New message');
+        $el->label($this->lang->t9n('New post'));
         $ta = $el->render();
 
         $el = null;
@@ -724,7 +753,7 @@ EOT
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Send');
+        $el->html($this->lang->t9n('Send'));
         $submit = $el->render();
 
         $el = null;
@@ -782,7 +811,7 @@ EOT
 
         if (empty($messages['messages'])) {
 
-            $el->div('No messages', 'text-center text-muted text-uppercase py-4');
+            $el->div($this->lang->t9n('No posts'), 'text-center text-muted text-uppercase py-4');
         }
 
         foreach ($messages['messages'] as $message) {
@@ -817,7 +846,7 @@ EOT
      */
     public function notes(int $project_id, array $notes): string {
 
-        $this->title("Project notes - Project - {$notes['title']}");
+        $this->title("{$this->lang->t9n('Project notes')} - {$this->lang->t9n('Project')} - {$notes['title']}");
 
         $this->head();
 
@@ -827,9 +856,9 @@ EOT
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-        $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
+        $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
         $el->item($notes['title'], '#project/browse?id=' . $project_id);
-        $el->item('Project notes');
+        $el->item($this->lang->t9n('Project notes'));
         $bc = $el->render();
 
         $el = null;
@@ -838,7 +867,7 @@ EOT
 
         $user_note = isset($notes['user']['note']) ?
             $this->sanitation->lmth($notes['user']['note']) :
-            '<span class="text-secondary">No notes found.</span>';
+            "<span class=\"text-secondary text-uppercase\">{$this->lang->t9n('No notes')}</span>";
 
         /** @var Bootstrap\Button $el */
         $el = $this->di->get('Button');
@@ -846,7 +875,7 @@ EOT
         $el->context('link');
         $el->addClass('open-notes px-1 py-0 border-0');
         $el->dataId($project_id);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $note_button = $el->render();
 
         $el = null;
@@ -855,7 +884,7 @@ EOT
         $el = $this->di->get('Card');
 
         $el->addClass('h-100');
-        $el->header("<b>YOUR NOTES</b> $note_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('My notes')}</b> $note_button");
         $el->body("<div id=\"user-note\">$user_note</div>");
         $user_card = $el->render();
 
@@ -879,7 +908,7 @@ EOT
 
         if (empty($notes['others'] )) {
 
-            $el->li('No notes found.', 'pt-0 pb-4 text-secondary');
+            $el->li($this->lang->t9n('No notes'), 'pt-0 pb-4 text-secondary text-uppercase');
         }
 
         foreach ($notes['others'] as $others_note) {
@@ -901,7 +930,7 @@ EOT;
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>OTHERS' NOTES</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Others\' notes')}</b>");
         $el->listGroup($notes_list);
         $others_card = $el->render();
 
@@ -930,7 +959,7 @@ EOT;
      */
     public function compilation(int $project_id, array $notes): string {
 
-        $this->title("Item note compilation - Project - {$notes['title']}");
+        $this->title("{$this->lang->t9n('Note compilation')} - {$this->lang->t9n('Project')} - {$notes['title']}");
 
         $this->head();
 
@@ -940,16 +969,16 @@ EOT;
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
-        $el->item('Projects', IL_BASE_URL . 'index.php/#projects/main');
+        $el->item($this->lang->t9n('Projects'), IL_BASE_URL . 'index.php/#projects/main');
         $el->item($notes['title'], '#project/browse?id=' . $project_id);
-        $el->item('Item note compilation');
+        $el->item($this->lang->t9n('Note compilation'));
         $bc = $el->render();
 
         $el = null;
 
         // User's notes.
         $user_htmls = [];
-        $user_html = '<span class="text-muted">No notes found.</span>';
+        $user_html = "<span class=\"text-secondary text-uppercase\">{$this->lang->t9n('No notes')}</span>";
 
         foreach ($notes['user'] as $item_id => $item) {
 
@@ -977,7 +1006,7 @@ USER;
         $el = $this->di->get('Card');
 
         $el->addClass('h-100');
-        $el->header("<b>YOUR NOTES</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('My notes')}</b>");
         $el->body("<div id=\"user-note\">$user_html</div>");
         $user_card = $el->render();
 
@@ -995,7 +1024,7 @@ USER;
         $el = null;
 
         $other_htmls = [];
-        $other_html = '<span class="text-muted">No notes found.</span>';
+        $other_html = "<span class=\"text-secondary text-uppercase\">{$this->lang->t9n('No notes')}</span>";
 
         if (!empty($notes['other'])) {
 
@@ -1015,7 +1044,7 @@ NOTE;
                 $item_url = IL_BASE_URL . "index.php/item#summary?id={$item_id}";
 
                 $other_htmls[] = <<<USER
-                <h5><a href="$item_url">{$item['title']}</a></h5>
+                <h5 class="mt-3"><a href="$item_url">{$item['title']}</a></h5>
                 $note_html
 USER;
 
@@ -1026,7 +1055,7 @@ USER;
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>OTHERS' NOTES</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Others\' notes')}</b>");
         $el->body($other_html);
         $others_card = $el->render();
 

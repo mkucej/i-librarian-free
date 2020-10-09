@@ -21,15 +21,15 @@ class KeyboardView extends TextView {
 
         $el->id('keyboard-header');
         $el->addClass("mx-1");
-        $el->item('Arrows', 'keyboard-arrows');
-        $el->item('Currency', 'keyboard-currency');
-        $el->item('Greek', 'keyboard-greek', true);
-        $el->item('Latin', 'keyboard-latin');
-        $el->item('Math Symbols', 'keyboard-math');
-        $el->item('Math Operators', 'keyboard-math2');
-        $el->item('Superscripts & Subscripts', 'keyboard-super');
-        $el->item('Technical', 'keyboard-technical');
-        $el->item('Other', 'keyboard-other');
+        $el->item($this->lang->t9n('Arrows'), 'keyboard-arrows');
+        $el->item($this->lang->t9n('Currency'), 'keyboard-currency');
+        $el->item($this->lang->t9n('Greek'), 'keyboard-greek', true);
+        $el->item($this->lang->t9n('Latin'), 'keyboard-latin');
+        $el->item($this->lang->t9n('Math symbols'), 'keyboard-math');
+        $el->item($this->lang->t9n('Math operators'), 'keyboard-math2');
+        $el->item($this->lang->t9n('Superscripts and subscripts'), 'keyboard-super');
+        $el->item($this->lang->t9n('Technical'), 'keyboard-technical');
+        $el->item($this->lang->t9n('Other'), 'keyboard-other');
         $header = $el->render();
 
         $el = null;
@@ -236,7 +236,7 @@ KEYBOARD;
         $el->id('keyboard-window');
         $el->addClass("d-none d-lg-block {$card_class}");
         $el->header(<<<EOT
-            <b>EXTENDED KEYBOARD</b>
+            <b class="text-uppercase">{$this->lang->t9n('Extended keyboard')}</b>
             <button type="button" class="close" aria-label="Close">
                 $close
             </button>

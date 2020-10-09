@@ -39,10 +39,7 @@ class EditController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         $model = new ItemModel($this->di);
         $item = $model->get($this->get['id']);
@@ -70,15 +67,12 @@ class EditController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         $model = new ItemModel($this->di);
         $model->update($this->post);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'The item was saved.']);
+        return $view->main(['info' => 'item was saved']);
     }
 }

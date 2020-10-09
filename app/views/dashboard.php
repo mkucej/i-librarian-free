@@ -12,18 +12,15 @@ class DashboardView extends TextView {
     use SharedHtmlView;
 
     /**
-     * @var Temporal
-     */
-    private $temporal;
-
-    /**
+     * Dashboard HTML.
+     *
      * @param $data
      * @return string
      * @throws Exception
      */
     public function main($data) {
 
-        $this->title('Dashboard');
+        $this->title($this->lang->t9n('Dashboard'));
 
         $this->head();
 
@@ -33,7 +30,7 @@ class DashboardView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Dashboard");
+        $el->item($this->lang->t9n('Dashboard'));
         $bc = $el->render();
 
         $el = null;
@@ -51,11 +48,12 @@ class DashboardView extends TextView {
             $el = $this->di->get('Button');
 
             $el->context('link');
-            $el->addClass('px-1');
+            $el->addClass('p-0 ml-3');
+            $el->style('transform: translateY(-2px)');
             $el->attr('data-dismiss', 'modal');
             $el->attr('data-toggle', 'modal');
             $el->dataTarget('#modal-advanced-search');
-            $el->html('Advanced search');
+            $el->html($this->lang->t9n('Advanced'));
             $advanced_button = $el->render();
 
             $el = null;
@@ -64,26 +62,29 @@ class DashboardView extends TextView {
             $el = $this->di->get('Button');
 
             $el->context('link');
-            $el->addClass('px-1 ml-2');
+            $el->addClass('p-0 ml-3');
+            $el->style('transform: translateY(-2px)');
             $el->attr('data-dismiss', 'modal');
             $el->attr('data-toggle', 'modal');
             $el->dataTarget('#modal-searches');
-            $el->html('Previous searches');
+            $el->html($this->lang->t9n('Previous'));
             $searches_button = $el->render();
 
             $el = null;
 
-            $search_html = <<<EOT
-                {$this->sharedQuickSearch()}
-                $advanced_button
-                $searches_button
-EOT;
+            $search_html = $this->sharedQuickSearch();
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<b>SEARCH</b>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<div>
+    <b class="text-uppercase">{$this->lang->t9n('Search-NOUN')}</b> $advanced_button $searches_button
+</div>
+HTML
+            , 'px-4 pt-3');
             $el->body($search_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -98,16 +99,19 @@ EOT;
 
             $count = $this->scalar_utils->formatNumber($data['count']);
 
-            $activ_html = <<<EOT
-                <div style="position:relative;width:100%;height:200px"><canvas id="myChart"></canvas></div>
-EOT;
-
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header("<b>$count ITEMS</b>", 'px-4 pt-3');
-            $el->body($activ_html, null, 'px-4 pb-4');
+            $el->header(
+<<<HTML
+<span>
+    <b class="text-uppercase">$count {$this->lang->t9n('Items')}</b>
+    <a class="ml-3" href='#logs/main'>{$this->lang->t9n('Usage logs')}</a>
+</span>
+HTML
+            , 'px-4 pt-3');
+            $el->body('<div style="position:relative;width:100%;height:200px"><canvas id="myChart"></canvas></div>', null, 'px-4 pb-4');
             $cards[] = $el->render();
 
             $el = null;
@@ -121,20 +125,22 @@ EOT;
 
         if ($this->app_settings->getUser('dashboard_remove_items') === '0') {
 
-            $last5_html = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $last5_html =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_items']) === 0) {
 
-                $last5_html .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="text-center text-secondary pb-4 align-middle">
-                            NO ITEMS
-                        </td>
-                    </tr>
-EOT;
+                $last5_html .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="text-center text-secondary text-uppercase pb-4 align-middle">
+                {$this->lang->t9n('No items')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_items'] as $item) {
@@ -147,31 +153,39 @@ EOT;
                 if ($item['has_pdf'] === '1') {
 
                     $pdf_url = IL_BASE_URL . 'index.php/pdf?id=' . $item['id'];
-                    $pdf_button = <<<PDF
-                        <a href="{$pdf_url}"><span class="badge badge-warning rounded-0 mr-2">PDF</span></a>
-PDF;
+                    $pdf_button = "<a href=\"{$pdf_url}\"><span class=\"badge badge-warning rounded-0 mr-2\">PDF</span></a>";
                 }
 
-                $last5_html .= <<<EOT
-                    <tr>
-                        <td class="text-truncate">
-                            $pdf_button
-                            <a href="{$item_url}">{$item['title']}</a>
-                        </td>
-                    </tr>
-EOT;
+                $last5_html .=
+<<<HTML
+        <tr>
+            <td class="text-truncate">
+                $pdf_button
+                <a href="{$item_url}">{$item['title']}</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $last5_html .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $last5_html .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<span><b>ITEMS</b> <a class="mx-3" href="#items/main">List</a> <a href="#items/filter">Filter</a></span>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<span>
+    <b class="text-uppercase">{$this->lang->t9n('Items')}</b>
+    <a class="mx-3" href="#items/main">{$this->lang->t9n('List-NOUN')}</a>
+    <a href="#items/filter">{$this->lang->t9n('Filter-NOUN')}</a>
+</span>
+HTML
+            , 'px-4 pt-3');
             $el->body($last5_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -184,45 +198,56 @@ EOT;
 
         if ($this->app_settings->getUser('dashboard_remove_projects') === '0') {
 
-            $project_html = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $project_html =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_projects']) === 0) {
 
-                $project_html .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="align-middle text-center text-secondary pb-4">
-                            NO PROJECTS
-                        </td>
-                    </tr>
-EOT;
+                $project_html .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="align-middle text-center text-uppercase text-secondary pb-4">
+                {$this->lang->t9n('No projects')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_projects'] as $project) {
 
                 $item_url = IL_BASE_URL . 'index.php/project#project/browse?id=' . $project['id'];
 
-                $project_html .= <<<EOT
-                    <tr>
-                        <td class="text-truncate">
-                            <a href="{$item_url}">{$project['project']}</a>
-                        </td>
-                    </tr>
-EOT;
+                $project_html .=
+<<<HTML
+        <tr>
+            <td class="text-truncate">
+                <a href="{$item_url}">{$project['project']}</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $project_html .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $project_html .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<span><b>PROJECTS</b> <a class="ml-3" href="#projects/main">List</a></span>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<span>
+    <b class="text-uppercase">{$this->lang->t9n('Projects')}</b>
+    <a class="mx-3" href="#projects/main">{$this->lang->t9n('List-NOUN')}</a>
+</span>
+HTML
+            , 'px-4 pt-3');
             $el->body($project_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -230,25 +255,27 @@ EOT;
         }
 
         /*
-         * Last notes.
+         * Last item notes.
          */
 
         if ($this->app_settings->getUser('dashboard_remove_item_notes') === '0') {
 
-            $notes_html = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $notes_html =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_notes']) === 0) {
 
-                $notes_html .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="text-center text-secondary align-middle pb-4">
-                            NO NOTES
-                        </td>
-                    </tr>
-EOT;
+                $notes_html .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="text-center text-secondary text-uppercase align-middle pb-4">
+                {$this->lang->t9n('No notes')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_notes'] as $item) {
@@ -257,25 +284,31 @@ EOT;
 
                 $note = $this->sanitation->lmth($item['note']);
 
-                $notes_html .= <<<EOT
-                    <tr>
-                        <td class="text-truncate" style="direction: rtl">
-                            <a href="{$item_url}">{$note}&lrm;</a>
-                        </td>
-                    </tr>
-EOT;
+                $notes_html .=
+<<<HTML
+        <tr>
+            <td class="text-truncate" style="direction: rtl">
+                <a href="{$item_url}">{$note}&lrm;</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $notes_html .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $notes_html .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<b>ITEM NOTES</b>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('Item notes')}</b>
+HTML
+            , 'px-4 pt-3');
             $el->body($notes_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -288,45 +321,53 @@ EOT;
 
         if ($this->app_settings->getUser('dashboard_remove_project_notes') === '0') {
 
-            $project_notes = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $project_notes =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_project_notes']) === 0) {
 
-                $project_notes .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="text-center text-secondary align-middle pb-4">
-                            NO NOTES
-                        </td>
-                    </tr>
-EOT;
+                $project_notes .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="text-center text-secondary text-uppercase align-middle pb-4">
+                {$this->lang->t9n('No notes')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_project_notes'] as $project) {
 
                 $item_url = IL_BASE_URL . 'index.php/project#project/notes?id=' . $project['id'];
 
-                $project_notes .= <<<EOT
-                    <tr>
-                        <td class="text-truncate">
-                            <a href="{$item_url}">{$project['note']}</a>
-                        </td>
-                    </tr>
-EOT;
+                $project_notes .=
+<<<HTML
+        <tr>
+            <td class="text-truncate">
+                <a href="{$item_url}">{$project['note']}</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $project_notes .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $project_notes .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<b>PROJECT NOTES</b>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('Project notes')}</b>
+HTML
+            , 'px-4 pt-3');
             $el->body($project_notes, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -339,45 +380,53 @@ EOT;
 
         if ($this->app_settings->getUser('dashboard_remove_item_discussions') === '0') {
 
-            $discussed_html = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $discussed_html =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_discussed']) === 0) {
 
-                $discussed_html .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="text-center text-secondary align-middle pb-4">
-                            NO POSTS
-                        </td>
-                    </tr>
-EOT;
+                $discussed_html .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="text-center text-secondary text-uppercase pb-4 align-middle">
+                {$this->lang->t9n('No posts')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_discussed'] as $item) {
 
                 $item_url = IL_BASE_URL . 'index.php/item#itemdiscussion?id=' . $item['id'];
 
-                $discussed_html .= <<<EOT
-                    <tr>
-                        <td class="text-truncate">
-                            <a href="{$item_url}">{$item['message']}</a>
-                        </td>
-                    </tr>
-EOT;
+                $discussed_html .=
+<<<HTML
+        <tr>
+            <td class="text-truncate">
+                <a href="{$item_url}">{$item['message']}</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $discussed_html .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $discussed_html .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<b>ITEM DISCUSSIONS</b>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('Item discussions')}</b>
+HTML
+            , 'px-4 pt-3');
             $el->body($discussed_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -390,45 +439,53 @@ EOT;
 
         if ($this->app_settings->getUser('dashboard_remove_project_discussions') === '0') {
 
-            $discussed_html = <<<EOT
-                <table style="table-layout: fixed;width:100%;line-height: 2rem">
-                    <tbody>
-EOT;
+            $discussed_html =
+<<<HTML
+<table style="table-layout: fixed;width:100%;line-height: 2rem">
+    <tbody>
+HTML;
 
             if (count($data['last_discussed_projects']) === 0) {
 
-                $discussed_html .= <<<EOT
-                    <tr>
-                        <td style="height: 10rem" class="text-center text-secondary pb-4 align-middle">
-                            NO POSTS
-                        </td>
-                    </tr>
-EOT;
+                $discussed_html .=
+<<<HTML
+        <tr>
+            <td style="height: 10rem" class="text-center text-secondary text-uppercase pb-4 align-middle">
+                {$this->lang->t9n('No posts')}
+            </td>
+        </tr>
+HTML;
             }
 
             foreach ($data['last_discussed_projects'] as $project) {
 
                 $item_url = IL_BASE_URL . 'index.php/project#project/discussion?id=' . $project['project_id'];
 
-                $discussed_html .= <<<EOT
-                    <tr>
-                        <td class="text-truncate">
-                            <a href="{$item_url}">{$project['message']}</a>
-                        </td>
-                    </tr>
-EOT;
+                $discussed_html .=
+<<<HTML
+        <tr>
+            <td class="text-truncate">
+                <a href="{$item_url}">{$project['message']}</a>
+            </td>
+        </tr>
+HTML;
             }
 
-            $discussed_html .= <<<EOT
-                    </tbody>
-                </table>
-EOT;
+            $discussed_html .=
+<<<HTML
+    </tbody>
+</table>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
-            $el->header('<b>PROJECT DISCUSSIONS</b>', 'px-4 pt-3');
+            $el->header(
+<<<HTML
+<b class="text-uppercase">{$this->lang->t9n('Project discussions')}</b>
+HTML
+                , 'px-4 pt-3');
             $el->body($discussed_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -438,23 +495,29 @@ EOT;
         /*
          * Active sessions.
          */
-        $this->temporal = $this->di->get('Temporal');
+
+        /** @var Temporal $temporal */
+        $temporal = $this->di->get('Temporal');
 
         $active_sessions = $this->session->readSessionFiles($data['sessions']);
 
-        $sessions_card = '<div class="pl-4">LOGGED DEVICES</div>';
+        $sessions_card =
+<<<HTML
+<div class="pl-4 text-uppercase">{$this->lang->t9n('Logged devices')}</div>
+HTML;
 
         foreach ($active_sessions as $active_session) {
 
-            $created = $this->temporal->toUserTime($active_session['created']);
-            $updated = $this->temporal->toUserTime($active_session['last_accessed']);
+            $created = $temporal->toUserTime($active_session['created']);
+            $updated = $temporal->toUserTime($active_session['last_accessed']);
 
-            $sessions_card .= <<<SESSION
+            $sessions_card .=
+<<<HTML
 <table class="ml-4 mb-2 text-muted">
     <tbody>
         <tr>
             <td class="align-top pr-3 text-primary">
-                <small><b>CLIENT IP</b></small>
+                <small><b class="text-uppercase">{$this->lang->t9n('Client IP')}</b></small>
             </td>
             <td>
                 {$active_session['remote_ip']}
@@ -462,7 +525,7 @@ EOT;
         </tr>
         <tr>
             <td class="align-top pr-3">
-                <small><b>SOFTWARE</b></small>
+                <small><b class="text-uppercase">{$this->lang->t9n('Software')}</b></small>
             </td>
             <td>
                 {$active_session['user_agent']}
@@ -470,7 +533,7 @@ EOT;
         </tr>
         <tr>
             <td class="align-top pr-3">
-                <small><b>STARTED</b></small>
+                <small><b class="text-uppercase">{$this->lang->t9n('Started')}</b></small>
             </td>
             <td>
                 $created
@@ -478,7 +541,7 @@ EOT;
         </tr>
         <tr>
             <td class="align-top pr-3">
-                <small><b>LAST&nbsp;ACCESS</b></small>
+                <small><b class="text-uppercase">{$this->lang->t9n('Last access')}</b></small>
             </td>
             <td>
                 $updated
@@ -486,8 +549,7 @@ EOT;
         </tr>
     </tbody>
 </table>
-SESSION;
-
+HTML;
         }
 
         /*
@@ -512,17 +574,15 @@ SESSION;
         $content = $el->render();
 
         /*
-         * Modals.
+         * Advanced search modal.
          */
-
-        // Advanced search.
 
         /** @var Bootstrap\Button $el */
         $el = $this->di->get('Button');
 
         $el->addClass('search-submit');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search_button = $el->render();
 
         $el = null;
@@ -531,7 +591,7 @@ SESSION;
         $el = $this->di->get('Modal');
 
         $el->id('modal-advanced-search');
-        $el->header('Search library');
+        $el->header($this->lang->t9n('Search library'));
         $el->button($search_button);
         $el->body($this->sharedAdvancedSearch($data['tags']), 'bg-darker-5');
         $el->componentSize('large');

@@ -46,8 +46,6 @@ class AuthenticationController extends Controller {
 
         $model = new AuthenticationModel($this->di);
 
-        $view  = new DefaultView($this->di);
-
         /** @var array $ldap_settings */
         $ldap_settings = $this->app_settings->getIni('ldap');
 
@@ -57,12 +55,6 @@ class AuthenticationController extends Controller {
             $this->ldap = $this->di->get('Ldap');
             $ldap_response = $this->ldap->authenticate($this->post['username'], $this->post['password']);
 
-            // Feedback info for a user.
-            if (isset($ldap_response['info'])) {
-
-                return $view->main($ldap_response);
-            }
-
             // Create/update LDAP user in local database.
             $user_data = $model->syncLdapUser($ldap_response, session_id());
 
@@ -70,12 +62,6 @@ class AuthenticationController extends Controller {
 
             // Native authentication.
             $user_data = $model->authenticate($this->post['username'], $this->post['password'], session_id());
-        }
-
-        // Feedback info for a user.
-        if (isset($user_data['info'])) {
-
-            return $view->main($user_data);
         }
 
         // Log out old sessions.
@@ -91,7 +77,8 @@ class AuthenticationController extends Controller {
         $this->app_settings->setUser($user_data['settings']);
         $this->app_settings->setGlobal($user_data['global_settings']);
 
-        return $view->main([]);
+        $view  = new DefaultView($this->di);
+        return $view->main();
     }
 
     /**
@@ -119,7 +106,6 @@ class AuthenticationController extends Controller {
 
         // Send response.
         $view = new DefaultView($this->di);
-
         return $view->main();
     }
 }

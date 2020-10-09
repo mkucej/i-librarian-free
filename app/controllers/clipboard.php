@@ -34,11 +34,7 @@ class ClipboardController extends Controller {
 
         // Page.
         $this->get['page'] = isset($this->get['page']) ? $this->get['page'] : 1;
-
-        if ($this->validation->id($this->get['page']) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         // Limit from.
         $from = ($this->get['page'] - 1) * $this->app_settings->getUser('page_size');
@@ -89,7 +85,7 @@ class ClipboardController extends Controller {
             if ($this->get['export'] === 'zip') {
 
                 // Export to a ZIP file.
-                $zip = $model->exportZip($items['items']);
+                $zip = $model->exportZip($items['items'], $this->lang->getLanguage());
 
                 $view = new FileView($this->di, $zip);
                 return $view->main('attachment');
@@ -164,11 +160,7 @@ class ClipboardController extends Controller {
 
         // From.
         $this->get['page'] = isset($this->get['page']) ? $this->get['page'] : 1;
-
-        if ($this->validation->id($this->get['page']) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         // Limit from.
         $from = ($this->get['page'] - 1) * $this->app_settings->getUser('page_size');
@@ -208,7 +200,7 @@ class ClipboardController extends Controller {
             if ($this->get['export'] === 'zip') {
 
                 // Export to a ZIP file.
-                $zip = $model->exportZip($items['items']);
+                $zip = $model->exportZip($items['items'], $this->lang->getLanguage());
 
                 $view = new FileView($this->di, $zip);
                 return $view->main('attachment');
@@ -267,10 +259,7 @@ class ClipboardController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         $model = new ItemsModel($this->di);
         $response = $model->clipboardAdd($this->post['id']);
@@ -281,7 +270,7 @@ class ClipboardController extends Controller {
         if ($response['max_count'] === '1') {
 
             $info = [
-                'info' => 'Clipboard maximum size reached.',
+                'info' => 'clipboard maximum size was reached',
                 'max_count' => true
             ];
         }
@@ -312,10 +301,7 @@ class ClipboardController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         $model = new ItemsModel($this->di);
         $model->clipboardDelete($this->post['id']);

@@ -32,7 +32,7 @@ class TagsController extends Controller {
     public function mainAction() {
 
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 
     /**
@@ -44,10 +44,12 @@ class TagsController extends Controller {
     public function itemAction(): string {
 
         // Check id.
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new TagsModel($this->di);
         $tags = $model->getItemTags($this->get['id']);
@@ -71,21 +73,25 @@ class TagsController extends Controller {
         }
 
         // Check ids.
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
 
-        if ($this->validation->id($this->post['tag_id']) === false) {
+        $this->validation->id($this->post['id']);
 
-            throw new Exception("tag id parameter {$this->validation->error}", 422);
+        if (isset($this->post['tag_id']) === false) {
+
+            throw new Exception('tag id parameter required', 400);
         }
+
+        $this->validation->id($this->post['tag_id']);
 
         $model = new TagsModel($this->di);
         $model->saveItemTags($this->post['id'], (array) $this->post['tag_id']);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Item tag was added.']);
+        return $view->main(['info' => 'item tag was added']);
     }
 
     /**
@@ -103,21 +109,25 @@ class TagsController extends Controller {
         }
 
         // Check ids.
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("id parameter {$this->validation->error}", 422);
+            throw new Exception('id parameter required', 400);
         }
 
-        if ($this->validation->id($this->post['tag_id']) === false) {
+        $this->validation->id($this->post['id']);
 
-            throw new Exception("tag id parameter {$this->validation->error}", 422);
+        if (isset($this->post['tag_id']) === false) {
+
+            throw new Exception('tag id parameter required', 400);
         }
+
+        $this->validation->id($this->post['tag_id']);
 
         $model = new TagsModel($this->di);
         $model->deleteItemTag($this->post['id'], $this->post['tag_id']);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Item tag was removed.']);
+        return $view->main(['info' => 'item tag was removed']);
     }
 
     /**
@@ -139,10 +149,7 @@ class TagsController extends Controller {
 
         if (isset($this->post['id'])) {
 
-            if ($this->validation->id($this->post['id']) === false) {
-
-                throw new Exception("id parameter {$this->validation->error}", 422);
-            }
+            $this->validation->id($this->post['id']);
 
             $item_id = $this->post['id'];
         }
@@ -162,7 +169,7 @@ class TagsController extends Controller {
         }
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'New tag was created.']);
+        return $view->main(['info' => 'new tag was created']);
     }
 
     /**
@@ -202,10 +209,7 @@ class TagsController extends Controller {
 
         if (isset($this->post['tag'])) {
 
-            if ($this->validation->id(key($this->post['tag'])) === false) {
-
-                throw new Exception("tag id parameter {$this->validation->error}", 422);
-            }
+            $this->validation->id(key($this->post['tag']));
 
         } else {
 
@@ -224,6 +228,6 @@ class TagsController extends Controller {
         }
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => 'Tag was updated.']);
+        return $view->main(['info' => 'tag was updated']);
     }
 }

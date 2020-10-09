@@ -39,7 +39,7 @@ class FilterController extends Controller {
     public function mainAction(): string {
 
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 
     /**

@@ -136,33 +136,33 @@ class ItemView extends TextView {
             'link'    => '#',
             'submenu' => [
                 [
-                    'label' => 'User profile',
+                    'label' => $this->lang->t9n('User profile'),
                     'link'  => '#profile/main'
                 ],
                 [
-                    'label' => 'User settings',
+                    'label' => $this->lang->t9n('User settings'),
                     'link'  => '#settings/main'
                 ],
                 [
-                    'label' => '<div id="sign-out">Sign out</div>',
+                    'label' => "<div id=\"sign-out\">{$this->lang->t9n('Sign out')}</div>",
                     'link'  => '#'
                 ]
             ]
         ];
 
         $menu_arr[] = [
-            'label' => "{$dasboard}Dashboard",
+            'label' => "{$dasboard}{$this->lang->t9n('Dashboard')}",
             'link'  => IL_BASE_URL . 'index.php/#dashboard/main'
         ];
 
         $menu_arr[] = [
-            'label' => "{$back_icon}Back",
+            'label' => "{$back_icon}{$this->lang->t9n('Back')}",
             'link'  => IL_BASE_URL,
             'attrs' => 'id="item-back-link"'
         ];
 
         $menu_arr[] = [
-            'label' => "{$summary_icon}Item summary",
+            'label' => "{$summary_icon}{$this->lang->t9n('Item summary')}",
             'link'  => '#summary?id=',
             'attrs' => 'class="add-id-link"'
         ];
@@ -174,23 +174,23 @@ class ItemView extends TextView {
                 'link' => '#',
                 'submenu' => [
                     [
-                        'label' => 'Open',
+                        'label' => $this->lang->t9n('Open-VERB'),
                         'link' => '#pdf/main?id=',
                         'attrs' => 'class="add-id-link"'
 
                     ],
                     [
-                        'label' => 'Open in new window',
+                        'label' => $this->lang->t9n('Open in new window'),
                         'link' => IL_BASE_URL . 'index.php/pdf?id=',
                         'attrs' => 'class="add-id-link" target="_blank"'
                     ],
                     [
-                        'label' => "Download",
+                        'label' => $this->lang->t9n('Download'),
                         'link' => IL_BASE_URL . 'index.php/pdf/file?disposition=attachment&id=',
                         'attrs' => 'class="add-id-link"'
                     ],
                     [
-                        'label' => "Manage PDF",
+                        'label' => $this->lang->t9n('Manage PDF'),
                         'link'  => '#pdf/manage?id=',
                         'attrs' => 'class="add-id-link"'
                     ]
@@ -204,18 +204,18 @@ class ItemView extends TextView {
                 'link' => '#',
                 'submenu' => [
                     [
-                        'label' => 'Open',
+                        'label' => $this->lang->t9n('Open-VERB'),
                         'link' => '#pdf/main?id=',
                         'attrs' => 'class="add-id-link"'
 
                     ],
                     [
-                        'label' => 'Open in new window',
+                        'label' => $this->lang->t9n('Open in new window'),
                         'link' => IL_BASE_URL . 'index.php/pdf?id=',
                         'attrs' => 'class="add-id-link" target="_blank"'
                     ],
                     [
-                        'label' => "Download",
+                        'label' => $this->lang->t9n('Download'),
                         'link' => IL_BASE_URL . 'index.php/pdf/file?disposition=attachment&id=',
                         'attrs' => 'class="add-id-link"'
                     ]
@@ -224,13 +224,13 @@ class ItemView extends TextView {
         }
 
         $menu_arr[] = [
-            'label' => "{$notes_icon}Notes",
+            'label' => "{$notes_icon}{$this->lang->t9n('Notes')}",
             'link'  => '#notes?id=',
             'attrs' => 'class="add-id-link"'
         ];
 
         $menu_arr[] = [
-            'label' => "{$tags_icon}Tags",
+            'label' => "{$tags_icon}{$this->lang->t9n('Tags')}",
             'link'  => '#tags/item?id=',
             'attrs' => 'class="add-id-link"'
         ];
@@ -238,26 +238,26 @@ class ItemView extends TextView {
         if ($this->session->data('permissions') === 'A' || $this->session->data('permissions') === 'U') {
 
             $menu_arr[] = [
-                'label' => "{$edit_icon}Edit",
+                'label' => "{$edit_icon}{$this->lang->t9n('Edit')}",
                 'link' => '#edit?id=',
                 'attrs' => 'class="add-id-link"'
             ];
 
             $menu_arr[] = [
-                'label' => "{$files_icon}Supplements",
+                'label' => "{$files_icon}{$this->lang->t9n('Supplements')}",
                 'link' => '#supplements?id=',
                 'attrs' => 'class="add-id-link"'
             ];
         }
 
         $menu_arr[] = [
-            'label' => "{$discuss_icon}Discussion",
+            'label' => "{$discuss_icon}{$this->lang->t9n('Discussion')}",
             'link'  => '#itemdiscussion?id=',
             'attrs' => 'class="add-id-link"'
         ];
 
         $menu_arr[] = [
-            'label'   => "{$keyboard}Extended keyboard",
+            'label'   => "{$keyboard}{$this->lang->t9n('Extended keyboard')}",
             'link'    => '#',
             'attrs'   => 'id="keyboard-toggle" class="d-none d-lg-block"'
         ];
@@ -319,8 +319,8 @@ class ItemView extends TextView {
 
         $el->id('notes-window');
         $el->addClass('d-none');
-        $el->header(<<<'EOT'
-            Notes
+        $el->header(<<<EOT
+            {$this->lang->t9n('Notes')}
             <button type="button" class="close" aria-label="Close">
                 <span aria-hidden="true" class="mdi mdi-close"></span>
             </button>
@@ -337,7 +337,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Yes');
+        $el->html($this->lang->t9n('Yes'));
         $button = $el->render();
 
         $el = null;
@@ -347,7 +347,7 @@ EOT
 
         $el->id('modal-confirm');
         $el->header('Confirmation');
-        $el->body('Confirm?');
+        $el->body('');
         $el->button($button);
         $confirm = $el->render();
 
@@ -359,7 +359,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Export');
+        $el->html($this->lang->t9n('Export-VERB'));
         $button = $el->render();
 
         $el = null;
@@ -368,7 +368,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-export');
-        $el->header('Export');
+        $el->header($this->lang->t9n('Export-NOUN'));
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $export = $el->render();

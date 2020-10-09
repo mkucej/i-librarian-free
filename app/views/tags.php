@@ -18,7 +18,7 @@ class TagsView extends TextView {
      */
     public function item(int $id, array $tags): string {
 
-        $this->title("Tags - {$tags['title']}");
+        $this->title("{$this->lang->t9n('Tags')} - {$tags['title']}");
 
         $this->head();
 
@@ -29,7 +29,7 @@ class TagsView extends TextView {
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$tags['title']}", '#summary?id=' . $id);
-        $el->item('Tags');
+        $el->item($this->lang->t9n('Tags'));
         $bc = $el->render();
 
         $el = null;
@@ -40,7 +40,7 @@ class TagsView extends TextView {
 
         $el->id('new-tags');
         $el->name('new_tags');
-        $el->label('New tags <span class="text-muted">(one per line)</span>');
+        $el->label("{$this->lang->t9n('New tags')} <span class=\"text-muted\">({$this->lang->t9n('one per line')})</span>");
         $ta = $el->render();
 
         $el = null;
@@ -60,7 +60,7 @@ class TagsView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;
@@ -79,7 +79,7 @@ class TagsView extends TextView {
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header("<b>ADD NEW ITEM TAGS</b>");
+        $el->header("<b>{$this->lang->t9n('Add new item tags')}</b>", 'text-uppercase');
         $el->body($form);
         $form_card = $el->render();
 
@@ -91,8 +91,8 @@ class TagsView extends TextView {
 
         $el->id('tag-filter');
         $el->name('tag_filter');
-        $el->placeholder('Filter');
-        $el->ariaLabel('Filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
         $el->attr('data-targets', '.label-text');
         $filter = $el->render();
 
@@ -102,7 +102,7 @@ class TagsView extends TextView {
 
         if (empty($tags['tags'])) {
 
-            $tag_html = '<div class="text-center text-muted text-uppercase py-4">No tags</div>';
+            $tag_html = "<div class=\"text-center text-muted text-uppercase py-4\">{$this->lang->t9n('No tags')}</div>";
 
         } else {
 
@@ -168,7 +168,7 @@ class TagsView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>ITEM TAGS</b>");
+        $el->header("<b>{$this->lang->t9n('Item tags')}</b>", 'text-uppercase');
         $el->body($filter . $tag_html);
         $tag_card = $el->render();
 
@@ -197,7 +197,7 @@ class TagsView extends TextView {
      */
     public function manage(array $tags): string {
 
-        $this->title("Tags");
+        $this->title($this->lang->t9n('Tags'));
 
         $this->head();
 
@@ -207,7 +207,7 @@ class TagsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Tags");
+        $el->item($this->lang->t9n('Tags'));
         $bc = $el->render();
 
         $el = null;
@@ -218,7 +218,7 @@ class TagsView extends TextView {
         $el = $this->di->get('Textarea');
 
         $el->name('new_tags');
-        $el->label('New tags (one per line)');
+        $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $ta = $el->render();
 
         $el = null;
@@ -228,7 +228,7 @@ class TagsView extends TextView {
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $submit = $el->render();
 
         $el = null;
@@ -246,7 +246,7 @@ class TagsView extends TextView {
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>CREATE NEW TAGS</b>");
+        $el->header("<b>{$this->lang->t9n('New tags')}</b>", 'text-uppercase');
         $el->body($form);
         $form_card = $el->render();
 
@@ -257,7 +257,7 @@ class TagsView extends TextView {
 
         if (empty($tags)) {
 
-            $el->column('No tags', 'col text-center text-muted text-uppercase py-4');
+            $el->column($this->lang->t9n('No tags'), 'col text-center text-muted text-uppercase py-4');
         }
 
         /** @var Bootstrap\IconButton $el */
@@ -275,11 +275,10 @@ class TagsView extends TextView {
 
             $tag['count'] = empty($tag['item_id']) ? '0' : $tag['count'];
             $class = $tag['count'] === '0' ? 'text-danger' : 'text-muted';
-            $plural = $tag['count'] === '1' ? '' : 's';
             $count = $this->scalar_utils->formatNumber($tag['count']);
 
             $label = <<<LABEL
-<div class="$class" style="transform: translateY(-6px)">{$count} item{$plural} tagged</div>
+<div class="$class" style="transform: translateY(-6px)">{$count} {$this->lang->t9n('tagged')}</div>
 LABEL;
 
             /** @var Bootstrap\Inputgroup $el2 */
@@ -315,7 +314,7 @@ LABEL;
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>EDIT TAGS</b>");
+        $el->header("<b>{$this->lang->t9n('Edit tags')}</b>", 'text-uppercase');
         $el->body($tag_row);
         $tag_card = $el->render();
 

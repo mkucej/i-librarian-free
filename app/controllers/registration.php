@@ -14,7 +14,7 @@ class RegistrationController extends Controller {
 
         if ($this->app_settings->getGlobal('disallow_signup') === '1') {
 
-            throw new Exception('creating new accounts is not authorized', 403);
+            throw new Exception('registration of new accounts is not allowed', 403);
         }
 
         // Authorization.
@@ -54,20 +54,14 @@ class RegistrationController extends Controller {
         // Password typo.
         if ($sanitized_post['password'] !== $sanitized_post['password2']) {
 
-            return $view->main(['info' => 'Password was mistyped.']);
+            return $view->main(['info' => 'password was mistyped']);
         }
 
         // Validate password.
-        if ($this->validation->password($sanitized_post['password']) === false) {
-
-            return $view->main(['info' => "Password {$this->validation->error}."]);
-        }
+        $this->validation->password($sanitized_post['password']);
 
         // Validate email.
-        if (!empty($sanitized_post['email']) && $this->validation->email($sanitized_post['email']) === false) {
-
-            return $view->main(['info' => "Email {$this->validation->error}."]);
-        }
+        $this->validation->email($sanitized_post['email']);
 
         // Create account.
         $model = new AccountModel($this->di);
@@ -88,6 +82,6 @@ class RegistrationController extends Controller {
             return $authentication->signinAction();
         }
 
-        return $view->main($user);
+        return $view->main();
     }
 }

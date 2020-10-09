@@ -7,100 +7,82 @@ use Exception;
 /**
  * Validation.
  *
- * All methods return `true` on pass, and `false` on fail. Upon failed
- * validation, an error message is written to the public property
- * Validation::error.
+ * All methods return Exception on fail.
  */
 final class Validation {
 
-    public $error;
+    /**
+     * @var int HTTP status code for all errors.
+     */
+    private $http_code = 422;
 
     /**
      * URL.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function url(string $value): bool {
+    public function url(string $value): void {
 
         if (filter_var($value, FILTER_VALIDATE_URL) === false) {
 
-            $this->error = "is not a valid URL address";
-            return false;
+            throw new Exception('invalid URL address provided', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Http(s) URL.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function link(string $value): bool {
+    public function link(string $value): void {
 
         // First check URL.
-        if ($this->url($value) === false) {
-
-            return false;
-        }
+        $this->url($value);
 
         $scheme = parse_url($value, PHP_URL_SCHEME);
 
         if ($scheme !== 'http' && $scheme !== 'https') {
 
-            $this->error = "is not a valid web link";
-            return false;
+            throw new Exception('invalid web link provided', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Https URL.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function tlsLink(string $value): bool {
+    public function tlsLink(string $value): void {
 
         // First check URL.
-        if ($this->url($value) === false) {
-
-            return false;
-        }
+        $this->url($value);
 
         if (parse_url($value, PHP_URL_SCHEME) !== 'https') {
 
-            $this->error = "is not a secure web link";
-            return false;
+            throw new Exception('provided web link is insecure', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * SSRF-safe URL.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function ssrfLink(string $value): bool {
+    public function ssrfLink(string $value): void {
 
         // First check URL.
-        if ($this->url($value) === false) {
-
-            return false;
-        }
+        $this->url($value);
 
         $host = parse_url($value, PHP_URL_HOST);
 
         // Prevent IP based addresses and localhost.
         if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)  || filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 
-            $this->error = "can't be an IP-host URL";
-            return false;
+            throw new Exception('invalid link to an IP-host', $this->http_code);
         }
 
         // Deal with wildcard DNS.
@@ -109,94 +91,76 @@ final class Validation {
 
         if ($ip === false) {
 
-            $this->error = "is not a valid URL address";
-            return false;
+            throw new Exception('invalid link provided', $this->http_code);
         }
 
         $is_inner_ipaddress =
             ip2long('127.0.0.0')   >> 24 === $ip >> 24 or
-            ip2long('10.0.0.0')    >> 24 === $ip >> 24 or
-            ip2long('172.16.0.0')  >> 20 === $ip >> 20 or
-            ip2long('169.254.0.0') >> 16 === $ip >> 16 or
-            ip2long('192.168.0.0') >> 16 === $ip >> 16;
+        ip2long('10.0.0.0')    >> 24 === $ip >> 24 or
+        ip2long('172.16.0.0')  >> 20 === $ip >> 20 or
+        ip2long('169.254.0.0') >> 16 === $ip >> 16 or
+        ip2long('192.168.0.0') >> 16 === $ip >> 16;
 
         if ($is_inner_ipaddress) {
 
-            $this->error = "can't be an internal network address";
-            return false;
+            throw new Exception('invalid link to internal network', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Email.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function email(string $value): bool {
+    public function email(string $value): void {
 
         if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
 
-            $this->error = "is not a valid email address";
-            return false;
-
+            throw new Exception('invalid email address provided', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Latin letters.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function alpha(string $value): bool {
+    public function alpha(string $value): void {
 
-        if (preg_match('/^[[:alpha:]]*$/', $value) === 0) {
+        if (preg_match('/^[a-zA-Z]*$/', $value) === 0) {
 
-            $this->error = "must contain letters only";
-            return false;
-
+            throw new Exception('provided text must contain letters only', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Latin letters and numbers.
      *
      * @param $value
-     * @return bool
+     * @throws Exception
      */
-    public function alphanum($value): bool {
+    public function alphanum($value): void {
 
-        if (preg_match('/^[[:alnum:]]*$/', $value) === 0) {
+        if (preg_match('/^[a-zA-Z0-9]*$/', $value) === 0) {
 
-            $this->error = "must contain alphanumeric characters only";
-            return false;
+            throw new Exception('provided text must contain letters and numbers only', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * 0-9.
      *
      * @param $value
-     * @return bool
+     * @throws Exception
      */
-    public function num($value): bool {
+    public function num($value): void {
 
-        if (preg_match('/^[[:digit:]]*$/', $value) === 0) {
+        if (preg_match('/^[0-9]*$/', $value) === 0) {
 
-            $this->error = "must contain numeric characters only";
-            return false;
+            throw new Exception('invalid number provided', $this->http_code);
         }
-
-        return true;
     }
 
     /**
@@ -204,17 +168,14 @@ final class Validation {
      *
      * @param $value
      * @param int $length
-     * @return bool
+     * @throws Exception
      */
-    public function length($value, int $length): bool {
+    public function length($value, int $length): void {
 
         if (strlen($value) > $length) {
 
-            $this->error = "exceeded the required length of $length";
-            return false;
+            throw new Exception('provided text exceeded maximum length', $this->http_code);
         }
-
-        return true;
     }
 
     /**
@@ -222,33 +183,28 @@ final class Validation {
      *
      * @param $value
      * @param int $length
-     * @return bool
      * @throws Exception
      */
-    public function mbLength($value, int $length): bool {
+    public function mbLength($value, int $length): void {
 
         if (extension_loaded('mbstring') === false) {
 
-            throw new Exception("missing PHP extension mbstring", 500);
+            throw new Exception('missing PHP extension mbstring', 500);
         }
 
         if (mb_strlen($value, 'UTF-8') > $length) {
 
-            $this->error = "exceeded the required length of $length";
-            return false;
+            throw new Exception('provided text exceeded maximum length', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * Password.
      *
      * @param string $value
-     * @return bool
      * @throws Exception
      */
-    public function password(string $value): bool {
+    public function password(string $value): void {
 
         if (extension_loaded('mbstring') === false) {
 
@@ -260,49 +216,54 @@ final class Validation {
 
         if (mb_strlen($value, 'UTF-8') < $min_length) {
 
-            $this->error = "must be at least $min_length characters";
-            return false;
+            throw new Exception(sprintf("provided password must have at least %s characters", $min_length), $this->http_code);
         }
 
         if ($this->mbLength($value, $max_length) === false) {
 
-            return false;
+            throw new Exception(sprintf("provided password may have maximum of %s characters", $max_length), $this->http_code);
         }
 
-        if ($this->num($value) === true) {
+        try {
 
-            $this->error = "must not be a number";
-            return false;
+            $this->num($value);
+            $is_number = true;
+
+        } catch (Exception $exc) {
+
+            $is_number = false;
+
+        } finally {
+
+            if ($is_number === true) {
+
+                throw new Exception('provided password must not be a number', $this->http_code);
+            }
         }
-
-        return true;
     }
 
     /**
-     * Directory name - no double dots allowed.
+     * Path name - no double dots allowed.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function dirname(string $value): bool {
+    public function dirname(string $value): void {
 
         // No double dots allowed.
         if (strpos($value, '..') !== false) {
 
-            $this->error = "is invalid directory name";
-            return false;
+            throw new Exception('invalid path name provided', $this->http_code);
         }
-
-        return true;
     }
 
     /**
      * LDAP string.
      *
      * @param string $value
-     * @return bool
+     * @throws Exception
      */
-    public function ldap(string $value): bool {
+    public function ldap(string $value): void {
 
         // Not allowed.
         $chars = [',', '\\', '#', '+', '<', '>', ';', '"', '=', ' '];
@@ -311,44 +272,32 @@ final class Validation {
 
             if (strpos($value, $char) !== false) {
 
-                $this->error = "is invalid LDAP string";
-                return false;
+                throw new Exception('invalid LDAP text provided', $this->http_code);
             }
         }
-
-        return true;
     }
 
     /**
      * ID must be integer in a range.
      *
-     * @param int $value
-     * @return bool
+     * @param int|string $value
+     * @throws Exception
      */
-    public function id($value): bool {
+    public function id($value): void {
 
-        if ($this->num($value) === false) {
-
-            return false;
-        }
-
-        if ($this->intRange($value, 1, pow(2, 32)) === false) {
-
-            return false;
-        }
-
-        return true;
+        $this->num($value);
+        $this->intRange($value, 1, pow(2, 32));
     }
 
     /**
      * Integer is in range.
      *
-     * @param  int $value
-     * @param  int $min
-     * @param  int $max
-     * @return bool
+     * @param int|string $value
+     * @param int $min
+     * @param int $max
+     * @throws Exception
      */
-    public function intRange($value, int $min, int $max): bool {
+    public function intRange($value, int $min, int $max): void {
 
         $result = filter_var(
             $value,
@@ -363,10 +312,7 @@ final class Validation {
 
         if ($result === false) {
 
-            $this->error = "is out of range";
-            return false;
+            throw new Exception('provided number is out of valid range', $this->http_code);
         }
-
-        return true;
     }
 }

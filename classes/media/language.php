@@ -118,7 +118,7 @@ final class Language {
         $tokens = $this->tokens;
 
         return preg_replace_callback(
-            '/{T% (.*) %T}/u',
+            '/{T% (.*?) %T}/u',
             function ($matches) use ($tokens) {
                 if (isset($tokens[$matches[1]]) === false || $tokens[$matches[1]] === '') {
                     return $this->textToEnglish($matches[1]);

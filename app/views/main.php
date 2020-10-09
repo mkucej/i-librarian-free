@@ -81,6 +81,7 @@ body.content-light {
     }
 }
 STYLE;
+
         $this->head();
 
         /*
@@ -91,31 +92,44 @@ STYLE;
          * Sign in form.
          */
 
-        $title = <<<TITLE
-            <div
-                class="bg-primary text-white text-center py-2 w-100"
-                style="font-family: monospace;max-width: 400px;margin:auto;font-size: 20px;">
-                I, Librarian Free
-             </div>
-TITLE;
+        $title =
+<<<HTML
+<div
+    class="bg-primary text-white text-center py-2 w-100"
+    style="font-family: monospace;max-width: 400px;margin:auto;font-size: 20px;">
+    I, Librarian Free
+</div>
+HTML;
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
         $el->name('username');
         $el->autofocus('autofocus');
-        $el->label('Username or email');
+        $el->label(
+<<<HTML
+{$this->lang->t9n('Username')} {$this->lang->t9n('or')} {$this->lang->t9n('email')}
+HTML
+        );
         $username = $el->render();
 
         $el = null;
+
+        $IL_BASE_URL = IL_BASE_URL;
 
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
         $el->type('password');
         $el->name('password');
-        $el->label('Password');
-        $el->hint('<a style="font-size:1rem" class="text-dark" href="' . IL_BASE_URL . 'index.php/resetpassword"><b>Forgot password?</b></a>');
+        $el->label($this->lang->t9n('Password'));
+        $el->hint(
+<<<HTML
+<a style="font-size:1rem" class="text-dark" href="{$IL_BASE_URL}index.php/resetpassword">
+    <b>{$this->lang->t9n('Forgot password')}?</b>
+</a>
+HTML
+        );
         $password = $el->render();
 
         $el = null;
@@ -125,7 +139,7 @@ TITLE;
 
         $el->context('primary');
         $el->type('submit');
-        $el->html('Sign in');
+        $el->html($this->lang->t9n('Sign in'));
         $sign_btn = $el->render();
 
         $el = null;
@@ -141,7 +155,7 @@ TITLE;
             $el->href(IL_BASE_URL . 'index.php/registration');
             $el->context('secondary');
             $el->addClass('float-right');
-            $el->html('Create account');
+            $el->html($this->lang->t9n('Create account'));
             $register_btn = $el->render();
 
             $el = null;
@@ -250,7 +264,7 @@ EOT
 
         $el->addClass('mdi-24px mr-2');
         $el->icon('view-dashboard');
-        $dasboard = $el->render();
+        $dashboard = $el->render();
 
         $el = null;
 
@@ -345,16 +359,19 @@ EOT
             'link'    => '#',
             'submenu' => [
                 [
-                    'label' => 'User profile',
+                    'label' => $this->lang->t9n('User profile'),
                     'link'  => '#profile/main'
                 ],
                 [
-                    'label' => 'User settings',
+                    'label' => $this->lang->t9n('User settings'),
                     'link'  => '#settings/main'
                 ],
                 [
-                    'label' => '<div id="sign-out">Sign out</div>',
-                    'link'  => '#'
+                    'label' =>
+<<<HTML
+<div id="sign-out">{$this->lang->t9n('Sign out')}</div>
+HTML
+                    , 'link'  => '#'
                 ]
             ]
         ];
@@ -363,8 +380,11 @@ EOT
          * Dashboard.
          */
         $menu_arr[] = [
-            'label' => "{$dasboard}Dashboard",
-            'link'  => '#dashboard/main'
+            'label' =>
+<<<HTML
+{$dashboard}{$this->lang->t9n('Dashboard')}
+HTML
+            , 'link'  => '#dashboard/main'
         ];
 
         /*
@@ -448,19 +468,22 @@ EOT
             }
 
             $menu_arr[] = [
-                'label' => "{$record}Import",
-                'link' => '#',
+                'label' =>
+<<<HTML
+{$record}{$this->lang->t9n('Import-NOUN')}
+HTML
+                , 'link' => '#',
                 'submenu' => [
                     [
-                        'label' => 'Import wizard',
+                        'label' => $this->lang->t9n('Import wizard'),
                         'link' => '#import/wizard'
                     ],
                     [
-                        'label' => 'Manual import',
+                        'label' => $this->lang->t9n('Manual import'),
                         'link' => '#import/manual'
                     ],
                     [
-                        'label' => 'Internet search',
+                        'label' => $this->lang->t9n('Internet search'),
                         'link' => '#',
                         'submenu' => $external
                     ]
@@ -472,32 +495,44 @@ EOT
          * Library.
          */
         $menu_arr[] = [
-            'label'   => "{$library}Library",
-            'link'    => '#items/main'
+            'label'   =>
+<<<HTML
+{$library}{$this->lang->t9n('Library')}
+HTML
+            , 'link'    => '#items/main'
         ];
 
         /*
          * Clipboard.
          */
         $menu_arr[] = [
-            'label'   => "{$clipboard}Clipboard",
-            'link'    => '#clipboard/main'
+            'label'   =>
+<<<HTML
+{$clipboard}{$this->lang->t9n('Clipboard')}
+HTML
+            , 'link'    => '#clipboard/main'
         ];
 
         /*
          * Projects.
          */
         $menu_arr[] = [
-            'label'   => "{$project}Projects",
-            'link'    => '#projects/main'
+            'label'   =>
+<<<HTML
+{$project}{$this->lang->t9n('Projects')}
+HTML
+            , 'link'    => '#projects/main'
         ];
 
         /*
          * Catalog
          */
         $menu_arr[] = [
-            'label'   => "{$catalog}Catalog",
-            'link'    => '#items/catalog'
+            'label'   =>
+<<<HTML
+{$catalog}{$this->lang->t9n('Catalog')}
+HTML
+            , 'link'    => '#items/catalog'
         ];
 
         /*
@@ -506,19 +541,22 @@ EOT
         if ($this->session->data('permissions') === 'A' || $this->session->data('permissions') === 'U') {
 
             $menu_arr[] = [
-                'label' => "{$wrench}Tools",
-                'link' => '#',
+                'label' =>
+<<<HTML
+{$wrench}{$this->lang->t9n('Tools')}
+HTML
+                , 'link' => '#',
                 'submenu' => [
                     [
-                        'label' => 'Citation styles',
+                        'label' => $this->lang->t9n('Citation styles'),
                         'link' => '#citation/main'
                     ],
                     [
-                        'label' => 'Manage tags',
+                        'label' => $this->lang->t9n('Manage tags'),
                         'link' => '#tags/manage'
                     ],
                     [
-                        'label' => 'Normalize data',
+                        'label' => $this->lang->t9n('Normalize data'),
                         'link' => '#normalize/main'
                     ]
                 ]
@@ -531,31 +569,34 @@ EOT
         if ($this->session->data('permissions') === 'A') {
 
             $menu_arr[] = [
-                'label'   => "{$admin}Administrator",
-                'link'    => '#',
+                'label'   =>
+<<<HTML
+{$admin}{$this->lang->t9n('Administrator')}
+HTML
+                , 'link'    => '#',
                 'submenu' => [
                     [
-                        'label' => 'Logs',
+                        'label' => $this->lang->t9n('Logs'),
                         'link'  => '#logs/main'
                     ],
                     [
-                        'label' => 'Global settings',
+                        'label' => $this->lang->t9n('Global settings'),
                         'link'  => '#globalsettings/main'
                     ],
                     [
-                        'label' => 'User management',
+                        'label' => $this->lang->t9n('User management'),
                         'link'  => '#users/main'
                     ],
                     [
-                        'label' => 'Find duplicates',
+                        'label' => $this->lang->t9n('Find duplicates'),
                         'link'  => '#duplicates/main'
                     ],
                     [
-                        'label' => 'Software details',
+                        'label' => $this->lang->t9n('Software details'),
                         'link'  => '#details/main'
                     ],
                     [
-                        'label' => 'Databases & indexes',
+                        'label' => $this->lang->t9n('Databases'),
                         'link'  => '#reindex/main'
                     ]
                 ]
@@ -566,8 +607,11 @@ EOT
          * Keyboard.
          */
         $menu_arr[] = [
-            'label'   => "{$keyboard}Extended keyboard",
-            'link'    => '#',
+            'label'   =>
+<<<HTML
+{$keyboard}{$this->lang->t9n('Extended keyboard')}
+HTML
+            , 'link'    => '#',
             'attrs'   => 'id="keyboard-toggle" class="d-none d-lg-block"'
         ];
 
@@ -595,7 +639,7 @@ EOT
         $el = $this->di->get('Input');
 
         $el->name('filter');
-        $el->placeholder('Search');
+        $el->placeholder($this->lang->t9n('Search-VERB'));
         $filter = $el->render();
 
         $el = null;
@@ -644,7 +688,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-confirm');
-        $el->header('Confirmation');
+        $el->header($this->lang->t9n('Confirmation'));
         $el->body('Confirm?');
         $el->button($button);
         $confirm = $el->render();
@@ -657,7 +701,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Export');
+        $el->html($this->lang->t9n('Export-VERB'));
         $button = $el->render();
 
         $el = null;
@@ -666,7 +710,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-export');
-        $el->header('Export');
+        $el->header($this->lang->t9n('Export-NOUN'));
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $export = $el->render();
@@ -679,7 +723,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Submit');
+        $el->html($this->lang->t9n('Submit'));
         $button = $el->render();
 
         $el = null;
@@ -688,7 +732,11 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-omnitool');
-        $el->header('Omnitool - apply actions to all displayed items.');
+        $el->header(
+<<<HTML
+{$this->lang->t9n('Omnitool')} - {$this->lang->t9n('apply actions to all displayed items')}.
+HTML
+        );
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $omnitool = $el->render();
@@ -701,7 +749,7 @@ EOT
         $el = $this->di->get('Button');
 
         $el->context('primary');
-        $el->html('Save');
+        $el->html($this->lang->t9n('Save'));
         $button = $el->render();
 
         $el = null;
@@ -710,7 +758,7 @@ EOT
         $el = $this->di->get('Modal');
 
         $el->id('modal-settings');
-        $el->header('Display settings');
+        $el->header($this->lang->t9n('Display settings'));
         $el->body('', 'bg-darker-5');
         $el->button($button);
         $settings = $el->render();
@@ -724,7 +772,7 @@ EOT
 
         $el->id('modal-searches');
         $el->componentSize('large');
-        $el->header('Previous searches');
+        $el->header($this->lang->t9n('Previous searches'));
         $el->body('', 'p-0');
         $searches = $el->render();
 

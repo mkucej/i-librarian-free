@@ -21,7 +21,7 @@ class ResetpasswordView extends TextView {
          * Head.
          */
 
-        $this->title('Reset password');
+        $this->title($this->lang->t9n('Reset password'));
 
         $this->styleLink('css/plugins.css');
 
@@ -36,7 +36,7 @@ class ResetpasswordView extends TextView {
 
         $el->style('margin: 0 -15px');
         $el->item('IL', IL_BASE_URL);
-        $el->item("Reset password");
+        $el->item($this->lang->t9n('Reset password'));
         $bc = $el->render();
 
         $el = null;
@@ -48,7 +48,7 @@ class ResetpasswordView extends TextView {
 
             $el->addClass('mt-5');
             $el->context('danger');
-            $el->html('Password reset must be enabled in the configuration file.');
+            $el->html($this->lang->t9n('Password reset must be enabled in the configuration file'));
             $alert = $el->render();
 
             $el = null;
@@ -83,7 +83,7 @@ class ResetpasswordView extends TextView {
 
             $el->name('username');
             $el->type('test');
-            $el->label('Username/email');
+            $el->label("{$this->lang->t9n('Username')} {$this->lang->t9n('or')} {$this->lang->t9n('email')}");
             $el->maxlength('256');
             $el->required('required');
             $username = $el->render();
@@ -95,7 +95,7 @@ class ResetpasswordView extends TextView {
 
             $el->context('primary');
             $el->type('submit');
-            $el->html('Reset password');
+            $el->html($this->lang->t9n('Reset password'));
             $button = $el->render();
 
             $el = null;
@@ -114,8 +114,7 @@ class ResetpasswordView extends TextView {
             $el = $this->di->get('Card');
 
             $el->addClass('bg-white mt-4 mb-3');
-            $el->header('<b>Reset password for account:</b>');
-            $el->body($form);
+            $el->body($form, null, 'pt-3');
             $card = $el->render();
 
             $el = null;
@@ -125,7 +124,7 @@ class ResetpasswordView extends TextView {
 
             $el->addClass('mt-5');
             $el->context('danger');
-            $el->html('Disable password reset in the configuration file immediately after you are done.');
+            $el->html($this->lang->t9n('Disable password reset in the configuration file immediately after you are done'));
             $alert = $el->render();
 
             $el = null;
@@ -177,7 +176,7 @@ EOT
      */
     public function result(string $password): string {
 
-        $this->title('Reset password');
+        $this->title($this->lang->t9n('Reset password'));
 
         $this->head();
 
@@ -186,7 +185,7 @@ EOT
 
         $el->style('margin: 0 -15px');
         $el->item('IL', IL_BASE_URL);
-        $el->item("Reset password");
+        $el->item($this->lang->t9n('Reset password'));
         $bc = $el->render();
 
         $el = null;
@@ -196,7 +195,7 @@ EOT
 
         $el->addClass('mt-5');
         $el->context('danger');
-        $el->html('Disable password reset in the configuration file immediately after you are done.');
+        $el->html($this->lang->t9n('Disable password reset in the configuration file immediately after you are done'));
         $alert = $el->render();
 
         $el = null;
@@ -207,14 +206,15 @@ EOT
         $el = $this->di->get('Card');
 
         $el->addClass('bg-white mt-4 mb-3');
-        $el->body(<<<HTML
-            <p>Your temporary password is:</p>
-            <p><kbd id="new-password">{$password}</kbd></p>
-            1. Copy the password to the clipboard.<br>
-            2. <a href="{$IL_BASE_URL}">Login</a> using the password.<br>
-            3. Immediately change your password in <b>User profile</b>.
+        $el->body(
+<<<HTML
+<p>{$this->lang->t9n('Your temporary password is')}:</p>
+<p><kbd id="new-password">{$password}</kbd></p>
+1. {$this->lang->t9n('Copy the password to clipboard')}.<br>
+2. <a href="{$IL_BASE_URL}">{$this->lang->t9n('Sign in')}.</a><br>
+3. {$this->lang->t9n('Immediately change your password in user profile')}.
 HTML
-    , null, 'pt-3');
+        , null, 'pt-3');
         $card = $el->render();
 
         $el = null;

@@ -31,10 +31,7 @@ class SummaryController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Display type export.
         $display_type = isset($this->get['export']) ? 'export' : '';

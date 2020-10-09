@@ -19,7 +19,7 @@ class IEEEView extends TextView {
      */
     public function main(array $searches) {
 
-        $this->title("IEEE Xplore\u{00ae} search");
+        $this->title("IEEE Xplore\u{00ae} " . $this->lang->t9n('search-NOUN'));
 
         $this->head();
 
@@ -29,27 +29,27 @@ class IEEEView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("IEEE Xplore\u{00ae} search");
+        $el->item("IEEE Xplore\u{00ae} " . $this->lang->t9n('search-NOUN'));
         $bc = $el->render();
 
         $el = null;
 
         $parameters = [
-            'abstract'          => 'Abstract',
-            'affiliation'       => 'Affiliation',
-            'meta_data'         => 'Anywhere',
-            'author'            => 'Author',
-            'querytext'         => 'Boolean search',
+            'abstract'          => $this->lang->t9n('Abstract'),
+            'affiliation'       => $this->lang->t9n('Affiliation'),
+            'meta_data'         => $this->lang->t9n('Anywhere'),
+            'author'            => $this->lang->t9n('Author'),
+            'querytext'         => $this->lang->t9n('Boolean search'),
             'doi'               => 'DOI',
             'article_number'    => 'IEEE ID',
-            'thesaurus_terms'   => 'IEEE Terms',
+            'thesaurus_terms'   => 'IEEE ' . $this->lang->t9n('Terms'),
             'isbn'              => 'ISBN',
             'issn'              => 'ISSN',
-            'is_number'         => 'Issue',
-            'index_terms'       => 'Keywords',
-            'publication_title' => 'Publication title',
-            'article_title'     => 'Title',
-            'publication_year'  => 'Year'
+            'is_number'         => $this->lang->t9n('Issue'),
+            'index_terms'       => $this->lang->t9n('Keywords'),
+            'publication_title' => $this->lang->t9n('Publication title'),
+            'article_title'     => $this->lang->t9n('Title'),
+            'publication_year'  => $this->lang->t9n('Year')
         ];
 
         $preselections = [
@@ -69,7 +69,7 @@ class IEEEView extends TextView {
             // Select.
             $el->groupClass('col-sm-3');
             $el->name('search_type[' . ($row_number - 1) . ']');
-            $el->label('Field');
+            $el->label($this->lang->t9n('Field'));
 
             foreach ($parameters as $parameter => $description) {
 
@@ -89,7 +89,7 @@ class IEEEView extends TextView {
             $el->id('value-' . $row_number);
             $el->groupClass('col-sm-9');
             $el->name('search_query[' . ($row_number - 1) . ']');
-            $el->label('Terms');
+            $el->label($this->lang->t9n('Terms'));
             $input = $el->render();
 
             $el = null;
@@ -133,7 +133,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->checked('checked');
-        $el->label('any');
+        $el->label($this->lang->t9n('any'));
         $content_type = $el->render();
 
         $el = null;
@@ -146,7 +146,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value($this->sanitation->attr('Journals .AND. Magazines'));
-        $el->label('Journals');
+        $el->label($this->lang->t9n('Journals'));
         $content_type .= $el->render();
 
         $el = null;
@@ -159,7 +159,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value('Conferences');
-        $el->label('Conferences');
+        $el->label($this->lang->t9n('Conferences'));
         $content_type .= $el->render();
 
         $el = null;
@@ -172,7 +172,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value($this->sanitation->attr('Early Access Articles'));
-        $el->label('Early Access');
+        $el->label($this->lang->t9n('Early access'));
         $content_type .= $el->render();
 
         $el = null;
@@ -185,7 +185,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value('Standards');
-        $el->label('Standards');
+        $el->label($this->lang->t9n('Standards'));
         $content_type .= $el->render();
 
         $el = null;
@@ -198,7 +198,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value('Books');
-        $el->label('Books');
+        $el->label($this->lang->t9n('Books'));
         $content_type .= $el->render();
 
         $el = null;
@@ -211,7 +211,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value('Courses');
-        $el->label('Courses');
+        $el->label($this->lang->t9n('Courses'));
         $content_type .= $el->render();
 
         $el = null;
@@ -224,7 +224,7 @@ EOT;
         $el->name('search_filter[0][content_type]');
         $el->inline(true);
         $el->value('Magazines');
-        $el->label('Magazines');
+        $el->label($this->lang->t9n('Magazines'));
         $content_type .= $el->render();
 
         $el = null;
@@ -237,7 +237,7 @@ EOT;
         $el->name('search_filter[0][publisher]');
         $el->inline(true);
         $el->checked('checked');
-        $el->label('any');
+        $el->label($this->lang->t9n('any'));
         $publishers = $el->render();
 
         $el = null;
@@ -406,7 +406,7 @@ EOT;
         $el->name('search_filter[0][open_access]');
         $el->inline(true);
         $el->value('True');
-        $el->label('Open Access');
+        $el->label($this->lang->t9n('Open access'));
         $open_access = $el->render();
 
         $el = null;
@@ -419,7 +419,7 @@ EOT;
         $el->maxLength(4);
         $el->name('search_filter[0][start_year]');
         $el->inline(true);
-        $el->label('Year from');
+        $el->label($this->lang->t9n('Year from'));
         $start_year = $el->render();
 
         $el = null;
@@ -432,7 +432,7 @@ EOT;
         $el->maxLength(4);
         $el->name('search_filter[0][end_year]');
         $el->inline(true);
-        $el->label('Year to');
+        $el->label($this->lang->t9n('Year to'));
         $end_year = $el->render();
 
         $el = null;
@@ -443,7 +443,7 @@ EOT;
         $el->type('submit');
         $el->addClass('my-2 mr-3');
         $el->context('primary');
-        $el->html('Search');
+        $el->html($this->lang->t9n('Search-VERB'));
         $search = $el->render();
 
         $el = null;
@@ -456,7 +456,7 @@ EOT;
         $el->id('save-search');
         $el->name('save_search');
         $el->value('1');
-        $el->label('save this search for later');
+        $el->label($this->lang->t9n('save this search for later'));
         $save_search = $el->render();
 
         $el = null;
@@ -473,15 +473,15 @@ EOT;
             $clone
             $clone_remove
             <div class="mb-3">
-                <b>Content type</b><br>
+                <b>{$this->lang->t9n('Content type')}</b><br>
                 $content_type
             </div>
             <div class="mb-3">
-                <b>Publishers</b><br>
+                <b>{$this->lang->t9n('Publishers')}</b><br>
                 $publishers
             </div>
             <div class="mb-3">
-                <b>License</b><br>
+                <b>{$this->lang->t9n('License')}</b><br>
                 $open_access
             </div>
             <div class="form-row mb-3">

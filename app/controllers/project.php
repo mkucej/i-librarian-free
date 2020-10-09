@@ -57,18 +57,11 @@ class ProjectController extends Controller {
             throw new Exception("project id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Page.
         $this->get['page'] = isset($this->get['page']) ? $this->get['page'] : 1;
-
-        if ($this->validation->id($this->get['page']) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         // Limit from.
         $from = ($this->get['page'] - 1) * $this->app_settings->getUser('page_size');
@@ -121,7 +114,7 @@ class ProjectController extends Controller {
             if ($this->get['export'] === 'zip') {
 
                 // Export to a ZIP file.
-                $zip = $model->exportZip($items['items']);
+                $zip = $model->exportZip($items['items'], $this->lang->getLanguage());
 
                 $view = new FileView($this->di, $zip);
                 return $view->main('attachment');
@@ -194,13 +187,17 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
+        // Project id.
+        if (isset($this->get['id']) === false) {
+
+            throw new Exception("project id is required", 400);
+        }
+
+        $this->validation->id($this->get['id']);
+
         // From.
         $this->get['page'] = isset($this->get['page']) ? $this->get['page'] : 1;
-
-        if ($this->validation->id($this->get['page']) === false) {
-
-            throw new Exception("page parameter {$this->validation->error}", 422);
-        }
+        $this->validation->intRange($this->get['page'], 1, 10000);
 
         // Limit from.
         $from = ($this->get['page'] - 1) * $this->app_settings->getUser('page_size');
@@ -243,7 +240,7 @@ class ProjectController extends Controller {
             if ($this->get['export'] === 'zip') {
 
                 // Export to a ZIP file.
-                $zip = $model->exportZip($items['items']);
+                $zip = $model->exportZip($items['items'], $this->lang->getLanguage());
 
                 $view = new FileView($this->di, $zip);
                 return $view->main('attachment');
@@ -299,10 +296,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -335,10 +329,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -371,10 +362,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -407,10 +395,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -443,10 +428,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -470,6 +452,14 @@ class ProjectController extends Controller {
 
         // Authorization.
         $this->authorization->signedId(true);
+
+        // Project id.
+        if (isset($this->get['id']) === false) {
+
+            throw new Exception("project id is required", 400);
+        }
+
+        $this->validation->id($this->get['id']);
 
         $model = new ProjectModel($this->di);
         $project = $model->get($this->get['id']);
@@ -499,10 +489,7 @@ class ProjectController extends Controller {
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         // Authorization.
         $this->authorization->signedId(true);
@@ -513,7 +500,7 @@ class ProjectController extends Controller {
 
         $view = new DefaultView($this->di);
 
-        return $view->main(['info' => 'Project was updated.']);
+        return $view->main(['info' => 'project settings were updated']);
     }
 
     /**
@@ -538,20 +525,14 @@ class ProjectController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         if (isset($this->post['project_id']) === false) {
 
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         $model = new ItemsModel($this->di);
         $response = $model->projectAdd([$this->post['id']], $this->post['project_id']);
@@ -562,7 +543,7 @@ class ProjectController extends Controller {
         if ($response['max_count'] === 'true') {
 
             $info = [
-                'info' => 'Project maximum size reached.',
+                'info' => 'project maximum size was reached',
                 'max_count' => true
             ];
         }
@@ -593,20 +574,14 @@ class ProjectController extends Controller {
             throw new Exception("id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         if (isset($this->post['project_id']) === false) {
 
             throw new Exception("project id parameter is required", 400);
         }
 
-        if ($this->validation->id($this->post['project_id']) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['project_id']);
 
         $model = new ItemsModel($this->di);
         $model->projectDelete([$this->post['id']], $this->post['project_id']);
@@ -626,10 +601,12 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("project id parameter {$this->validation->error}", 422);
+            throw new Exception('project id parameter is required', 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new ProjectModel($this->di);
         $notes = $model->readNotes($this->get['id']);
@@ -655,10 +632,12 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
-        if ($this->validation->id($this->post['id']) === false) {
+        if (isset($this->post['id']) === false) {
 
-            throw new Exception("project id parameter {$this->validation->error}", 422);
+            throw new Exception('project id parameter is required', 400);
         }
+
+        $this->validation->id($this->post['id']);
 
         $model = new ProjectModel($this->di);
         $model->saveNotes($this->post['id'], $this->post['note']);
@@ -684,10 +663,7 @@ class ProjectController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Get file.
         $model = new ProjectModel($this->di);
@@ -719,10 +695,7 @@ class ProjectController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Get file.
         $model = new ProjectModel($this->di);
@@ -744,10 +717,12 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
-        if ($this->validation->id($this->get['id']) === false) {
+        if (isset($this->get['id']) === false) {
 
-            throw new Exception("project id parameter {$this->validation->error}", 422);
+            throw new Exception('project id is required', 400);
         }
+
+        $this->validation->id($this->get['id']);
 
         $model = new ProjectModel($this->di);
         $messages = $model->loadDiscussion($this->get['id']);
@@ -773,18 +748,18 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
-        if ($this->validation->id($this->post['project_id']) === false) {
+        if (isset($this->post['project_id']) === false) {
 
-            throw new Exception("project id parameter {$this->validation->error}", 422);
+            throw new Exception('project id is required', 400);
         }
 
-        if ($this->post['message'] === '') {
+        $this->validation->id($this->post['project_id']);
 
-            throw new Exception("message is empty", 400);
+        if ($this->post['message'] !== '') {
+
+            $model = new ProjectModel($this->di);
+            $model->saveMessage($this->post);
         }
-
-        $model = new ProjectModel($this->di);
-        $model->saveMessage($this->post);
 
         $view = new DefaultView($this->di);
         return $view->main();
@@ -1064,10 +1039,7 @@ class ProjectController extends Controller {
         // Authorization.
         $this->authorization->signedId(true);
 
-        if ($this->validation->id($project_id) === false) {
-
-            throw new Exception("project id parameter {$this->validation->error}", 422);
-        }
+        $this->validation->id($project_id);
 
         $model = new ItemcolumnsModel($this->di);
 
@@ -1084,17 +1056,17 @@ class ProjectController extends Controller {
         return $view->linkList('project', $type, $items);
     }
 
-    /**
-     * @return string
-     * @throws Exception
-     */
-    public function rssAction(): string {
-
-        $model = new ItemsModel($this->di);
-        $items = $model->read('project', 'id', 20, 0, 'rss', $this->get['id']);
-        $model = null;
-
-        $view = new RSSView($this->di);
-        return $view->main($items['items']);
-    }
+//    /**
+//     * @return string
+//     * @throws Exception
+//     */
+//    public function rssAction(): string {
+//
+//        $model = new ItemsModel($this->di);
+//        $items = $model->read('project', 'id', 20, 0, 'rss', $this->get['id']);
+//        $model = null;
+//
+//        $view = new RSSView($this->di);
+//        return $view->main($items['items']);
+//    }
 }

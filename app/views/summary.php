@@ -126,7 +126,7 @@ class SummaryView extends TextView {
 EOT;
 
         // Authors.
-        $authors = '<div class="mb-1">No authors</div>';
+        $authors = "<div class=\"mb-1\">{$this->lang->t9n('No authors')}</div>";
 
         if (!empty($item['authors'])) {
 
@@ -141,7 +141,7 @@ EOT;
         if (!empty($item['editors'])) {
 
             $editors = join('; ', $item['editors']);
-            $editors = "<div class=\"truncate mb-1\">Edited by: $editors</div>";
+            $editors = "<div class=\"truncate mb-1\">{$this->lang->t9n('Edited by')}: $editors</div>";
         }
 
         // Links.
@@ -160,7 +160,7 @@ EOT;
                         $doi_lmth = $this->sanitation->lmth($value);
                         $doi_url = $this->sanitation->urlquery($doi_lmth);
                         $doi_attr = $this->sanitation->attr($doi_url);
-                        $links .= empty($doi_url) ? "" : "<a class=\"mr-3\" href=\"https://dx.doi.org/{$doi_attr}\">Publisher</a>";
+                        $links .= empty($doi_url) ? "" : "<a class=\"mr-3\" href=\"https://dx.doi.org/{$doi_attr}\">{$this->lang->t9n('Publisher')}</a>";
                         break;
 
                     case 'PMID':
@@ -171,9 +171,9 @@ EOT;
                         $href = 'https://www.ncbi.nlm.nih.gov/pubmed/' . $value_html;
                         $links .= "<a class=\"mr-3\" href=\"$href\">$name</a> ";
                         $href = 'https://www.ncbi.nlm.nih.gov/pubmed?linkname=pubmed_pubmed&from_uid=' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">Similar</a> ";
+                        $links .= "<a class=\"mr-3\" href=\"$href\">{$this->lang->t9n('Similar')}</a> ";
                         $href = 'https://www.ncbi.nlm.nih.gov/pubmed?linkname=pubmed_pubmed_citedin&from_uid=' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">Cited&nbsp;in</a> ";
+                        $links .= "<a class=\"mr-3\" href=\"$href\">{$this->lang->t9n('Cited in')}</a> ";
                         break;
 
                     case 'PMCID':
@@ -202,7 +202,7 @@ EOT;
 
         // I, Librarian stable link.
         $IL_BASE_URL = IL_BASE_URL;
-        $links .= "<a class=\"mr-3\" href=\"{$IL_BASE_URL}stable.php?id={$item['id']}\">Stable&nbsp;link</a>";
+        $links .= "<a class=\"mr-3\" href=\"{$IL_BASE_URL}stable.php?id={$item['id']}\">{$this->lang->t9n('Stable link')}</a>";
 
         // Project button.
         /** @var Bootstrap\Icon $el */
@@ -222,7 +222,7 @@ EOT;
         $el->addClass('p-0 pr-1 mr-2 projects-button');
         $el->dataToggle('collapse');
         $el->dataTarget("#projects-{$item['id']}");
-        $el->html("{$chevron}Projects");
+        $el->html("{$chevron}{$this->lang->t9n('Projects')}");
         $project_button = $el->render();
 
         $el = null;
@@ -234,7 +234,7 @@ EOT;
         $el->type('checkbox');
         $el->inline(true);
         $el->addClass('clipboard');
-        $el->label('Clipboard');
+        $el->label($this->lang->t9n('Clipboard'));
         $el->name('clipboard');
 
         if ($item['in_clipboard'] === 'Y') {
@@ -247,7 +247,7 @@ EOT;
         $el = null;
 
         // Projects.
-        $project_html = empty($item['projects']) ? '<span class="text-secondary">No projects yet.</span>' : '';
+        $project_html = empty($item['projects']) ? "<span class=\"text-secondary\">{$this->lang->t9n('No projects')}</span>" : '';
 
         if (!empty($item['projects'])) {
 
@@ -314,7 +314,7 @@ TOP
 
         $el->elementName('a');
         $el->href('#edit?id='. $item['id']);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $edit_button = $el->render();
 
         $el = null;
@@ -323,7 +323,7 @@ TOP
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>ABSTRACT</b> $edit_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('abstract')}</b> $edit_button");
         $el->body($item['abstract'] . '<br><br>');
         $abstract_card = $el->render();
 
@@ -350,7 +350,7 @@ GRAPHICAL;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>GRAPHICAL ABSTRACT</b> <a href=\"#supplements?id={$item['id']}\">Edit</a>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Graphical abstract')}</b> <a href=\"#supplements?id={$item['id']}\">{$this->lang->t9n('Edit')}</a>");
         $el->body($graphical_abstract, null, 'p-0');
         $graphical_abstract_card = $el->render();
 
@@ -391,7 +391,7 @@ GRAPHICAL;
         $el->context('link');
         $el->addClass('open-notes px-1 py-0 border-0');
         $el->dataItemId($item['id']);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $note_button = $el->render();
 
         $el = null;
@@ -400,7 +400,7 @@ GRAPHICAL;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>NOTES</b> $note_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Notes')}</b> $note_button");
         $el->body($notes);
         $notes_card = $el->render();
 
@@ -444,7 +444,7 @@ EOT;
 
         $el->elementName('a');
         $el->href('#supplements?id='. $item['id']);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $supplements_button = $el->render();
 
         $el = null;
@@ -453,7 +453,7 @@ EOT;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>SUPPLEMENTS</b> $supplements_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Supplements')}</b> $supplements_button");
         $el->body($supplements);
         $supplements_card = $el->render();
 
@@ -475,7 +475,7 @@ EOT;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header('<b>PDF NOTES</b>');
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('PDF notes')}</b>");
         $el->body($pdfnotes);
         $pdfnotes_card = $el->render();
 
@@ -494,7 +494,7 @@ EOT;
 
         $el->elementName('a');
         $el->href('#tags/item?id='. $item['id']);
-        $el->html('Edit');
+        $el->html($this->lang->t9n('Edit'));
         $tag_button = $el->render();
 
         $el = null;
@@ -503,7 +503,7 @@ EOT;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>TAGS</b> $tag_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Tags')}</b> $tag_button");
         $el->body($tags);
         $tags_card = $el->render();
 
@@ -524,7 +524,7 @@ EOT;
                 </tr>
                 <tr>
                     <td class="px-4">
-                        <b>Citation key</b><br>
+                        <b>{$this->lang->t9n('Citation key')}</b><br>
                         {$item[ItemMeta::COLUMN['BIBTEX_ID']]}
                     </td>
                     <td>
@@ -604,7 +604,7 @@ UIDS;
                     $btn->context('outline-danger');
                     $btn->addClass('mb-3 mb-sm-0');
                     $btn->componentSize('small');
-                    $btn->html('Autoupdate');
+                    $btn->html($this->lang->t9n('Autoupdate'));
                     $update = $btn->render();
 
                     $btn = null;
@@ -649,7 +649,7 @@ UIDS;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>IDENTIFIERS</b> $edit_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Identifiers')}</b> $edit_button");
         $el->body($uids, null, 'p-0');
         $uid_card = $el->render();
 
@@ -663,7 +663,7 @@ UIDS;
         if (!empty($item['keywords'])) {
 
             $keywords = join('; ', $item['keywords']);
-            $el->term('Keywords', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Keywords'), 'col-xl-3 text-truncate');
             $el->description($keywords, 'col-xl-9');
         }
 
@@ -674,13 +674,13 @@ UIDS;
             $secondary = empty($item['secondary_title']) ? '' : "{$item['secondary_title']}<br>";
             $tertiary = empty($item['tertiary_title']) ? '' : "{$item['tertiary_title']}";
 
-            $el->term('Publication', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Publication'), 'col-xl-3 text-truncate');
             $el->description($primary . $secondary. $tertiary, 'col-xl-9');
         }
 
         if (!empty($item['publication_date'])) {
 
-            $el->term('Date', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Published date'), 'col-xl-3 text-truncate');
             $el->description($this->temporal_obj->toLocalDate($item['publication_date']), 'col-xl-9');
         }
 
@@ -690,14 +690,14 @@ UIDS;
             $i = empty($item['issue']) ? '' : "issue {$item['issue']}";
             $p = empty($item['pages']) ? '' : "pages {$item['pages']}";
 
-            $el->term('Pages', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Pages'), 'col-xl-3 text-truncate');
             $el->description("$v $i $p", 'col-xl-9');
         }
 
         // Affiliation.
         if (!empty($item['affiliation'])) {
 
-            $el->term('Affiliation', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Affiliation'), 'col-xl-3 text-truncate');
             $el->description("<div class=\"truncate\">{$item['affiliation']}</div>", 'col-xl-9');
         }
 
@@ -706,7 +706,7 @@ UIDS;
 
             $place = empty($item['place_published']) ? '' : " ({$item['place_published']})";
 
-            $el->term('Publisher', 'col-xl-3 text-truncate');
+            $el->term($this->lang->t9n('Publisher'), 'col-xl-3 text-truncate');
             $el->description($item['publisher'] . $place, 'col-xl-9');
         }
 
@@ -733,7 +733,7 @@ UIDS;
         $el = $this->di->get('Card');
 
         $el->addClass('item-card-row h-100');
-        $el->header("<b>MISCELLANEOUS</b>  <a href=\"#edit?id={$item['id']}\">Edit</a>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Miscellaneous')}</b>  <a href=\"#edit?id={$item['id']}\">{$this->lang->t9n('Edit')}</a>");
         $el->body($dl);
         $misc_card = $el->render();
 
@@ -746,8 +746,8 @@ UIDS;
         /** @var Bootstrap\Descriptionlist $el */
         $el = $this->di->get('Descriptionlist');
         $el->addClass('mb-3');
-        $el->term('Added', 'col-sm-1 ml-4');
-        $el->description("{$added_time} by {$item['name']}", 'col-sm-10 ml-4');
+        $el->term($this->lang->t9n('Added'), 'col-sm-1 ml-4');
+        $el->description("{$added_time}, {$item['name']}", 'col-sm-10 ml-4');
 
         $dl = $el->render();
 
@@ -799,7 +799,7 @@ UIDS;
         $el->dataToggle('modal');
         $el->dataTarget('#modal-export');
         $el->attr('data-export-url', IL_BASE_URL . 'index.php/' . IL_PATH_URL . '?' . $server['QUERY_STRING']);
-        $el->html('Export');
+        $el->html($this->lang->t9n('Export-NOUN'));
         $export_button = $el->render();
 
         $el = null;
@@ -821,9 +821,10 @@ UIDS;
         $el->id('delete-item');
         $el->context('danger');
         $el->addClass('border-0');
-        $el->html('Delete');
-        $el->dataTitle('Delete item?');
-        $el->dataBody("{$alert_escaped} The item will be deleted permanently.");
+        $el->html($this->lang->t9n('Delete'));
+        $el->dataTitle($this->lang->t9n('Delete'));
+        $el->dataButton($this->lang->t9n('Yes-NOUN'));
+        $el->dataBody("{$alert_escaped} {$this->lang->t9n('Item will be deleted permanently')}");
         $delete_button = $el->render();
 
         $el = null;
@@ -831,7 +832,7 @@ UIDS;
         // Email.
         $subject = rawurlencode($item['title']);
         $body = rawurlencode(<<<BODY
-Check out this item in the library:
+{$this->lang->t9n('View this item in the library')}:
 
 {$item['title']}
 
@@ -846,7 +847,7 @@ BODY
         $el->context($btn_class);
         $el->addClass('border-0');
         $el->href('mailto:?subject=' . $subject . '&body=' . $body);
-        $el->html('Email');
+        $el->html($this->lang->t9n('Email'));
         $email_button = $el->render();
 
         $el = null;
@@ -861,7 +862,7 @@ BODY
         $el->context($btn_class);
         $el->addClass('border-0 ');
         $el->icon('chevron-left');
-        $el->tooltip('Go to previous item');
+        $el->tooltip($this->lang->t9n('Previous'));
         $prev_button = $el->render();
 
         $el = null;
@@ -876,7 +877,7 @@ BODY
         $el->context($btn_class);
         $el->addClass('border-0 ');
         $el->icon('chevron-right');
-        $el->tooltip('Go to next item');
+        $el->tooltip($this->lang->t9n('Next'));
         $next_button = $el->render();
 
         $el = null;

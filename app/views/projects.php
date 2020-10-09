@@ -28,7 +28,7 @@ class ProjectsView extends TextView {
 
         $this->temporal = $this->di->getShared('Temporal');
 
-        $this->title('Projects');
+        $this->title($this->lang->t9n('Projects'));
 
         $this->head();
 
@@ -38,7 +38,7 @@ class ProjectsView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("Projects");
+        $el->item($this->lang->t9n('Projects'));
         $bc = $el->render();
 
         $el = null;
@@ -47,7 +47,7 @@ class ProjectsView extends TextView {
         $el = $this->di->get('Input');
 
         $el->name('name');
-        $el->label('Project name');
+        $el->label($this->lang->t9n('Project name'));
         $el->required('required');
         $proj_name = $el->render();
 
@@ -58,7 +58,7 @@ class ProjectsView extends TextView {
 
         $el->context('info');
         $el->icon('help-circle');
-        $el->tooltip('Users can join this project freely.');
+        $el->tooltip($this->lang->t9n('Users can join this project freely'));
         $help = $el->render();
 
         $el = null;
@@ -72,7 +72,7 @@ class ProjectsView extends TextView {
         $el->inline(true);
         $el->name('access');
         $el->value('open');
-        $el->label("open access");
+        $el->label($this->lang->t9n('open access'));
         $el->html("&nbsp;$help");
         $proj_access = $el->render();
 
@@ -83,7 +83,7 @@ class ProjectsView extends TextView {
 
         $el->context('info');
         $el->icon('help-circle');
-        $el->tooltip('You select users joining this project.');
+        $el->tooltip($this->lang->t9n('You select members of this project'));
         $help = $el->render();
 
         $el = null;
@@ -96,7 +96,7 @@ class ProjectsView extends TextView {
         $el->inline(true);
         $el->name('access');
         $el->value('restricted');
-        $el->label('restricted access');
+        $el->label($this->lang->t9n('restricted access'));
         $el->html("&nbsp;$help");
         $proj_access .= $el->render();
 
@@ -123,7 +123,7 @@ class ProjectsView extends TextView {
 
         if (count($projects['users']) > 0) {
 
-            $users_card = '<div class="my-2"><b>Users with access</b></div>';
+            $users_card = "<div class=\"my-2\"><b>{$this->lang->t9n('Users with access')}</b></div>";
 
             /** @var Element $el */
             $el = $this->di->get('Element');
@@ -142,7 +142,7 @@ class ProjectsView extends TextView {
         $el->addClass('mt-3');
         $el->type('submit');
         $el->context('danger');
-        $el->html('Create');
+        $el->html($this->lang->t9n('Create'));
         $create = $el->render();
 
         $el = null;
@@ -161,7 +161,7 @@ class ProjectsView extends TextView {
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>CREATE NEW PROJECT</b>');
+        $el->header("<b>{$this->lang->t9n('Create new project')}</b>", 'text-uppercase');
         $el->body($form);
         $card_form = $el->render();
 
@@ -171,7 +171,7 @@ class ProjectsView extends TextView {
 
         if (empty($projects['active_projects'])) {
 
-            $list = '<small class="text-secondary text-uppercase">No active projects</small>';
+            $list = "<small class=\"text-secondary text-uppercase\">{$this->lang->t9n('No active projects')}</small>";
 
         } else {
 
@@ -188,8 +188,8 @@ class ProjectsView extends TextView {
                 $el->addClass('inactivate my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
                 $el->componentSize('small');
-                $el->style('width: 6rem');
-                $el->html('Inactivate');
+                $el->style('min-width: 6rem');
+                $el->html($this->lang->t9n('Inactivate'));
 
                 if ($this->session->data('user_id') !== $project['id_hash']) {
 
@@ -207,9 +207,9 @@ class ProjectsView extends TextView {
                 $el->context('outline-danger');
                 $el->addClass('leave my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
-                $el->style('width: 6rem');
+                $el->style('min-width: 6rem');
                 $el->componentSize('small');
-                $el->html('Leave');
+                $el->html($this->lang->t9n('Leave'));
 
                 if ($this->session->data('user_id') === $project['id_hash'] || $project['is_restricted'] === 'Y') {
 
@@ -228,9 +228,9 @@ class ProjectsView extends TextView {
                 $el->addClass('delete my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
                 $el->attr('data-body', 'Delete this project?');
-                $el->style('width: 6rem');
+                $el->style('min-width: 6rem');
                 $el->componentSize('small');
-                $el->html('Delete');
+                $el->html($this->lang->t9n('Delete'));
 
                 if ($this->session->data('user_id') !== $project['id_hash']) {
 
@@ -245,7 +245,8 @@ class ProjectsView extends TextView {
                 $list .= <<<ACTIVE
                     <div class="mb-2 active-project-container">
                         <h5><a class="active-project" href="{$IL_BASE_URL}index.php/project#project/browse?id={$project['id']}">{$project['project']}</a></h5>
-                        <b>Owner:</b> {$project['name']} &middot; <b>Created:</b> $date <br>
+                        <b>{$this->lang->t9n('Owner')}:</b> {$project['name']} &middot;
+                        <b>{$this->lang->t9n('Created')}:</b> $date <br>
                         $inactivate $leave $delete
                     </div>
 ACTIVE;
@@ -262,7 +263,7 @@ ACTIVE;
 
             $el->id("filter-active");
             $el->name('filter');
-            $el->placeholder('Filter');
+            $el->placeholder($this->lang->t9n('Filter-VERB'));
             $filter_active = $el->render();
 
             $el = null;
@@ -272,7 +273,7 @@ ACTIVE;
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>ACTIVE PROJECTS</b>');
+        $el->header("<b>{$this->lang->t9n('Active projects')}</b>", 'text-uppercase');
         $el->body($filter_active . $list);
         $card_ative = $el->render();
 
@@ -282,7 +283,7 @@ ACTIVE;
 
         if (empty($projects['open_projects'])) {
 
-            $list = '<small class="text-secondary text-uppercase">No open projects</small>';
+            $list = "<small class=\"text-secondary text-uppercase\">{$this->lang->t9n('No open projects')}</small>";
 
         } else {
 
@@ -298,9 +299,9 @@ ACTIVE;
                 $el->context('outline-danger');
                 $el->addClass('join my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
-                $el->style('width: 6rem');
+                $el->style('min-width: 6rem');
                 $el->componentSize('small');
-                $el->html('Join');
+                $el->html($this->lang->t9n('Join'));
                 $join = $el->render();
 
                 $el = null;
@@ -308,7 +309,8 @@ ACTIVE;
                 $list .= <<<OPEN
                     <div class="mb-2 open-project-container">
                         <h5 class="open-project">{$project['project']}</h5>
-                        <b>Owner:</b> {$project['name']} &middot; <b>Created:</b> $date <br>
+                        <b>{$this->lang->t9n('Owner')}:</b> {$project['name']} &middot;
+                        <b>{$this->lang->t9n('Created')}:</b> $date <br>
                         $join
                     </div>
 OPEN;
@@ -325,7 +327,7 @@ OPEN;
 
             $el->id("filter-open");
             $el->name('filter');
-            $el->placeholder('Filter');
+            $el->placeholder($this->lang->t9n('Filter-VERB'));
             $filter_open = $el->render();
 
             $el = null;
@@ -335,7 +337,7 @@ OPEN;
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>OPEN-ACCESS PROJECTS</b>');
+        $el->header("<b>{$this->lang->t9n('Open-access projects')}</b>", 'text-uppercase');
         $el->body($filter_open . $list);
         $card_open = $el->render();
 
@@ -345,7 +347,7 @@ OPEN;
 
         if (empty($projects['inactive_projects'])) {
 
-            $list = '<small class="text-secondary text-uppercase">No inactive projects</small>';
+            $list = "<small class=\"text-secondary text-uppercase\">{$this->lang->t9n('No inactive projects')}</small>";
 
         } else {
 
@@ -360,9 +362,9 @@ OPEN;
 
                 $el->context('outline-danger');
                 $el->addClass('activate my-2');
-                $el->style('width: 6rem');
+                $el->style('min-width: 6rem');
                 $el->componentSize('small');
-                $el->html('Activate');
+                $el->html($this->lang->t9n('Activate'));
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
                 $reactivate = $el->render();
 
@@ -375,9 +377,9 @@ OPEN;
                 $el->addClass('delete my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
                 $el->attr('data-body', 'Delete this project?');
-                $el->style('width: 6rem');
+                $el->style('min-width: 6rem');
                 $el->componentSize('small');
-                $el->html('Delete');
+                $el->html($this->lang->t9n('Delete'));
                 $delete = $el->render();
 
                 $el = null;
@@ -385,7 +387,8 @@ OPEN;
                 $list .= <<<INACTIVE
                     <div class="mb-2 inactive-project-container">
                         <h5><a class="inactive-project" href="{$IL_BASE_URL}index.php/project#project/browse?id={$project['id']}">{$project['project']}</a></h5>
-                        <b>Owner:</b> {$project['name']} &middot; <b>Created:</b> $date <br>
+                        <b>{$this->lang->t9n('Owner')}:</b> {$project['name']} &middot;
+                        <b>{$this->lang->t9n('Created')}:</b> $date <br>
                         $reactivate $delete
                     </div>
 INACTIVE;
@@ -402,7 +405,7 @@ INACTIVE;
 
             $el->id("filter-inactive");
             $el->name('filter');
-            $el->placeholder('Filter');
+            $el->placeholder($this->lang->t9n('Filter-VERB'));
             $filter_inactive = $el->render();
 
             $el = null;
@@ -412,7 +415,7 @@ INACTIVE;
         $el = $this->di->get('Card');
 
         $el->addClass('mb-3');
-        $el->header('<b>INACTIVE PROJECTS</b>');
+        $el->header("<b>{$this->lang->t9n('Inactive projects')}</b>", 'text-uppercase');
         $el->body($filter_inactive . $list);
         $card_inactive = $el->render();
 

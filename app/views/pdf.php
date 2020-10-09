@@ -49,7 +49,7 @@ class PdfView extends TextView {
 
                 $el->style('margin: 5rem 25%');
                 $el->context('primary');
-                $el->html('There is no PDF.');
+                $el->html($this->lang->t9n('There is no PDF'));
                 $alert = $el->render();
 
                 $el = null;
@@ -86,7 +86,7 @@ EOT;
 
                 $el->style('margin: 5rem 25%');
                 $el->context('primary');
-                $el->html('There is no PDF.');
+                $el->html($this->lang->t9n('There is no PDF'));
                 $alert = $el->render();
 
                 $el = null;
@@ -125,7 +125,7 @@ EOT;
 
         $this->temporal_obj = $this->di->getShared('Temporal');
 
-        $this->title("PDF - {$item['title']} - Library");
+        $this->title("{$this->lang->t9n('Manage PDF')} - {$item['title']}");
 
         $this->head();
 
@@ -136,7 +136,7 @@ EOT;
         $el->addClass('bg-transparent');
         $el->item('IL', IL_BASE_URL . 'index.php/#dashboard/main');
         $el->item("{$item['title']}", '#summary?id=' . $item_id);
-        $el->item('Manage PDF');
+        $el->item($this->lang->t9n('Manage PDF'));
         $bc = $el->render();
 
         $el = null;
@@ -171,7 +171,7 @@ EOT;
 
         $el->type('submit');
         $el->context('danger');
-        $el->html('Upload');
+        $el->html($this->lang->t9n('Save'));
         $upload_button = $el->render();
 
         $el = null;
@@ -187,12 +187,12 @@ EOT;
 
         $el = null;
 
-        $add_replace = !empty($item['info']['name']) ? 'REPLACE' : 'ADD';
+        $add_replace = !empty($item['info']['name']) ? 'Replace PDF' : 'Add PDF';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b>{$add_replace} PDF</b>");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n($add_replace)}</b>");
         $el->body($form);
         $form_card = $el->render();
 
@@ -205,11 +205,11 @@ EOT;
 
             $el->context('danger');
             $el->id('delete-pdf');
-            $el->style('width: 5.5rem');
+            $el->style('min-width: 5.5rem');
             $el->name('delete');
-            $el->html('Delete');
-            $el->dataBody('Do you want to delete this PDF?');
-            $el->dataButton('Delete');
+            $el->html($this->lang->t9n('Delete'));
+            $el->dataBody($this->lang->t9n('Do you want to delete this PDF?'));
+            $el->dataButton($this->lang->t9n('Delete'));
             $del_button = $el->render();
 
             $el = null;
@@ -219,11 +219,17 @@ EOT;
 
             $el->context('danger');
             $el->id('reindex-pdf');
-            $el->style('width: 5.5rem');
+            $el->style('min-width: 5.5rem');
             $el->name('reindex');
-            $el->html('Extract');
-            $el->dataBody('Do you want to re-extract text from this PDF? This action will erase the existing index, including all OCRed data.');
-            $el->dataButton('Extract');
+            $el->html($this->lang->t9n('Extract-VERB'));
+            $el->dataTitle($this->lang->t9n('Extract-VERB'));
+            $el->dataBody(
+<<<TEXT
+{$this->lang->t9n('Do you want to re-extract text from this PDF?')}
+{$this->lang->t9n('This action will erase the existing index, including all OCR data')}.
+TEXT
+            );
+            $el->dataButton($this->lang->t9n('Extract-VERB'));
             $rei_button = $el->render();
 
             $el = null;
@@ -287,24 +293,24 @@ EOT;
             $el->context('danger');
             $el->id('ocr-pdf');
             $el->addClass('ml-1');
-            $el->style('width: 5.5rem');
+            $el->style('min-width: 5.5rem');
             $el->name('ocr');
-            $el->html('OCR');
-            $el->dataTitle('Optical character recognition');
+            $el->html($this->lang->t9n('OCR'));
+            $el->dataTitle($this->lang->t9n('OCR'));
             $el->dataBody($this->sanitation->attr($form));
             $el->dataButton('OCR');
             $ocr_button = $el->render();
 
             $el = null;
 
-            $text = empty(trim($item['info']['text'])) ? '<div class="text-secondary">NO TEXT</div>' : $item['info']['text'];
+            $text = empty(trim($item['info']['text'])) ? "<div class=\"text-secondary text-uppercase\">{$this->lang->t9n('No text')}</div>" : $item['info']['text'];
 
             /** @var Bootstrap\ListGroup $el */
             $el = $this->di->get('ListGroup');
 
             $el->addClass('mb-3');
             $el->div("<b>{$item['info']['name']}</b> $del_button", 'd-flex justify-content-between align-items-center');
-            $el->div("<b>Indexed text</b> <span>$rei_button $ocr_button</span>", 'd-flex justify-content-between align-items-center');
+            $el->div("<b>{$this->lang->t9n('Indexed text')}</b> <span>$rei_button $ocr_button</span>", 'd-flex justify-content-between align-items-center');
             $el->div($text);
             $card = $el->render();
 
@@ -316,7 +322,7 @@ EOT;
             $el = $this->di->get('ListGroup');
 
             $el->addClass('mb-3');
-            $el->div('<div class="text-center text-secondary">NO PDF</div>');
+            $el->div('<div class="text-center text-secondary text-uppercase">' . $this->lang->t9n('There is no PDF') . '</div>');
             $card = $el->render();
 
             $el = null;

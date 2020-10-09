@@ -73,11 +73,6 @@ EOT;
 
         $id_hash = $this->encryption->getRandomKey(32);
 
-        if (!empty($data['email']) && $this->validation->email($data['email']) === false) {
-
-            return ['info' => 'Email ' . $this->validation->error . '.'];
-        }
-
         $first_name = !empty($data['first_name']) ? $data['first_name'] : null;
         $last_name = !empty($data['last_name']) ? $data['last_name'] : null;
         $encrypted_password = $this->encryption->hashPassword($data['password']);
@@ -154,7 +149,7 @@ EOT;
             if ($id > 0) {
 
                 $this->db_main->rollBack();
-                return ['info' => 'This username already exists.'];
+                throw new Exception('username already exists');
             }
 
             // Check uniqueness of email.
@@ -175,7 +170,7 @@ EOT;
             if ($id > 0) {
 
                 $this->db_main->rollBack();
-                return ['info' => 'This email already exists.'];
+                throw new Exception('email already exists');
             }
         }
 

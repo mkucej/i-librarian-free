@@ -118,18 +118,14 @@ class ImportController extends Controller {
     public function batchAction(): string {
 
         // Imported file is saved to temp file.
-        $temp_filename = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid(true);
+        $temp_filename = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('batch_' . true);
         $uploaded_file = $this->getUploadedFile('file');
 
         if (!empty($this->post['remote_url'])) {
 
             // Safe link?
-            if ($this->validation->ssrfLink($this->post['remote_url']) === false) {
+            $this->validation->ssrfLink($this->post['remote_url']);
 
-                throw new Exception("this link " . $this->validation->error, 400);
-            }
-
-            /** @var CookieJar $jar */
             $jar = new CookieJar();
 
             /** @var Client $client */
@@ -214,7 +210,9 @@ class ImportController extends Controller {
 
         } elseif (in_array($mime_type, $this->app_settings->extra_mime_types) === false) {
 
-            throw new Exception("only the " . join(', ', $this->app_settings->extra_file_types) . ", and pdf files can be imported", 400);
+            throw new Exception(sprintf(
+                $this->lang->t9n('only these file types can be imported: %s'),
+                join(', ', $this->app_settings->extra_file_types) . ', pdf'), 400);
         }
 
         // Fetch record metadata.
@@ -292,7 +290,7 @@ class ImportController extends Controller {
         unlink($temp_filename);
 
         $view = new DefaultView($this->di);
-        return $view->main(['info' => "New item was saved."]);
+        return $view->main(['info' => "new item was saved"]);
     }
 
     /**
@@ -324,12 +322,8 @@ class ImportController extends Controller {
             if (!empty($this->post['remote_url'])) {
 
                 // Safe link?
-                if ($this->validation->ssrfLink($this->post['remote_url']) === false) {
+                $this->validation->ssrfLink($this->post['remote_url']);
 
-                    throw new Exception("this link " . $this->validation->error, 400);
-                }
-
-                /** @var CookieJar $jar */
                 $jar = new CookieJar();
 
                 /** @var Client $client */
@@ -367,14 +361,14 @@ class ImportController extends Controller {
             }
 
             $model = new ItemModel($this->di);
-            $count = $model->importText($this->post);
+            $model->importText($this->post);
 
             $view = new DefaultView($this->di);
-            return $view->main(['info' => "{$count['count']} new items were saved."]);
+            return $view->main(['info' => "new items were saved"]);
         }
 
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 
     /**
@@ -412,13 +406,13 @@ class ImportController extends Controller {
 
                 } catch (Exception $ex) {
 
-                    $error = ", but PDF was not &mdash; {$ex->getMessage()}";
+                    $error = ", but PDF was not";
                 }
 
             }
 
             $view = new DefaultView($this->di);
-            return $view->main(['info' => "New item was saved{$error}."]);
+            return $view->main(['info' => "new item was saved{$error}"]);
         }
 
         // GET. Upload form.
@@ -437,6 +431,6 @@ class ImportController extends Controller {
         }
 
         $view = new DefaultView($this->di);
-        return $view->main([]);
+        return $view->main();
     }
 }

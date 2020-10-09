@@ -29,7 +29,7 @@ class PdfViewerView extends TextView {
 
             $el->style('margin: 5rem 25%');
             $el->context('primary');
-            $el->html('There is no PDF.');
+            $el->html($this->lang->t9n('There is no PDF'));
             $alert = $el->render();
 
             $el = null;
@@ -61,6 +61,7 @@ class PdfViewerView extends TextView {
         $el->style('width: 3rem');
         $el->id('pdfviewer-left-btn');
         $el->icon('page-layout-sidebar-left');
+        $el->title($this->lang->t9n('Sidebar'));
         $left_toggle_btn = $el->render();
 
         $el = null;
@@ -74,7 +75,7 @@ class PdfViewerView extends TextView {
         $el->inline(true);
         $el->name('annotations');
         $el->value('1');
-        $el->label('add annotations');
+        $el->label($this->lang->t9n('add annotations'));
         $add_annotations = $el->render();
 
         $el = null;
@@ -86,7 +87,7 @@ class PdfViewerView extends TextView {
         $el->inline(true);
         $el->name('supplements');
         $el->value('1');
-        $el->label('add supplements');
+        $el->label($this->lang->t9n('add supplements'));
         $add_supplements = $el->render();
 
         $el = null;
@@ -117,7 +118,7 @@ class PdfViewerView extends TextView {
         $el->context('primary');
         $el->addClass('d-block mt-3');
         $el->type('submit');
-        $el->html('Download');
+        $el->html($this->lang->t9n('Download'));
         $download_btn = $el->render();
 
         $el = null;
@@ -126,7 +127,7 @@ class PdfViewerView extends TextView {
         $el = $this->di->get('Form');
 
         $el->addClass('px-4 py-2');
-        $el->style('width: 200px');
+        $el->style('min-width: 14rem');
         $el->method('GET');
         $el->action(IL_BASE_URL . 'index.php/pdf/file');
         $el->append($add_annotations);
@@ -152,7 +153,7 @@ class PdfViewerView extends TextView {
         $el->context('dark');
         $el->addClass('d-inline');
         $el->label($download_icon);
-        $el->span('<b>Save to disk</b>');
+        $el->span("<b>{$this->lang->t9n('Download')}</b>");
         $el->form($form);
         $save_btn = $el->render();
 
@@ -160,14 +161,15 @@ class PdfViewerView extends TextView {
 
         // PDF search.
 
-        $search_input = <<<'EOT'
-            <input
-                type="text"
-                id="pdfviewer-search-input"
-                class="form-control bg-light border-0 d-inline rounded-0 px-2 py-0"
-                style="transform: translateY(2px);height: 2.1rem;width: 15rem"
-                placeholder="Search PDF">
-EOT;
+        $search_input =
+<<<HTML
+<input
+    type="text"
+    id="pdfviewer-search-input"
+    class="form-control bg-light border-0 d-inline rounded-0 px-2 py-0"
+    style="transform: translateY(2px);height: 2.1rem;width: 15rem"
+    placeholder="{$this->lang->t9n('Search-VERB')}">
+HTML;
 
         /** @var Bootstrap\IconButton $el */
         $el = $this->di->get('IconButton');
@@ -177,6 +179,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-result-down');
         $el->icon('chevron-down');
+        $el->title($this->lang->t9n('Next search result'));
         $down_btn = $el->render();
 
         $el = null;
@@ -189,6 +192,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-result-up');
         $el->icon('chevron-up');
+        $el->title($this->lang->t9n('Previous search result'));
         $up_btn = $el->render();
 
         $el = null;
@@ -211,10 +215,23 @@ EOT;
         $el->context('dark');
         $el->addClass('d-inline');
         $el->label($annot_icon);
-        $el->button('Show annotations', 'annot-show');
-        $el->button('Hide annotations', 'annot-hide');
+        $el->button($this->lang->t9n('Show annotations'), 'annot-show');
+        $el->button($this->lang->t9n('Hide annotations'), 'annot-hide');
 
         $annot_btn = $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\IconButton $el */
+        $el = $this->di->get('IconButton');
+
+        $el->context('dark');
+        $el->addClass('border-0 px-2');
+        $el->style('width: 3rem');
+        $el->id('pdfviewer-new-note-btn');
+        $el->icon('message-plus');
+        $el->title($this->lang->t9n('New annotation'));
+        $pin_btn = $el->render();
 
         $el = null;
 
@@ -234,26 +251,14 @@ EOT;
         $el->context('dark');
         $el->addClass('d-inline');
         $el->label($marker_icon);
-        $el->span('<div class="highlight-color highlight-blue px-3" style="cursor: pointer">Blue</div>');
-        $el->span('<div class="highlight-color highlight-yellow px-3" style="cursor: pointer">Yellow</div>');
-        $el->span('<div class="highlight-color highlight-green px-3" style="cursor: pointer">Green</div>');
-        $el->span('<div class="highlight-color highlight-red px-3" style="cursor: pointer">Red</div>');
-        $el->span('<div class="highlight-eraser px-3" style="cursor: pointer;">Eraser</div>');
-        $el->span('<div class="highlight-cancel px-3" style="cursor: pointer">Cancel</div>');
+        $el->span("<div class=\"highlight-color highlight-blue px-3 cursor-pointer\">{$this->lang->t9n('Blue')}</div>");
+        $el->span("<div class=\"highlight-color highlight-yellow px-3 cursor-pointer\">{$this->lang->t9n('Yellow')}</div>");
+        $el->span("<div class=\"highlight-color highlight-green px-3 cursor-pointer\">{$this->lang->t9n('Green')}</div>");
+        $el->span("<div class=\"highlight-color highlight-red px-3 cursor-pointer\">{$this->lang->t9n('Red')}</div>");
+        $el->span("<div class=\"highlight-eraser px-3 cursor-pointer\">{$this->lang->t9n('Eraser')}</div>");
+        $el->span("<div class=\"highlight-cancel px-3 cursor-pointer\">{$this->lang->t9n('Cancel')}</div>");
 
         $marker_btn = $el->render();
-
-        $el = null;
-
-        /** @var Bootstrap\IconButton $el */
-        $el = $this->di->get('IconButton');
-
-        $el->context('dark');
-        $el->addClass('border-0 px-2');
-        $el->style('width: 3rem');
-        $el->id('pdfviewer-new-note-btn');
-        $el->icon('message-plus');
-        $pin_btn = $el->render();
 
         $el = null;
 
@@ -266,7 +271,7 @@ EOT;
         $el->addClass('border-0 custom-select py-0 px-2');
         $el->groupClass('d-inline');
         $el->style("width: 5.5rem;height: 32px;background-color:white !important;color: rgb(73, 80, 87) !important");
-        $el->option('screen', 'screen');
+        $el->option($this->lang->t9n('screen-NOUN'), 'screen');
 
         $steps = range(100, 300, 25);
 
@@ -289,6 +294,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-image');
         $el->icon('image');
+        $el->title($this->lang->t9n('Copy image'));
         $img_btn = $el->render();
 
         $el = null;
@@ -302,6 +308,7 @@ EOT;
         $el->id('pdfviewer-text-btn');
         $el->style('width: 3rem');
         $el->icon('format-color-text');
+        $el->title($this->lang->t9n('Copy text'));
         $text_btn = $el->render();
 
         $el = null;
@@ -316,6 +323,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-night-btn');
         $el->icon('weather-night');
+        $el->title($this->lang->t9n('Night mode'));
         $night_btn = $el->render();
 
         $el = null;
@@ -330,6 +338,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-prev');
         $el->icon('chevron-left');
+        $el->title($this->lang->t9n('Previous page'));
         $el->dataValue('prev');
         $prev_btn = $el->render();
 
@@ -355,6 +364,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-next');
         $el->icon('chevron-right');
+        $el->title($this->lang->t9n('Next page'));
         $el->dataValue('next');
         $next_btn = $el->render();
 
@@ -385,6 +395,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-previews-btn');
         $el->icon('file');
+        $el->title($this->lang->t9n('Pages'));
         $preview_btn = $el->render();
 
         $el = null;
@@ -397,6 +408,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-bookmarks-btn');
         $el->icon('bookmark');
+        $el->title($this->lang->t9n('Bookmarks'));
         $bookmark_btn = $el->render();
 
         $el = null;
@@ -409,6 +421,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-notes-btn');
         $el->icon('message-text');
+        $el->title($this->lang->t9n('PDF notes'));
         $notes_btn = $el->render();
 
         $el = null;
@@ -421,6 +434,7 @@ EOT;
         $el->style('width: 3rem');
         $el->id('pdfviewer-results-btn');
         $el->icon('file-search');
+        $el->title($this->lang->t9n('Search results'));
         $results_btn = $el->render();
 
         $el = null;
@@ -438,7 +452,7 @@ EOT;
                 <img
                     width="{$w}"
                     height="{$h}"
-                    alt="PDF page"
+                    alt="{$this->lang->t9n('Page')}"
                     src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1">
             </div>
 EOT;
@@ -450,7 +464,7 @@ EOT;
         $thumbs = <<<EOT
             <div class="pdfviewer-thumb bg-white position-relative my-3 md-box-shadow-1" data-page="1">
                 <img
-                    alt="PDF page"
+                    alt="{$this->lang->t9n('Page')}"
                     class="lazy"
                     src="{$IL_BASE_URL}index.php/page/empty"
                     data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1"
@@ -475,7 +489,7 @@ EOT;
                         src="{$IL_BASE_URL}index.php/page/empty"
                         width="{$w}"
                         height="{$h}"
-                        alt="PDF page"
+                        alt="{$this->lang->t9n('Page')}"
                         data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
                         class="lazy">
                 </div>
@@ -484,7 +498,7 @@ EOT;
             $thumbs .= <<<EOT
                 <div class="pdfviewer-thumb bg-white position-relative md-box-shadow-1" data-page="{$number}">
                     <img
-                        alt="PDF page"
+                        alt="{$this->lang->t9n('Page')}"
                         src="{$IL_BASE_URL}index.php/page/empty"
                         data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
                         class="lazy"
@@ -499,9 +513,9 @@ EOT;
 
         $left_menu_div = '<div class="border-darker-bottom py-1" style="width: 270px">' . "$preview_btn $bookmark_btn $notes_btn $results_btn" . '</div>';
         $thumbs_div    = '<div id="pdfviewer-thumbs" class="d-none" style="width: 270px">' . $thumbs . '</div>';
-        $bookmarks_div = '<div id="pdfviewer-bookmarks" class="d-none" style="width: 270px"></div>';
-        $notes_div     = '<div id="pdfviewer-notes" class="d-none" style="width: 270px"><div class="pt-3">No PDF notes.</div></div>';
-        $results_div   = '<div id="pdfviewer-results" class="d-none" style="width: 270px"><div class="pt-3">No search results.</div></div>';
+        $bookmarks_div = "<div id=\"pdfviewer-bookmarks\" class=\"d-none\" style=\"width: 270px\">{$this->lang->t9n('No bookmarks')}</div>";
+        $notes_div     = "<div id=\"pdfviewer-notes\" class=\"d-none\" style=\"width: 270px\"><div class=\"pt-3\">{$this->lang->t9n('No notes')}</div></div>";
+        $results_div   = "<div id=\"pdfviewer-results\" class=\"d-none\" style=\"width: 270px\"><div class=\"pt-3\">{$this->lang->t9n('No search results')}</div></div>";
 
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
@@ -554,7 +568,7 @@ EOT;
      */
     public function bookmarks(array $bookmarks): string {
 
-        $html = '<div class="pt-3 text-center">No bookmarks.</div>';
+        $html = "<div class=\"pt-3 text-center\">{$this->lang->t9n('No bookmarks')}</div>";
 
         if (!empty($bookmarks)) {
 
@@ -564,8 +578,8 @@ EOT;
             $el->addClass('mt-3');
             $el->groupClass('mx-3');
             $el->style("background-color: white !important;color: rgb(73, 80, 87) !important");
-            $el->placeholder('Search bookmarks');
-            $el->ariaLabel('Search bookmarks');
+            $el->placeholder($this->lang->t9n('Search bookmarks'));
+            $el->ariaLabel($this->lang->t9n('Search bookmarks'));
             $html = $el->render();
 
             $el = null;
@@ -824,7 +838,7 @@ FORM
                     $el->context('light');
                     $el->componentSize('small');
                     $el->addClass('note-edit-btn ml-3 mt-2 mb-3');
-                    $el->html('Edit');
+                    $el->html($this->lang->t9n('Edit'));
                     $note_edit = $el->render();
 
                     $el = null;
@@ -846,7 +860,7 @@ FORM
 
                     $el->type('submit');
                     $el->context('danger');
-                    $el->html('Save');
+                    $el->html($this->lang->t9n('Save'));
                     $el->componentSize('small');
                     $note_save = $el->render();
 

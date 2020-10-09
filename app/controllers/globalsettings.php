@@ -53,7 +53,7 @@ class GlobalSettingsController extends Controller {
         $this->authorization->signedId(true);
         $this->authorization->permissions('A');
 
-        $this->post['settings'] = $this->sanitation->length($this->post['settings'], 1024);
+        $this->post['settings'] = $this->sanitation->length($this->post['settings'], 100000);
 
         // Remove non-existing settings.
         foreach (array_keys($this->post['settings']) as $key) {
@@ -82,6 +82,6 @@ class GlobalSettingsController extends Controller {
         // Send the view.
         $view = new DefaultView($this->di);
 
-        return $view->main(['info' => 'New settings were saved.']);
+        return $view->main(['info' => 'new settings were saved']);
     }
 }

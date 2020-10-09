@@ -154,11 +154,11 @@ class DetailsController extends Controller {
         /** @var string $soffice */
 
         $details['binaries'] = [
-            'Pdftotext'     => $pdftotext,
-            'Pdfinfo'       => $pdfinfo,
-            'Pdftohtml'     => $pdftohtml,
-            'Pdftocairo'    => $pdftocairo,
-            'Ghostscript'   => $gs,
+            'Poppler pdftotext'  => $pdftotext,
+            'Poppler pdfinfo'    => $pdfinfo,
+            'Poppler pdftohtml'  => $pdftohtml,
+            'Poppler pdftocairo' => $pdftocairo,
+            'Ghostscript'        => $gs,
             'Tesseract OCR (optional)' => $tesseract,
             'LibreOffice (optional)'   => $soffice
         ];

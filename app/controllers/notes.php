@@ -42,10 +42,7 @@ class NotesController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Get file.
         $model = new NotesModel($this->di);
@@ -69,10 +66,7 @@ class NotesController extends Controller {
             throw new Exception("the parameter id is required", 400);
         }
 
-        if ($this->validation->id($this->get['id']) === false) {
-
-            throw new Exception("the parameter id {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->get['id']);
 
         // Get file.
         $model = new NotesModel($this->di);
@@ -105,10 +99,7 @@ class NotesController extends Controller {
             throw new Exception("request method must be POST", 405);
         }
 
-        if ($this->validation->id($this->post['id']) === false) {
-
-            throw new Exception("the parameter <kbd>item_id</kbd> {$this->validation->error}", 422);
-        }
+        $this->validation->id($this->post['id']);
 
         // Save new settings permanently.
         $model = new NotesModel($this->di);

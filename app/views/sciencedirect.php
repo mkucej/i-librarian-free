@@ -16,7 +16,7 @@ class SciencedirectView extends TextView {
      */
     public function main() {
 
-        $this->title("ScienceDirect search");
+        $this->title("ScienceDirect {$this->lang->t9n('Search-NOUN')}");
 
         $this->head();
 
@@ -26,7 +26,7 @@ class SciencedirectView extends TextView {
         $el->style('margin: 0 -15px');
         $el->addClass('bg-transparent');
         $el->item('IL', '#dashboard');
-        $el->item("ScienceDirect search");
+        $el->item("ScienceDirect {$this->lang->t9n('Search-NOUN')}");
         $bc = $el->render();
 
         $el = null;

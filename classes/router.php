@@ -83,10 +83,7 @@ final class Router {
         // Validate. Path components must be alphanumerical.
         foreach ($this->route as $route_part) {
 
-            if ($this->validation->alphanum($route_part) === false) {
-
-                throw new Exception('request URL path ' . $this->validation->error, 400);
-            }
+            $this->validation->alphanum($route_part);
         }
     }
 
