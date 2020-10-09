@@ -4,6 +4,7 @@ namespace LibrarianApp;
 
 use Exception;
 use PDO;
+use \Librarian\Http\Client\Psr7;
 
 /**
  * Class DuplicatesModel.
@@ -108,6 +109,42 @@ SQL;
      * @throws Exception
      */
     protected function _pdfs(): array {
+
+        // Make sure all PDFs have hashes.
+
+        $sql_select_nohash = <<<'SQL'
+SELECT id
+    FROM items
+    WHERE file_hash IS NULL
+SQL;
+
+        $sql_update_nohash = <<<'EOT'
+UPDATE items
+    SET file_hash = ?
+    WHERE id = ?
+EOT;
+
+        $this->db_main->run($sql_select_nohash);
+        $empty_ids = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
+
+        foreach ($empty_ids as $empty_id) {
+
+            // PDF exists?
+            if ($this->isPdf($empty_id) === true) {
+
+                $filepath = $this->idToPdfPath($empty_id);
+
+                $pdf_stream = $this->readFile($filepath);
+                $pdf_hash = Psr7\hash($pdf_stream, 'md5');
+
+                $columns_update = [
+                    $pdf_hash,
+                    (integer) $empty_id
+                ];
+
+                $this->db_main->run($sql_update_nohash, $columns_update);
+            }
+        }
 
         $this->db_main->beginTransaction();
 

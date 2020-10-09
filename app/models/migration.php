@@ -6,6 +6,7 @@ use Exception;
 use Librarian\Http\Client\Psr7;
 use Librarian\Media\ScalarUtils;
 use Librarian\Security\Encryption;
+use PDO;
 
 /**
  * Class MigrationModel.
@@ -89,12 +90,12 @@ class MigrationModel extends AppModel {
         }
 
         // OK, we can upgrade.
+        $this->_moveFiles();
         $this->_legacyUsers();
         $this->_legacyLibrary();
         // Do not migrate full_text, instruct users to reindex after upgrade.
 //        $this->_legacyFulltext();
         $this->_legacyDiscussions();
-        $this->_moveFiles();
 
         $this->db_main->run('ANALYZE');
 
@@ -520,6 +521,19 @@ EOT;
 DETACH DATABASE library
 EOT;
 
+        // Make sure all PDFs have hashes.
+        $sql_select_nohash = <<<'SQL'
+SELECT id
+    FROM items
+    WHERE file_hash IS NULL
+SQL;
+
+        $sql_update_nohash = <<<'EOT'
+UPDATE items
+    SET file_hash = ?
+    WHERE id = ?
+EOT;
+
         $columns = [
             $this->legacy_dir . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'library.sq3'
         ];
@@ -737,6 +751,29 @@ EOT;
 
         $this->db_main->commit();
         $this->db_main->run($sql_detach);
+
+        // Fix no hashes.
+        $this->db_main->run($sql_select_nohash);
+        $empty_ids = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
+
+        foreach ($empty_ids as $empty_id) {
+
+            // PDF exists?
+            if ($this->isPdf($empty_id) === true) {
+
+                $filepath = $this->idToPdfPath($empty_id);
+
+                $pdf_stream = $this->readFile($filepath);
+                $pdf_hash = Psr7\hash($pdf_stream, 'md5');
+
+                $columns_update = [
+                    $pdf_hash,
+                    (integer) $empty_id
+                ];
+
+                $this->db_main->run($sql_update_nohash, $columns_update);
+            }
+        }
     }
 
     /**
