@@ -111,7 +111,7 @@ HTML
 </span>
 HTML
             , 'px-4 pt-3');
-            $el->body('<div style="position:relative;width:100%;height:200px"><canvas id="myChart"></canvas></div>', null, 'px-4 pb-4');
+            $el->body('<div style="position:relative;width:100%;height:190px"><canvas id="myChart"></canvas></div>', null, 'px-4 pb-4');
             $cards[] = $el->render();
 
             $el = null;
