@@ -147,6 +147,6 @@ final class Language {
 
     private function textToEnglish(string $text): string {
 
-        return str_replace(['{T%', '%T}'], '', $text);
+        return str_replace(['{T%', '%T}', '-VERB', '-NOUN'], '', $text);
     }
 }
