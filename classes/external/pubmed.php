@@ -70,7 +70,7 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
      * @return array
      * @throws Exception
      */
-    public function fetchMultiple($uids): array {
+    public function fetchMultiple(array $uids): array {
 
         $params = [
             'db'      => 'pubmed',
@@ -80,9 +80,7 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
         $response = $this->client->get($this->url_fetch . http_build_query($params));
 
-        $items = $this->formatMetadata($response->getBody()->getContents());
-
-        return $items;
+        return $this->formatMetadata($response->getBody()->getContents());
     }
 
     /**
@@ -91,8 +89,8 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
      * @param array $terms Search terms [name => term].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [name => value].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [name => value].
+     * @param string|null $sort Optional sorting string.
      * @return array
      * @throws Exception
      */
@@ -104,7 +102,8 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
         string $sort = null
     ): array {
 
-        $maximum_rows = 100;
+        // Max rows to fetch (100) can be overridden with $rows.
+        $maximum_rows = max(100, $rows);
 
         $allowed_params = [
             'TIAB'   => 'Abstract',
@@ -277,7 +276,7 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
     /**
      * Format metadata so that it is ready to be saved by the item model.
      *
-     * @param string $input
+     * @param string|array $input
      * @return array
      * @throws Exception
      */
