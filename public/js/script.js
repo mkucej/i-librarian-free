@@ -77,31 +77,31 @@ $.widget("il.typeahead", {
         // Select dropdown option.
         let $menu = this.element.parent().next();
         this._on($menu, {'click button': function (e) {
-                this.element.val($(e.target).text()).attr('data-id', $(e.target).attr('data-id'));
-                this._clearMenus();
-                this._trigger("onSelect", null, {element: this.element});
-            }});
+            this.element.val($(e.target).text()).attr('data-id', $(e.target).attr('data-id'));
+            this._clearMenus();
+            this._trigger("onSelect", null, {element: this.element});
+        }});
         // Menu focus management using arrows.
         this._on($menu, {'keyup button': function (e) {
-                e.stopPropagation();
-                if (e.which === 38) {
-                    $(e.target).prev().focus();
-                }
-                if (e.which === 40) {
-                    $(e.target).next().focus();
-                }
-                // Escape.
-                if (e.which === 27) {
-                    this.element.focus();
-                    this._clearMenus();
-                }
-            }});
+            e.stopPropagation();
+            if (e.which === 38) {
+                $(e.target).prev().focus();
+            }
+            if (e.which === 40) {
+                $(e.target).next().focus();
+            }
+            // Escape.
+            if (e.which === 27) {
+                this.element.focus();
+                this._clearMenus();
+            }
+        }});
         // Outside click closes dropdown.
         this._on('body', {'click': this._clearMenus});
         // Stop inside click propagation to trigger menu close.
         this._on(this.element.closest('.typeahead'), {click: function (e) {
-                e.stopPropagation();
-            }});
+            e.stopPropagation();
+        }});
         // Resize dropdown on window resize.
         this._on(this.window, {resize: this._resizeMenus});
     },
@@ -1837,7 +1837,8 @@ class ItemsMainView extends View {
         super();
         this.parent = '#content-col';
         this.events = {
-            'click .open-filter': 'filterModal',
+            'click .open-filter-local': 'filterLocal',
+            'click .open-filter-remote': 'filterRemote',
             'click .clipboard': 'clipboard',
             'click .project': 'project',
             'click #open-export': exportform.init,
@@ -1869,8 +1870,8 @@ class ItemsMainView extends View {
             $('#top-row').height($(window).height() - bH);
         }
     }
-    filterModal() {
-        let filterOptions = {}, src = $(this).data('src'), ttl = $(this).data('title');
+    filterLocal() {
+        let src = $(this).data('src'), ttl = $(this).data('title');
         $.when(model.load({url: src})).done(function (response) {
             $('#modal-filters .modal-title').html(ttl);
             $('#modal-filters .modal-body .container-fluid').replaceWith(response.html);
@@ -1878,20 +1879,28 @@ class ItemsMainView extends View {
             $('#modal-filters .modal-body').on('click', 'a', function () {
                 $('#modal-filters').modal('hide');
             });
-            if (ttl === 'Tags' || ttl === 'Added dates') {
-                // Local search.
-                filterOptions = {targets: '#modal-filters a'};
-            } else {
-                // Remote search.
-                filterOptions = {
-                    source: src,
-                    container: '#modal-filters .container-fluid'
-                };
-            }
             // Destroy existing filter widget.
             $('#modal-filters .filterable').filterable('destroy');
             // Initiate new filter.
-            $('#modal-filters :text').filterable(filterOptions).val('').focus();
+            $('#modal-filters :text').filterable({targets: '#modal-filters a'}).val('').focus();
+        });
+    }
+    filterRemote() {
+        let src = $(this).data('src'), ttl = $(this).data('title');
+        $.when(model.load({url: src})).done(function (response) {
+            $('#modal-filters .modal-title').html(ttl);
+            $('#modal-filters .modal-body .container-fluid').replaceWith(response.html);
+            $('#modal-filters').modal();
+            $('#modal-filters .modal-body').on('click', 'a', function () {
+                $('#modal-filters').modal('hide');
+            });
+            // Destroy existing filter widget.
+            $('#modal-filters .filterable').filterable('destroy');
+            // Initiate new filter.
+            $('#modal-filters :text').filterable({
+                source: src,
+                container: '#modal-filters .container-fluid'
+            }).val('').focus();
         });
     }
     clipboard() {
@@ -1972,7 +1981,8 @@ class ItemsCatalogView extends View {
         super();
         this.parent = '#content-col';
         this.events = {
-            'click .open-filter': views.itemsmain.filterModal,
+            'click .open-filter-local': views.itemsmain.filterLocal,
+            'click .open-filter-remote': views.itemsmain.filterRemote,
             'click .clipboard': 'clipboard',
             'click .project': 'project',
             'click #open-export': exportform.init,
@@ -2030,7 +2040,8 @@ class ClipboardMainView extends View {
         super();
         this.parent = '#content-col';
         this.events = {
-            'click .open-filter': views.itemsmain.filterModal,
+            'click .open-filter-local': views.itemsmain.filterLocal,
+            'click .open-filter-remote': views.itemsmain.filterRemote,
             'click .clipboard': 'clipboard',
             'click .project': 'project',
             'click #open-export': exportform.init,
@@ -2191,7 +2202,8 @@ class ProjectBrowseView extends View {
         super();
         this.parent = '#content-col';
         this.events = {
-            'click .open-filter': views.itemsmain.filterModal,
+            'click .open-filter-local': views.itemsmain.filterLocal,
+            'click .open-filter-remote': views.itemsmain.filterRemote,
             'click .clipboard': 'clipboard',
             'click .project': 'project',
             'click #open-export': exportform.init,

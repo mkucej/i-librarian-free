@@ -1479,11 +1479,13 @@ EOT;
         }
 
         $IL_BASE_URL = IL_BASE_URL;
-        $classes = 'list-group-item-action border-0 open-filter';
+        $classes = 'list-group-item-action border-0';
 
         foreach ($action_to_name as $action => $name) {
 
-            $el->button($name, $classes, "data-title=\"$name\" data-src=\"{$IL_BASE_URL}index.php/{$controller}/{$action}{$get_query}\"");
+            $filter_class = $action === 'tags' || $action === 'addedtime' ? ' open-filter-local' : ' open-filter-remote';
+
+            $el->button($name, $classes . $filter_class, "data-title=\"$name\" data-src=\"{$IL_BASE_URL}index.php/{$controller}/{$action}{$get_query}\"");
         }
 
         if ($collection === 'library') {
