@@ -101,9 +101,10 @@ class NasaController extends Controller {
         $items = $this->nasa->search($terms, $from, 10, $filters, $this->get['sort']);
 
         // Search URL to save.
-        unset($this->get['from']);
-        unset($this->get['save_search']);
-        $search_url = '#' . IL_PATH_URL . '?' . http_build_query($this->get);
+        $get = $this->get;
+        unset($get['from']);
+        unset($get['save_search']);
+        $search_url = '#' . IL_PATH_URL . '?' . http_build_query($get);
 
         // Model.
         $model = new SearchModel($this->di);
