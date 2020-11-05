@@ -1492,7 +1492,7 @@ EOT;
 
             $name = $this->lang->t9n('Miscellaneous');
 
-            $el->button($name, $classes, "data-title=\"{$name}\" data-src=\"{$IL_BASE_URL}index.php/items/misc{$get_query}\"");
+            $el->button($name, $classes . ' open-filter-local', "data-title=\"{$name}\" data-src=\"{$IL_BASE_URL}index.php/items/misc{$get_query}\"");
         }
 
         $list = $el->render();
