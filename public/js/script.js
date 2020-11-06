@@ -522,6 +522,7 @@ $.widget("il.saveable", {
             if (input.length === 0 && clonedNum < 3) {
                 This.element.find(".clone-button").trigger('click');
                 clonedNum++;
+                input = This.element.find("[name='" + o.name + "']");
             }
             input.val([o.value]);
         });
