@@ -926,6 +926,7 @@ EOT;
             'ind_items.secondary_title_index',
             'ind_items.tertiary_title_index',
             'ind_items.title_index',
+            'items.publication_date',
             'ind_items.custom1_index',
             'ind_items.custom2_index',
             'ind_items.custom3_index',
@@ -977,6 +978,10 @@ EOT;
 
                             $columns[] = "% {$term}, %";
 
+                        } elseif ($field === 'items.publication_date') {
+
+                            $columns[] = "{$term}%";
+
                         } else {
 
                             $columns[] = "% {$term} %";
@@ -1001,6 +1006,10 @@ EOT;
                     if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($query, ',') === false) {
 
                         $columns[] = "% {$query}, %";
+
+                    } elseif ($field === 'items.publication_date') {
+
+                        $columns[] = "{$query}%";
 
                     } else {
 
@@ -1531,6 +1540,7 @@ EOT;
             'T2' => 'ind_items.secondary_title_index',
             'T3' => 'ind_items.tertiary_title_index',
             'TI' => 'ind_items.title_index',
+            'YR' => 'items.publication_date',
             'C1' => 'ind_items.custom1_index',
             'C2' => 'ind_items.custom2_index',
             'C3' => 'ind_items.custom3_index',
@@ -1579,7 +1589,7 @@ EOT;
             $placeholder .= $placeholder !== '' && isset($search['search_glue'][$key]) ? " {$search['search_glue'][$key]} " : '';
 
             // Some fields must have PHRASE boolean.
-            if (in_array($search['search_type'][$key], ['AU', 'KW', 'JO', 'T1', 'T2', 'T3', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'])) {
+            if (in_array($search['search_type'][$key], ['AU', 'KW', 'JO', 'T1', 'T2', 'T3', 'YR', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'])) {
 
                 $search['search_boolean'][$key] = 'PHRASE';
             }
@@ -1647,7 +1657,7 @@ EOT;
                     } else {
 
                         $placeholder .= "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "% {$search_query} %";
+                        $columns[] = $search['search_type'][$key] === 'YR' ? "{$search_query}%" : "% {$search_query} %";
                     }
 
                     break;

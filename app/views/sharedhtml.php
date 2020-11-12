@@ -180,6 +180,7 @@ HTML
             $el->option($this->lang->t9n('Secondary title'), 'T2');
             $el->option($this->lang->t9n('Tertiary title'), 'T3');
             $el->option($this->lang->t9n('Keyword'), 'KW');
+            $el->option($this->lang->t9n('Year'), 'YR');
 
             /** @var AppSettings $app_settings */
             $app_settings = $this->app_settings;
