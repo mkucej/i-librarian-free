@@ -2740,23 +2740,13 @@ class EditMainView extends View {
         $('#edit-form').trigger('submit');
     }
     uploadFormWidgets() {
+        let This = this;
         $('input.input-typeahead').each(function () {
             let $t = $(this);
             $t.typeahead({
                 source: $t.data('source'),
                 onSelect: function () {
-                    if ($(this).attr('name') === 'author_last_name[]') {
-                        let $first = $(this).closest('.form-row').find('input[name="author_first_name\\[\\]"]');
-                        let names = $(this).val().split(',');
-                        $(this).val($.trim(names[0] || ''));
-                        $first.val($.trim(names[1] || ''));
-                    }
-                    if ($(this).attr('name') === 'editor_last_name[]') {
-                        let $first = $(this).closest('.form-row').find('input[name="editor_first_name\\[\\]"]');
-                        let names = $(this).val().split(',');
-                        $(this).val($.trim(names[0] || ''));
-                        $first.val($.trim(names[1] || ''));
-                    }
+                    This._selectAuthor(this);
                 }
             });
         });
@@ -2765,7 +2755,10 @@ class EditMainView extends View {
             onClone: function (e, data) {
                 let $last = $(data.clonedTarget).find('.input-typeahead');
                 $last.typeahead({
-                    source: $last.data('source')
+                    source: $last.data('source'),
+                    onSelect: function () {
+                        This._selectAuthor(this);
+                    }
                 });
             }
         });
@@ -2774,13 +2767,30 @@ class EditMainView extends View {
             onClone: function (e, data) {
                 let $last = $(data.clonedTarget).find('.input-typeahead');
                 $last.typeahead({
-                    source: $last.data('source')
+                    source: $last.data('source'),
+                    onSelect: function () {
+                        This._selectAuthor(this);
+                    }
                 });
             }
         });
         $('#clone-uid').clonable({
             target: '#uid-row'
         });
+    }
+    _selectAuthor(typeahead) {
+        if ($(typeahead).attr('name') === 'author_last_name[]') {
+            let $first = $(typeahead).closest('.form-row').find('input[name="author_first_name\\[\\]"]');
+            let names = $(typeahead).val().split(',');
+            $(typeahead).val($.trim(names[0] || ''));
+            $first.val($.trim(names[1] || ''));
+        }
+        if ($(typeahead).attr('name') === 'editor_last_name[]') {
+            let $first = $(typeahead).closest('.form-row').find('input[name="editor_first_name\\[\\]"]');
+            let names = $(typeahead).val().split(',');
+            $(typeahead).val($.trim(names[0] || ''));
+            $first.val($.trim(names[1] || ''));
+        }
     }
 }
 
