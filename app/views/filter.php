@@ -93,12 +93,6 @@ class FilterView extends TextView {
         // Empty list.
         if ($total_count === 0) {
 
-            // Custom.
-            if (strpos($type, 'custom') === 0) {
-
-                $type = $this->app_settings->getGlobal($type);
-            }
-
             /** @var Bootstrap\ListGroup $el */
             $el = $this->di->get('ListGroup');
 
@@ -159,7 +153,19 @@ class FilterView extends TextView {
         $el1->addClass('list-group-flush');
         $el2->addClass('list-group-flush');
 
-        for ($i = 0; $i < min($total_count, 99); $i++) {
+        // Untagged link with mock id 0.
+        if ($type === 'tag') {
+
+            $new_get = $sanitized_get;
+            $new_get['filter']['tag'][] = 0;
+            $get_query = '?'. http_build_query($new_get);
+
+            $el1->link("#{$controller}/filter{$get_query}", '!' . $this->lang->t9n('untagged'), 'border-0');
+        }
+
+        $max_items = $type === 'tag' ? $total_count : min($total_count, 99);
+
+        for ($i = 0; $i < $max_items; $i++) {
 
             // Add filter to _GET.
             $new_get = $sanitized_get;

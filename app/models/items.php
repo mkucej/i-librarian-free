@@ -296,13 +296,25 @@ EOT;
 
             foreach ($filters['tag'] as $id) {
 
-                $sqls[] = <<<EOT
+                if ($id === '0') {
+
+                    // Get untagged items.
+                    $sqls[] = <<<EOT
+SELECT items.id as item_id, publication_date, title
+    FROM items LEFT JOIN items_tags ON items.id=items_tags.item_id
+    WHERE items_tags.item_id IS NULL
+EOT;
+
+                } else {
+
+                    $sqls[] = <<<EOT
 SELECT items.id as item_id, publication_date, title
     FROM items INNER JOIN items_tags ON items.id=items_tags.item_id
     WHERE items_tags.tag_id=?
 EOT;
 
-                $columns[] = $id;
+                    $columns[] = $id;
+                }
             }
         }
 
@@ -598,6 +610,13 @@ SELECT tag
 EOT;
 
             foreach ($filters['tag'] as $id) {
+
+                if ($id === '0') {
+
+                    $output[] = [
+                        'tag' => [0, 'untagged']
+                    ];
+                }
 
                 $this->db_main->run($sql, [$id]);
 

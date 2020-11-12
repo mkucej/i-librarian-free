@@ -449,10 +449,12 @@ class ItemsView extends TextView {
 
                 $name = $facet_fields[$key] ?? $this->lang->t9n('Filter-NOUN');
 
+                $t9n_value = $values[1] === 'untagged' ? $this->lang->t9n($values[1]) : $values[1];
+
                 $tags_html .= <<<EOT
                     <div class="btn-group mr-1 mb-2" role="group" aria-label="Filter button">
                         <button type="button" class="btn btn-sm btn-dark rounded-0">
-                            <b>{$name}</b> &mdash; {$values[1]}
+                            <b>{$name}</b> &mdash; {$t9n_value}
                         </button>
                         <a href="{$close_url}" class="btn btn-sm btn-secondary">{$close}</a>
                     </div>
