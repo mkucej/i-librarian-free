@@ -108,7 +108,7 @@ class SupplementsModel extends AppModel {
         $this->writeFile($filepath, $stream);
 
         // Check if image.
-        $mime = $this->file_tools->mimeType($filepath);
+        $mime = $this->file_tools->getMime($filepath);
 
         if ($mime !== 'image/png' && $mime !== 'image/jpg' && $mime !== 'image/jpeg') {
 
