@@ -812,7 +812,7 @@ EOT;
 
                 if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                    $search = '&search=' . rawurlencode(trim(join(' ', $get['search_query'])));
+                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
                 }
 
                 /** @var Bootstrap\Button $el */
@@ -1101,7 +1101,7 @@ EOT;
 
             if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                $search = '&search=' . rawurlencode(trim(join(' ', $get['search_query'])));
+                $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
             }
 
             /** @var Bootstrap\Card $el */
@@ -1176,7 +1176,7 @@ EOT
 
                 if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                    $search = '&search=' . rawurlencode(trim(join(' ', $get['search_query'])));
+                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
                 }
 
                 /** @var Bootstrap\Button $el */
