@@ -96,10 +96,10 @@ final class Validation {
 
         $is_inner_ipaddress =
             ip2long('127.0.0.0')   >> 24 === $ip >> 24 or
-        ip2long('10.0.0.0')    >> 24 === $ip >> 24 or
-        ip2long('172.16.0.0')  >> 20 === $ip >> 20 or
-        ip2long('169.254.0.0') >> 16 === $ip >> 16 or
-        ip2long('192.168.0.0') >> 16 === $ip >> 16;
+            ip2long('10.0.0.0')    >> 24 === $ip >> 24 or
+            ip2long('172.16.0.0')  >> 20 === $ip >> 20 or
+            ip2long('169.254.0.0') >> 16 === $ip >> 16 or
+            ip2long('192.168.0.0') >> 16 === $ip >> 16;
 
         if ($is_inner_ipaddress) {
 
@@ -282,11 +282,13 @@ final class Validation {
      *
      * @param int|string $value
      * @throws Exception
+     *
+     * The max id is a signed integer (2**31), limited by 32-bit systems.
      */
     public function id($value): void {
 
         $this->num($value);
-        $this->intRange($value, 1, (int) pow(2, 32));
+        $this->intRange($value, 1, (int) pow(2, 31));
     }
 
     /**
@@ -296,6 +298,8 @@ final class Validation {
      * @param int $min
      * @param int $max
      * @throws Exception
+     *
+     * The min and max integers are limited by PHP_INT_MIN and PHP_INT_MAX.
      */
     public function intRange($value, int $min, int $max): void {
 
@@ -304,8 +308,8 @@ final class Validation {
             FILTER_VALIDATE_INT,
             [
                 'options' => [
-                    'min_range' => $min,
-                    'max_range' => $max
+                    'min_range' => max($min, PHP_INT_MIN),
+                    'max_range' => min($max, PHP_INT_MAX)
                 ]
             ]
         );
