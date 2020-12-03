@@ -489,7 +489,8 @@ EOT;
         $el->id('edit-form');
         $el->autocomplete('off');
         $el->action(IL_BASE_URL . 'index.php/edit/save');
-        $el->html($selects['reference_type']
+        $el->html("<a href=\"#pdf/manage?id={$item['id']}\" class=\"d-inline-block mb-2\">Add/replace PDF</a>"
+            . $selects['reference_type']
             . $tas['title']
             . $tas['abstract']
             . $author_card
