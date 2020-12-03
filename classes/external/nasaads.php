@@ -5,6 +5,8 @@ namespace Librarian\External;
 use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Http\Client\Client;
+use Librarian\Http\Client\Exception\GuzzleException;
+use Librarian\Http\Client\Utils;
 use Librarian\ItemMeta;
 use const JSON_OBJECT_AS_ARRAY;
 
@@ -87,7 +89,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
      *
      * @param string $uid
      * @return array
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function fetch(string $uid): array {
 
@@ -141,8 +143,9 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
      * @param int $start
      * @param int $rows
      * @param array|null $filters
-     * @param string $sort
+     * @param string|null $sort
      * @return array
+     * @throws GuzzleException
      * @throws Exception
      */
     public function search(
@@ -155,7 +158,8 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
 
         $queries = [];
         $search_name = '';
-        $maximum_rows = 100;
+        // Max rows to fetch (100) can be overridden with $rows.
+        $maximum_rows = max(100, $rows);
 
         $allowed_params = [
             'abs'     => 'Title + abstract',
@@ -292,7 +296,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         ];
 
         // Response is JSON. Convert to array.
-        $json = \Librarian\Http\Client\json_decode($input, JSON_OBJECT_AS_ARRAY);
+        $json = Utils::jsonDecode($input, JSON_OBJECT_AS_ARRAY);
         $output['found'] =  $json['response']['numFound'] ?? 0;
         $docs = $json['response']['docs'] ?? [];
 

@@ -5,7 +5,7 @@ namespace LibrarianApp;
 use Exception;
 use Librarian\Cache\FileCache;
 use \Librarian\Http\Client\Psr7;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\Logger\Logger;
 use Librarian\Logger\Reporter;
 use Librarian\Media\Pdf;
@@ -305,7 +305,7 @@ UPDATE items
 EOT;
 
         $pdf_stream = $this->readFile($filepath);
-        $pdf_hash = Psr7\hash($pdf_stream, 'md5');
+        $pdf_hash = Psr7\Utils::hash($pdf_stream, 'md5');
 
         $columns_update = [
             $pdf_hash,
@@ -1036,12 +1036,12 @@ EOT;
             clearstatcache($zip_file);
 
             $zp = fopen($zip_file, 'rb');
-            return Psr7\stream_for($zp);
+            return Psr7\Utils::streamFor($zp);
 
         } else {
 
             $fp = fopen($pdf_file, 'r');
-            return Psr7\stream_for($fp);
+            return Psr7\Utils::streamFor($fp);
         }
     }
 

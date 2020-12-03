@@ -86,7 +86,7 @@ final class Factory {
 
         $this->di->set('ResponseStream', function ($resource = null, $options = []) {
 
-            return \Librarian\Http\Client\Psr7\stream_for($resource, $options);
+            return \Librarian\Http\Client\Psr7\Utils::streamFor($resource, $options);
         });
 
         $this->di->set('Session', function () {

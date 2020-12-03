@@ -764,7 +764,7 @@ EOT;
                 $filepath = $this->idToPdfPath($empty_id);
 
                 $pdf_stream = $this->readFile($filepath);
-                $pdf_hash = Psr7\hash($pdf_stream, 'md5');
+                $pdf_hash = Psr7\Utils::hash($pdf_stream, 'md5');
 
                 $columns_update = [
                     $pdf_hash,
@@ -959,12 +959,12 @@ EOT;
 
                 $this->makeDir($dir);
 
-                $fp_from     = Psr7\try_fopen($file, 'r');
-                $stream_from = Psr7\stream_for($fp_from);
-                $fp_to       = Psr7\try_fopen($this->idToPdfPath($id), 'w');
-                $stream_to   = Psr7\stream_for($fp_to);
+                $fp_from     = Psr7\Utils::tryFopen($file, 'r');
+                $stream_from = Psr7\Utils::streamFor($fp_from);
+                $fp_to       = Psr7\Utils::tryFopen($this->idToPdfPath($id), 'w');
+                $stream_to   = Psr7\Utils::streamFor($fp_to);
 
-                Psr7\copy_to_stream($stream_from, $stream_to);
+                Psr7\Utils::copyToStream($stream_from, $stream_to);
 
                 $fp_from     = null;
                 $stream_from = null;
@@ -997,12 +997,12 @@ EOT;
                     $sup_name = trim(mb_substr($sup_name, 0, -1, 'UTF-8'));
                 }
 
-                $fp_from     = Psr7\try_fopen($file, 'r');
-                $stream_from = Psr7\stream_for($fp_from);
-                $fp_to       = Psr7\try_fopen($this->idToSupplementPath($id) . rawurlencode($sup_name), 'w');
-                $stream_to   = Psr7\stream_for($fp_to);
+                $fp_from     = Psr7\Utils::tryFopen($file, 'r');
+                $stream_from = Psr7\Utils::streamFor($fp_from);
+                $fp_to       = Psr7\Utils::tryFopen($this->idToSupplementPath($id) . rawurlencode($sup_name), 'w');
+                $stream_to   = Psr7\Utils::streamFor($fp_to);
 
-                Psr7\copy_to_stream($stream_from, $stream_to);
+                Psr7\Utils::copyToStream($stream_from, $stream_to);
 
                 $fp_from     = null;
                 $stream_from = null;
@@ -1025,12 +1025,12 @@ EOT;
 
                 $this->makeDir($dir);
 
-                $fp_from     = Psr7\try_fopen($file, 'r');
-                $stream_from = Psr7\stream_for($fp_from);
-                $fp_to       = Psr7\try_fopen($this->idToPdfPath($id), 'w');
-                $stream_to   = Psr7\stream_for($fp_to);
+                $fp_from     = Psr7\Utils::tryFopen($file, 'r');
+                $stream_from = Psr7\Utils::streamFor($fp_from);
+                $fp_to       = Psr7\Utils::tryFopen($this->idToPdfPath($id), 'w');
+                $stream_to   = Psr7\Utils::streamFor($fp_to);
 
-                Psr7\copy_to_stream($stream_from, $stream_to);
+                Psr7\Utils::copyToStream($stream_from, $stream_to);
 
                 $fp_from     = null;
                 $stream_from = null;
@@ -1063,12 +1063,12 @@ EOT;
                     $sup_name = trim(mb_substr($sup_name, 0, -1, 'UTF-8'));
                 }
 
-                $fp_from     = Psr7\try_fopen($file, 'r');
-                $stream_from = Psr7\stream_for($fp_from);
-                $fp_to       = Psr7\try_fopen($this->idToSupplementPath($id) . rawurlencode($sup_name), 'w');
-                $stream_to   = Psr7\stream_for($fp_to);
+                $fp_from     = Psr7\Utils::tryFopen($file, 'r');
+                $stream_from = Psr7\Utils::streamFor($fp_from);
+                $fp_to       = Psr7\Utils::tryFopen($this->idToSupplementPath($id) . rawurlencode($sup_name), 'w');
+                $stream_to   = Psr7\Utils::streamFor($fp_to);
 
-                Psr7\copy_to_stream($stream_from, $stream_to);
+                Psr7\Utils::copyToStream($stream_from, $stream_to);
 
                 $fp_from     = null;
                 $stream_from = null;

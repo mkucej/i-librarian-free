@@ -7,6 +7,7 @@ use DOMElement;
 use DomXpath;
 use Exception;
 use Librarian\Container\DependencyInjector;
+use Librarian\Http\Client\Utils;
 use Librarian\Queue\Queue;
 use Librarian\Storage\Database;
 use PDO;
@@ -27,7 +28,7 @@ final class Pdf {
     /**
      * @var Queue
      */
-    private $queue;
+//    private $queue;
 
     /**
      * Pdf constructor.
@@ -173,12 +174,12 @@ SQL;
                 'title'      => $metadata['title'],
                 'created'    => $metadata['created'],
                 'page_count' => $metadata['page_count'],
-                'page_sizes' => \Librarian\Http\Client\json_decode($metadata['page_sizes'], JSON_OBJECT_AS_ARRAY)
+                'page_sizes' => Utils::jsonDecode($metadata['page_sizes'], JSON_OBJECT_AS_ARRAY)
             ];
 
             if ($boxes === true) {
 
-                $pdfinfo['page_boxes'] = \Librarian\Http\Client\json_decode($metadata['page_boxes'], JSON_OBJECT_AS_ARRAY);
+                $pdfinfo['page_boxes'] = Utils::jsonDecode($metadata['page_boxes'], JSON_OBJECT_AS_ARRAY);
             }
 
         } else {
@@ -249,9 +250,9 @@ SQL;
 
             $db->run($sql_update, [
                 $pdfinfo['created'],
-                \Librarian\Http\Client\json_encode($pdfinfo['page_boxes']),
+                Utils::jsonEncode($pdfinfo['page_boxes']),
                 $pdfinfo['page_count'],
-                \Librarian\Http\Client\json_encode($pdfinfo['page_sizes']),
+                Utils::jsonEncode($pdfinfo['page_sizes']),
                 $pdfinfo['title']
             ]);
 
@@ -318,7 +319,7 @@ SQL;
      *
      * @param int|string$pageNumber
      * @param string $type
-     * @param int|string $resolution
+     * @param int|string|null $resolution
      * @param string $engine pdfcairo or gs
      * @return string
      * @throws Exception
@@ -488,7 +489,7 @@ SQL;
 
         if (!empty($bookmarks)) {
 
-            $this->bookmarks = \Librarian\Http\Client\json_decode($bookmarks, JSON_OBJECT_AS_ARRAY);
+            $this->bookmarks = Utils::jsonDecode($bookmarks, JSON_OBJECT_AS_ARRAY);
 
         } else {
 
@@ -514,7 +515,7 @@ SQL;
 
             // Save to db.
             $db->run($sql_insert, [
-                \Librarian\Http\Client\json_encode($this->bookmarks)
+                Utils::jsonEncode($this->bookmarks)
             ]);
         }
 
@@ -636,7 +637,7 @@ EOT;
      * @return array
      * @throws Exception
      */
-    public function getBoxes($pages): array {
+    public function getBoxes(array $pages): array {
 
         $db = $this->openDb();
         $db->connect();
@@ -897,10 +898,10 @@ EOT;
         $db->run($sql_metadata_select);
         $json = $db->getResult();
 
-        $array = empty($json) ? [] : \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $array = empty($json) ? [] : Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
         $new_array = array_diff($array, range($page_from, $page_end));
 
-        $db->run($sql_metadata_update, [\Librarian\Http\Client\json_encode($new_array)]);
+        $db->run($sql_metadata_update, [Utils::jsonEncode($new_array)]);
 
         // Get boxes.
         $html_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('boxes_') . '.html';
@@ -987,10 +988,10 @@ EOT;
         $db->run($sql_metadata_select);
         $json = $db->getResult();
 
-        $array = empty($json) ? [] : \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $array = empty($json) ? [] : Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
         $new_array = array_unique(array_merge($array, $processed_pages));
 
-        $db->run($sql_metadata_update, [\Librarian\Http\Client\json_encode($new_array)]);
+        $db->run($sql_metadata_update, [Utils::jsonEncode($new_array)]);
 
         $db->commit();
         $db->close();
@@ -1136,7 +1137,7 @@ EOT;
     /**
      * Get XML for a page.
      *
-     * @param int $page
+     * @param int|null $page
      * @return string
      * @throws Exception
      */
@@ -1312,7 +1313,7 @@ NOTE
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
 
-        $array = \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $array = Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
 
         $db = $this->openDb();
         $db->connect();
@@ -1349,10 +1350,10 @@ EOT;
         $db->run($sql_metadata_select);
         $json = $db->getResult();
 
-        $metadata_array = empty($json) ? [] : \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $metadata_array = empty($json) ? [] : Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
         $new_array = array_diff($metadata_array, [$page]);
 
-        $db->run($sql_metadata_update, [\Librarian\Http\Client\json_encode($new_array)]);
+        $db->run($sql_metadata_update, [Utils::jsonEncode($new_array)]);
 
         // Delete boxes.
         $db->run($sql_delete, [$page]);
@@ -1391,10 +1392,10 @@ EOT;
         $db->run($sql_metadata_select);
         $json = $db->getResult();
 
-        $metadata_array = empty($json) ? [] : \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $metadata_array = empty($json) ? [] : Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
         $new_array = array_unique(array_merge($metadata_array, [$page]));
 
-        $db->run($sql_metadata_update, [\Librarian\Http\Client\json_encode($new_array)]);
+        $db->run($sql_metadata_update, [Utils::jsonEncode($new_array)]);
 
         $db->commit();
         $db->close();

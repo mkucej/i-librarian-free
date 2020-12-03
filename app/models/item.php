@@ -4,6 +4,7 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Cache\FileCache;
+use Librarian\Http\Client;
 use Librarian\Import\Bibtex;
 use Librarian\Import\Endnote;
 use Librarian\Import\Ris;
@@ -11,7 +12,6 @@ use Librarian\ItemMeta;
 use Librarian\Media\Pdf;
 use Librarian\Media\ScalarUtils;
 use PDO;
-use function Librarian\Http\Client\Psr7\stream_for;
 
 /**
  * Class ItemModel.
@@ -471,7 +471,7 @@ SQL;
 
             } else {
 
-                $format = \Librarian\Http\Client\json_decode($format_json, true);
+                $format = Client\Utils::jsonDecode($format_json, true);
             }
 
             $this->scalar_utils = $this->di->getShared('ScalarUtils');
@@ -942,7 +942,7 @@ SQL;
 
             } else {
 
-                $format = \Librarian\Http\Client\json_decode($format_json, true);
+                $format = Client\Utils::jsonDecode($format_json, true);
             }
 
             $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
@@ -1495,7 +1495,7 @@ EOT;
                 if (is_readable($pdf_file)) {
 
                     $fp = fopen($pdf_file, 'rb');
-                    $stream = stream_for($fp);
+                    $stream = Client\Psr7\Utils::streamFor($fp);
 
                     $pdf_object->save($item['item_id'], $stream);
 

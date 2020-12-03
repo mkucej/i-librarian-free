@@ -3,19 +3,18 @@
 namespace Librarian\Mvc;
 
 use Exception;
-use finfo;
 use Librarian\AppSettings;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Psr7;
+use Librarian\Http\Client\Exception\GuzzleException;
 use Librarian\Http\Client\Psr7\Stream;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Client\Psr7\Utils;
+use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\Media\Binary;
 use Librarian\Media\FileTools;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
 use Librarian\Security\Validation;
 use Librarian\Storage\Database;
-use const FILEINFO_MIME_TYPE;
 
 /**
  * Class Model
@@ -113,8 +112,9 @@ abstract class Model {
      * @param array $arguments
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
-    public function __call($method, $arguments = []) {
+    public function __call(string $method, $arguments = []) {
 
         // Call local method.
         if (method_exists($this, '_' . $method) === false) {
@@ -136,7 +136,7 @@ abstract class Model {
     /**
      * Check if the item ID exists.
      *
-     * @param  integer $item_id
+     * @param  integer|string $item_id
      * @return bool
      */
     protected function idExists($item_id) {
@@ -154,13 +154,13 @@ EOT;
         $this->db_main->run($sql, $columns);
         $count = (integer) $this->db_main->getResult();
 
-        return $count === 1 ? true : false;
+        return $count === 1;
     }
 
     /**
      * Convert id to subdirectory path part.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @return string
      * @throws Exception
      */
@@ -174,11 +174,11 @@ EOT;
     /**
      * Check if local file exists.
      *
-     * @param  string $filepath
+     * @param string $filepath
      * @return boolean
      * @throws Exception
      */
-    protected function isFile($filepath) {
+    protected function isFile(string $filepath) {
 
         if (is_readable($filepath) === false) {
 
@@ -191,7 +191,7 @@ EOT;
     /**
      * Convert id to 9-digit basename.
      *
-     * @param  integer $id
+     * @param  integer|string $id
      * @return string
      * @throws Exception
      */
@@ -203,7 +203,7 @@ EOT;
     /**
      * Locate PDF file and return PSR Stream.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @return Stream
      * @throws Exception
      */
@@ -222,7 +222,7 @@ EOT;
     /**
      * Check if PDF file exists for this item id.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @return boolean
      * @throws Exception
      */
@@ -238,11 +238,11 @@ EOT;
      * @return Stream
      * @throws Exception
      */
-    protected function readFile($filepath) {
+    protected function readFile(string $filepath) {
 
         try {
 
-            $fp = Psr7\try_fopen($filepath, 'r');
+            $fp = Utils::tryFopen($filepath, 'r');
 
         } catch (Exception $exc) {
 
@@ -250,7 +250,7 @@ EOT;
             throw new Exception('could not read file', 500);
         }
 
-        return Psr7\stream_for($fp);
+        return Utils::streamFor($fp);
     }
 
     /**
@@ -275,7 +275,7 @@ EOT;
 
         try {
 
-            $fp = Psr7\try_fopen($filepath, 'w');
+            $fp = Utils::tryFopen($filepath, 'w');
 
         } catch (Exception $exc) {
 
@@ -360,7 +360,7 @@ EOT;
     /**
      * Get PDF path from id.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @return string
      * @throws Exception
      */
@@ -386,10 +386,7 @@ EOT;
      */
     protected function makeDir($dir) {
 
-        if ($this->validation->dirname($dir) === false) {
-
-            throw new Exception('the directory ' . $this->validation->error, 400);
-        }
+        $this->validation->dirname($dir);
 
         if (!is_dir($dir)) {
 

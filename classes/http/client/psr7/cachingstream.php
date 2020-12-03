@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Stream decorator that can cache previously read bytes from a sequentially
@@ -131,7 +132,7 @@ class CachingStream implements StreamInterface
     private function cacheEntireStream()
     {
         $target = new FnStream(['write' => 'strlen']);
-        copy_to_stream($this, $target);
+        Utils::copyToStream($this, $target);
 
         return $this->tell();
     }

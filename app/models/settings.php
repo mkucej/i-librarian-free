@@ -4,6 +4,7 @@ namespace LibrarianApp;
 
 use Exception;
 use InvalidArgumentException;
+use Librarian\Http\Client\Utils;
 
 /**
  * Settings model.
@@ -50,7 +51,7 @@ EOT;
 
             if (is_array($value) === true) {
 
-                $value = \Librarian\Http\Client\json_encode($value);
+                $value = Utils::jsonEncode($value);
             }
 
             $columns2 = [
@@ -88,7 +89,7 @@ EOT;
             // Could be JSON data.
             try {
 
-                $row['setting_value'] = \Librarian\Http\Client\json_decode($row['setting_value'], true);
+                $row['setting_value'] = Utils::jsonDecode($row['setting_value'], true);
 
             } catch (InvalidArgumentException $exc) {
 
@@ -145,7 +146,7 @@ EOT;
 
             if (is_array($value) === true) {
 
-                $value = \Librarian\Http\Client\json_encode($value);
+                $value = Utils::jsonEncode($value);
             }
 
             $columns2 = [
@@ -181,7 +182,7 @@ EOT;
             // Could be JSON data.
             try {
 
-                $row['setting_value'] = \Librarian\Http\Client\json_decode($row['setting_value'], true);
+                $row['setting_value'] = Utils::jsonDecode($row['setting_value'], true);
 
             } catch (InvalidArgumentException $exc) {
 

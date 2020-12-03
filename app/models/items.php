@@ -4,19 +4,19 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Cache\FileCache;
-use Librarian\Http\Client\Psr7\Stream;
+use Librarian\Http\Client;
+use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\ItemMeta;
 use Librarian\Media\Language;
 use Librarian\Media\ScalarUtils;
 use Librarian\Security\Sanitation;
 use PDO;
 use ZipArchive;
-use function Librarian\Http\Client\Psr7\stream_for;
 
 /**
  * @method array clipboardAdd(array $items)
  * @method void  clipboardDelete(array $items)
- * @method Stream exportZip(array $items, string $locale = 'en_US')
+ * @method StreamInterface exportZip(array $items, string $locale = 'en_US')
  * @method array maxId()
  * @method array projectAdd(array $item_ids, int $project_id)
  * @method void  projectDelete(array $item_ids, int $project_id)
@@ -2908,10 +2908,10 @@ EOT;
      *
      * @param array $items
      * @param string $locale
-     * @return Stream
+     * @return StreamInterface
      * @throws Exception
      */
-    protected function _exportZip(array $items, $locale = 'en_US') {
+    protected function _exportZip(array $items, $locale = 'en_US'): StreamInterface {
 
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
@@ -3120,7 +3120,7 @@ README
         clearstatcache($zip_file);
         $zp = fopen($zip_file, 'rb');
 
-        return stream_for($zp);
+        return Client\Psr7\Utils::streamFor($zp);
     }
 
     /**
@@ -3142,7 +3142,7 @@ SQL;
         $this->db_main->run($sql_bibtex_fromat);
         $format_json = $this->db_main->getResult();
 
-        $format = \Librarian\Http\Client\json_decode($format_json, true);
+        $format = Client\Utils::jsonDecode($format_json, true);
 
         $transaction_size = 10;
 

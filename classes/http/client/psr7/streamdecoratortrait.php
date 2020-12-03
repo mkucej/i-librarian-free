@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Stream decorator trait
@@ -52,7 +53,7 @@ trait StreamDecoratorTrait
 
     public function getContents()
     {
-        return copy_to_string($this);
+        return Utils::copyToString($this);
     }
 
     /**
@@ -140,6 +141,7 @@ trait StreamDecoratorTrait
      * Implement in subclasses to dynamically create streams when requested.
      *
      * @return StreamInterface
+     *
      * @throws \BadMethodCallException
      */
     protected function createStream()

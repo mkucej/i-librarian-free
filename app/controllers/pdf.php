@@ -6,6 +6,7 @@ use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Http\Client\Cookie\CookieJar;
 use Librarian\Http\Client\Psr7\Response;
+use Librarian\Http\Client\Utils;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\ScalarUtils;
 use Librarian\Media\TesseractOcr;
@@ -382,7 +383,7 @@ class PdfController extends Controller {
             // Save box data to PDF db.
             unset($array['text']);
             $array['page'] = $i;
-            $json = \Librarian\Http\Client\json_encode($array);
+            $json = Utils::jsonEncode($array);
             $pdf_model->saveOcrBoxes($this->post['id'], $json);
         }
 
@@ -560,7 +561,7 @@ class PdfController extends Controller {
         $this->validation->id($this->post['id']);
 
         // Boxes come as JSON.
-        $boxes = \Librarian\Http\Client\json_decode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
+        $boxes = Utils::jsonDecode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
 
         $model = new PdfModel($this->di);
         $model->saveHighlights($this->post['id'], $this->post['color'], $boxes);
@@ -588,7 +589,7 @@ class PdfController extends Controller {
         $this->validation->id($this->post['id']);
 
         // Boxes come as JSON.
-        $boxes = \Librarian\Http\Client\json_decode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
+        $boxes = Utils::jsonDecode($this->post['boxes'], JSON_OBJECT_AS_ARRAY);
 
         $model = new PdfModel($this->di);
         $model->deleteHighlights($this->post['id'], $boxes);
@@ -678,7 +679,7 @@ HTML;
 
             if (!empty( $divs['boxes']) || !empty( $divs['snippets'])) {
 
-                $sse = \Librarian\Http\Client\json_encode($divs);
+                $sse = Utils::jsonEncode($divs);
                 $view->sseLine('data: ' . $sse . "\n\n");
             }
         }
@@ -781,7 +782,7 @@ HREF;
                 continue;
             }
 
-            $sse = \Librarian\Http\Client\json_encode($divs);
+            $sse = Utils::jsonEncode($divs);
             $view->sseLine('data: ' . $sse . "\n\n");
         }
 

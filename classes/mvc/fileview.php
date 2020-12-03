@@ -4,7 +4,7 @@ namespace Librarian\Mvc;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\Media\FileTools;
 
 /**

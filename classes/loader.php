@@ -75,13 +75,5 @@ final class Loader {
 
             require $class_file;
         }
-
-        // Load Guzzle functions.
-        if (strpos($class, 'Librarian\\Http\\Client') === 0) {
-
-            require IL_CLASS_PATH . DIRECTORY_SEPARATOR . 'http' . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'functions_include.php';
-            require IL_CLASS_PATH . DIRECTORY_SEPARATOR . 'http' . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'psr7' . DIRECTORY_SEPARATOR . 'functions_include.php';
-            require IL_CLASS_PATH . DIRECTORY_SEPARATOR . 'http' . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . 'promise' . DIRECTORY_SEPARATOR . 'functions_include.php';
-        }
     }
 }

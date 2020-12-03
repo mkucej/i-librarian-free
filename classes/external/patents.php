@@ -8,13 +8,14 @@ use DOMNodeList;
 use Exception;
 use Librarian\Http\Client\Client;
 use Librarian\Http\Client\Exception\ClientException;
+use Librarian\Http\Client\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 
 /**
  * Class Patents.
  *
- * Search Espacenet. Fetch from Google Patents.
+ * Fetch from Google Patents.
  */
 final class Patents extends ExternalDatabase implements ExternalDatabaseInterface {
 
@@ -32,8 +33,6 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
      * Constructor.
      *
      * @param DependencyInjector $di
-     * @param string $api_key
-     * @param string $api_secret
      * @throws Exception
      */
     public function __construct(DependencyInjector $di) {
@@ -59,7 +58,7 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
      *
      * @param string $number
      * @return array
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function fetch(string $number): array {
 

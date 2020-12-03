@@ -8,7 +8,7 @@ use Librarian\Container\DependencyInjector;
 use Librarian\Html\Bootstrap\Badge;
 use Librarian\Html\Element;
 use Librarian\Http\Client\Psr7;
-use Librarian\Http\Client\Psr7\Stream;
+use Librarian\Http\Client\Utils;
 use Librarian\Media\ScalarUtils;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
@@ -35,7 +35,7 @@ abstract class TextView extends View {
     protected $session;
 
     /**
-     * @var Stream
+     * @var Psr7\Stream
      */
     protected $stream;
 
@@ -99,7 +99,7 @@ abstract class TextView extends View {
     /**
      * Set/get response content type.
      *
-     * @param string $type
+     * @param string|null $type
      * @return string
      */
     public function contentType(string $type = null): string {
@@ -281,7 +281,7 @@ EOT
             // Get the whole stream contents and decode to array.
             $this->stream->rewind();
 
-            $stream_arr = \Librarian\Http\Client\json_decode($this->stream, true);
+            $stream_arr = Utils::jsonDecode($this->stream, true);
 
             if (is_array($stream_arr) === false) {
 
@@ -291,7 +291,7 @@ EOT
             // Merge the existing array with new input array.
             $stream_arr = array_merge($stream_arr, $input);
 
-            $input = \Librarian\Http\Client\json_encode($stream_arr);
+            $input = Utils::jsonEncode($stream_arr);
 
             // JSON overwrites the whole stream.
             $this->stream->rewind();
@@ -308,7 +308,7 @@ EOT
     /**
      * Overwrite the whole response stream.
      *
-     * @param string $input
+     * @param string|array $input
      * @return void
      * @throws Exception
      */
@@ -326,7 +326,7 @@ EOT
                 throw new Exception('array required for JSON response', 500);
             }
 
-            $input = \Librarian\Http\Client\json_encode($input);
+            $input = Utils::jsonEncode($input);
         }
 
         $this->stream->rewind();
@@ -512,7 +512,7 @@ EOT
      *
      * @param string $title
      */
-    protected function title($title): void {
+    protected function title(string $title): void {
 
         $this->title = $title . ' - ' . $this->title;
     }
@@ -529,7 +529,7 @@ EOT
         // No-store does not use Etag.
         if ($this->cache_settings['no-store'] === false) {
 
-            $etag = Psr7\hash($this->stream, 'md5');
+            $etag = Psr7\Utils::hash($this->stream, 'md5');
             $this->response = $this->response->withHeader('ETag', $etag);
         }
     }

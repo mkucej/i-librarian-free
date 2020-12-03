@@ -5,6 +5,7 @@ namespace LibrarianApp;
 use Exception;
 use Librarian\Html\Element;
 use Librarian\Html\Bootstrap;
+use Librarian\Http\Client\Utils;
 use Librarian\ItemMeta;
 use Librarian\Mvc\TextView;
 
@@ -213,7 +214,7 @@ class ExternalView extends TextView {
 
             $el = null;
 
-            $metadata = $this->sanitation->attr($this->sanitation->lmth(\Librarian\Http\Client\json_encode($article)));
+            $metadata = $this->sanitation->attr($this->sanitation->lmth(Utils::jsonEncode($article)));
 
             // Upload form.
 

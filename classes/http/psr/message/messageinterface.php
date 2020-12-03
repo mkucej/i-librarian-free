@@ -1,6 +1,6 @@
 <?php
 
-namespace Librarian\Http\Message;
+namespace Librarian\Http\Psr\Message;
 
 /**
  * HTTP messages consist of requests from a client to a server and responses

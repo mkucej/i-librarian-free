@@ -4,9 +4,9 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\Mvc\Controller;
-use Librarian\Http\Client\Psr7;
+use Librarian\Http\Client\Psr7\Utils;
 
 /**
  * Class PageController
@@ -73,10 +73,10 @@ class PageController extends Controller {
         // Get white page.
         try {
 
-            $fp = Psr7\try_fopen(
-                    IL_APP_PATH .
-                    DIRECTORY_SEPARATOR . 'media' .
-                    DIRECTORY_SEPARATOR . 'white.png', 'r'
+            $fp = Utils::tryFopen(
+                IL_APP_PATH .
+                DIRECTORY_SEPARATOR . 'media' .
+                DIRECTORY_SEPARATOR . 'white.png', 'r'
             );
 
         } catch (Exception $exc) {
@@ -86,7 +86,7 @@ class PageController extends Controller {
         }
 
         // View.
-        $view = new FileView($this->di, Psr7\stream_for($fp));
+        $view = new FileView($this->di, Utils::streamFor($fp));
         return $view->main();
     }
 

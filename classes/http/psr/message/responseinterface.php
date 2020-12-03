@@ -1,6 +1,6 @@
 <?php
 
-namespace Librarian\Http\Message;
+namespace Librarian\Http\Psr\Message;
 
 /**
  * Representation of an outgoing, server-side response.

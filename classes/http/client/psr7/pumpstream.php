@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Provides a read only stream that pumps data from a PHP callable.
@@ -51,7 +52,7 @@ class PumpStream implements StreamInterface
     public function __toString()
     {
         try {
-            return copy_to_string($this);
+            return Utils::copyToString($this);
         } catch (\Exception $e) {
             return '';
         }
@@ -66,6 +67,8 @@ class PumpStream implements StreamInterface
     {
         $this->tellPos = false;
         $this->source = null;
+
+        return null;
     }
 
     public function getSize()

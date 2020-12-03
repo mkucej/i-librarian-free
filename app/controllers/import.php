@@ -9,15 +9,13 @@ use Librarian\External\Nasaads;
 use Librarian\External\Pmc;
 use Librarian\External\Pubmed;
 use Librarian\External\Xplore;
-use Librarian\Http\Client\Client;
+use Librarian\Http\Client;
 use Librarian\Http\Client\Cookie\CookieJar;
 use Librarian\Http\Client\Exception\GuzzleException;
 use Librarian\Http\Client\Psr7\Response;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\Pdf;
 use Librarian\Mvc\Controller;
-use function Librarian\Http\Client\Psr7\stream_for;
-use function Librarian\Http\Client\Psr7\try_fopen;
 
 class ImportController extends Controller {
 
@@ -128,7 +126,7 @@ class ImportController extends Controller {
 
             $jar = new CookieJar();
 
-            /** @var Client $client */
+            /** @var Client\Client $client */
             $client = $this->di->get('HttpClient', [
                 [
                     'timeout' => 30,
@@ -279,8 +277,8 @@ class ImportController extends Controller {
         if (!empty($result['item_id'])) {
 
             // Open stream for the temp file.
-            $fp = try_fopen($temp_filename, 'rb');
-            $stream = stream_for($fp);
+            $fp = Client\Psr7\Utils::tryFopen($temp_filename, 'rb');
+            $stream = Client\Psr7\Utils::streamFor($fp);
 
             // Save the file.
             $model = new PdfModel($this->di);
@@ -326,7 +324,7 @@ class ImportController extends Controller {
 
                 $jar = new CookieJar();
 
-                /** @var Client $client */
+                /** @var Client\Client $client */
                 $client = $this->di->get('HttpClient', [
                     [
                         'timeout' => 30,
@@ -382,7 +380,7 @@ class ImportController extends Controller {
         // Save from the wizard UID input.
         if (isset($this->post['metadata'])) {
 
-            $metadata = \Librarian\Http\Client\json_decode($this->post['metadata'], JSON_OBJECT_AS_ARRAY);
+            $metadata = Client\Utils::jsonDecode($this->post['metadata'], JSON_OBJECT_AS_ARRAY);
             $this->post = $this->post + $metadata;
         }
 

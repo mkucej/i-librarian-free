@@ -1,6 +1,6 @@
 <?php
 
-namespace Librarian\Http\Message;
+namespace Librarian\Http\Psr\Message;
 
 /**
  * Describes a data stream.

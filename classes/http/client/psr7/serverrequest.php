@@ -3,10 +3,10 @@
 namespace Librarian\Http\Client\Psr7;
 
 use InvalidArgumentException;
-use Librarian\Http\Message\ServerRequestInterface;
-use Librarian\Http\Message\UriInterface;
-use Librarian\Http\Message\StreamInterface;
-use Librarian\Http\Message\UploadedFileInterface;
+use Librarian\Http\Psr\Message\ServerRequestInterface;
+use Librarian\Http\Psr\Message\UriInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
+use Librarian\Http\Psr\Message\UploadedFileInterface;
 
 /**
  * Server-side HTTP request
@@ -79,8 +79,10 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Return an UploadedFile instance array.
      *
      * @param array $files A array which respect $_FILES structure
-     * @throws InvalidArgumentException for unrecognized values
+     *
      * @return array
+     *
+     * @throws InvalidArgumentException for unrecognized values
      */
     public static function normalizeFiles(array $files)
     {
@@ -165,10 +167,56 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     public static function fromGlobals()
     {
+
+        if (!function_exists('getallheaders')) {
+
+            /**
+             * Get all HTTP header key/values as an associative array for the current request.
+             *
+             * @return array The HTTP header key/value pairs.
+             */
+            function getallheaders()
+            {
+                $headers = array();
+
+                $copy_server = array(
+                    'CONTENT_TYPE'   => 'Content-Type',
+                    'CONTENT_LENGTH' => 'Content-Length',
+                    'CONTENT_MD5'    => 'Content-Md5',
+                );
+
+                foreach ($_SERVER as $key => $value) {
+                    if (substr($key, 0, 5) === 'HTTP_') {
+                        $key = substr($key, 5);
+                        if (!isset($copy_server[$key]) || !isset($_SERVER[$key])) {
+                            $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', $key))));
+                            $headers[$key] = $value;
+                        }
+                    } elseif (isset($copy_server[$key])) {
+                        $headers[$copy_server[$key]] = $value;
+                    }
+                }
+
+                if (!isset($headers['Authorization'])) {
+                    if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                        $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+                    } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+                        $basic_pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+                        $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $basic_pass);
+                    } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+                        $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
+                    }
+                }
+
+                return $headers;
+            }
+
+        }
+
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $headers = getallheaders();
         $uri = self::getUriFromGlobals();
-        $body = new LazyOpenStream('php://input', 'r+');
+        $body = new CachingStream(new LazyOpenStream('php://input', 'r+'));
         $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? str_replace('HTTP/', '', $_SERVER['SERVER_PROTOCOL']) : '1.1';
 
         $serverRequest = new ServerRequest($method, $uri, $headers, $body, $protocol, $_SERVER);
@@ -180,23 +228,41 @@ class ServerRequest extends Request implements ServerRequestInterface
             ->withUploadedFiles(self::normalizeFiles($_FILES));
     }
 
+    private static function extractHostAndPortFromAuthority($authority)
+    {
+        $uri = 'http://'.$authority;
+        $parts = parse_url($uri);
+        if (false === $parts) {
+            return [null, null];
+        }
+
+        $host = isset($parts['host']) ? $parts['host'] : null;
+        $port = isset($parts['port']) ? $parts['port'] : null;
+
+        return [$host, $port];
+    }
+
     /**
      * Get a Uri populated with values from $_SERVER.
      *
      * @return UriInterface
      */
-    public static function getUriFromGlobals() {
+    public static function getUriFromGlobals()
+    {
         $uri = new Uri('');
 
         $uri = $uri->withScheme(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http');
 
         $hasPort = false;
         if (isset($_SERVER['HTTP_HOST'])) {
-            $hostHeaderParts = explode(':', $_SERVER['HTTP_HOST']);
-            $uri = $uri->withHost($hostHeaderParts[0]);
-            if (isset($hostHeaderParts[1])) {
+            list($host, $port) = self::extractHostAndPortFromAuthority($_SERVER['HTTP_HOST']);
+            if ($host !== null) {
+                $uri = $uri->withHost($host);
+            }
+
+            if ($port !== null) {
                 $hasPort = true;
-                $uri = $uri->withPort($hostHeaderParts[1]);
+                $uri = $uri->withPort($port);
             }
         } elseif (isset($_SERVER['SERVER_NAME'])) {
             $uri = $uri->withHost($_SERVER['SERVER_NAME']);
@@ -210,7 +276,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
         $hasQuery = false;
         if (isset($_SERVER['REQUEST_URI'])) {
-            $requestUriParts = explode('?', $_SERVER['REQUEST_URI']);
+            $requestUriParts = explode('?', $_SERVER['REQUEST_URI'], 2);
             $uri = $uri->withPath($requestUriParts[0]);
             if (isset($requestUriParts[1])) {
                 $hasQuery = true;

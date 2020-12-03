@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Lazily reads or writes to a file that is opened only after an IO operation
@@ -34,6 +35,6 @@ class LazyOpenStream implements StreamInterface
      */
     protected function createStream()
     {
-        return stream_for(try_fopen($this->filename, $this->mode));
+        return Utils::streamFor(Utils::tryFopen($this->filename, $this->mode));
     }
 }

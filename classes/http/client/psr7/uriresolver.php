@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\UriInterface;
+use Librarian\Http\Psr\Message\UriInterface;
 
 /**
  * Resolves a URI reference in the context of a base URI and the opposite way.

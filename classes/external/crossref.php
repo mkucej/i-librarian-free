@@ -5,6 +5,8 @@ namespace Librarian\External;
 use Exception;
 use Librarian\Http\Client\Client;
 use Librarian\Http\Client\Exception\ClientException;
+use Librarian\Http\Client\Exception\GuzzleException;
+use Librarian\Http\Client\Utils;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 
@@ -56,7 +58,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
      *
      * @param string $doi
      * @return array
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function fetch(string $doi): array {
 
@@ -68,7 +70,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
      *
      * @param array $dois
      * @return array
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     public function fetchMultiple(array $dois): array {
 
@@ -106,9 +108,10 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
      * @param array $terms Search terms [[name => term]].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [[name => value]].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [[name => value]].
+     * @param string|null $sort Optional sorting string.
      * @return array
+     * @throws GuzzleException
      * @throws Exception
      */
     public function search(
@@ -228,7 +231,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
     /**
      * Format metadata so that it is ready to be saved by the item model.
      *
-     * @param string $json
+     * @param $json
      * @return array
      * @throws Exception
      */
@@ -241,7 +244,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
         $items = [];
 
-        $array = \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $array = Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
 
         if ($array['message-type'] === 'work') {
 

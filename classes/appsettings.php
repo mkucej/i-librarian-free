@@ -4,6 +4,7 @@ namespace Librarian;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
+use Librarian\Http\Client\Utils;
 use Librarian\Security\Session;
 
 /**
@@ -140,12 +141,12 @@ final class AppSettings {
     /**
      * Get an INI setting. The ini file is always local.
      *
-     * @param  string $section
-     * @param  string $name
+     * @param string|null $section
+     * @param string|null $name
      * @return string|array
      * @throws Exception
      */
-    public function getIni($section = null, $name = null) {
+    public function getIni(string $section = null, string $name = null) {
 
         if (!isset($section)) {
 
@@ -174,11 +175,11 @@ final class AppSettings {
     /**
      * Get user settings.
      *
-     * @param  string $name
+     * @param string|null $name
      * @return array|string
      * @throws Exception
      */
-    public function getUser($name = null) {
+    public function getUser(string $name = null) {
 
         // If user settings were not saved to memory yet.
         if (!isset($this->settings['user'])) {
@@ -231,17 +232,17 @@ final class AppSettings {
     /**
      * Get global settings.
      *
-     * @param  string $name
+     * @param string|null $name
      * @return array|string
      * @throws Exception
      */
-    public function getGlobal($name = null) {
+    public function getGlobal(string $name = null) {
 
         // If global settings were not saved to memory yet.
         if (!isset($this->settings['global']) && is_readable(IL_TEMP_PATH . DIRECTORY_SEPARATOR . 'settings.json')) {
 
             $json_settings = file_get_contents(IL_TEMP_PATH . DIRECTORY_SEPARATOR . 'settings.json');
-            $this->settings['global'] = \Librarian\Http\Client\json_decode($json_settings, JSON_OBJECT_AS_ARRAY);
+            $this->settings['global'] = Utils::jsonDecode($json_settings, JSON_OBJECT_AS_ARRAY);
         }
 
         // Return requested setting(s).
@@ -276,7 +277,7 @@ final class AppSettings {
 
         $settings = array_merge($this->default_global_settings, $settings);
 
-        $global_settings = \Librarian\Http\Client\json_encode($settings, JSON_PRETTY_PRINT);
+        $global_settings = Utils::jsonEncode($settings, JSON_PRETTY_PRINT);
         file_put_contents(IL_TEMP_PATH . DIRECTORY_SEPARATOR . 'settings.json', $global_settings, LOCK_EX);
 
         // Save to memory.

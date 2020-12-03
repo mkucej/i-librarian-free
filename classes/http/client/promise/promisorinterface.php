@@ -1,4 +1,5 @@
 <?php
+
 namespace Librarian\Http\Client\Promise;
 
 /**

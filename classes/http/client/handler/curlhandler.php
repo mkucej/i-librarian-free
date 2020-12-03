@@ -1,8 +1,9 @@
 <?php
+
 namespace Librarian\Http\Client\Handler;
 
-use Librarian\Http\Client\Psr7;
-use Librarian\Http\Message\RequestInterface;
+use Librarian\Http\Client\Promise\PromiseInterface;
+use Librarian\Http\Psr\Message\RequestInterface;
 
 /**
  * HTTP handler that uses cURL easy handles as a transport layer.
@@ -10,10 +11,14 @@ use Librarian\Http\Message\RequestInterface;
  * When using the CurlHandler, custom curl options can be specified as an
  * associative array of curl option constants mapping to values in the
  * **curl** key of the "client" key of the request.
+ *
+ * @final
  */
 class CurlHandler
 {
-    /** @var CurlFactoryInterface */
+    /**
+     * @var CurlFactoryInterface
+     */
     private $factory;
 
     /**
@@ -25,20 +30,19 @@ class CurlHandler
      */
     public function __construct(array $options = [])
     {
-        $this->factory = isset($options['handle_factory'])
-            ? $options['handle_factory']
-            : new CurlFactory(3);
+        $this->factory = $options['handle_factory']
+            ?? new CurlFactory(3);
     }
 
-    public function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         if (isset($options['delay'])) {
-            usleep($options['delay'] * 1000);
+            \usleep($options['delay'] * 1000);
         }
 
         $easy = $this->factory->create($request, $options);
-        curl_exec($easy->handle);
-        $easy->errno = curl_errno($easy->handle);
+        \curl_exec($easy->handle);
+        $easy->errno = \curl_errno($easy->handle);
 
         return CurlFactory::finish($this, $easy, $this->factory);
     }

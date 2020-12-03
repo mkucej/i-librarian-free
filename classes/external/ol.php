@@ -4,6 +4,7 @@ namespace Librarian\External;
 
 use Exception;
 use Librarian\Http\Client\Client;
+use Librarian\Http\Client\Utils;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 
@@ -73,10 +74,9 @@ final class Ol extends ExternalDatabase implements ExternalDatabaseInterface {
      * @param array $terms Search terms [[name => term]].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [[name => value]].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [[name => value]].
+     * @param string|null $sort Optional sorting string.
      * @return array
-     * @throws Exception
      */
     public function search(
         array  $terms,
@@ -103,7 +103,7 @@ final class Ol extends ExternalDatabase implements ExternalDatabaseInterface {
             'items' => []
         ];
 
-        $array = \Librarian\Http\Client\json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $array = Utils::jsonDecode($json, JSON_OBJECT_AS_ARRAY);
 
         $i = 0;
         $article = current($array);

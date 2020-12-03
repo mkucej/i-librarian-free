@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 
 /**
@@ -72,7 +73,7 @@ class LimitStream implements StreamInterface
     {
         if ($whence !== SEEK_SET || $offset < 0) {
             throw new \RuntimeException(sprintf(
-                'Cannot seek to offset % with whence %s',
+                'Cannot seek to offset %s with whence %s',
                 $offset,
                 $whence
             ));

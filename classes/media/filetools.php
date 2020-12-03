@@ -4,7 +4,7 @@ namespace Librarian\Media;
 
 use Exception;
 use finfo;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 use SplFileObject;
 
 final class FileTools {

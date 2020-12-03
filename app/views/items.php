@@ -10,6 +10,7 @@ use Librarian\Export\Ris;
 use Librarian\Html\Bootstrap;
 use Librarian\Html\Bootstrap\Icon;
 use Librarian\Html\Element;
+use Librarian\Http\Client\Utils;
 use Librarian\ItemMeta;
 use Librarian\Media\Temporal;
 use Librarian\Mvc\TextView;
@@ -1644,7 +1645,7 @@ EOT;
             ];
         }
 
-        $items_json = \Librarian\Http\Client\json_encode($csl_items, JSON_INVALID_UTF8_SUBSTITUTE);
+        $items_json = Utils::jsonEncode($csl_items, JSON_INVALID_UTF8_SUBSTITUTE);
         $items_json = str_replace(['\r', '\n', '\r\n'], ' ', $items_json);
         $items_json = str_replace('\\', '\\\\', $items_json);
         $items_json = str_replace('"', '\\"', $items_json);

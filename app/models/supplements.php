@@ -3,7 +3,7 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Class SupplementsModel.

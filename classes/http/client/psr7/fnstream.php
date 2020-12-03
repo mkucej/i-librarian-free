@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Compose stream implementations based on a hash of functions.
@@ -34,6 +35,7 @@ class FnStream implements StreamInterface
 
     /**
      * Lazily determine which methods are not implemented.
+     *
      * @throws \BadMethodCallException
      */
     public function __get($name)
@@ -50,6 +52,15 @@ class FnStream implements StreamInterface
         if (isset($this->_fn_close)) {
             call_user_func($this->_fn_close);
         }
+    }
+
+    /**
+     * An unserialize would allow the __destruct to run when the unserialized value goes out of scope.
+     * @throws \LogicException
+     */
+    public function __wakeup()
+    {
+        throw new \LogicException('FnStream should never be unserialized');
     }
 
     /**

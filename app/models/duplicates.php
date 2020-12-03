@@ -3,8 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
+use Librarian\Http\Client\Psr7\Utils;
 use PDO;
-use \Librarian\Http\Client\Psr7;
 
 /**
  * Class DuplicatesModel.
@@ -135,7 +135,7 @@ EOT;
                 $filepath = $this->idToPdfPath($empty_id);
 
                 $pdf_stream = $this->readFile($filepath);
-                $pdf_hash = Psr7\hash($pdf_stream, 'md5');
+                $pdf_hash = Utils::hash($pdf_stream, 'md5');
 
                 $columns_update = [
                     $pdf_hash,

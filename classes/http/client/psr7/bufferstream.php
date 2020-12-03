@@ -1,7 +1,8 @@
 <?php
+
 namespace Librarian\Http\Client\Psr7;
 
-use Librarian\Http\Message\StreamInterface;
+use Librarian\Http\Psr\Message\StreamInterface;
 
 /**
  * Provides a buffer stream that can be written to to fill a buffer, and read
@@ -49,6 +50,8 @@ class BufferStream implements StreamInterface
     public function detach()
     {
         $this->close();
+
+        return null;
     }
 
     public function getSize()
