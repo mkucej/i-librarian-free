@@ -55,8 +55,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         parent::__construct($di);
 
         // Acquire green light.
-        $this->queue->lane('nasa');
-        $this->queue->wait();
+        $this->queue->wait('nasa');
 
         // Get current request count limit from SHM.
         $count = $this->queue->count();
@@ -110,6 +109,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         // Save counts to queue.
         $this->queue->count($limit_total - $limit_remaining);
         $this->queue->maxCount($limit_total);
+        $this->queue->release('nasa');
 
         // No more requests allowed.
         if ((integer) $limit_remaining === 1) {
@@ -254,6 +254,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
             // Save counts to queue.
             $this->queue->count($limit_total - $limit_remaining);
             $this->queue->maxCount($limit_total);
+            $this->queue->release('nasa');
 
             // No more requests allowed.
             if ((integer) $limit_remaining === 1) {

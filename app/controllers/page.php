@@ -63,6 +63,37 @@ class PageController extends Controller {
     }
 
     /**
+     * PDF page thumb preview.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function previewAction(): string {
+
+        if (!isset($this->get['id'])) {
+
+            throw new Exception("the parameter <kbd>id</kbd> is required", 400);
+        }
+
+        $this->validation->id($this->get['id']);
+
+        if (!isset($this->get['number'])) {
+
+            throw new Exception("the parameter <kbd>number</kbd> is required", 400);
+        }
+
+        $this->validation->intRange($this->get['number'], 1, 100000);
+
+        // Get icon.
+        $model = new PageModel($this->di);
+        $stream = $model->getPreview($this->get['id'], $this->get['number']);
+
+        // View.
+        $view = new FileView($this->di, $stream);
+        return $view->main();
+    }
+
+    /**
      * Empty page placeholder - white background.
      *
      * @return StreamInterface
@@ -144,12 +175,12 @@ class PageController extends Controller {
         $model = new PageModel($this->di);
 
         $stream = $model->getCroppedPage(
-            $this->get['id'],
-            $this->get['page'],
-            $this->get['x'],
-            $this->get['y'],
-            $this->get['width'],
-            $this->get['height']
+            (int) $this->get['id'],
+            (int) $this->get['page'],
+            (int) $this->get['x'],
+            (int) $this->get['y'],
+            (int) $this->get['width'],
+            (int) $this->get['height']
         );
 
         $view = new FileView($this->di, $stream);

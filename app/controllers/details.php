@@ -127,7 +127,7 @@ class DetailsController extends Controller {
             'pdftotext',
             'pdfinfo',
             'pdftohtml',
-            'pdftocairo',
+            'pdftoppm',
             'gs',
             'tesseract',
             'soffice'
@@ -148,17 +148,17 @@ class DetailsController extends Controller {
         /** @var string $pdftotext */
         /** @var string $pdfinfo */
         /** @var string $pdftohtml */
-        /** @var string $pdftocairo */
+        /** @var string $pdftoppm */
         /** @var string $gs */
         /** @var string $tesseract */
         /** @var string $soffice */
 
         $details['binaries'] = [
-            'Poppler pdftotext'  => $pdftotext,
-            'Poppler pdfinfo'    => $pdfinfo,
-            'Poppler pdftohtml'  => $pdftohtml,
-            'Poppler pdftocairo' => $pdftocairo,
-            'Ghostscript'        => $gs,
+            'Poppler pdftotext' => $pdftotext,
+            'Poppler pdfinfo'   => $pdfinfo,
+            'Poppler pdftohtml' => $pdftohtml,
+            'Poppler pdftoppm'  => $pdftoppm,
+            'Ghostscript'       => $gs,
             'Tesseract OCR (optional)' => $tesseract,
             'LibreOffice (optional)'   => $soffice
         ];

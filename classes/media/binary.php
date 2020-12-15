@@ -5,17 +5,11 @@ namespace Librarian\Media;
 use Exception;
 use Librarian\AppSettings;
 use Librarian\Container\DependencyInjector;
-use Librarian\Queue\Queue;
 
 /**
  * Class to return correct commands for executable programs.
  */
 final class Binary {
-
-    /**
-     * @var Queue
-     */
-    private $queue;
 
     /**
      * @var AppSettings
@@ -35,7 +29,6 @@ final class Binary {
      */
     public function __construct(DependencyInjector $di) {
 
-        $this->queue    = $di->getShared('Queue');
         $this->settings = $di->getShared('AppSettings');
 
         // Set the OS.
@@ -98,6 +91,16 @@ final class Binary {
      * @return string
      * @throws Exception
      */
+    public function pdftoppm(bool $check = false): string {
+
+        return $this->command('pdftoppm', $check);
+    }
+
+    /**
+     * @param bool $check
+     * @return string
+     * @throws Exception
+     */
     public function ghostscript(bool $check = false): string {
 
         return $this->command('gs', $check);
@@ -132,10 +135,6 @@ final class Binary {
      * @throws Exception
      */
     private function command(string $binary, bool $check): string {
-
-        // Select a lane and wait for the green light.
-        $this->queue->lane('binary');
-        $this->queue->wait();
 
         $binary = $this->withPath($binary);
 
@@ -204,6 +203,7 @@ final class Binary {
             case 'pdftotext':
             case 'pdftohtml':
             case 'pdftocairo':
+            case 'pdftoppm':
 
                 $name = $this->os === 'WINDOWS' ? "{$binary}.exe" : $binary;
                 $path = IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'poppler' . DIRECTORY_SEPARATOR . $name;

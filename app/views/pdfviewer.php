@@ -467,7 +467,7 @@ EOT;
                     alt="{$this->lang->t9n('Page')}"
                     class="lazy"
                     src="{$IL_BASE_URL}index.php/page/empty"
-                    data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1"
+                    data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number=1"
                     width="{$tw}"
                     height="{$th}">
                     <div class="bg-secondary">1</div>
@@ -500,7 +500,7 @@ EOT;
                     <img
                         alt="{$this->lang->t9n('Page')}"
                         src="{$IL_BASE_URL}index.php/page/empty"
-                        data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
+                        data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number={$number}"
                         class="lazy"
                         width="{$tw}"
                         height="{$th}">

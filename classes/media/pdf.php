@@ -28,7 +28,7 @@ final class Pdf {
     /**
      * @var Queue
      */
-//    private $queue;
+    private $queue;
 
     /**
      * Pdf constructor.
@@ -45,6 +45,7 @@ final class Pdf {
         }
 
         $this->di = $di;
+        $this->queue = $this->di->getShared('Queue');
         $this->binary = $this->di->getShared('Binary');
         $this->file = $file;
         $this->page_resolution = 96;
@@ -186,7 +187,12 @@ SQL;
 
             // Run pdfinfo, save, and return metadata.
             $raw = [];
+
+            $this->queue->wait('binary');
+
             exec($this->binary->pdfinfo() . ' -enc UTF-8 -f 1 -l 10000 -box ' . escapeshellarg($this->file), $raw);
+
+            $this->queue->release('binary');
 
             foreach ($raw as $line) {
 
@@ -293,7 +299,11 @@ SQL;
 
         if ($page_count === 0) {
 
+            $this->queue->wait('binary');
+
             exec($this->binary->pdfinfo() . ' -enc "UTF-8" -f 1 -l 1 ' . escapeshellarg($this->file), $raw);
+
+            $this->queue->release('binary');
 
             foreach ($raw as $line) {
 
@@ -314,17 +324,19 @@ SQL;
     }
 
     /**
-     * Extract a page as an image. We use pdftocairo, because it can correctly apply cropbox
+     * Extract a page as an image. We use pdftoppm, because it can correctly apply cropbox
      * dimensions when extracting image from a PDF page.
      *
      * @param int|string$pageNumber
      * @param string $type
      * @param int|string|null $resolution
-     * @param string $engine pdfcairo or gs
+     * @param string $engine pdftoppm or gs
      * @return string
      * @throws Exception
      */
-    public function pageToImage($pageNumber, $type = 'jpg', $resolution = null, $engine = 'pdftocairo'): string {
+    public function pageToImage($pageNumber, $type = 'jpg', $resolution = null, $engine = 'pdftoppm'): string {
+
+        $this->queue->wait('binary');
 
         $resolution = isset($resolution) ? $resolution : $this->page_resolution;
         $imagePath = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid();
@@ -337,10 +349,20 @@ SQL;
 
                 if ($engine === 'pdftocairo') {
 
-                    $imagePath = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file);
                     $device = $type === 'jpg' ? 'jpeg -jpegopt quality=85' : 'png';
 
                     exec($this->binary->pdftocairo()
+                        . " -f {$pageNumber} -l {$pageNumber} -singlefile -cropbox "
+                        . " -r {$resolution} -{$device} "
+                        . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
+
+                    $imagePath = "{$imagePath}.{$type}";
+
+                } elseif ($engine === 'pdftoppm') {
+
+                    $device = $type === 'jpg' ? 'jpeg -jpegopt quality=85' : 'png';
+
+                    exec($this->binary->pdftoppm()
                         . " -f {$pageNumber} -l {$pageNumber} -singlefile -cropbox "
                         . " -r {$resolution} -{$device} "
                         . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
@@ -371,8 +393,6 @@ SQL;
 
             case 'pnggray':
 
-                $imagePath = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid();
-
                 exec($this->binary->ghostscript() . " -sDEVICE=pnggray -r{$resolution}"
                     . " -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dDOINTERPOLATE -dUseCropBox"
                     . " -dFirstPage={$pageNumber} -dLastPage={$pageNumber} -o "
@@ -384,6 +404,8 @@ SQL;
                 throw new Exception("cannot convert PDF to this image type", 400);
         }
 
+        $this->queue->release('binary');
+
         // Image must exist -> error.
         if (!is_file($imagePath)) {
 
@@ -394,7 +416,7 @@ SQL;
     }
 
     /**
-     * Crop PDF page to an image. Used by a JS PDF cropper. We use pdftocairo, because it can correctly apply cropbox
+     * Crop PDF page to an image. Used by a JS PDF cropper. We use pdftoppm, because it can correctly apply cropbox
      * dimensions when extracting image from a PDF page.
      *
      * @param  int $page
@@ -407,8 +429,8 @@ SQL;
      */
     public function cropPageToImage(int $page, int $x, int $y, int $w, int $h): string {
 
-        // SVG is always 96 dpi. To make the image 300 dpi, we must multiply the args.
-        $ratio = 300 / 96;
+        // The pages in the viewer are are 288 dpi. To make the image 300 dpi, we must multiply the args.
+        $ratio = 300 / 288;
         $x = round($ratio * $x);
         $y = round($ratio * $y);
         $w = round($ratio * $w);
@@ -416,11 +438,15 @@ SQL;
 
         $img_path = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid();
 
+        $this->queue->wait('binary');
+
         // Create image.
-        exec($this->binary->pdftocairo()
+        exec($this->binary->pdftoppm()
             . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=90"
             . " -r 300 -x {$x} -y {$y} -W {$w} -H {$h} -cropbox "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
+
+        $this->queue->release('binary');
 
         // Image must exist -> error.
         if (!is_file($img_path . '.jpg')) {
@@ -432,7 +458,7 @@ SQL;
     }
 
     /**
-     * Create icon/thumb. We use pdftocairo, because it can correctly apply cropbox dimensions when extracting image
+     * Create icon/thumb. We use pdftoppm, because it can correctly apply cropbox dimensions when extracting image
      * from a PDF page.
      *
      * @param int $page
@@ -448,11 +474,15 @@ SQL;
 
         $img_path = $path ?? IL_CACHE_PATH . DIRECTORY_SEPARATOR . 'icons' . DIRECTORY_SEPARATOR . uniqid();
 
+        $this->queue->wait('binary');
+
         // Create image.
-        exec($this->binary->pdftocairo()
+        exec($this->binary->pdftoppm()
             . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=80 -r 96 -cropbox"
             . " -scale-to-x {$width} -scale-to-y -1 -x 0 -y 0 -W {$width} -H {$height} "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
+
+        $this->queue->release('binary');
 
         // Image must exist -> error.
         if (!is_file($img_path . '.jpg')) {
@@ -535,8 +565,12 @@ SQL;
         $tmpFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . '-temp.txt';
         $txtFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . '.txt';
 
+        $this->queue->wait('binary');
+
         exec($this->binary->pdftotext() . ' -enc UTF-8 '
             . escapeshellarg($this->file) . ' ' . escapeshellarg($tmpFile));
+
+        $this->queue->release('binary');
 
         // Binary failed -> quiet exit.
         if (!is_file($tmpFile)) {
@@ -843,11 +877,6 @@ EOT;
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
 
-        // This class is run exclusively on the whole server.
-//        $this->queue = $this->di->getShared('Queue');
-//        $this->queue->lane('pdfextract');
-//        $this->queue->lock();
-
         $sql_metadata_select = <<<'EOT'
 SELECT has_text
     FROM metadata
@@ -906,8 +935,12 @@ EOT;
         // Get boxes.
         $html_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('boxes_') . '.html';
 
+        $this->queue->wait('binary');
+
         exec($this->binary->pdftotext() . " -bbox -enc \"UTF-8\" -f {$page_from} -l {$page_end} "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($html_file));
+
+        $this->queue->release('binary');
 
         // Binary failed -> quiet exit.
         if (!is_file($html_file)) {
@@ -932,7 +965,7 @@ EOT;
         foreach ($pages as $page) {
 
             /*
-             * Pdftotext gives coordinates relative to MediaBox, whereas Pdftocairo works with CropBox.
+             * Pdftotext gives coordinates relative to MediaBox, whereas pdftoppm works with CropBox.
              */
 
             // Get Cropbox size and offsets.
@@ -1037,8 +1070,12 @@ EOT;
         // Add links.
         $xml_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('links_') . '.xml';
 
+        $this->queue->wait('binary');
+
         exec($this->binary->pdftohtml() . " -nodrm -q -enc \"UTF-8\" -nomerge -i -hidden -xml -f {$page_from} -l {$page_end} "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xml_file));
+
+        $this->queue->release('binary');
 
         $db = $this->openDb();
         $db->connect();
@@ -1066,7 +1103,7 @@ EOT;
         foreach ($pages as $page) {
 
             /*
-             * Pdftohtml gives coordinates relative to MediaBox in px, whereas Pdftocairo works with CropBox and pts.
+             * Pdftohtml gives coordinates relative to MediaBox in px, whereas pdftoppm works with CropBox and pts.
              */
 
             // Get Cropbox size and offsets.
@@ -1152,8 +1189,12 @@ EOT;
             $xmlFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . "p{$page}.xml";
         }
 
+        $this->queue->wait('binary');
+
         exec($this->binary->pdftohtml() . " -nodrm {$pages} -enc UTF-8 -nomerge -i -hidden -xml "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xmlFile));
+
+        $this->queue->release('binary');
 
         // Binary failed -> quiet exit.
         if (!is_file($xmlFile)) {
@@ -1294,9 +1335,13 @@ NOTE
 
         if (file_exists($pdfmark_file)) {
 
+            $this->queue->wait('binary');
+
             exec($this->binary->ghostscript() . ' -o ' . escapeshellarg($output_file) .
                 ' -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite ' .
                 escapeshellarg($pdfmark_file) . ' ' . escapeshellarg($this->file));
+
+            $this->queue->release('binary');
         }
 
         return $output_file;

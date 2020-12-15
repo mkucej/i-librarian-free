@@ -11,6 +11,7 @@ use Librarian\Http\Client\Psr7\Utils;
 use Librarian\Http\Psr\Message\StreamInterface;
 use Librarian\Media\Binary;
 use Librarian\Media\FileTools;
+use Librarian\Queue\Queue;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
 use Librarian\Security\Validation;
@@ -418,9 +419,16 @@ EOT;
             putenv('HOME=' . IL_TEMP_PATH);
         }
 
+        /** @var Queue $queue */
+        $queue = $this->di->getShared('Queue');
+
+        $queue->wait('binary');
+
         exec($this->binary->soffice() . ' --invisible --convert-to pdf:writer_pdf_Export --outdir ' .
             escapeshellarg(IL_TEMP_PATH) . ' ' . escapeshellarg($filename)
         );
+
+        $queue->release('binary');
 
         if (PHP_OS === 'Linux' || PHP_OS === 'Darwin') {
 

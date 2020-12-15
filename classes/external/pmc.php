@@ -32,9 +32,6 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
         parent::__construct($di);
 
-        // Set queue lane.
-        $this->queue->lane('pubmed');
-
         $this->client = $this->di->get('HttpClient', [
             [
                 'timeout' => 30,
@@ -78,7 +75,13 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             'retmode' => 'xml'
         ];
 
+        // Acquire semaphore.
+        $this->queue->wait('pubmed');
+
+        // Get results.
         $response = $this->client->get($this->url_fetch . http_build_query($params));
+
+        $this->queue->release('pubmed');
 
         $items = $this->formatMetadata($response->getBody()->getContents());
 
@@ -104,7 +107,8 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
         string $sort = null
     ): array {
 
-        $maximum_rows = 100;
+        // Max rows to fetch (100) can be overridden with $rows.
+        $maximum_rows = max(100, $rows);
 
         $allowed_params = [
             'AB'      => 'Abstract',
@@ -223,20 +227,19 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
         if (empty($items)) {
 
             // Acquire semaphore.
-            $this->queue->wait();
+            $this->queue->wait('pubmed');
 
             // Get results.
             $response = $this->client->get($this->url_search . http_build_query($params));
-            $contents = $response->getBody()->getContents();
 
+            $this->queue->release('pubmed');
+
+            $contents = $response->getBody()->getContents();
             $json = json_decode($contents, true);
 
             $items['items'] = [];
 
             if (!empty($json['esearchresult']['idlist'])) {
-
-                // Acquire another semaphore.
-                $this->queue->wait();
 
                 $items = $this->fetchMultiple($json['esearchresult']['idlist']);
             }
