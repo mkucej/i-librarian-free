@@ -321,6 +321,12 @@ EOT;
             throw new Exception('permissions prevent renaming the file', 500);
         }
 
+        // Windows fix.
+        if (is_writable($new_name)) {
+
+            unlink($new_name);
+        }
+
         $rename = rename($old_name, $new_name);
 
         if ($rename === false) {

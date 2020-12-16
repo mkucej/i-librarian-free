@@ -156,6 +156,12 @@ class SupplementsModel extends AppModel {
         $oldfilepath = $this->idToSupplementPath($item_id) . rawurlencode($oldname);
         $newfilepath = $this->idToSupplementPath($item_id) . rawurlencode($newname);
 
+        // Windows fix.
+        if (is_writable($newfilepath)) {
+
+            unlink($newfilepath);
+        }
+
         rename($oldfilepath, $newfilepath);
     }
 

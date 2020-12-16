@@ -315,6 +315,11 @@ final class FileCache {
             case 'icons':
             case 'pages':
                 // Value is a file pathname. Move file to cache location.
+                // Windows fix.
+                if (is_writable($filename)) {
+
+                    unlink($filename);
+                }
                 return rename($value, $filename);
 
             default:

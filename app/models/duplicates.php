@@ -305,6 +305,12 @@ SQL;
                 $basename = substr(basename($file), 9);
                 $newfilepath = $this->idToSupplementPath($first_id) . $basename;
 
+                // Windows fix.
+                if (is_writable($newfilepath)) {
+
+                    unlink($newfilepath);
+                }
+
                 rename($file, $newfilepath);
             }
         }

@@ -1084,6 +1084,12 @@ EOT;
         $key = $security->getRandomKey(32);
         $safe_name = IL_TEMP_PATH . DIRECTORY_SEPARATOR . $key . '.jpg';
 
+        // Windows fix.
+        if (is_writable($safe_name)) {
+
+            unlink($safe_name);
+        }
+
         rename($image_path, $safe_name);
 
         return $key;
