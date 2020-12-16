@@ -67,11 +67,6 @@ final class Queue {
      */
     public function wait(string $lane): bool {
 
-        if (isset($this->semaphores[$lane]) === false) {
-
-            throw new Exception('unknown queue lane specified');
-        }
-
         // Set lane property;
         $this->lane = $lane;
 
@@ -82,6 +77,11 @@ final class Queue {
             // there are APIs that could ban the server, if RPS is too high.
             $this->delay();
             return true;
+        }
+
+        if (isset($this->semaphores[$lane]) === false) {
+
+            throw new Exception('unknown queue lane specified');
         }
 
         // Acquire semaphore.
@@ -104,6 +104,11 @@ final class Queue {
      */
     public function release(string $lane): void {
 
+        if (function_exists('sem_get') === false) {
+
+            return;
+        }
+
         if (isset($this->semaphores[$lane]) === false) {
 
             throw new Exception('unknown queue lane specified');
@@ -112,11 +117,6 @@ final class Queue {
         if ($this->lane !== $lane) {
 
             throw new Exception('incorrect queue lane specified');
-        }
-
-        if (function_exists('sem_get') === false) {
-
-            return;
         }
 
         // Release the semaphore lock.
