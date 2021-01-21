@@ -2289,9 +2289,11 @@ EOT;
 
         $item_ids = array_column($item_rows, 'item_id');
 
-        // Item placeholder.
-        $item_placeholders = array_fill(0, count($item_ids), '?');
-        $item_placeholder  = join(',', $item_placeholders);
+        // Item SQL placeholder.
+        // We can't parameterize ids because of an old SQLite limit - SQLITE_MAX_VARIABLE_NUMBER = 999.
+        // Instead we will cast the array members to integers and hardcode id list into the SQL statement.
+        $item_ids = array_map('intval', $item_ids);
+        $item_placeholder  = join(',', $item_ids);
 
         // Keep item ordering.
         $item_ordering = '';
@@ -2325,7 +2327,7 @@ SELECT
     END
 EOT;
 
-            $this->db_main->run($sql, $item_ids);
+            $this->db_main->run($sql);
 
             $i = 0;
             $output = [];
@@ -2409,7 +2411,7 @@ SELECT
     END
 EOT;
 
-            $this->db_main->run($sql, $item_ids);
+            $this->db_main->run($sql);
 
             $i = 0;
             $output = [];
@@ -2504,7 +2506,7 @@ SELECT items.id, items.title, items.abstract, items.added_time
     END
 EOT;
 
-            $this->db_main->run($sql, $item_ids);
+            $this->db_main->run($sql);
 
             $i = 0;
             $output = [];
@@ -2564,7 +2566,7 @@ SELECT
     END
 EOT;
 
-            $this->db_main->run($sql, $item_ids);
+            $this->db_main->run($sql);
             $output = $this->db_main->getResultRows();
 
             $count = count($output);
