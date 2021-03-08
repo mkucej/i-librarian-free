@@ -288,7 +288,7 @@ final class Validation {
     public function id($value): void {
 
         $this->num($value);
-        $this->intRange($value, 1, (int) pow(2, 31));
+        $this->intRange($value, 1, PHP_INT_MAX);
     }
 
     /**
