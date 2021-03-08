@@ -121,7 +121,7 @@ EOT;
 
         // Save rehashed password to db.
         if (is_string($rehash)) {
-            
+
             $this->db_main->run($sql_update, [$rehash, $row['id']]);
         }
 
@@ -193,10 +193,14 @@ EOT;
         $sql = <<<'EOT'
 SELECT id
     FROM users
-    WHERE username=?
+    WHERE lower(username) = ?
 EOT;
 
-        $this->db_main->run($sql, [$data['username']]);
+        $columns = [
+            strtolower($data['username'])
+        ];
+
+        $this->db_main->run($sql, $columns);
 
         $user_id = $this->db_main->getResult();
 
@@ -206,10 +210,14 @@ EOT;
             $sql = <<<'EOT'
 SELECT id
     FROM users
-    WHERE email = ?
+    WHERE lower(email) = ?
 EOT;
 
-            $this->db_main->run($sql, [$data['email']]);
+            $columns = [
+                strtolower($data['email'])
+            ];
+
+            $this->db_main->run($sql, $columns);
 
             $user_id = $this->db_main->getResult();
         }
@@ -271,7 +279,7 @@ EOT;
             $sql = <<<'EOT'
 UPDATE users
     SET password = '', email = ?, first_name = ?, last_name = ?, permissions = ?, changed_time = CURRENT_TIMESTAMP
-    WHERE username = ?
+    WHERE id = ?
 EOT;
 
             $columns = [
@@ -279,7 +287,7 @@ EOT;
                 !empty($data['first_name']) ? $data['first_name'] : null,
                 !empty($data['last_name']) ? $data['last_name'] : null,
                 $data['permissions'],
-                $data['username']
+                $user_id
             ];
 
             $this->db_main->run($sql, $columns);
@@ -287,11 +295,11 @@ EOT;
             $sql = <<<'EOT'
 SELECT id_hash
     FROM users
-    WHERE username = ?
+    WHERE id = ?
 EOT;
 
             $columns = [
-                $data['username']
+                $user_id
             ];
 
             $this->db_main->run($sql, $columns);
