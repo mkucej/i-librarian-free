@@ -1529,6 +1529,16 @@ EOT;
                 $this->setDisposition($disposition, $filename);
                 break;
 
+            case 'bibtexabs':
+                /** @var Bibtex $formatter */
+                $formatter = $this->di->get('BibtexExport');
+                $output = $formatter->format($items['items'], true);
+                $this->append($output);
+                $filename = 'export.bib';
+                $this->contentType('text');
+                $this->setDisposition($disposition, $filename);
+                break;
+
             case 'citation':
                 $this->citationList($items['items'], $style);
                 $filename = 'export.html';
@@ -1810,6 +1820,19 @@ SCRIPT;
         $el->value('bibtex');
         $el->checked('checked');
         $el->label('B<span style="font-size: 0.85rem">IB</span>T<div class="d-inline-block" style="transform: translateY(2px)">E</div>X');
+        $inputs .= $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('export-radio3-2');
+        $el->type('radio');
+        $el->name('export');
+        $el->value('bibtexabs');
+        $el->checked('checked');
+        $el->label('B<span style="font-size: 0.85rem">IB</span>T<div class="d-inline-block" style="transform: translateY(2px)">E</div>X + ' . $this->lang->t9n('abstracts'));
         $inputs .= $el->render();
 
         $el = null;

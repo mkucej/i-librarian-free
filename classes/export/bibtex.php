@@ -33,10 +33,11 @@ class Bibtex {
 
     /**
      * @param array $items
+     * @param bool $abstracts Include abstracts?
      * @return string
      * @throws Exception
      */
-    public function format(array $items): string {
+    public function format(array $items, bool $abstracts = false): string {
 
         $output = '';
 
@@ -53,7 +54,7 @@ class Bibtex {
             $output .= $this->prettyTag('title') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['TITLE']] ?? 'No title') . '},' . PHP_EOL;
 
             // Abstract
-            if (!empty($item[ItemMeta::COLUMN['ABSTRACT']])) {
+            if ($abstracts && !empty($item[ItemMeta::COLUMN['ABSTRACT']])) {
 
                 $output .= $this->prettyTag('abstract') . '{' . $this->prettyValue($item[ItemMeta::COLUMN['ABSTRACT']]) . '},' . PHP_EOL;
             }
