@@ -433,6 +433,20 @@ EOT;
             $el = null;
         }
 
+        /** @var Bootstrap\Select $el */
+        $el = $this->di->get('Select');
+
+        $el->name('keyword_separator');
+        $el->id('keyword-separator');
+        $el->label('Keyword separator');
+        $el->option('new line', '');
+        $el->option(',', ',');
+        $el->option(';', ';');
+        $el->option('/', '/');
+        $selects['keyword_separator'] = $el->render();
+
+        $el = null;
+
         // Textareas.
         $tas = [];
         $ta_names = [
@@ -510,6 +524,7 @@ EOT;
             . $inputs['bibtex_id']
             . $selects['bibtex_type']
             . $tas['keywords']
+            . $selects['keyword_separator']
             . $typeaheads['custom1']
             . $typeaheads['custom2']
             . $typeaheads['custom3']

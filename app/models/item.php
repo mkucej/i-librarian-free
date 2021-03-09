@@ -605,7 +605,9 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_unique(array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']])));
+            $separator = empty($item['keyword_separator']) ? "\n" : $item['keyword_separator'];
+            $keywords = array_unique(array_filter(explode($separator, $item[ItemMeta::COLUMN['KEYWORDS']])));
+            $keywords = array_map('trim', $keywords);
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
@@ -1232,7 +1234,9 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_unique(array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']])));
+            $separator = empty($item['keyword_separator']) ? "\n" : $item['keyword_separator'];
+            $keywords = array_unique(array_filter(explode($separator, $item[ItemMeta::COLUMN['KEYWORDS']])));
+            $keywords = array_map('trim', $keywords);
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
