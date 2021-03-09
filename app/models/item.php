@@ -605,11 +605,11 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']]));
+            $keywords = array_unique(array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']])));
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter($item[ItemMeta::COLUMN['KEYWORDS']]);
+            $keywords = array_unique(array_filter($item[ItemMeta::COLUMN['KEYWORDS']]));
         }
 
         $keyword_select = <<<EOT
@@ -1232,11 +1232,11 @@ EOT;
 
         if (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_string($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']]));
+            $keywords = array_unique(array_filter(explode("\n", $item[ItemMeta::COLUMN['KEYWORDS']])));
 
         } elseif (isset($item[ItemMeta::COLUMN['KEYWORDS']]) && is_array($item[ItemMeta::COLUMN['KEYWORDS']])) {
 
-            $keywords = array_filter($item[ItemMeta::COLUMN['KEYWORDS']]);
+            $keywords = array_unique(array_filter($item[ItemMeta::COLUMN['KEYWORDS']]));
         }
 
         $keyword_delete = <<<EOT
