@@ -249,8 +249,7 @@ class Bibtex {
 
         $value = str_replace('&', '\&', $value);
         $value = str_replace('%', '\%', $value);
-//        $value = str_replace('$', '\$', $value);
 
-        return preg_replace('/(\p{Lu}{2,})/u', '{$1}', $value);
+        return preg_replace('/(\p{Lu}+)/u', '{$1}', $value);
     }
 }
