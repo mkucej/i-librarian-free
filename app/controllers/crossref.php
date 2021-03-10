@@ -128,9 +128,16 @@ class CrossrefController extends Controller {
             $items['items'] = $model->uidsExist($items['items']);
         }
 
+        $model = new ProjectModel($this->di);
+        $projects = $model->list();
+        $model = null;
+
+        $model = new TagsModel($this->di);
+        $tags = $model->getTags('library');
+
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("Crossref", $items, $from, $items['search_name'] ?? '');
+        return $view->results("Crossref", $items, $from, $items['search_name'] ?? '', $projects, $tags);
     }
 
     /**

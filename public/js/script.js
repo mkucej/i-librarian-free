@@ -1069,6 +1069,13 @@ class OmnitoolForm {
                                 $(this).parent().parent().removeClass('d-none');
                             }
                         });
+                        $('#omnitool-tags .tag-table').find('tr').each(function() {
+                            if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                                $(this).addClass('d-none');
+                            } else {
+                                $(this).removeClass('d-none');
+                            }
+                        });
                     }
                 });
             });
@@ -1146,6 +1153,13 @@ class AdvancedSearch {
                         $(this).parent().parent().addClass('d-none');
                     } else {
                         $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $('#search-tags .tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
                     }
                 });
             }
@@ -2860,6 +2874,13 @@ class TagsItemView extends View {
                         $(this).parent().parent().removeClass('d-none');
                     }
                 });
+                $('.tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
             }
         });
     }
@@ -4018,6 +4039,24 @@ class ImportUidView extends View {
     afterRender(data) {
         formStyle.init();
         $('#upload-form').uploadable();
+        $('#tag-filter').filterable({
+            complete: function () {
+                $('#content-col .label-text').each(function () {
+                    if ($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $('.tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
     uidResolve(e) {
         let uidVal = $.trim($(this).val());
@@ -4270,6 +4309,24 @@ class ImportFileView extends View {
     afterRender(data) {
         formStyle.init();
         $('#upload-form').uploadable();
+        $('#tag-filter').filterable({
+            complete: function () {
+                $('#content-col .label-text').each(function () {
+                    if ($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $('.tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
 }
 
@@ -4283,6 +4340,24 @@ class ImportTextView extends View {
     afterRender(data) {
         formStyle.init();
         $('#upload-form').uploadable();
+        $('#tag-filter').filterable({
+            complete: function () {
+                $('#content-col .label-text').each(function () {
+                    if ($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $('.tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
 }
 
@@ -4312,6 +4387,24 @@ class ImportManualView extends View {
             }
         });
         this.editmain.uploadFormWidgets();
+        $('#tag-filter').filterable({
+            complete: function () {
+                $('#content-col .label-text').each(function () {
+                    if ($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $('.tag-table').find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
 }
 
@@ -4384,19 +4477,36 @@ class ExternalSearchView extends View {
         this.parent = '#content-col';
         this.events = {
             'click .add-pdf-btn': 'makeUploadable',
-            'click button': 'makeUploadableBtn'
+            'click button': 'makeUploadable'
         };
     }
     afterRender(data) {
+        formStyle.init();
         $(window).off('resize.ExternalSearchView').on('resize.ExternalSearchView', function () {
             views.itemsmain.itemsHeight();
         });
         views.itemsmain.itemsHeight();
+        $('#content-col .tag-filter').filterable({
+            complete: function () {
+                let $par = $(this).closest('.collapse'), $tab = $(this).closest('.collapse').find('table');
+                $par.find('.label-text').each(function () {
+                    if ($(this).hasClass('d-none')) {
+                        $(this).parent().parent().addClass('d-none');
+                    } else {
+                        $(this).parent().parent().removeClass('d-none');
+                    }
+                });
+                $tab.find('tr').each(function() {
+                    if($(this).find('.label-text').length - $(this).find('.label-text.d-none').length === 0) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
+                });
+            }
+        });
     }
     makeUploadable() {
-        $(this).parent().find('form').uploadable();
-    }
-    makeUploadableBtn() {
         $(this).closest('form').uploadable();
     }
 }

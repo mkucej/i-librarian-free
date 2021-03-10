@@ -317,10 +317,23 @@ EOT
         $el = $this->di->get('Textarea');
 
         $el->id('tags-new');
-        $el->type('checkbox');
         $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
+
+        $el = null;
+
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter');
+        $el->name('tag_filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->label($this->lang->t9n('Tags'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
+        $el->attr('data-targets', '.label-text');
+        $tag_filter = $el->render();
 
         $el = null;
 
@@ -400,6 +413,7 @@ EOT
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
+                    $tag_filter
                     $tag_checkboxes
                 </div>
             </div>
@@ -861,10 +875,23 @@ EOT;
         $el = $this->di->get('Textarea');
 
         $el->id('tags-new');
-        $el->type('checkbox');
         $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
+
+        $el = null;
+
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter');
+        $el->name('tag_filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->label($this->lang->t9n('Tags'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
+        $el->attr('data-targets', '.label-text');
+        $tag_filter = $el->render();
 
         $el = null;
 
@@ -938,6 +965,7 @@ EOT;
             </div>
             <div class="collapse" id="tags">
                 $tags_ta
+                $tag_filter
                 $tag_checkboxes
             </div>
 EOT
@@ -1146,10 +1174,23 @@ EOT
         $el = $this->di->get('Textarea');
 
         $el->id('tags-new');
-        $el->type('checkbox');
         $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
+
+        $el = null;
+
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter');
+        $el->name('tag_filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->label($this->lang->t9n('Tags'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
+        $el->attr('data-targets', '.label-text');
+        $tag_filter = $el->render();
 
         $el = null;
 
@@ -1218,6 +1259,7 @@ EOT
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
+                    $tag_filter
                     $tag_checkboxes
                 </div>
             </div>
@@ -1365,10 +1407,23 @@ BODY
         $el = $this->di->get('Textarea');
 
         $el->id('tags-new');
-        $el->type('checkbox');
         $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
         $el->name('new_tags');
         $tags_ta = $el->render();
+
+        $el = null;
+
+        // Filter input.
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('tag-filter');
+        $el->name('tag_filter');
+        $el->placeholder($this->lang->t9n('Filter-VERB'));
+        $el->label($this->lang->t9n('Tags'));
+        $el->ariaLabel($this->lang->t9n('Filter-VERB'));
+        $el->attr('data-targets', '.label-text');
+        $tag_filter = $el->render();
 
         $el = null;
 
@@ -1450,6 +1505,7 @@ HELP;
                 </div>
                 <div class="collapse ml-3" id="tags">
                     $tags_ta
+                    $tag_filter
                     $tag_checkboxes
                 </div>
             </div>

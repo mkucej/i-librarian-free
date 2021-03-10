@@ -28,11 +28,20 @@ class ExternalView extends TextView {
      * @param $items
      * @param $from
      * @param string $search_name
+     * @param array $projects
+     * @param array $tags
      * @param array $terms
      * @return string
      * @throws Exception
      */
-    public function results($database, $items, $from, $search_name = '', $terms = []) {
+    public function results(
+        string $database,
+        array $items,
+        int $from,
+        string $search_name,
+        array $projects,
+        array $tags,
+        $terms = []): string {
 
         $get = $this->request->getQueryParams();
         $trimmed_get = $this->sanitation->trim($get);
@@ -42,8 +51,7 @@ class ExternalView extends TextView {
 
         $this->head();
 
-        $this->item_meta = $this->di->getShared('ItemMeta');
-
+        // Breadcrumb.
         $search_name = empty($search_name) ? '' : "&ndash; $search_name";
 
         /** @var Bootstrap\Breadcrumb $el */
@@ -57,6 +65,7 @@ class ExternalView extends TextView {
 
         $el = null;
 
+        // Item count, paging.
         $page_from = $this->scalar_utils->formatNumber($from);
         $page_to = $this->scalar_utils->formatNumber($from + count($items['items']) - 1);
         $found = $this->scalar_utils->formatNumber($items['found'] ?? 0);
@@ -70,6 +79,7 @@ class ExternalView extends TextView {
             $item_count = "<div class=\"text-muted w-100 pb-3 pb-xl-0\">{$this->lang->t9n('Results')} $page_from - $page_to of $found</div>";
         }
 
+        // Shared HTML components.
         /** @var Bootstrap\Button $el */
         $el = $this->di->get('Button');
 
@@ -89,10 +99,6 @@ class ExternalView extends TextView {
         $chevron = $el->render();
 
         $el = null;
-
-        // Items.
-        $titles = '';
-        $i = 1;
 
         /** @var Bootstrap\Badge $el */
         $el = $this->di->get('Badge');
@@ -116,13 +122,13 @@ class ExternalView extends TextView {
 
                 $part = trim($part);
 
-                // Ignore tags.
+                // Ignore search tags.
                 if (mb_strpos($part, '[') === 0) {
 
                     continue;
                 }
 
-                // Ignore NASA tag.
+                // Ignore NASA tags.
                 $part = strpos($part, ':') !== false ? strstr($part, ':') : $part;
 
                 // Ignore booleans.
@@ -150,6 +156,10 @@ class ExternalView extends TextView {
 
         $patterns = array_unique($patterns);
 
+        // Items.
+        $titles = '';
+        $i = 1;
+
         // Found items.
         foreach ($items['items'] as $article) {
 
@@ -174,7 +184,7 @@ class ExternalView extends TextView {
 
                 if ($last_last_name !== $article[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][0]) {
 
-                    $author .= $this->sanitation->html(" ...{$last_last_name}");
+                    $author .= ' &hellip;' . $this->sanitation->html($last_last_name);
 
                     // First name.
                     $last_first_name = $article[ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][($author_count - 1)] ?? '';
@@ -195,29 +205,18 @@ class ExternalView extends TextView {
 
             $publication = empty($publication) ? $this->lang->t9n('No publication title') : $publication;
 
-            // Abstract with search tern highlighting.
+            // Abstract with search term highlighting.
             $abstract = preg_replace($patterns, '<mark>$1</mark>', $this->sanitation->html($article[ItemMeta::COLUMN['ABSTRACT']] ?? ''));
 
             // Links.
             $link     = $article[ItemMeta::COLUMN['URLS']][0] ?? null;
             $pdf_link = $article[ItemMeta::COLUMN['URLS']][1] ?? null;
 
-            /** @var Element $el */
-            $el = $this->di->get('Element');
-
-            $el->elementName('div');
-            $el->addClass('cursor-pointer d-inline-block mb-2 add-pdf-btn');
-            $el->dataToggle('collapse');
-            $el->dataTarget("#pdf-form-{$i}");
-            $el->html("{$chevron}{$this->lang->t9n('Add PDF')}");
-            $pdf_button = $el->render();
-
-            $el = null;
-
             $metadata = $this->sanitation->attr($this->sanitation->lmth(Utils::jsonEncode($article)));
 
             // Upload form.
 
+            // Metadata.
             /** @var Bootstrap\Input $el Metadata. */
             $el = $this->di->get('Input');
 
@@ -227,6 +226,135 @@ class ExternalView extends TextView {
             $hidden = $el->render();
 
             $el = null;
+
+            // Clipboard.
+            /** @var Bootstrap\Input $el */
+            $el = $this->di->get('Input');
+
+            $el->id("clipboard-checkbox-{$i}");
+            $el->groupClass('mb-3');
+            $el->type('checkbox');
+            $el->inline(true);
+            $el->label($this->lang->t9n('Clipboard'));
+            $el->name('clipboard');
+            $el->value('1');
+            $clipboard_check = $el->render();
+
+            $el = null;
+
+            // Projects.
+            $project_checks = '';
+
+            foreach ($projects['active_projects'] as $project) {
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->id("project-checkbox-{$project['id']}-{$i}");
+                $el->groupClass('mb-3');
+                $el->type('checkbox');
+                $el->inline(true);
+                $el->label($project['project']);
+                $el->name('projects[]');
+                $el->value($project['id']);
+                $project_checks .= $el->render();
+
+                $el = null;
+            }
+
+            // New tags.
+            /** @var Bootstrap\Textarea $el */
+            $el = $this->di->get('Textarea');
+
+            $el->id("tags-new-{$i}");
+            $el->label("{$this->lang->t9n('New tags')} ({$this->lang->t9n('one per line')})");
+            $el->name('new_tags');
+            $tags_ta = $el->render();
+
+            $el = null;
+
+            // Filter input.
+            /** @var Bootstrap\Input $el */
+            $el = $this->di->get('Input');
+
+            $el->id("tag-filter-{$i}");
+            $el->addClass('tag-filter');
+            $el->name('tag_filter');
+            $el->placeholder($this->lang->t9n('Filter-VERB'));
+            $el->label($this->lang->t9n('Tags'));
+            $el->attr('data-targets', "#tags-{$i} .label-text");
+            $tag_filter = $el->render();
+
+            $el = null;
+
+            // Tags.
+            $first_letter = '';
+            $j = 0;
+
+            $tag_checkboxes =
+<<<HTML
+<table class="tag-table">
+    <tr>
+        <td style="width:2.25rem">
+        </td>
+        <td>
+HTML;
+
+            foreach ($tags as $tag_id => $tag) {
+
+                $first_letter2 = mb_strtoupper($this->scalar_utils->deaccent($tag[0] === '' ? '' : mb_substr($tag, 0, 1, 'UTF-8')), 'UTF-8');
+
+                // New letter.
+                if ($first_letter2 !== $first_letter) {
+
+                    /** @var Bootstrap\Badge $el */
+                    $el = $this->di->get('Badge');
+
+                    $el->context('warning');
+                    $el->addClass('d-inline-block mr-2 mb-2');
+                    $el->style('width: 1.33rem');
+                    $el->html($first_letter2);
+                    $letter_badge = $el->render();
+
+                    $el = null;
+
+                    $tag_checkboxes .=
+<<<HTML
+        </td>
+    </tr>
+    <tr>
+        <td style="width:2.25rem">
+            $letter_badge
+        </td>
+        <td>
+HTML;
+
+                    $first_letter = $first_letter2;
+                }
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->id("tag-checkbox-$i-$j");
+                $el->type('checkbox');
+                $el->name("tags[]");
+                $el->value($tag_id);
+                $el->label($tag);
+                $el->inline(true);
+
+                $tag_checkboxes .= $el->render();
+
+                $el = null;
+
+                $j++;
+            }
+
+            $tag_checkboxes .=
+<<<HTML
+        </td>
+    </tr>
+</table>
+HTML;
 
             // We put CSRF key here, because the JS file upload plugin has its own AJAX methods.
 
@@ -245,25 +373,45 @@ class ExternalView extends TextView {
 
             $el->addClass('save-form');
             $el->action(IL_BASE_URL . 'index.php/import/manual');
-            $el->append(<<<EOT
-                <div id="pdf-form-{$i}" class="collapse" style="width: 290px">
-                    {$this->sharedFileInput(false, $pdf_link)}
-                </div>
-EOT
+            $el->append(
+<<<HTML
+<div class="add-pdf-btn d-inline-block cursor-pointer mb-2" data-toggle="collapse" data-target="#pdf-form-{$i}">
+    {$chevron}{$this->lang->t9n('Add PDF')}
+</div><br>
+<div id="pdf-form-{$i}" class="collapse" style="width: 290px">
+    {$this->sharedFileInput(false, $pdf_link)}
+</div>
+<div class="d-inline-block cursor-pointer mb-2" data-toggle="collapse" data-target="#collections-{$i}">
+    {$chevron}{$this->lang->t9n('Add to')}
+</div><br>
+<div class="collapse" id="collections-{$i}">
+    $clipboard_check $project_checks
+</div>
+<div class="d-inline-block cursor-pointer mb-3" data-toggle="collapse" data-target="#tags-{$i}">
+    {$chevron}{$this->lang->t9n('Tag with')}
+</div><br>
+<div class="collapse" id="tags-{$i}">
+    $tags_ta
+    $tag_filter
+    $tag_checkboxes
+</div>
+$hidden
+$csrf_input
+$save
+HTML
             );
-            $el->append("$hidden $csrf_input $save");
             $form = $el->render();
 
             $el = null;
 
-            $title = <<<EOT
+            $title =
+<<<HTML
 $exists
-                <h5><a href="{$link}">{$title}</a></h5>
-                <p>$author <span class="ml-1">({$year})</span> <i class="ml-1">$publication</i></p>
-                <p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
-                $pdf_button
-                <div>$form</div>
-EOT;
+<h5><a href="{$link}">{$title}</a></h5>
+<p>$author <span class="ml-1">({$year})</span> <i class="ml-1">$publication</i></p>
+<p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
+<div>$form</div>
+HTML;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
@@ -295,6 +443,7 @@ EOT;
 
         $el = null;
 
+        // Toolbar.
         $btn_class = self::$theme === 'dark' ? 'secondary' : 'outline-dark';
         $bar_class = self::$theme === 'dark' ? 'bg-secondary' : 'list-group-item-secondary';
 

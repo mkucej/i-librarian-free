@@ -126,9 +126,16 @@ class PmcController extends Controller {
             $items['items'] = $model->uidsExist($items['items']);
         }
 
+        $model = new ProjectModel($this->di);
+        $projects = $model->list();
+        $model = null;
+
+        $model = new TagsModel($this->di);
+        $tags = $model->getTags('library');
+
         // View.
         $view = new ExternalView($this->di);
-        return $view->results("Pubmed Central", $items, $from, $items['search_name'], $terms);
+        return $view->results("Pubmed Central", $items, $from, $items['search_name'], $projects, $tags, $terms);
     }
 
     /**
