@@ -262,7 +262,7 @@ EOT;
             } else {
 
                 // This MIME not allowed. Delete file.
-                $this->deleteFile($filepath);
+                $this->deleteFile($new_path);
                 throw new Exception('uploaded file is not a PDF or a supported type', 400);
             }
         }
