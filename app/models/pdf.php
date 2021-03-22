@@ -1142,4 +1142,133 @@ EOT;
 
         $this->pdf_object->saveJsonBoxes($boxes);
     }
+
+    /**
+     * Scan PDF text for a DOI and save it to item.
+     *
+     * @param int $item_id
+     * @return array
+     * @throws Exception
+     */
+    protected function _scanDOIAndSave(int $item_id): array {
+
+        $output = [
+            'doi' => ''
+        ];
+
+        // Check if ID exists.
+        if ($this->idExists($item_id) === false) {
+
+            throw new Exception('this item does not exist', 404);
+        }
+
+        // Does PDF exist?
+        if ($this->isPdf($item_id) === false) {
+
+            return $output;
+        }
+
+        // Get PDF text.
+        $sql_sel = <<<'EOT'
+SELECT full_text
+    FROM ind_items
+    WHERE id = ?
+EOT;
+
+        $columns_ins = [
+            (integer) $item_id
+        ];
+
+        $this->db_main->run($sql_sel, $columns_ins);
+        $pdf_text = gzdecode($this->db_main->getResult());
+
+        if (empty($pdf_text)) {
+
+            return $output;
+        }
+
+        preg_match('/10\.\d{4,5}\.?\d*\/\S+/ui', $pdf_text, $match, PREG_OFFSET_CAPTURE);
+
+        if (isset($match[0][0])) {
+
+            // First match.
+            $doi = $match[0][0];
+            $offset = $match[0][1];
+
+            // Remove punctuation marks from the end.
+            if (in_array(substr($doi, -1), ['.', ',', ';']) === true) {
+
+                $doi = substr($doi, 0, -1);
+            }
+
+            // Extract DOI from parentheses.
+            if ($offset > 0) {
+
+                if (substr($doi, -1) === ')' && $pdf_text[($offset - 1)] === '(') {
+
+                    $doi = substr($doi, 0, -1);
+                }
+
+                if (substr($doi, -1) === ']' && $pdf_text[($offset - 1)] === '[') {
+
+                    $doi = substr($doi, 0, -1);
+                }
+            }
+
+            // Save DOI to item.
+            if (!empty($doi)) {
+
+                $sql_uid_find = <<<SQL
+SELECT id
+    FROM uids
+    WHERE item_id = ? AND uid_type = 'DOI'
+SQL;
+
+                $sql_uid_update = <<<SQL
+UPDATE
+    uids
+    SET uid = ?
+    WHERE item_id = ? AND uid_type = 'DOI'
+SQL;
+
+                $sql_uid_insert = <<<SQL
+INSERT INTO uids
+    (uid_type, uid, item_id)
+    VALUES ('DOI', ?, ?)
+SQL;
+
+                $this->db_main->beginTransaction();
+
+                $columns_uid = [
+                    $item_id
+                ];
+
+                // DOI exists?
+                $this->db_main->run($sql_uid_find, $columns_uid);
+                $exists = $this->db_main->getResult();
+
+                $columns_uid = [
+                    $doi,
+                    $item_id
+                ];
+
+                if (!empty($exists)) {
+
+                    // Update DOI.
+                    $this->db_main->run($sql_uid_update, $columns_uid);
+
+                } else {
+
+                    // Add new DOI.
+                    $this->db_main->run($sql_uid_insert, $columns_uid);
+                }
+
+                $this->db_main->commit();
+            }
+
+            $output['doi'] = $doi;
+        }
+
+        return $output;
+    }
 }

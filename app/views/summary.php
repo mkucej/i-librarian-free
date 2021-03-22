@@ -201,7 +201,6 @@ EOT;
         }
 
         // I, Librarian stable link.
-        $IL_BASE_URL = IL_BASE_URL;
         $links .= "<a class=\"mr-3\" href=\"{$IL_BASE_URL}stable.php?id={$item['id']}\">{$this->lang->t9n('Stable link')}</a>";
 
         // Project button.
@@ -335,8 +334,6 @@ TOP
         foreach ($item['files'] as $file) {
 
             if ($file['name'] === 'graphical_abstract') {
-
-                $IL_BASE_URL = IL_BASE_URL;
 
                 $graphical_abstract = <<<GRAPHICAL
                     <img alt="Graphical abstract" class="w-100" src="{$IL_BASE_URL}index.php/supplements/download?id={$item['id']}&filename=graphical_abstract">
@@ -533,11 +530,39 @@ EOT;
             </table>
 UIDS;
 
-        if (!empty($item[ItemMeta::COLUMN['UID_TYPES']])) {
+        $uids .= <<<UIDS
+            <table class="table {$dark_table} table-borderless table-sm table-hover w-100 m-0 mb-3">
+UIDS;
+
+        // We have PDF, but no DOI.
+        if (!empty($item['file_hash']) && (empty($item[ItemMeta::COLUMN['UID_TYPES']]) || array_search('DOI', $item[ItemMeta::COLUMN['UID_TYPES']]) === false)) {
+
+            /** @var Bootstrap\Button $el */
+            $btn = $this->di->get('Button');
+
+            $btn->context('outline-danger');
+            $btn->addClass('rescan-pdf ml-2 mb-1');
+            $btn->componentSize('small');
+            $btn->attr('data-url', "{$IL_BASE_URL}index.php/pdf/scandoiandsave?id={$item['id']}");
+            $btn->html($this->lang->t9n('Rescan PDF'));
+            $rescan_btn = $btn->render();
+
+            $btn = null;
 
             $uids .= <<<UIDS
-                <table class="table {$dark_table} table-borderless table-sm table-hover w-100 m-0">
+                <tr>
+                    <td class="pl-4">
+                        <b>DOI</b><br>
+                        {$this->lang->t9n('Missing DOI?')} $rescan_btn
+                    </td>
+                    <td class="pr-4 align-middle">
+                        &nbsp;
+                    </td>
+                </tr>
 UIDS;
+        }
+
+        if (!empty($item[ItemMeta::COLUMN['UID_TYPES']])) {
 
             foreach ($item[ItemMeta::COLUMN['UID_TYPES']] as $key => $type) {
 
@@ -640,10 +665,11 @@ UIDS;
 UIDS;
             }
 
-            $uids .= <<<UIDS
+        }
+
+        $uids .= <<<UIDS
             </table>
 UIDS;
-        }
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');

@@ -790,4 +790,32 @@ HREF;
 
         return '';
     }
+
+    /**
+     * Rescan PDF text for DOI and save it.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function scandoiandsaveAction(): string {
+
+        // Authorization.
+        $this->authorization->signedId(true);
+
+        if (!isset($this->get['id'])) {
+
+            throw new Exception("the parameter id is required", 400);
+        }
+
+        $this->validation->id($this->get['id']);
+
+        $model = new PdfModel($this->di);
+        $doi = $model->scanDOIAndSave($this->get['id']);
+
+        $view = new DefaultView($this->di);
+        return $view->main([
+            'doi'  => $doi['doi'],
+            'info' => empty($doi['doi']) ? 'No DOI found' : 'DOI found'
+        ]);
+    }
 }

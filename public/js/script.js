@@ -2507,7 +2507,8 @@ class SummaryMainView extends View {
             'click .project': 'project',
             'click #open-export': exportform.init,
             'submit .form-uid': 'submitForm',
-            'click .open-notes': 'openNotes'
+            'click .open-notes': 'openNotes',
+            'click .rescan-pdf': 'rescanPdf'
         };
     }
     afterRender(data) {
@@ -2701,6 +2702,12 @@ class SummaryMainView extends View {
             $nw.find('.close').off('click.notes').on('click.notes', function () {
                 $('#notes-window').addClass('d-none');
             });
+        });
+    }
+    rescanPdf() {
+        let link = $(this).data('url');
+        $.when(model.load({url: link})).done(function () {
+            B.history.loadUrl();
         });
     }
 }
