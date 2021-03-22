@@ -50,6 +50,29 @@ h5 {
     background-color: rgba(55,60,65,0.5);
 }
 
+#signin-form {
+    visibility: hidden;
+}
+
+#signin-loader {
+    position: absolute;
+    left: calc(50% - 60px);
+    top: calc(50% - 60px);
+    border-style: solid;
+    border-width: 10px !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .content-light {
     background-color: #f2f3f6;
 }
@@ -69,7 +92,6 @@ h5 {
 #pdfviewer-bookmarks ::placeholder, #pdfviewer-menu ::placeholder  {
     color: rgba(0,0,0,0.4);
 }
-
 
 .form-group label {
     font-weight: bold;

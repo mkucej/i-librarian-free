@@ -180,7 +180,7 @@ HTML
 
         $el->context('primary');
         $el->addClass('d-inline-block text-left border-0 mb-3');
-        $el->body($form, null, 'pt-3');
+        $el->body($form . '<div id="signin-loader" class="border-light"></div>', null, 'pt-3');
         $card = $el->render();
 
         $el = null;

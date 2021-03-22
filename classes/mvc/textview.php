@@ -405,6 +405,8 @@ EOT
                         inlineMath: [['$', '$']]
                     }
                 };
+                $('#signin-form').css('visibility','visible').hide().fadeIn(150);
+                $('#signin-loader').hide();
 EOT;
             $this->script = $csrf_script . $this->script;
         }
