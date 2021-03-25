@@ -427,6 +427,18 @@ img.img-night-mode {
     }
 }
 
+#left-item-list {
+    width: 230px;
+}
+
+#left-item-list .left-item-link {
+    line-height: 1.57rem;
+    color: inherit;
+    hyphens: auto;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
 /* Vertical layout. */
 
 @media (max-width: 991px) {
@@ -673,6 +685,10 @@ small {
 
 .bg-darker-5 {
     background-color: rgba(0, 10, 30, 0.05);
+}
+
+.bg-darker-10 {
+    background-color: rgba(0, 10, 30, 0.1);
 }
 
 .bg-lighter-5 {

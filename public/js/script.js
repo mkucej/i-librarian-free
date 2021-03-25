@@ -1764,7 +1764,7 @@ class DashboardMainView extends View {
             pages_read_label,
             pages_read
         );
-        sessionStore.save('il.idList', data.id_list);
+        sessionStore.delete('il.idList');
     }
 }
 
@@ -2522,6 +2522,11 @@ class SummaryMainView extends View {
         $(window).off('resize.SummaryMainView').on('resize.SummaryMainView', function () {
             This.itemHeight();
         });
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
         $('#delete-item').confirmable({
             submit: function () {
                 $.when(model.save({url: window.IL_BASE_URL + 'index.php/item/delete', data: {id: $('body').data('id')}})).done(function () {
@@ -2537,35 +2542,25 @@ class SummaryMainView extends View {
             let thisHParts = $(this).attr('href').split('id=');
             $(this).attr('href', thisHParts[0] + 'id=' + anId);
         });
-        // Navigation buttons.
+        // Navigation buttons. Id list: [{id:1,title:foo},{id=2,title:bar}]
         let itemList = sessionStore.load('il.idList');
         if (itemList) {
-            let prevId = itemList[itemList.indexOf(anId) - 1],
-                nextId = itemList[itemList.indexOf(anId) + 1];
-            if (prevId === undefined) {
+            let prevItem = itemList[itemList.indexOf(itemList.find(o => o.id === anId)) - 1],
+                nextItem = itemList[itemList.indexOf(itemList.find(o => o.id === anId)) + 1];
+            if (prevItem === undefined) {
                 $('#summary-previous').addClass('disabled').attr('tabindex', '-1').attr('aria-disabled', 'true');
             } else {
-                $('#summary-previous').attr('href', '#summary?id=' + prevId);
+                $('#summary-previous').attr('href', '#summary?id=' + prevItem['id']);
             }
-            if (nextId === undefined) {
+            if (nextItem === undefined) {
                 $('#summary-next').addClass('disabled').attr('tabindex', '-1').attr('aria-disabled', 'true');
             } else {
-                $('#summary-next').attr('href', '#summary?id=' + nextId);
+                $('#summary-next').attr('href', '#summary?id=' + nextItem['id']);
             }
         } else {
             $('#summary-next, #summary-previous').remove();
         }
         $('#autoupload-doi-form').saveable();
-        // Item id changed. Load notes, reload editor if notes initialized.
-        if ($('#id-hidden').val() !== anId) {
-            $.when(model.load({url: window.IL_BASE_URL + 'index.php/notes/user', data: {id: anId}})).done(function (response) {
-                $('#notes-ta').val(response.user.note);
-                $('#id-hidden').val(anId);
-                if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
-                    window.tinymce.activeEditor.load();
-                }
-            });
-        }
     }
     itemHeight() {
         let bH = $('#bottom-row').outerHeight();
@@ -2730,6 +2725,11 @@ class NotesMainView extends View {
         let params = (new URL('http://foo.bar/' + location.hash.substring(1))).searchParams,
             anId = params.get('id') || '';
         $('body').attr('data-id', anId).data('id', anId);
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
 }
 
@@ -2749,6 +2749,11 @@ class EditMainView extends View {
     }
     afterRender(data) {
         this.uploadFormWidgets();
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
     bindForm(e) {
         e.preventDefault();
@@ -2832,6 +2837,11 @@ class ItemdiscussionMainView extends View {
     afterRender(data) {
         // Messages timer.
         this.messagesId = setInterval(this.refreshMessages, 10000);
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
     bindForm(e) {
         e.preventDefault();
@@ -2890,6 +2900,11 @@ class TagsItemView extends View {
                 });
             }
         });
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
     /**
      * Create new item tags.
@@ -2976,6 +2991,11 @@ class SupplementsMainView extends View {
                 });
             }
         });
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
     renameFile() {
         let $l = $(this).closest('li').find('.filename-link'),
@@ -3055,18 +3075,22 @@ class PdfMainView extends View {
             'click #pdfviewer-new-note-btn': 'createNewNote',
             'click .pdflink': 'openLink'
         };
+    }
+    afterRender(data) {
         this.selectable = undefined;
         let This = this;
         this.throttledZoom = _.throttle(function (zoom) {
             This.pageZoom(zoom);
         }, 500, {leading: true, trailing: true});
-    }
-    afterRender(data) {
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
         // No PDF.
         if ($('#pdfviewer-pages').length === 0) {
             return;
         }
-        let This = this;
         formStyle.init();
         $('#content-col').find('[data-toggle="tooltip"]').tooltip();
         // Id in body tag for HTML view.
@@ -3109,7 +3133,7 @@ class PdfMainView extends View {
         // Set initial page zoom.
         this.pageZoom(store.load('il.pageZoom') || 'screen');
         // Page change detection on scroll stop.
-        $('.pdfviewer-right').on('scroll', function () {
+        $('.pdfviewer-right').off('scroll').on('scroll', function () {
             clearTimeout($.data(window, 'scrollTimer'));
             $.data(window, 'scrollTimer', setTimeout(function () {
                 $('.pdfviewer-right > div').each(function () {
@@ -3128,6 +3152,9 @@ class PdfMainView extends View {
         if (typeof This.selectable === 'object') {
             This.selectable.disable();
             This.selectable.destroy();
+        }
+        if (typeof This.cropper === 'object') {
+            This.destroyCropper();
         }
         // Search param.
         let params = {}, e = $.Event("keyup");
@@ -3225,10 +3252,6 @@ class PdfMainView extends View {
      * @param {number} pgNum
      */
     setPageNumber(pgNum) {
-        if (pgNum === this.page) {
-            // No change.
-            return false;
-        }
         let This = this;
         // Use delay, to prevent rapid firing.
         if (typeof this.pageTimer !== 'undefined') {
@@ -4015,6 +4038,11 @@ class PdfManageView extends View {
         $('body').off('submit.pdfmanage').on('submit.pdfmanage', '#ocr-form', function (e) {
             e.preventDefault();
         });
+        // Title list.
+        if (typeof itemview === 'object') {
+            itemview.clickTitle();
+            itemview.changeTitleLink();
+        }
     }
 }
 
@@ -4948,6 +4976,82 @@ class ItemView {
             $.when(model.save({url: window.IL_BASE_URL + 'index.php/authentication/signout'})).done(function () {
                 location.assign(window.IL_BASE_URL);
             });
+        });
+        // Init title list.
+        let itemList = sessionStore.load('il.idList');
+        if (itemList === null || itemList.length < 2) {
+            $('#left-item-list').addClass('d-none');
+        } else {
+            // Fetch the template link.
+            let $l = $('#left-item-list .left-item-link').detach(), href = $l.attr('href');
+            itemList.forEach(function (v) {
+                let isActive = v.id === anId ? 'bg-darker-10' : '';
+                $l.clone().addClass(isActive).attr('href', href.replace('{ID}', v.id)).attr('data-id', v.id).html(v.title).appendTo('#left-item-list');
+            });
+            $l = undefined;
+            $('#left-item-list').removeClass('d-none').hide().fadeIn();
+        }
+    }
+    /**
+     * Title menu click. Change active class in title list. Change left menu link ids.
+     */
+    clickTitle() {
+        let $par = $('#left-item-list'),
+            $activeLink = $('#left-item-list .left-item-link.bg-darker-10');
+        if ($activeLink.length === 0) {
+            $par.addClass('d-none')
+            sessionStore.delete('il.idList');
+            return;
+        }
+        if ($par.hasClass('d-none')) {
+            return;
+        }
+        let params = (new URL('http://foo.bar/' + location.hash.substring(1))).searchParams,
+            anId = params.get('id') || '';
+        // Add active class.
+        $('#left-item-list .left-item-link').each(function () {
+            $(this).removeClass('bg-darker-10');
+            if ($(this).attr('data-id') === anId) {
+                $(this).addClass('bg-darker-10');
+            }
+        });
+        // Scroll to active title.
+        let activePos = $activeLink.position().top,
+            parTop = $par.scrollTop(),
+            activeBox = $activeLink[0].getBoundingClientRect(),
+            parBox = $par[0].getBoundingClientRect();
+        if (activeBox.top < 10 || (parBox.bottom - activeBox.bottom) < 10) {
+            $par.animate({
+                'scrollTop': parTop + activePos - ($(window).height() / 3)
+            }, 250);
+        }
+        // Change url id parameters.
+        $('a.add-id-link').each(function () {
+            let thisHParts = $(this).attr('href').split('id=');
+            $(this).attr('href', thisHParts[0] + 'id=' + anId);
+        });
+        $('body').attr('data-id', anId).data('id', anId);
+        // Open notes. Item id changed. Load notes, reload editor if notes initialized.
+        if ($('#id-hidden').length === 1 && $('#id-hidden').val() !== anId) {
+            $.when(model.load({url: window.IL_BASE_URL + 'index.php/notes/user', data: {id: anId}})).done(function (response) {
+                $('#notes-ta').val(response.user.note);
+                $('#id-hidden').val(anId);
+                if (window.tinymce.activeEditor !== null && window.tinymce.activeEditor.initialized === true) {
+                    window.tinymce.activeEditor.load();
+                }
+            });
+        }
+    }
+    /**
+     * Main menu click. Change title link paths based on a current address bar link.
+     */
+    changeTitleLink() {
+        if ($('#left-item-list').hasClass('d-none')) {
+            return;
+        }
+        let href = '#' + (new URL('http://foo.bar/' + location.hash.substring(1))).pathname.substring(1);
+        $('#left-item-list .left-item-link').each(function () {
+            $(this).attr('href', href + '?id=' + $(this).attr('data-id'));
         });
     }
 }

@@ -137,11 +137,11 @@ class ItemView extends TextView {
             'submenu' => [
                 [
                     'label' => $this->lang->t9n('User profile'),
-                    'link'  => '#profile/main'
+                    'link'  => IL_BASE_URL . 'index.php/#profile/main'
                 ],
                 [
                     'label' => $this->lang->t9n('User settings'),
-                    'link'  => '#settings/main'
+                    'link'  => IL_BASE_URL . 'index.php/#settings/main'
                 ],
                 [
                     'label' => "<div id=\"sign-out\">{$this->lang->t9n('Sign out')}</div>",
@@ -377,11 +377,18 @@ EOT
 
         // Top HTML structure.
 
+        $title_list_class = self::$theme === 'dark' ? 'bg-dark text-white' : 'bg-white';
+
         $this->append(<<<EOT
             <div class="container-fluid h-100">
-                <div class="row">
+                <div class="row h-100">
                     <div class="left-container col-lg-auto p-0">
                         $sidebar
+                    </div>
+                    <div class="col-lg-auto d-none d-xl-flex p-0 h-100 {$title_list_class}">
+                        <div id="left-item-list" class="h-100 overflow-auto d-none">
+                            <a class="left-item-link d-block px-3" href="#summary?id={ID}"></a>
+                        </div>
                     </div>
                     <div class="col" id="content-col"></div>
                 </div>
@@ -396,10 +403,7 @@ EOT
         $this->scriptLink('js/tinymce/tinymce.min.js');
 
         $this->script(<<<EOT
-            $(function(){
-                new ItemView();
-            });
-
+            let itemview = new ItemView();
 EOT
         );
 

@@ -251,9 +251,20 @@ class ItemsView extends TextView {
 
         $html = "$page_rows $quick_search $advanced_search";
 
+        // ID list.
+        $id_list = [];
+
+        foreach ($input['items'] as $item) {
+
+            $id_list[] = [
+                'id'    => $item['id'],
+                'title' => trim(mb_substr($item['title'], 0, 75)) . (mb_strlen($item['title']) > 75 ? '&hellip;' : '')
+            ];
+        }
+
         $this->append([
             'html'    => $html,
-            'id_list' => array_column($input['items'], 'id')
+            'id_list' => $id_list
         ]);
 
         return $this->send();
