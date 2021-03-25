@@ -100,7 +100,7 @@ EOT;
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
-        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Others\' notes')}</b> $note_button");
+        $el->header("<b class=\"text-uppercase\">{$this->lang->t9n('Others\' notes')}</b>");
         $el->listGroup($notes_list);
         $others_card = $el->render();
 
