@@ -70,7 +70,7 @@ EOT;
                 $this->append($iframe);
             }
 
-            $this->scriptLink('js/plugins.js');
+            $this->scriptLink('js/plugins.min.js');
             $this->end();
 
         } elseif ($this->contentType() === 'json') {

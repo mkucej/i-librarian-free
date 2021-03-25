@@ -244,7 +244,7 @@ EOT
          * End.
          */
 
-        $this->scriptLink('js/plugins.js');
+        $this->scriptLink('js/plugins.min.js');
 
         $this->script(<<<EOT
             $(function(){

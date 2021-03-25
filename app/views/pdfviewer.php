@@ -39,7 +39,7 @@ class PdfViewerView extends TextView {
                 $this->styleLink('css/plugins.css');
                 $this->head();
                 $this->append($alert);
-                $this->scriptLink('js/plugins.js');
+                $this->scriptLink('js/plugins.min.js');
                 $this->end();
 
             } elseif ($this->contentType() === 'json') {
@@ -537,7 +537,7 @@ EOT;
 
             $this->append("<div class=\"container-fluid\">{$row}</div>");
 
-            $this->scriptLink('js/plugins.js');
+            $this->scriptLink('js/plugins.min.js');
 
             $this->script = <<<EOT
                 $(function(){

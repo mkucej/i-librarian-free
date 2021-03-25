@@ -189,7 +189,7 @@ I18N
              * End.
              */
 
-            $this->scriptLink('js/plugins.js');
+            $this->scriptLink('js/plugins.min.js');
 
             // HTML unauthenticated.
             if ($this->response->getStatusCode() === 401) {

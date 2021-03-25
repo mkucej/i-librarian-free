@@ -1697,7 +1697,7 @@ STYLE;
 
         $this->append('<table><tbody></tbody></table>');
 
-        $this->scriptLink('js/plugins.js');
+        $this->scriptLink('js/plugins.min.js');
         $this->scriptLink('js/citeproc/citeproc.js');
 
         $this->script = <<<SCRIPT

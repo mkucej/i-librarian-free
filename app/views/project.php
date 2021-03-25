@@ -452,7 +452,7 @@ HTML
 EOT
         );
 
-        $this->scriptLink('js/plugins.js');
+        $this->scriptLink('js/plugins.min.js');
         $this->scriptLink('js/tinymce/tinymce.min.js');
 
         $this->script(<<<EOT
