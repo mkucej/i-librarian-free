@@ -208,6 +208,19 @@ HTML;
 
         $el = null;
 
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->id('pdfviewer-underlined');
+        $el->type('checkbox');
+        $el->inline(true);
+        $el->name('underline');
+        $el->value('1');
+        $el->label($this->lang->t9n('underlined highlights'));
+        $underlined = $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Dropdown $el */
         $el = $this->di->get('Dropdown');
 
@@ -217,6 +230,8 @@ HTML;
         $el->label($annot_icon);
         $el->button($this->lang->t9n('Show annotations'), 'annot-show');
         $el->button($this->lang->t9n('Hide annotations'), 'annot-hide');
+        $el->divider();
+        $el->form("<form class='pl-4 pr-3 text-nowrap'>{$underlined}</form>");
 
         $annot_btn = $el->render();
 

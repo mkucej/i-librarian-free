@@ -252,8 +252,20 @@ img.img-night-mode {
     height: 100%;
 }
 
+.pdfviewer-highlights.underlined > div {
+    background-color: transparent;
+    border-bottom-width: 4px;
+    border-bottom-style: solid;
+    box-sizing: content-box;
+    margin-top: -2px;
+}
+
 .pdfviewer-highlights > .yellow {
     background-color: rgba(255, 245, 0, 0.25);
+}
+
+.pdfviewer-highlights.underlined > .yellow {
+    border-bottom-color: rgba(255, 235, 0, 0.66);
 }
 
 .img-night-mode .yellow {
@@ -272,6 +284,10 @@ img.img-night-mode {
     background-color: rgba(90, 150, 255, 0.25);
 }
 
+.pdfviewer-highlights.underlined > .blue {
+    border-bottom-color: rgba(47, 141, 237, 0.66);
+}
+
 .img-night-mode .blue {
     background-color: rgba(83, 134, 255, 0.25);
 }
@@ -288,6 +304,10 @@ img.img-night-mode {
     background-color: rgba(80, 225, 130, 0.25);
 }
 
+.pdfviewer-highlights.underlined > .green {
+    border-bottom-color: rgba(60, 205, 110, 0.66);
+}
+
 .img-night-mode .green {
     background-color: rgba(100, 190, 150, 0.25);
 }
@@ -302,6 +322,10 @@ img.img-night-mode {
 
 .pdfviewer-highlights > .red {
     background-color: rgba(255, 100, 120, 0.25);
+}
+
+.pdfviewer-highlights.underlined > .red {
+    border-bottom-color: rgba(255, 100, 120, 0.66);
 }
 
 .img-night-mode .red {

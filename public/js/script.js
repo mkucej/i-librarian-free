@@ -3039,7 +3039,6 @@ class PdfMainView extends View {
     constructor() {
         super();
         this.parent = '#content-col';
-        this.page = 1;
         this.events = {
             'change #pdfviewer-zoom':      'selectZoom',
             'input #pdfviewer-page-input': 'inputPageNum',
@@ -3073,11 +3072,13 @@ class PdfMainView extends View {
             'submit .note-form': 'saveNote',
             'submit #new-note-form': 'saveNote',
             'click #pdfviewer-new-note-btn': 'createNewNote',
-            'click .pdflink': 'openLink'
+            'click .pdflink': 'openLink',
+            'change #pdfviewer-underlined': 'highlightStyle'
         };
     }
     afterRender(data) {
         this.selectable = undefined;
+        this.page = undefined;
         let This = this;
         this.throttledZoom = _.throttle(function (zoom) {
             This.pageZoom(zoom);
@@ -3090,6 +3091,10 @@ class PdfMainView extends View {
         // No PDF.
         if ($('#pdfviewer-pages').length === 0) {
             return;
+        }
+        // Underlined checkbox.
+        if (store.load('il.highlightStyle') === 'underlined') {
+            $('#pdfviewer-underlined').prop('checked', true);
         }
         formStyle.init();
         $('#content-col').find('[data-toggle="tooltip"]').tooltip();
@@ -3169,6 +3174,7 @@ class PdfMainView extends View {
         }
         // Initial page number.
         let initialPage = params.get('page') || $('#pdfviewer-page-input').val();
+        this.setPageNumber(initialPage);
         this.scrollToPage(initialPage, 0);
         this.getLinks();
     }
@@ -3253,14 +3259,18 @@ class PdfMainView extends View {
      */
     setPageNumber(pgNum) {
         let This = this;
+        // If page the same exit.
+        if (This.page === parseInt(pgNum)) {
+            return;
+        }
+        // Page property.
+        This.page = parseInt(pgNum);
         // Use delay, to prevent rapid firing.
         if (typeof this.pageTimer !== 'undefined') {
             clearTimeout(this.pageTimer);
         }
         this.pageTimer = _.delay(function() {
             $('#pdfviewer-page-input').val(pgNum);
-            // Page property.
-            This.page = pgNum;
             // Update thumbs.
             $('.pdfviewer-thumb').children('div').removeClass('bg-primary').addClass('bg-secondary');
             $('.pdfviewer-thumb').eq(pgNum - 1).children('div').removeClass('bg-secondary').addClass('bg-primary');
@@ -3578,9 +3588,13 @@ class PdfMainView extends View {
             async: true
         })).done(function (response) {
             $('#pdfviewer-pages').find('.pdfviewer-highlights').remove();
+            let underlinedClass = '';
+            if (store.load('il.highlightStyle') === 'underlined') {
+                underlinedClass = 'underlined';
+            }
             _.forEach(response.highlights, function (boxes, page) {
                 let $con = $('#pdfviewer-pages').find('.pdfviewer-page').eq(page - 1);
-                $(boxes).insertAfter($con.children('img'));
+                $(boxes).addClass(underlinedClass).insertAfter($con.children('img'));
             });
         });
     }
@@ -3763,6 +3777,16 @@ class PdfMainView extends View {
             })).done(function () {
                 This.getHighlights()
             });
+        }
+    }
+    highlightStyle() {
+        // Save setting.
+        if ($(this).prop('checked') === true) {
+            $('#pdfviewer-pages').find('.pdfviewer-highlights').addClass('underlined');
+            store.save('il.highlightStyle', 'underlined');
+        } else {
+            $('#pdfviewer-pages').find('.pdfviewer-highlights').removeClass('underlined');
+            store.save('il.highlightStyle', 'highlight');
         }
     }
     getLinks() {
