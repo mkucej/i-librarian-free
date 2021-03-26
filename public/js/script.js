@@ -3139,6 +3139,7 @@ class PdfMainView extends View {
         this.pageZoom(store.load('il.pageZoom') || 'screen');
         // Page change detection on scroll stop.
         $('.pdfviewer-right').off('scroll').on('scroll', function () {
+            This.redrawNoteLine();
             clearTimeout($.data(window, 'scrollTimer'));
             $.data(window, 'scrollTimer', setTimeout(function () {
                 $('.pdfviewer-right > div').each(function () {
@@ -3924,15 +3925,14 @@ class PdfMainView extends View {
                 This.scrollToElement($('#pdfnote-' + noteId));
                 $('.note-btn').removeClass('active');
                 $(this).addClass('active');
-                $('.pdfnote').removeClass('active').tooltip('hide');
-                $('#pdfnote-' + noteId).addClass('active');
+                $('.pdfnote').tooltip('hide');
+                This.drawNoteLine(noteId);
             });
             $('.pdfnote').on('click', function () {
                 let noteId = $(this).data('id');
-                $('.pdfnote').removeClass('active');
-                $(this).addClass('active');
-                $('.note-btn').removeClass('active');
+                $('#pdfviewer-notes .note-btn').removeClass('active');
                 $('#pdfviewer-notes').find('.note-btn[data-id="' + noteId + '"]').addClass('active');
+                This.drawNoteLine(noteId);
             });
             if (typeof window.MathJax.typeset === 'function') {
                 window.MathJax.typeset();
@@ -3999,6 +3999,50 @@ class PdfMainView extends View {
     clearNewNote() {
         $('.pdfviewer-page').removeClass('cursor-cross');
         $('.pdfviewer-page').off('click.createnote');
+    }
+    drawNoteLine(noteId) {
+        let $note = $('#pdfnote-' + noteId),
+            $noteBtn = $('#pdfviewer-notes').find('.note-group[data-id="' + noteId + '"]'),
+            noteRect = $note[0].getBoundingClientRect(),
+            noteBtnRect = $noteBtn[0].getBoundingClientRect(),
+            leftPos = noteBtnRect.right,
+            topPos = Math.min((noteBtnRect.top + 15), noteRect.top),
+            svgWidth = noteRect.left - noteBtnRect.right,
+            svgHeight = noteRect.top - (noteBtnRect.top + 15);
+        let hiddenClass = '';
+        // Hide if note out of viewport.
+        if ($noteBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height()) {
+            hiddenClass = 'd-none';
+        }
+        // Draw bottom-to-top/flipped line.
+        let flipLine = '';
+        if (svgHeight < 0) {
+            flipLine = 'transform="scale (-1, 1)" transform-origin="center"';
+            svgHeight = Math.abs(svgHeight);
+        }
+        // If exactly horizontal, add 1px height.
+        if (svgHeight === 0) {
+            svgHeight = 1;
+        }
+        let line = `
+            <svg
+                id="note-line" data-note-id="${noteId}" class="${hiddenClass}"
+                style="pointer-events: none;position: fixed;width: ${svgWidth}px;height: ${svgHeight}px;top: ${topPos}px;left: ${leftPos}px"
+                viewBox="0 0 ${svgWidth} ${svgHeight}"
+                xmlns="http://www.w3.org/2000/svg">
+                <line x1="0" y1="0" x2="100%" y2="100%"
+                    stroke="rgba(47, 141, 237, 0.75)" stroke-dasharray="0, 6" stroke-width="2" stroke-linecap="round"
+                    ${flipLine} />
+            </svg>`;
+        // Prepend the line to the highlight container.
+        $('#note-line').remove();
+        $note.parent().prepend(line);
+    }
+    redrawNoteLine() {
+        let $line = $('#note-line');
+        if ($line.length === 1) {
+            this.drawNoteLine($line.attr('data-note-id'));
+        }
     }
     openLink(e) {
         let This = e.data.object, href = $(this).data('href');

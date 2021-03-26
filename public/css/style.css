@@ -361,14 +361,6 @@ img.img-night-mode {
     border-top: 10px solid rgba(47, 141, 237, 0.66);
 }
 
-.pdfnote.active {
-    background: rgba(220, 53, 69, 0.66);
-}
-
-.pdfnote.active::after {
-    border-top: 10px solid rgba(220, 53, 69, 0.66);
-}
-
 .pdflink {
     position: absolute;
     cursor: pointer;
