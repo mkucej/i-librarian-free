@@ -9,11 +9,20 @@ use Librarian\Http\Client\Psr7\ServerRequest as Request;
  */
 final class Url {
 
+    /**
+     * @var Request
+     */
     private $request;
+
+    /**
+     * @var array Server super globals.
+     */
+    private  $server;
 
     public function __construct(Request $request) {
 
         $this->request = $request;
+        $this->server  = $this->request->getServerParams();
     }
 
     /**
@@ -21,7 +30,7 @@ final class Url {
      *
      * @return string
      */
-    public function base() {
+    public function base(): string {
 
         // Construct whole URL from globals using Guzzle.
         $url = Request::getUriFromGlobals();
@@ -34,7 +43,10 @@ final class Url {
         $port = $url->getPort();
         $port = $port === '80' || $port === '443' || empty($port) ? '' : ":{$port}";
 
-        return "{$url->getScheme()}://{$url->getHost()}{$port}{$base_path}";
+        // Add scheme. Check for the scheme that client sent to a reverse proxy.
+        $scheme = !empty($this->server['HTTP_X_FORWARDED_PROTO']) ? strtolower($this->server['HTTP_X_FORWARDED_PROTO']) : $url->getScheme();
+
+        return "{$scheme}://{$url->getHost()}{$port}{$base_path}";
     }
 
     /**
@@ -42,10 +54,8 @@ final class Url {
      *
      * @return string
      */
-    public function path() {
+    public function path(): string {
 
-        $server = $this->request->getServerParams();
-
-        return isset($server['PATH_INFO']) ? substr($server['PATH_INFO'], 1) : '';
+        return isset($this->server['PATH_INFO']) ? substr($this->server['PATH_INFO'], 1) : '';
     }
 }
