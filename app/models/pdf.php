@@ -843,11 +843,9 @@ EOT;
 
         $this->db_main->commit();
 
-        $terms = explode(' ', $query);
-
         $pdfpath = $this->idToPdfPath($item_id);
         $this->pdf_object = $this->di->get('Pdf', $pdfpath);
-        $output = $this->pdf_object->search($terms, $page_from);
+        $output = $this->pdf_object->search($query, $page_from);
 
         return $output;
     }

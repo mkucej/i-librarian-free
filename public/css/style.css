@@ -412,12 +412,21 @@ img.img-night-mode {
 }
 
 .pdfviewer-result-boxes > div.result {
-    outline: 3px solid rgba(0, 100, 255, 0.66);
+    background-color: rgba(255, 0, 255, 0.33);
+    animation: blink 1.25s infinite;
 }
 
-.pdfviewer-result-boxes > div.result.active {
-    outline: 3px solid rgba(255, 0, 100, 0.66);
-    animation: 1s pulsate-opacity infinite;
+.snippet {
+    display: block;
+    text-align: left;
+    max-height: 4.15rem;
+    overflow: hidden;
+}
+
+@keyframes blink {
+    0% {opacity: 100%;}
+    50% {opacity: 50%;}
+    100% {opacity: 100%;}
 }
 
 /* Horizontal layout. */
@@ -842,15 +851,6 @@ div.il-expandable-left > button {
 /* jQuery UI */
 .ui-selectable:hover, .ui-selecting {
     background: rgba(100, 120, 150, 0.33);
-}
-
-@keyframes pulsate-opacity {
-    0%  {
-        opacity: 1
-    }
-    50% {
-        opacity: 0.5
-    }
 }
 
 /* DataTables */

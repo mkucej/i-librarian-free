@@ -624,7 +624,7 @@ class PdfController extends Controller {
         $view = new DefaultView($this->di);
 
         // Empty query.
-        if (empty($this->get['query'])) {
+        if (empty($this->get['query']) || mb_strlen($this->get['query']) < 3) {
 
             $view->sseLine("data: CLOSE\n\n");
             return '';
@@ -638,8 +638,9 @@ class PdfController extends Controller {
         for ($i = 1; $i <= $info['info']['page_count']; $i = $i + $chunk) {
 
             $divs = [
-                'boxes'    => [],
-                'snippets' => []
+                'boxes'     => [],
+                'last_page' => min($i + $chunk - 1, $info['info']['page_count']),
+                'snippets'  => []
             ];
 
             $boxes = $model->search($this->get['id'], $this->get['query'], $i);
@@ -655,8 +656,9 @@ class PdfController extends Controller {
                     $w = $word['width'] / 10;
                     $h = $word['height'] / 10;
 
-                    $html .= <<<HTML
-<div class="result" id="box-{$page}-{$word['position']}" style="left:{$l}%;top:{$t}%;width:{$w}%;height:{$h}%"></div>
+                    $html .=
+<<<HTML
+<div class="result" id="box-{$page}-{$word['position']}" style="left:calc({$l}% - 2px);top:{$t}%;width:calc({$w}% + 4px);height:{$h}%"></div>
 HTML;
                 }
 
@@ -669,19 +671,16 @@ HTML;
                 $position = $this->sanitation->attr($snippet['position']);
                 $text = $this->sanitation->html($snippet['text']);
 
-                $html = <<<HTML
-<a class="snippet d-block text-left text-white px-3 py-2 text-truncate"
- id="snippet-{$page}-{$position}" href="#" data-page="{$page}" data-box="box-{$page}-{$position}">$text</a>
+                $html =
+<<<HTML
+<a id="snippet-{$page}-{$position}" class="snippet text-white px-3 py-2" href="#" data-page="{$page}" data-box="box-{$page}-{$position}">{$this->sanitation->lmth($text)}</a>
 HTML;
 
                 $divs['snippets'][] = $html;
             }
 
-            if (!empty( $divs['boxes']) || !empty( $divs['snippets'])) {
-
-                $sse = Utils::jsonEncode($divs);
-                $view->sseLine('data: ' . $sse . "\n\n");
-            }
+            $sse = Utils::jsonEncode($divs);
+            $view->sseLine('data: ' . $sse . "\n\n");
         }
 
         $view->sseLine("data: CLOSE\n\n");

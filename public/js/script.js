@@ -3064,7 +3064,7 @@ class PdfMainView extends View {
             'click .highlight-cancel':     'clearHighlights',
             'dblclick .pdfviewer-page':    'dblZoom',
             'keyup #pdfviewer-search-input':'search',
-            'click #pdfviewer-results > a': 'scrollToResult',
+            'click #pdfviewer-results > .pdfviewer-results-container > a': 'scrollToResult',
             'click #pdfviewer-result-up': 'prevResult',
             'click #pdfviewer-result-down': 'nextResult',
             'click #pdfviewer-notes-btn':  'showNotes',
@@ -3079,6 +3079,7 @@ class PdfMainView extends View {
     afterRender(data) {
         this.selectable = undefined;
         this.page = undefined;
+        this.sseSearch = undefined;
         let This = this;
         this.throttledZoom = _.throttle(function (zoom) {
             This.pageZoom(zoom);
@@ -3140,6 +3141,7 @@ class PdfMainView extends View {
         // Page change detection on scroll stop.
         $('.pdfviewer-right').off('scroll').on('scroll', function () {
             This.redrawNoteLine();
+            This.redrawSnippetLine();
             clearTimeout($.data(window, 'scrollTimer'));
             $.data(window, 'scrollTimer', setTimeout(function () {
                 $('.pdfviewer-right > div').each(function () {
@@ -3154,6 +3156,10 @@ class PdfMainView extends View {
                     This.selectable.refresh();
                 }
             }, 400));
+        });
+        $('.pdfviewer-left').off('scroll').on('scroll', function () {
+            This.redrawNoteLine();
+            This.redrawSnippetLine();
         });
         if (typeof This.selectable === 'object') {
             This.selectable.disable();
@@ -3366,11 +3372,23 @@ class PdfMainView extends View {
         }
     }
     scrollToElement(el, speed) {
-        let time = typeof speed === 'undefined' ? 400 : speed, elTop = el.offset().top;
+        let time = typeof speed === 'undefined' ? 400 : speed, $pr = $('.pdfviewer-right'), elTop = el.offset().top;
         if (elTop < 100 || elTop > $(window).height() - 100) {
-            $('.pdfviewer-right').animate({
-                scrollTop: elTop + $('.pdfviewer-right').scrollTop() - ($(window).height() / 2)
-            }, time);
+            $pr.animate({
+                scrollTop: elTop + $pr.scrollTop() - ($(window).height() / 2)
+            }, {
+                duration: time,
+                queue: false
+            });
+        }
+        let elRect = el[0].getBoundingClientRect(), contRect = $pr[0].getBoundingClientRect();
+        if (elRect.left < contRect.left || elRect.right > contRect.right) {
+            $pr.animate({
+                scrollLeft: $pr.scrollLeft() + elRect.left - contRect.left - 0.5 * $pr.width()
+            }, {
+                duration: time,
+                queue: false
+            });
         }
     }
     toggleCropper(e) {
@@ -3472,11 +3490,14 @@ class PdfMainView extends View {
         $(window).trigger('resize.PdfMainView');
         store.save('il.leftPanel', $('.pdfviewer-left').is(':visible'));
     }
-    showThumbs() {
+    showThumbs(e) {
+        let This = typeof e === 'object' ? e.data.object : this;
         $('#pdfviewer-thumbs').removeClass('d-none');
         $('#pdfviewer-bookmarks').addClass('d-none');
         $('#pdfviewer-notes').addClass('d-none');
         $('#pdfviewer-results').addClass('d-none');
+        This.redrawNoteLine();
+        This.redrawSnippetLine();
         let pageWidth = 230;
         $('.pdfviewer-thumb > img').each(function () {
             if (this.style.width === '230px') {
@@ -3487,12 +3508,15 @@ class PdfMainView extends View {
             this.style.height = (pageWidth / this.getAttribute('width')) * this.getAttribute('height') + 'px';
         });
     }
-    showBookmarks() {
+    showBookmarks(e) {
+        let This = typeof e === 'object' ? e.data.object : this;
         if ($('#pdfviewer-bookmarks :text').length === 1) {
             $('#pdfviewer-thumbs').addClass('d-none');
             $('#pdfviewer-bookmarks').removeClass('d-none');
             $('#pdfviewer-notes').addClass('d-none');
             $('#pdfviewer-results').addClass('d-none');
+            This.redrawNoteLine();
+            This.redrawSnippetLine();
             return false;
         }
         $.when(model.load({url: window.IL_BASE_URL + 'index.php/pdf/bookmarks?id=' + $('body').data('id')})).done(function (response) {
@@ -3501,6 +3525,8 @@ class PdfMainView extends View {
             $('#pdfviewer-results').addClass('d-none');
             $('#pdfviewer-bookmarks').removeClass('d-none').html(response.html);
             $('#pdfviewer-bookmarks :text').filterable({targets: '#pdfviewer-bookmarks a'}).val('');
+            This.redrawNoteLine();
+            This.redrawSnippetLine();
         });
     }
     clickBookmark(e) {
@@ -3826,54 +3852,79 @@ class PdfMainView extends View {
         if (e.which !== 13) {
             return false;
         }
-        let This = e.data.object, $t = $(this);
-        if ($.trim($t.val()) === '') {
-            $('#pdfviewer-results').html('<div class="pt-3">No search results.</div>');
-            $('#pdfviewer-pages').find('.pdfviewer-result-boxes').remove();
-            return false;
+        let This = e.data.object,
+            $t = $(this),
+            pageCount = $('.pdfviewer-right > div:last-child').data('page'),
+            $noresultsCont = $('#pdfviewer-results > .pdfviewer-no-results-container'),
+            $resultsCont = $('#pdfviewer-results > .pdfviewer-results-container'),
+            $progressBar = $('#pdfviewer-search-progress'),
+            $pagesCont = $('#pdfviewer-pages'),
+            showProgress;
+        // Reset search results.
+        $noresultsCont.removeClass('d-none');
+        $resultsCont.empty();
+        $pagesCont.find('.pdfviewer-result-boxes').remove();
+        if (typeof This.sseSearch === 'object' && This.sseSearch.readyState !== 2) {
+            This.sseSearch.close();
+            clearTimeout(showProgress);
+            $progressBar.addClass('d-none');
+            $progressBar.find('div').width('0%').attr('aria-value-now', '0%');
         }
-        $('#pdfviewer-results').empty();
-        $('#pdfviewer-pages').find('.pdfviewer-result-boxes').remove();
-        let sseSearch = new EventSource(
+        showProgress = setTimeout(function() {
+            $progressBar.removeClass('d-none');
+        }, 500);
+        This.sseSearch = new EventSource(
             IL_BASE_URL + 'index.php/pdf/search?id=' + $('body').data('id') + '&query=' + $t.val()
         );
-        sseSearch.onmessage = function(e) {
-            if (e.data === 'CLOSE' || $('#pdfviewer-pages').length === 0) {
-                sseSearch.close();
+        This.sseSearch.onmessage = function(e) {
+            if (e.data === 'CLOSE' || $pagesCont.length === 0) {
+                This.sseSearch.close();
+                clearTimeout(showProgress);
+                $progressBar.addClass('d-none');
+                $progressBar.find('div').width('0%').attr('aria-value-now', '0%');
             } else {
                 let response = JSON.parse(e.data);
                 _.forEach(response.boxes, function (boxes, page) {
-                    let $con = $('#pdfviewer-pages').find('.pdfviewer-page').eq(page - 1).children('img');
+                    let $con = $pagesCont.find('.pdfviewer-page').eq(page - 1).children('img');
                     $con.after(boxes);
                 });
                 _.forEach(response.snippets, function (snippet) {
-                    let terms = $t.val().split(' '), pat = new RegExp('\(' + terms.join('\|') + '\)', 'giu');
-                    let $s = $(snippet);
-                    $s.html($s.html().replace(pat, '<span style="text-decoration: dotted underline">$1</span>')).appendTo('#pdfviewer-results');
+                    $(snippet).appendTo('#pdfviewer-results > .pdfviewer-results-container');
+                    if ($noresultsCont.hasClass('d-none') === false) {
+                        $noresultsCont.addClass('d-none');
+                    }
                 });
-                // Make results visible in left panel.
-                This.showResults();
-                // Open left panel on horizontal layouts.
-                if ($('.navbar-toggler').is(':visible') === false) {
-                    This.showLeft();
-                }
-                if ($('#pdfviewer-results a').eq(0).hasClass('bg-dark') === false) {
-                    $('#pdfviewer-results a').eq(0).trigger('click').focus();
+                let progress = Math.floor(Math.min(100, 100 * response.last_page / pageCount));
+                $progressBar.find('div').width(progress + '%').attr('aria-value-now', progress + '%');
+                // Click on the first result only once.
+                if ($resultsCont.find('a.bg-dark').length === 0) {
+                    $resultsCont.find('a').eq(0).trigger('click').focus();
                 }
             }
         }
+        // Make results visible in left panel.
+        This.showResults();
+        // Open left panel on horizontal layouts.
+        if ($('.navbar-toggler').is(':visible') === false) {
+            This.showLeft();
+        }
     }
-    showResults() {
+    showResults(e) {
+        let This = typeof e === 'object' ? e.data.object : this;
         $('#pdfviewer-thumbs').addClass('d-none');
         $('#pdfviewer-bookmarks').addClass('d-none');
         $('#pdfviewer-notes').addClass('d-none');
         $('#pdfviewer-results').removeClass('d-none');
+        This.redrawNoteLine();
+        This.redrawSnippetLine();
     }
     scrollToResult(e) {
+        let This = e.data.object;
         $('#pdfviewer-results .snippet').removeClass('bg-dark');
         $(this).addClass('bg-dark');
         let $el = $('#' + $(this).data('box'));
-        e.data.object.scrollToElement($el);
+        This.drawSnippetLine($(this).data('box'));
+        This.scrollToElement($el);
         $('.pdfviewer-result-boxes > div').removeClass('active');
         $el.addClass('active');
     }
@@ -3899,6 +3950,7 @@ class PdfMainView extends View {
         $('#pdfviewer-bookmarks').addClass('d-none');
         $('#pdfviewer-notes').removeClass('d-none');
         $('#pdfviewer-results').addClass('d-none');
+        This.redrawSnippetLine();
         $.when(model.load({
             url: window.IL_BASE_URL + 'index.php/pdf/notelist',
             data: {
@@ -4042,6 +4094,50 @@ class PdfMainView extends View {
         let $line = $('#note-line');
         if ($line.length === 1) {
             this.drawNoteLine($line.attr('data-note-id'));
+        }
+    }
+    drawSnippetLine(snippetId) {
+        let $snippet = $('#' + snippetId),
+            $snippetBtn = $('.pdfviewer-results-container').find('[data-box="' + snippetId + '"]'),
+            snippetRect = $snippet[0].getBoundingClientRect(),
+            snippetBtnRect = $snippetBtn[0].getBoundingClientRect(),
+            leftPos = snippetBtnRect.right,
+            topPos = Math.min((snippetBtnRect.top + 20), snippetRect.top),
+            svgWidth = snippetRect.left - snippetBtnRect.right,
+            svgHeight = snippetRect.top - (snippetBtnRect.top + 20);
+        let hiddenClass = '';
+        // Hide if snippet box out of viewport.
+        if ($snippetBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height()) {
+            hiddenClass = 'd-none';
+        }
+        // Draw bottom-to-top/flipped line.
+        let flipLine = '';
+        if (svgHeight < 0) {
+            flipLine = 'transform="scale (-1, 1)" transform-origin="center"';
+            svgHeight = Math.abs(svgHeight);
+        }
+        // If exactly horizontal, add 1px height.
+        if (svgHeight === 0) {
+            svgHeight = 1;
+        }
+        let line = `
+            <svg
+                id="snippet-line" data-snippet-id="${snippetId}" class="${hiddenClass}"
+                style="pointer-events: none;position: fixed;width: ${svgWidth}px;height: ${svgHeight}px;top: ${topPos}px;left: ${leftPos}px"
+                viewBox="0 0 ${svgWidth} ${svgHeight}"
+                xmlns="http://www.w3.org/2000/svg">
+                <line x1="0" y1="0" x2="100%" y2="100%"
+                    stroke="rgba(255, 0, 255, 0.75)" stroke-dasharray="0, 6" stroke-width="2" stroke-linecap="round"
+                    ${flipLine} />
+            </svg>`;
+        // Prepend the line to the highlight container.
+        $('#snippet-line').remove();
+        $snippet.parent().prepend(line);
+    }
+    redrawSnippetLine() {
+        let $line = $('#snippet-line');
+        if ($line.length === 1) {
+            this.drawSnippetLine($line.attr('data-snippet-id'));
         }
     }
     openLink(e) {

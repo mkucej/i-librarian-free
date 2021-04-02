@@ -747,12 +747,12 @@ EOT;
     /**
      * Search PDF.
      *
-     * @param array $terms
+     * @param string $query
      * @param int $page_from
      * @return array
      * @throws Exception
      */
-    public function search(array $terms, int $page_from): array {
+    public function search(string $query, int $page_from): array {
 
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
@@ -800,6 +800,10 @@ SQL;
         }
 
         // Search.
+        $terms = explode(' ', $query);
+        $term_count = count($terms);
+        $deaccented_query = $scalar_utils->deaccent($query, false);
+        $deaccented_terms = explode(' ', $deaccented_query);
         $likes = array_fill(0, count($terms), 'text LIKE ? OR text_ind LIKE ?');
         $like_param = join(' OR ', $likes);
 
@@ -808,22 +812,15 @@ SQL;
             $bin + $chunk
         ];
 
-        foreach ($terms as $term) {
-
-            if (mb_strlen($term) < 3) {
-
-                continue;
-            }
-
-            $deaccented = $scalar_utils->deaccent($term, false);
+        foreach ($terms as $key => $term) {
 
             $columns[] = "%{$term}%";
-            $columns[] = "%{$deaccented}%";
+            $columns[] = "%{$deaccented_terms[$key]}%";
         }
 
         $sql_search = <<<EOT
 SELECT
-    page, position, top, left, height, width, text
+    page, position, top, left, height, width, CASE WHEN text_ind = '' THEN text ELSE text_ind END AS text
     FROM boxes
     WHERE page >= ? AND page < ? AND ({$like_param})
     ORDER BY page, position
@@ -833,29 +830,73 @@ EOT;
 SELECT
     group_concat(text, ' ') AS snippet
     FROM boxes
-    WHERE page = ? AND position >= ? - 1 AND position <= ? + 5
+    WHERE page = ? AND position >= ? - 2 AND position <= ? + 20
     ORDER BY position
 EOT;
 
         $db->run($sql_search, $columns);
-        $output['boxes'] = $db->getResultRows(PDO::FETCH_GROUP| PDO::FETCH_ASSOC);
+        $output['boxes'] = $db->getResultRows(PDO::FETCH_GROUP | PDO::FETCH_ASSOC);
 
+        // We selected all boxes that match any of the query terms, but, in case of a multi-word query,
+        // we return only the boxes that match the phrase. This is normal behavior in other PDF viewers.
         foreach ($output['boxes'] as $page => $boxes) {
 
-            foreach ($boxes as $box) {
+            $protected_boxes = [];
+            $box_count = count($boxes);
 
-                $columns = [
-                    $page,
-                    $box['position'],
-                    $box['position']
-                ];
+            // Iterate over all boxes to find out if they fit the query, which can be multi-word.
+            for ($i = 0; $i < $box_count; $i = $i + 1) {
 
-                $db->run($sql_snippet, $columns);
-                $output['snippets'][] = [
-                    'text'     => $db->getResult(),
-                    'page'     => $page,
-                    'position' => $box['position']
-                ];
+                // Compile a phrase from number of boxes that matches the query term number.
+                $sliced_boxes = [];
+                $box_position = (int) $boxes[$i]['position'];
+
+                // We iterate on box position, because there must be no position gaps.
+                for ($pos = $box_position, $ind = $i; $pos < $box_position + $term_count; $pos++, $ind++) {
+
+                    // If a box with consecutive position exists, add it to array.
+                    if (isset($boxes[$ind]) && (int) $boxes[$ind]['position'] === $pos) {
+
+                        $sliced_boxes[$ind] = $boxes[$ind];
+                    }
+                }
+
+                // Extract just the text column.
+                $deaccented_boxes = array_column($sliced_boxes, 'text');
+
+                // Compare the query with the text in boxes.
+                if (mb_stripos(trim(join(' ', $deaccented_boxes)), trim($deaccented_query)) !== false) {
+
+                    // If whole query matches the boxes, fetch the snippet.
+
+                    $columns = [
+                        $page,
+                        $boxes[$i]['position'],
+                        $boxes[$i]['position']
+                    ];
+
+                    $db->run($sql_snippet, $columns);
+                    $snippet = str_replace('- ', '', $db->getResult());
+
+                    $output['snippets'][] = [
+                        // Remove word breaks.
+                        'text'     => $snippet,
+                        'page'     => $page,
+                        'position' => $boxes[$i]['position']
+                    ];
+
+                    // Protect all boxes in this snippet from deletion.
+                    $protected_boxes = array_merge($protected_boxes, array_keys($sliced_boxes));
+
+                } else {
+
+                    // If whole query does not match the boxes, delete the current text box.
+
+                    if (in_array($i, $protected_boxes) === false) {
+
+                        unset($output['boxes'][$page][$i]);
+                    }
+                }
             }
         }
 

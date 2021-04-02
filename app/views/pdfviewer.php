@@ -526,11 +526,17 @@ EOT;
 
         // Assemble bottom section.
 
-        $left_menu_div = '<div class="border-darker-bottom py-1" style="width: 270px">' . "$preview_btn $bookmark_btn $notes_btn $results_btn" . '</div>';
-        $thumbs_div    = '<div id="pdfviewer-thumbs" class="d-none" style="width: 270px">' . $thumbs . '</div>';
-        $bookmarks_div = "<div id=\"pdfviewer-bookmarks\" class=\"d-none\" style=\"width: 270px\">{$this->lang->t9n('No bookmarks')}</div>";
-        $notes_div     = "<div id=\"pdfviewer-notes\" class=\"d-none\" style=\"width: 270px\"><div class=\"pt-3\">{$this->lang->t9n('No notes')}</div></div>";
-        $results_div   = "<div id=\"pdfviewer-results\" class=\"d-none\" style=\"width: 270px\"><div class=\"pt-3\">{$this->lang->t9n('No search results')}</div></div>";
+        /** @var Bootstrap\ProgressBar $el */
+        $el = $this->di->get('ProgressBar');
+
+        $el->context('primary');
+        $el->id('pdfviewer-search-progress');
+        $el->addClass('d-none');
+        $el->style('height: 2px');
+        $el->value(1);
+        $search_progress = $el->render();
+
+        $el = null;
 
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
@@ -538,7 +544,30 @@ EOT;
         $el->id('pdfviewer-pages');
         $el->addClass('bg-secondary text-white text-center');
         $el->style('overflow: hidden');
-        $el->column("{$left_menu_div} {$thumbs_div} {$bookmarks_div} {$notes_div} {$results_div}", 'd-none col-auto p-0 pdfviewer-left overflow-scroll');
+        $el->column(
+<<<HTML
+<div class="border-darker-bottom py-1" style="width: 270px">
+    {$preview_btn}
+    {$bookmark_btn}
+    {$notes_btn}
+    {$results_btn}
+</div>
+<div id="pdfviewer-thumbs" class="d-none" style="width: 270px">
+    {$thumbs}
+</div>
+<div id="pdfviewer-bookmarks" class="d-none" style="width: 270px">
+    {$this->lang->t9n('No bookmarks')}
+</div>
+<div id="pdfviewer-notes" class="d-none" style="width: 270px"></div>
+<div id="pdfviewer-results" class="d-none" style="width: 270px">
+    {$search_progress}
+    <div class="pdfviewer-no-results-container pt-3">
+        {$this->lang->t9n('No search results')}
+    </div>
+    <div class="pdfviewer-results-container"></div>
+</div>
+HTML
+            , 'd-none col-auto p-0 pdfviewer-left overflow-scroll');
         $el->column($images, 'col pdfviewer-right');
         $row .= $el->render();
 
@@ -757,6 +786,7 @@ EOT;
      */
     public function noteList(array $input): string {
 
+        $has_notes = false;
         $list = '';
         $pages = [];
 
@@ -825,6 +855,8 @@ FORM
             $notes = '';
 
             foreach ($boxes as $box) {
+
+                $has_notes = true;
 
                 $top = $box['annotation_top'] / 10;
                 $left = $box['annotation_left'] / 10;
@@ -929,6 +961,12 @@ EOT;
             }
 
             $pages[$page] = "<div class=\"pdfviewer-notes\">$notes</div>";
+        }
+
+        // No notes.
+        if ($has_notes === false) {
+
+            $list = "<div class=\"py-3\">{$this->lang->t9n('No notes')}</div>" . $list;
         }
 
         $this->append([
