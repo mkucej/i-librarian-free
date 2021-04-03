@@ -220,7 +220,7 @@ SQL;
 
                 } elseif (strpos($line, "Page") === 0) {
 
-                    preg_match("/(Page\s+)(\d+)(\s+)(MediaBox:)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)/", $line, $match);
+                    preg_match("/(Page\s+)(\d+)(\s+)(MediaBox:)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)/", $line, $match);
 
                     $page = $match[2] ?? 0;
 
@@ -235,7 +235,7 @@ SQL;
 
                     } else {
 
-                        preg_match("/(Page\s+)(\d+)(\s+)(CropBox:)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)(\s+)(\d+\.?\d+)/", $line, $match);
+                        preg_match("/(Page\s+)(\d+)(\s+)(CropBox:)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)(\s+)(-?\d+\.?\d+)/", $line, $match);
 
                         $page = $match[2] ?? 0;
 
