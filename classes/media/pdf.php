@@ -1147,9 +1147,9 @@ EOT;
              * Pdftohtml gives coordinates relative to MediaBox in px, whereas pdftoppm works with CropBox and pts.
              */
 
-            // Get Cropbox size and offsets.
+            // Get Cropbox size and offsets. Remember, PDF coordinates start at lower left corner.
             $offset_x = ($info['page_boxes'][$page_number]['cropbox']['xmin'] - $info['page_boxes'][$page_number]['mediabox']['xmin']);
-            $offset_y = ($info['page_boxes'][$page_number]['cropbox']['ymin'] - $info['page_boxes'][$page_number]['mediabox']['ymin']);
+            $offset_y = $info['page_boxes'][$page_number]['mediabox']['ymax'] - $info['page_boxes'][$page_number]['cropbox']['ymax'];
             $page_w   = ($info['page_boxes'][$page_number]['cropbox']['xmax'] - $info['page_boxes'][$page_number]['cropbox']['xmin']);
             $page_h   = ($info['page_boxes'][$page_number]['cropbox']['ymax'] - $info['page_boxes'][$page_number]['cropbox']['ymin']);
 
