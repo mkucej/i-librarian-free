@@ -28,6 +28,7 @@ final class Installation {
      */
     public function upgrade(): void {
 
-        // Noop. Future upgrades can be called from here.
+        // Create reference type index.
+        $this->model->createReferenceTypeIndex();
     }
 }

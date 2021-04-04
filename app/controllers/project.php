@@ -939,6 +939,17 @@ class ProjectController extends Controller {
     }
 
     /**
+     * Publication type filter.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function publicationtypeAction(): string {
+
+        return $this->itemColumn('reference_type', $this->get['id']);
+    }
+
+    /**
      * Custom 1.
      *
      * @return string

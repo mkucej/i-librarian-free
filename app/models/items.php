@@ -401,6 +401,7 @@ EOT;
             'primary_title',
             'secondary_title',
             'tertiary_title',
+            'reference_type',
             'custom1',
             'custom2',
             'custom3',
@@ -772,6 +773,17 @@ EOT;
                         'tertiary_title' => [$id, $value]
                     ];
                 }
+            }
+        }
+
+        // Reference type.
+        if (!empty($filters['reference_type'])) {
+
+            foreach ($filters['reference_type'] as $id) {
+
+                $output[] = [
+                    'reference_type' => [$id, $id]
+                ];
             }
         }
 

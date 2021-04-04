@@ -24,6 +24,7 @@ class ItemcolumnsModel extends AppModel {
 
         $types = [
             'added_time',
+            'reference_type',
             'custom1',
             'custom2',
             'custom3',

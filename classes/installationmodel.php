@@ -10,6 +10,7 @@ use PDO;
  * Class InstallationModel
  *
  * @method void createFolders()
+ * @method void createReferenceTypeIndex()
  * @method void createTables(bool $force = false)
  */
 class InstallationModel extends Model {
@@ -167,5 +168,38 @@ class InstallationModel extends Model {
 
             copy($from, $to);
         }
+    }
+
+    /**
+     * Add index for reference type filtering. This update is backwards compatible.
+     *
+     * @throws Exception
+     */
+    protected function _createReferenceTypeIndex(): void {
+
+        $this->db_main = $this->di->get('Db_main');
+        $this->db_main->connect();
+
+        $this->db_main->run('PRAGMA index_info(ix_items_reference_type)');
+        $row = $this->db_main->getResultRow();
+
+        if (isset($row['cid']) === false) {
+
+            // Create DB tables script.
+            $sql_file = IL_APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'main_update_1.sql';
+
+            if (is_readable($sql_file) === false) {
+
+                throw new Exception("update failed: could not read the <kbd>{$sql_file}</kbd> file");
+            }
+
+            $sql = file_get_contents($sql_file);
+
+            /** @var PDO $pdo */
+            $pdo = $this->db_main->getPDO();
+            $pdo->exec($sql);
+        }
+
+        $this->db_main->close();
     }
 }

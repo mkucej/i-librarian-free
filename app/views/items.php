@@ -411,6 +411,7 @@ class ItemsView extends TextView {
             'keyword'          => $this->lang->t9n('Keyword'),
             'misc'             => $this->lang->t9n('Miscellaneous'),
             'primary_title'    => $this->lang->t9n('Primary title'),
+            'reference_type'   => $this->lang->t9n('Publication type'),
             'secondary_title'  => $this->lang->t9n('Secondary title'),
             'tag'              => $this->lang->t9n('Tag'),
             'tertiary_title'   => $this->lang->t9n('Tertiary title')
@@ -1475,6 +1476,7 @@ EOT;
             'primarytitles' => $this->lang->t9n('Primary title'),
             'secondarytitles' => $this->lang->t9n('Secondary title'),
             'tertiarytitles' => $this->lang->t9n('Tertiary title'),
+            'publicationtype' => $this->lang->t9n('Publication type'),
             'keywords' => $this->lang->t9n('Keyword'),
             'custom1' =>  $this->lang->t9n($this->app_settings->getGlobal('custom1')),
             'custom2' =>  $this->lang->t9n($this->app_settings->getGlobal('custom2')),
@@ -1497,7 +1499,7 @@ EOT;
 
         foreach ($action_to_name as $action => $name) {
 
-            $filter_class = $action === 'tags' || $action === 'addedtime' ? ' open-filter-local' : ' open-filter-remote';
+            $filter_class = in_array($action, ['tags', 'addedtime', 'publicationtype']) === true  ? ' open-filter-local' : ' open-filter-remote';
 
             $el->button($name, $classes . $filter_class, "data-title=\"$name\" data-src=\"{$IL_BASE_URL}index.php/{$controller}/{$action}{$get_query}\"");
         }
