@@ -201,30 +201,30 @@ h5 {
 
     @media (min-width: 992px) {
 
-        img.img-light-mode-blurred {
+        #pdfviewer-pages img.img-light-mode-blurred {
             filter: none;
         }
 
-        img.img-light-mode {
+        #pdfviewer-pages img.img-light-mode {
             filter: url(#sharpen);
         }
 
-        img.img-night-mode-blurred {
+        #pdfviewer-pages img.img-night-mode-blurred {
             filter: hue-rotate(180deg) invert(100%) contrast(75%);
         }
 
-        img.img-night-mode {
+        #pdfviewer-pages img.img-night-mode {
             filter: hue-rotate(180deg) invert(100%) contrast(75%) url(#sharpen);
         }
     }
 
     @media (max-width: 991px) {
 
-        img.img-light-mode-blurred, img.img-light-mode {
+        #pdfviewer-pages img.img-light-mode-blurred, #pdfviewer-pages img.img-light-mode {
             filter: none;
         }
 
-        img.img-night-mode-blurred, img.img-night-mode {
+        #pdfviewer-pages img.img-night-mode, #pdfviewer-pages img.img-night-mode-blurred {
             filter: hue-rotate(180deg) invert(100%) contrast(75%);
         }
     }
@@ -233,11 +233,11 @@ h5 {
 /* Firefox downscales images very nicely. */
 @supports not (image-rendering: -webkit-optimize-contrast) {
 
-    img.img-light-mode-blurred, img.img-light-mode, img.img-night-mode-blurred {
+    #pdfviewer-pages img.img-light-mode-blurred, #pdfviewer-pages img.img-light-mode {
         filter: none;
     }
 
-    #pdfviewer-pages img.img-night-mode {
+    #pdfviewer-pages img.img-night-mode, #pdfviewer-pages img.img-night-mode-blurred {
         filter: hue-rotate(180deg) invert(100%) contrast(75%);
     }
 }
