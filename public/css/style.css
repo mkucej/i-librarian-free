@@ -196,8 +196,50 @@ h5 {
     background-color: hsl(0, 0%, 12.5%);
 }
 
-img.img-night-mode {
-    filter:invert(100%) grayscale(100%) contrast(75%);
+/* Webkit image downscaling is abhorrent. We need to sharpen with an SVG filter. */
+@supports (image-rendering: -webkit-optimize-contrast) {
+
+    @media (min-width: 992px) {
+
+        img.img-light-mode-blurred {
+            filter: none;
+        }
+
+        img.img-light-mode {
+            filter: url(#sharpen);
+        }
+
+        img.img-night-mode-blurred {
+            filter: hue-rotate(180deg) invert(100%) contrast(75%);
+        }
+
+        img.img-night-mode {
+            filter: hue-rotate(180deg) invert(100%) contrast(75%) url(#sharpen);
+        }
+    }
+
+    @media (max-width: 991px) {
+
+        img.img-light-mode-blurred, img.img-light-mode {
+            filter: none;
+        }
+
+        img.img-night-mode-blurred, img.img-night-mode {
+            filter: hue-rotate(180deg) invert(100%) contrast(75%);
+        }
+    }
+}
+
+/* Firefox downscales images very nicely. */
+@supports not (image-rendering: -webkit-optimize-contrast) {
+
+    img.img-light-mode-blurred, img.img-light-mode, img.img-night-mode-blurred {
+        filter: none;
+    }
+
+    #pdfviewer-pages img.img-night-mode {
+        filter: hue-rotate(180deg) invert(100%) contrast(75%);
+    }
 }
 
 .pdfviewer-thumb {

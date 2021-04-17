@@ -463,11 +463,12 @@ EOT;
         $IL_BASE_URL = IL_BASE_URL;
 
         $images = <<<EOT
-            <div class="d-inline-block pdfviewer-page my-3 bg-white md-box-shadow-1" data-page="1">
+            <div class="d-inline-block pdfviewer-page my-3 img-light-mode md-box-shadow-1" data-page="1">
                 <img
                     width="{$w}"
                     height="{$h}"
                     alt="{$this->lang->t9n('Page')}"
+                    class="img-light-mode"
                     src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1">
             </div>
 EOT;
@@ -477,14 +478,15 @@ EOT;
         $th = round(0.4 * $h);
 
         $thumbs = <<<EOT
-            <div class="pdfviewer-thumb bg-white position-relative my-3 md-box-shadow-1" data-page="1">
+            <div class="pdfviewer-thumb img-light-mode position-relative my-3 md-box-shadow-1" data-page="1">
                 <img
                     alt="{$this->lang->t9n('Page')}"
                     class="lazy"
                     src="{$IL_BASE_URL}index.php/page/empty"
                     data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number=1"
                     width="{$tw}"
-                    height="{$th}">
+                    height="{$th}"
+                    class="img-light-mode">
                     <div class="bg-secondary">1</div>
             </div>
 EOT;
@@ -499,24 +501,24 @@ EOT;
             $th = round(0.4 * $h);
 
             $images .= <<<EOT
-                <div class="d-inline-block pdfviewer-page mb-3 bg-white md-box-shadow-1" data-page="{$number}">
+                <div class="d-inline-block pdfviewer-page mb-3 img-light-mode md-box-shadow-1" data-page="{$number}">
                     <img
                         src="{$IL_BASE_URL}index.php/page/empty"
                         width="{$w}"
                         height="{$h}"
                         alt="{$this->lang->t9n('Page')}"
                         data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
-                        class="lazy">
+                        class="lazy img-light-mode">
                 </div>
 EOT;
 
             $thumbs .= <<<EOT
-                <div class="pdfviewer-thumb bg-white position-relative md-box-shadow-1" data-page="{$number}">
+                <div class="pdfviewer-thumb img-light-mode position-relative md-box-shadow-1" data-page="{$number}">
                     <img
                         alt="{$this->lang->t9n('Page')}"
                         src="{$IL_BASE_URL}index.php/page/empty"
                         data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number={$number}"
-                        class="lazy"
+                        class="lazy img-light-mode"
                         width="{$tw}"
                         height="{$th}">
                     <div class="bg-secondary">{$number}</div>
@@ -537,6 +539,15 @@ EOT;
         $search_progress = $el->render();
 
         $el = null;
+
+        // SVG image sharpening filter for Webkit.
+        $filter = <<<HTML
+<svg>
+    <filter id="sharpen">
+        <feConvolveMatrix order="3 3" preserveAlpha="true" kernelMatrix="-1 0 0 0 10 0 0 0 -1"/>
+    </filter>
+</svg>
+HTML;
 
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
@@ -568,7 +579,7 @@ EOT;
 </div>
 HTML
             , 'd-none col-auto p-0 pdfviewer-left overflow-scroll');
-        $el->column($images, 'col pdfviewer-right');
+        $el->column($images . $filter, 'col pdfviewer-right');
         $row .= $el->render();
 
         $el = null;
