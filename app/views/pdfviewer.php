@@ -540,15 +540,6 @@ EOT;
 
         $el = null;
 
-        // SVG image sharpening filter for Webkit.
-        $filter = <<<HTML
-<svg>
-    <filter id="sharpen">
-        <feConvolveMatrix order="3 3" preserveAlpha="true" kernelMatrix="-1 0 0 0 10 0 0 0 -1"/>
-    </filter>
-</svg>
-HTML;
-
         /** @var Bootstrap\Row $el */
         $el = $this->di->get('Row');
 
@@ -579,10 +570,19 @@ HTML;
 </div>
 HTML
             , 'd-none col-auto p-0 pdfviewer-left overflow-scroll');
-        $el->column($images . $filter, 'col pdfviewer-right');
+        $el->column($images, 'col pdfviewer-right');
         $row .= $el->render();
 
         $el = null;
+
+        // SVG image sharpening filter for Webkit.
+        $filter = <<<HTML
+<svg class="d-none">
+    <filter id="sharpen">
+        <feConvolveMatrix order="3 3" preserveAlpha="true" kernelMatrix="-1 0 0 0 10 0 0 0 -1"/>
+    </filter>
+</svg>
+HTML;
 
         if ($this->contentType() === 'html') {
 
@@ -590,7 +590,7 @@ HTML
 
             $this->head();
 
-            $this->append("<div class=\"container-fluid\">{$row}</div>");
+            $this->append("<div class=\"container-fluid\">{$row}</div>{$filter}");
 
             $this->scriptLink('js/plugins.min.js');
 
@@ -608,7 +608,7 @@ EOT;
 
             $this->head();
 
-            $this->append(['html' => $row]);
+            $this->append(['html' => $row . $filter]);
         }
 
         return $this->send();
