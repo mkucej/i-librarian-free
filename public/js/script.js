@@ -4200,7 +4200,7 @@ class PdfMainView extends View {
             svgHeight = noteRect.top - (noteBtnRect.top + 15);
         let hiddenClass = '';
         // Hide if note out of viewport.
-        if ($noteBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height()) {
+        if ($noteBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height() || svgWidth < 1) {
             hiddenClass = 'd-none';
         }
         // Draw bottom-to-top/flipped line.
@@ -4244,7 +4244,7 @@ class PdfMainView extends View {
             svgHeight = snippetRect.top - (snippetBtnRect.top + 20);
         let hiddenClass = '';
         // Hide if snippet box out of viewport.
-        if ($snippetBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height()) {
+        if ($snippetBtn[0].offsetParent === null || topPos < 50 || (svgHeight + topPos) > $(window).height() || svgWidth < 1) {
             hiddenClass = 'd-none';
         }
         // Draw bottom-to-top/flipped line.
