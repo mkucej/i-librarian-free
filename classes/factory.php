@@ -430,6 +430,11 @@ final class Factory {
             return new \Librarian\Html\Bootstrap\ProgressBar();
         });
 
+        $this->di->set('Range', function () {
+
+            return new \Librarian\Html\Bootstrap\Range();
+        });
+
         $this->di->set('Row', function () {
 
             return new \Librarian\Html\Bootstrap\Row();

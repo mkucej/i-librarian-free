@@ -103,6 +103,15 @@ h5 {
     content: "*"
 }
 
+.range-divider {
+    border-left: 1px solid #ced2d6;
+    margin-left: 50%;
+    margin-top: -1.89rem;
+    width: 1px;
+    user-select: none;
+    pointer-events: none;
+}
+
 #menu-first-name {
     font-size: 14px;
     max-width: 180px;
@@ -190,56 +199,6 @@ h5 {
 .pdfviewer-image {
     display: inline-block;
     min-height: 1px;
-}
-
-.pdfviewer-page.img-night-mode, .pdfviewer-thumb.img-night-mode {
-    background-color: hsl(0, 0%, 12.5%);
-}
-
-/* Webkit image downscaling is abhorrent. We need to sharpen with an SVG filter. */
-@supports (image-rendering: -webkit-optimize-contrast) {
-
-    @media (min-width: 992px) {
-
-        #pdfviewer-pages img.img-light-mode-blurred {
-            filter: none;
-        }
-
-        #pdfviewer-pages img.img-light-mode {
-            filter: url(#sharpen);
-        }
-
-        #pdfviewer-pages img.img-night-mode-blurred {
-            filter: hue-rotate(180deg) invert(100%) contrast(75%);
-        }
-
-        #pdfviewer-pages img.img-night-mode {
-            filter: hue-rotate(180deg) invert(100%) contrast(75%) url(#sharpen);
-        }
-    }
-
-    @media (max-width: 991px) {
-
-        #pdfviewer-pages img.img-light-mode-blurred, #pdfviewer-pages img.img-light-mode {
-            filter: none;
-        }
-
-        #pdfviewer-pages img.img-night-mode, #pdfviewer-pages img.img-night-mode-blurred {
-            filter: hue-rotate(180deg) invert(100%) contrast(75%);
-        }
-    }
-}
-
-/* Firefox downscales images very nicely. */
-@supports not (image-rendering: -webkit-optimize-contrast) {
-
-    #pdfviewer-pages img.img-light-mode-blurred, #pdfviewer-pages img.img-light-mode {
-        filter: none;
-    }
-
-    #pdfviewer-pages img.img-night-mode, #pdfviewer-pages img.img-night-mode-blurred {
-        filter: hue-rotate(180deg) invert(100%) contrast(75%);
-    }
 }
 
 .pdfviewer-thumb {
@@ -450,7 +409,7 @@ h5 {
 }
 
 .pdfviewer-text > div {
-    border-bottom: 1px dotted rgba(100, 120, 130, 0.66);
+    border-bottom: 1px dotted rgba(120, 140, 150, 1);
 }
 
 .pdfviewer-result-boxes > div.result {

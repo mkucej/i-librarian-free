@@ -1453,6 +1453,134 @@ class ILChart {
 
 let chart = new ILChart();
 
+/**
+ * Image CSS filter formatter.
+ */
+class ImageFilter {
+    constructor() {
+        let webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast');
+        this.default = {
+            contrast:   '1',
+            brightness: '1',
+            saturation: '1',
+            hue:        '0deg',
+            invert:     '0',
+            sharpen:     webkit,
+            sharpness:  (webkit ? '0.5' : '0')
+        };
+    }
+    /**
+     * Parse CSS filter into an object.
+     * @param {text} f
+     * @returns {{saturation: string, brightness: string, invert: string, contrast: string, hue: string, sharpen: boolean}}
+     */
+    cssToObj(f) {
+        let output = Object.assign({}, this.default);
+        f.split(' ').forEach(function(v) {
+            let type = v.match(/^[a-z]+/), val = v.match(/(\()(.+)(\))/);
+            if (type.length === 0) {
+                return;
+            }
+            switch(type[0]) {
+                case 'contrast':
+                    output.contrast = val[2];
+                    break;
+                case 'brightness':
+                    output.brightness = val[2];
+                    break;
+                case 'saturate':
+                    output.saturation = val[2];
+                    break;
+                case 'hue':
+                    output.hue = val[2];
+                    break;
+                case 'invert':
+                    output.invert = val[2];
+                    break;
+                case 'url':
+                    output.sharpen = true;
+                    break;
+            }
+        });
+        return output;
+    }
+    /**
+     * Convert filter object to CSS string.
+     * @param {{saturation: string, brightness: string, invert: string, contrast: string, hue: string, sharpen: boolean}} fo
+     * @returns {string}
+     */
+    objToCss(fo) {
+        let f = `contrast(${fo.contrast}) brightness(${fo.brightness}) saturate(${fo.saturation}) hue-rotate(${fo.hue}) invert(${fo.invert})`;
+        if (fo.sharpen) {
+            f = f + ' url(#sharpen)';
+        }
+        return f;
+    }
+    adjustBrightness($el, val) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.brightness = val;
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+    adjustContrast($el, val) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.contrast = val;
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+    adjustSaturation($el, val) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.saturation = val;
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+    adjustSharpness($el, val) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.sharpen = false;
+        if (val !== '0') {
+            fo.sharpen = true;
+            let matrix = $('#sharpen feConvolveMatrix').attr('kernelMatrix').split(' ');
+            matrix[4] = -12 * parseFloat(val) + 16;
+            $('#sharpen feConvolveMatrix').attr('kernelMatrix', matrix.join(' '));
+        }
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+    enableSharpening($el) {
+        this.adjustSharpness($el, $el.eq(0).data('sharpness') || this.default.sharpness);
+    }
+    disableSharpening($el) {
+        $el.eq(0).data('sharpness', $('#adjust-sharpness').val());
+        this.adjustSharpness($el, '0');
+    }
+    reset($el) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.brightness = '1';
+        fo.contrast = '1';
+        fo.saturation = '1';
+        $el.css('filter', this.objToCss(fo));
+        this.adjustSharpness($el, this.default.sharpness);
+        $('#adjust-sharpness').val(this.default.sharpness);
+        fo = null;
+    }
+    lightMode($el) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.hue = '0deg';
+        fo.invert = '0';
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+    nightMode($el) {
+        let fo = this.cssToObj($el.css('filter'));
+        fo.hue = '180deg';
+        fo.invert = '1';
+        $el.css('filter', this.objToCss(fo));
+        fo = null;
+    }
+}
+
+let imageFilter = new ImageFilter();
+
 let arxiv = {
     url: 'https://export.arxiv.org/api/query?start=0&max_results=1&id_list=',
     metadata: function (input) {
@@ -3138,8 +3266,10 @@ class PdfMainView extends View {
         }
         // Set initial page zoom.
         this.pageZoom(store.load('il.pageZoom') || 'screen');
+        // Initial page sharpening on Webkit.
+        imageFilter.adjustSharpness($('#pdfviewer-pages > .pdfviewer-right img'), imageFilter.default.sharpness);
         // Page change detection on scroll stop.
-        $('.pdfviewer-right').off('scroll').on('scroll', function () {
+        $('.pdfviewer-right').off('scroll').on('scroll', _.throttle(function () {
             This.redrawNoteLine();
             This.redrawSnippetLine();
             clearTimeout($.data(window, 'scrollTimer'));
@@ -3155,16 +3285,15 @@ class PdfMainView extends View {
                 if (typeof This.selectable === 'object') {
                     This.selectable.refresh();
                 }
-                $('.pdfviewer-right > div.img-night-mode img').removeClass('img-night-mode-blurred').addClass('img-night-mode');
-                $('.pdfviewer-right > div.img-light-mode img').removeClass('img-light-mode-blurred').addClass('img-light-mode');
-            }, 400));
-            $('.pdfviewer-right > div.img-night-mode img').removeClass('img-night-mode').addClass('img-night-mode-blurred');
-            $('.pdfviewer-right > div.img-light-mode img').removeClass('img-light-mode').addClass('img-light-mode-blurred');
-        });
-        $('.pdfviewer-left').off('scroll').on('scroll', function () {
+                imageFilter.enableSharpening($('.pdfviewer-right img'));
+            }, 200));
+            // Disable sharpening when scrolling.
+            imageFilter.disableSharpening($('.pdfviewer-right img'));
+        }, 20));
+        $('.pdfviewer-left').off('scroll').on('scroll', _.throttle(function () {
             This.redrawNoteLine();
             This.redrawSnippetLine();
-        });
+        }, 20));
         if (typeof This.selectable === 'object') {
             This.selectable.disable();
             This.selectable.destroy();
@@ -3538,11 +3667,15 @@ class PdfMainView extends View {
         e.data.object.scrollToPage($(this).data('page'));
     }
     nightMode() {
-        $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page > img').toggleClass('img-night-mode img-light-mode');
         $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page').toggleClass('img-night-mode img-light-mode');
-        $('#pdfviewer-pages > .pdfviewer-left .pdfviewer-thumb > img').toggleClass('img-night-mode img-light-mode');
-        $('#pdfviewer-pages > .pdfviewer-left .pdfviewer-thumb').toggleClass('img-night-mode img-light-mode');
-        let nightMode = $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page > img:first').hasClass('img-night-mode');
+        let nightMode = $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page:first').hasClass('img-night-mode');
+        if (nightMode) {
+            imageFilter.nightMode($('#pdfviewer-pages > .pdfviewer-left img'));
+            imageFilter.nightMode($('#pdfviewer-pages > .pdfviewer-right img'));
+        } else {
+            imageFilter.lightMode($('#pdfviewer-pages > .pdfviewer-left img'));
+            imageFilter.lightMode($('#pdfviewer-pages > .pdfviewer-right img'));
+        }
         store.save('il.nightMode', nightMode);
     }
     toggleTextLayer(e) {

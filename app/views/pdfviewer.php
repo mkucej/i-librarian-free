@@ -468,7 +468,6 @@ EOT;
                     width="{$w}"
                     height="{$h}"
                     alt="{$this->lang->t9n('Page')}"
-                    class="img-light-mode"
                     src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1">
             </div>
 EOT;
@@ -485,8 +484,7 @@ EOT;
                     src="{$IL_BASE_URL}index.php/page/empty"
                     data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number=1"
                     width="{$tw}"
-                    height="{$th}"
-                    class="img-light-mode">
+                    height="{$th}">
                     <div class="bg-secondary">1</div>
             </div>
 EOT;
@@ -508,7 +506,7 @@ EOT;
                         height="{$h}"
                         alt="{$this->lang->t9n('Page')}"
                         data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
-                        class="lazy img-light-mode">
+                        class="lazy">
                 </div>
 EOT;
 
@@ -518,7 +516,7 @@ EOT;
                         alt="{$this->lang->t9n('Page')}"
                         src="{$IL_BASE_URL}index.php/page/empty"
                         data-src="{$IL_BASE_URL}index.php/page/preview?id={$item_id}&number={$number}"
-                        class="lazy img-light-mode"
+                        class="lazy"
                         width="{$tw}"
                         height="{$th}">
                     <div class="bg-secondary">{$number}</div>
@@ -577,7 +575,7 @@ HTML
 
         // SVG image sharpening filter for Webkit.
         $filter = <<<HTML
-<svg class="d-none">
+<svg class="position-fixed">
     <filter id="sharpen">
         <feConvolveMatrix order="3 3" preserveAlpha="true" kernelMatrix="-1 0 0 0 10 0 0 0 -1"/>
     </filter>
