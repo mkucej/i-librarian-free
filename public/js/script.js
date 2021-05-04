@@ -1458,124 +1458,91 @@ let chart = new ILChart();
  */
 class ImageFilter {
     constructor() {
-        let webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast');
+        this.touchDevice = window.matchMedia('(max-width: 1199px)').matches;
+        // Webkit desktop = true.
+        this.webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast') && window.matchMedia('(min-width: 1200px)').matches;
         this.default = {
             contrast:   '1',
             brightness: '1',
             saturation: '1',
             hue:        '0deg',
             invert:     '0',
-            sharpen:     webkit,
-            sharpness:  (webkit ? '0.5' : '0')
+            sharpen:     this.webkit,
+            sharpness:  (this.webkit ? '0.5' : '0')
         };
     }
     /**
-     * Parse CSS filter into an object.
-     * @param {text} f
-     * @returns {{saturation: string, brightness: string, invert: string, contrast: string, hue: string, sharpen: boolean}}
-     */
-    cssToObj(f) {
-        let output = Object.assign({}, this.default);
-        f.split(' ').forEach(function(v) {
-            let type = v.match(/^[a-z]+/), val = v.match(/(\()(.+)(\))/);
-            if (type.length === 0) {
-                return;
-            }
-            switch(type[0]) {
-                case 'contrast':
-                    output.contrast = val[2];
-                    break;
-                case 'brightness':
-                    output.brightness = val[2];
-                    break;
-                case 'saturate':
-                    output.saturation = val[2];
-                    break;
-                case 'hue':
-                    output.hue = val[2];
-                    break;
-                case 'invert':
-                    output.invert = val[2];
-                    break;
-                case 'url':
-                    output.sharpen = true;
-                    break;
-            }
-        });
-        return output;
-    }
-    /**
-     * Convert filter object to CSS string.
-     * @param {{saturation: string, brightness: string, invert: string, contrast: string, hue: string, sharpen: boolean}} fo
+     * Compile CSS filter string.
+     * @param {boolean} sharpen Sharpen or not.
      * @returns {string}
      */
-    objToCss(fo) {
-        let f = `contrast(${fo.contrast}) brightness(${fo.brightness}) saturate(${fo.saturation}) hue-rotate(${fo.hue}) invert(${fo.invert})`;
-        if (fo.sharpen) {
+    compileCss(sharpen) {
+        let nightMode = $('.pdfviewer-right > div:first').hasClass('img-night-mode'),
+            contrast = $('#adjust-contrast').val(),
+            brightness = $('#adjust-brightness').val(),
+            saturation = $('#adjust-saturation').val(),
+            hue = nightMode ? '180deg' : '0deg',
+            invert = nightMode ? '1' : '0';
+        let f = `contrast(${contrast}) brightness(${brightness}) saturate(${saturation}) hue-rotate(${hue}) invert(${invert})`;
+        if (sharpen === true && $('#adjust-sharpness').val() !== '0') {
             f = f + ' url(#sharpen)';
         }
         return f;
     }
-    adjustBrightness($el, val) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.brightness = val;
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
-    }
-    adjustContrast($el, val) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.contrast = val;
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
-    }
-    adjustSaturation($el, val) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.saturation = val;
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
-    }
-    adjustSharpness($el, val) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.sharpen = false;
-        if (val !== '0') {
-            fo.sharpen = true;
-            let matrix = $('#sharpen feConvolveMatrix').attr('kernelMatrix').split(' ');
-            matrix[4] = -12 * parseFloat(val) + 16;
-            $('#sharpen feConvolveMatrix').attr('kernelMatrix', matrix.join(' '));
+    /**
+     * Adjust CSS filter for the page number.
+     * @param {number} page
+     */
+    adjustFilter(page) {
+        if (this.touchDevice) {
+            return;
         }
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
+        $('.pdfviewer-right img').slice(Math.max(page - 3, 0), page + 3).css('filter', this.compileCss(true));
     }
-    enableSharpening($el) {
-        this.adjustSharpness($el, $el.eq(0).data('sharpness') || this.default.sharpness);
+    /**
+     * Adjust SVG sharpness filter for the page number.
+     * @param {number} page
+     */
+    adjustSharpness(page) {
+        if (this.touchDevice) {
+            return;
+        }
+        let $svg = $('#sharpen feConvolveMatrix'), matrix = $svg.attr('kernelMatrix').split(' ');
+        matrix[4] = -12 * parseFloat($('#adjust-sharpness').val()) + 16;
+        $svg.attr('kernelMatrix', matrix.join(' '));
+        this.adjustFilter(page);
     }
-    disableSharpening($el) {
-        $el.eq(0).data('sharpness', $('#adjust-sharpness').val());
-        this.adjustSharpness($el, '0');
+    /**
+     * Remove SVG sharpness filter for the page number. Improves scrolling performance.
+     * @param {number} page
+     */
+    disableSharpening(page) {
+        if (this.touchDevice) {
+            return;
+        }
+        $('.pdfviewer-right img').slice(Math.max(page - 3, 0), page + 3).css('filter', this.compileCss(false));
     }
-    reset($el) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.brightness = '1';
-        fo.contrast = '1';
-        fo.saturation = '1';
-        $el.css('filter', this.objToCss(fo));
-        this.adjustSharpness($el, this.default.sharpness);
+    /**
+     * Reset SVG sharpness and CSS filters for the page number to default values.
+     * @param {number} page
+     */
+    reset(page) {
+        if (this.touchDevice) {
+            return;
+        }
+        $('#adjust-contrast').val(this.default.contrast);
+        $('#adjust-brightness').val(this.default.brightness);
+        $('#adjust-saturation').val(this.default.saturation);
         $('#adjust-sharpness').val(this.default.sharpness);
-        fo = null;
+        this.adjustSharpness(page);
     }
-    lightMode($el) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.hue = '0deg';
-        fo.invert = '0';
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
+    lightMode() {
+        $('.pdfviewer-left img').css('filter', 'hue-rotate(0deg) invert(0)');
+        $('.pdfviewer-right img').css('filter', this.compileCss(true));
     }
-    nightMode($el) {
-        let fo = this.cssToObj($el.css('filter'));
-        fo.hue = '180deg';
-        fo.invert = '1';
-        $el.css('filter', this.objToCss(fo));
-        fo = null;
+    nightMode() {
+        $('.pdfviewer-left img').css('filter', 'hue-rotate(180deg) invert(1)');
+        $('.pdfviewer-right img').css('filter', this.compileCss(true));
     }
 }
 
@@ -3267,11 +3234,13 @@ class PdfMainView extends View {
         // Set initial page zoom.
         this.pageZoom(store.load('il.pageZoom') || 'screen');
         // Initial page sharpening on Webkit.
-        imageFilter.adjustSharpness($('#pdfviewer-pages > .pdfviewer-right img'), imageFilter.default.sharpness);
+        $('#adjust-sharpness').val(imageFilter.default.sharpness);
         // Page change detection on scroll stop.
         $('.pdfviewer-right').off('scroll').on('scroll', _.throttle(function () {
             This.redrawNoteLine();
             This.redrawSnippetLine();
+            // Disable sharpening when scrolling.
+            imageFilter.disableSharpening(This.page);
             clearTimeout($.data(window, 'scrollTimer'));
             $.data(window, 'scrollTimer', setTimeout(function () {
                 $('.pdfviewer-right > div').each(function () {
@@ -3285,10 +3254,8 @@ class PdfMainView extends View {
                 if (typeof This.selectable === 'object') {
                     This.selectable.refresh();
                 }
-                imageFilter.enableSharpening($('.pdfviewer-right img'));
+                imageFilter.adjustSharpness(This.page);
             }, 200));
-            // Disable sharpening when scrolling.
-            imageFilter.disableSharpening($('.pdfviewer-right img'));
         }, 20));
         $('.pdfviewer-left').off('scroll').on('scroll', _.throttle(function () {
             This.redrawNoteLine();
@@ -3670,11 +3637,9 @@ class PdfMainView extends View {
         $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page').toggleClass('img-night-mode img-light-mode');
         let nightMode = $('#pdfviewer-pages > .pdfviewer-right > .pdfviewer-page:first').hasClass('img-night-mode');
         if (nightMode) {
-            imageFilter.nightMode($('#pdfviewer-pages > .pdfviewer-left img'));
-            imageFilter.nightMode($('#pdfviewer-pages > .pdfviewer-right img'));
+            imageFilter.nightMode();
         } else {
-            imageFilter.lightMode($('#pdfviewer-pages > .pdfviewer-left img'));
-            imageFilter.lightMode($('#pdfviewer-pages > .pdfviewer-right img'));
+            imageFilter.lightMode();
         }
         store.save('il.nightMode', nightMode);
     }
