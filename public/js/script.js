@@ -517,6 +517,8 @@ $.widget("il.saveable", {
     load: function () {
         let clonedNum = 0, This = this, formData = store.load('saveable.' + this.element.attr('id')) || [];
         this.element.get(0).reset();
+        // Uncheck all checkboxes, because unchecked inputs are not serialized/saved.
+        this.element.find(':checkbox').prop('checked', false);
         _.forEach(formData, function (o) {
             let input = This.element.find("[name='" + o.name + "']");
             if (input.length === 0 && clonedNum < 3) {
@@ -1460,7 +1462,9 @@ class ImageFilter {
     constructor() {
         this.touchDevice = window.matchMedia('(max-width: 1199px)').matches;
         // Webkit desktop = true.
-        this.webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast') && window.matchMedia('(min-width: 1200px)').matches;
+        this.webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast') &&
+            window.matchMedia('(min-width: 1200px)').matches &&
+            this.detectBrowser() !== 'safari';
         this.default = {
             contrast:   '1',
             brightness: '1',
@@ -1470,6 +1474,20 @@ class ImageFilter {
             sharpen:     this.webkit,
             sharpness:  (this.webkit ? '0.5' : '0')
         };
+    }
+    detectBrowser() {
+        return (function (agent) {
+            switch (true) {
+                case agent.indexOf("edge") > -1: return "edge_legacy";
+                case agent.indexOf("edg") > -1: return "edge";
+                case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
+                case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
+                case agent.indexOf("trident") > -1: return "ie";
+                case agent.indexOf("firefox") > -1: return "firefox";
+                case agent.indexOf("safari") > -1: return "safari";
+                default: return "other";
+            }
+        })(window.navigator.userAgent.toLowerCase());
     }
     /**
      * Compile CSS filter string.
