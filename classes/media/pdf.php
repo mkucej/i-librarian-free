@@ -360,7 +360,7 @@ SQL;
 
                 } elseif ($engine === 'pdftoppm') {
 
-                    $device = $type === 'jpg' ? 'jpeg -jpegopt quality=85' : 'png';
+                    $device = $type === 'jpg' ? 'jpeg -jpegopt quality=100' : 'png';
 
                     exec($this->binary->pdftoppm()
                         . " -f {$pageNumber} -l {$pageNumber} -singlefile -cropbox "

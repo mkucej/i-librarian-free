@@ -53,9 +53,16 @@ class PageController extends Controller {
 
         $this->validation->intRange($this->get['number'], 1, 100000);
 
+        $zoom = isset($this->get['zoom']) ? (int) $this->get['zoom'] : 300;
+
+        if (in_array($zoom, [200, 250, 300]) === false) {
+
+            throw new Exception("incorrect page zoom factor", 422);
+        }
+
         // Get icon.
         $model = new PageModel($this->di);
-        $stream = $model->getPage($this->get['id'], $this->get['number']);
+        $stream = $model->getPage($this->get['id'], $this->get['number'], $zoom);
 
         // View.
         $view = new FileView($this->di, $stream);

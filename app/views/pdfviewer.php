@@ -286,14 +286,15 @@ HTML;
         $el->addClass('border-0 custom-select py-0 px-2');
         $el->groupClass('d-inline');
         $el->style("width: 5.5rem;height: 32px;background-color:white !important;color: rgb(73, 80, 87) !important");
-        $el->option($this->lang->t9n('screen-NOUN'), 'screen');
-
-        $steps = range(100, 300, 25);
-
-        foreach ($steps as $step) {
-
-            $el->option($step . '%', $step);
-        }
+        $el->option($this->lang->t9n('auto-NOUN'), 'auto');
+        $el->option('50%', '50');
+        $el->option('75%', '75');
+        $el->option('100%', '100');
+        $el->option('125%', '125');
+        $el->option('150%', '150');
+        $el->option('200%', '200');
+        $el->option('250%', '250');
+        $el->option('300%', '300');
 
         $zoom = $el->render();
 
@@ -465,10 +466,12 @@ EOT;
         $images = <<<EOT
             <div class="d-inline-block pdfviewer-page my-3 img-light-mode md-box-shadow-1" data-page="1">
                 <img
+                    src="{$IL_BASE_URL}index.php/page/empty"
                     width="{$w}"
                     height="{$h}"
                     alt="{$this->lang->t9n('Page')}"
-                    src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1">
+                    data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number=1&zoom=200"
+                    class="lazy">
             </div>
 EOT;
 
@@ -505,7 +508,7 @@ EOT;
                         width="{$w}"
                         height="{$h}"
                         alt="{$this->lang->t9n('Page')}"
-                        data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}"
+                        data-src="{$IL_BASE_URL}index.php/page/main?id={$item_id}&number={$number}&zoom=200"
                         class="lazy">
                 </div>
 EOT;

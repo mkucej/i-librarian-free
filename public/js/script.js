@@ -1461,33 +1461,15 @@ let chart = new ILChart();
 class ImageFilter {
     constructor() {
         this.touchDevice = window.matchMedia('(max-width: 1199px)').matches;
-        // Webkit desktop = true.
-        this.webkit = window.CSS.supports('image-rendering: -webkit-optimize-contrast') &&
-            window.matchMedia('(min-width: 1200px)').matches &&
-            this.detectBrowser() !== 'safari';
         this.default = {
             contrast:   '1',
             brightness: '1',
             saturation: '1',
             hue:        '0deg',
             invert:     '0',
-            sharpen:     this.webkit,
-            sharpness:  (this.webkit ? '0.5' : '0')
+            sharpen:     false,
+            sharpness:   0
         };
-    }
-    detectBrowser() {
-        return (function (agent) {
-            switch (true) {
-                case agent.indexOf("edge") > -1: return "edge_legacy";
-                case agent.indexOf("edg") > -1: return "edge";
-                case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
-                case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
-                case agent.indexOf("trident") > -1: return "ie";
-                case agent.indexOf("firefox") > -1: return "firefox";
-                case agent.indexOf("safari") > -1: return "safari";
-                default: return "other";
-            }
-        })(window.navigator.userAgent.toLowerCase());
     }
     /**
      * Compile CSS filter string.
@@ -3221,7 +3203,7 @@ class PdfMainView extends View {
         // Update page zoom on resize.
         $(window).off('resize.PdfMainView').on('resize.PdfMainView', function () {
             This.pagesHeight();
-            This.pageZoom(store.load('il.pageZoom') || 'screen');
+            This.pageZoom(store.load('il.pageZoom') || 'auto');
             // Page change detection.
             $('.pdfviewer-right').trigger('scroll');
         });
@@ -3234,7 +3216,7 @@ class PdfMainView extends View {
             load_delay: 250,
             threshold: 400
         });
-        new LazyLoad({
+        this.lazyLoad = new LazyLoad({
             container: document.querySelector('.pdfviewer-right'),
             elements_selector: '.lazy',
             load_delay: 250,
@@ -3250,7 +3232,7 @@ class PdfMainView extends View {
             this.showThumbs();
         }
         // Set initial page zoom.
-        this.pageZoom(store.load('il.pageZoom') || 'screen');
+        this.pageZoom(store.load('il.pageZoom') || 'auto');
         // Initial page sharpening on Webkit.
         $('#adjust-sharpness').val(imageFilter.default.sharpness);
         // Page change detection on scroll stop.
@@ -3313,34 +3295,70 @@ class PdfMainView extends View {
      * Double-click zoom toggle.
      */
     dblZoom(e) {
-        let pageW = $('.pdfviewer-right').width() - 30;
-        let imgW = $('.pdfviewer-page > img').eq(e.data.object.page - 1).attr('width');
-        let zoom = store.load('il.pageZoom') === 'screen' ? Math.min(Math.floor((200 * pageW / imgW) / 25) * 25, 300) : 'screen';
+        let zoom = store.load('il.pageZoom');
+        if (zoom === 'auto') {
+            let pageWidth = $('.pdfviewer-right').width() - 30,
+                imgWidth = 0.5 * $('.pdfviewer-page > img').eq(0).attr('width'),
+                tempZoom = 100 * pageWidth / imgWidth;
+            [100, 125, 150, 200, 250, 300].forEach(function(v) {
+                if (v <= tempZoom) {
+                    zoom = v.toString();
+                }
+            });
+        } else {
+            zoom = 'auto';
+        }
         e.data.object.pageZoom(zoom);
     }
     /**
      * Execute page zoom change.
-     * @param {number} zoom
+     * @param {number|string} zoom
      */
     pageZoom(zoom) {
-        let pageBefore = this.page;
-        switch(zoom) {
-            case 'screen':
-                let pageWidth = $('.pdfviewer-right').width() - 30;
-                $('.pdfviewer-page > img').each(function () {
-                    this.style.width  = pageWidth + 'px';
-                    this.style.height = pageWidth / this.getAttribute('width') * this.getAttribute('height') + 'px';
-                });
-                break;
-            default:
-                $('.pdfviewer-page > img').each(function () {
-                    this.style.width  = 0.01 * zoom * this.getAttribute('width') + 'px';
-                    this.style.height = 0.01 * zoom * this.getAttribute('height') + 'px';
-                });
-                break;
-        }
+        let pageBefore = this.page, imgZoom;
         $('#pdfviewer-zoom').val(zoom);
         store.save('il.pageZoom', zoom);
+        // Set image zoom factor.
+        if (zoom === 'auto') {
+            let pageWidth = $('.pdfviewer-right').width() - 30,
+                imgWidth = $('.pdfviewer-page > img').eq(0).attr('width'),
+                tempZoom = Math.max(100 * pageWidth / imgWidth, 50);
+            [50, 75, 100, 125, 150, 200, 250, 300].forEach(function(v) {
+                if (v <= tempZoom) {
+                    zoom = v.toString();
+                }
+            });
+        }
+        switch(zoom) {
+            case '50':
+            case '100':
+            case '200':
+                imgZoom = '200';
+                break;
+            case '125':
+            case '250':
+                imgZoom = '250';
+                break;
+            case '75':
+            case '150':
+            case '300':
+                imgZoom = '300';
+                break;
+            default:
+                imgZoom = '200';
+        }
+        $('.pdfviewer-page > img').each(function () {
+            // Resize images.
+            this.style.width  = Math.ceil(0.01 * zoom * this.getAttribute('width')) + 'px';
+            this.style.height = Math.ceil(0.01 * zoom * this.getAttribute('height')) + 'px';
+            // Reset lazy loading.
+            if (this.getAttribute('data-src') !== null) {
+                this.removeAttribute('data-was-processed');
+                this.classList.remove('loaded');
+                this.setAttribute('data-src', this.getAttribute('data-src').replace(/zoom=\d+/, 'zoom=' + imgZoom));
+            }
+        });
+        this.lazyLoad.update();
         this.scrollToPage(pageBefore, 0);
     }
     /**
@@ -3513,7 +3531,7 @@ class PdfMainView extends View {
         if (typeof e.data.object.cropper === 'undefined') {
             e.data.object.clearHighlights(e);
             e.data.object.clearNotes(e);
-            e.data.object.pageZoom('screen');
+            e.data.object.pageZoom('auto');
             e.data.object.destroyTextLayer();
             // Disable other controls.
             $('.dropdown.show .dropdown-toggle').dropdown('toggle');
