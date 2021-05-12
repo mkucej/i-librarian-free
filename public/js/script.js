@@ -1468,7 +1468,7 @@ class ImageFilter {
             hue:        '0deg',
             invert:     '0',
             sharpen:     false,
-            sharpness:   0
+            sharpness:  '0'
         };
     }
     /**
@@ -1478,13 +1478,14 @@ class ImageFilter {
      */
     compileCss(sharpen) {
         let nightMode = $('.pdfviewer-right > div:first').hasClass('img-night-mode'),
-            contrast = $('#adjust-contrast').val(),
-            brightness = $('#adjust-brightness').val(),
-            saturation = $('#adjust-saturation').val(),
+            contrast = $('#adjust-contrast').val() || this.default.contrast,
+            brightness = $('#adjust-brightness').val() || this.default.brightness,
+            saturation = $('#adjust-saturation').val() || this.default.saturation,
+            sharpness = $('#adjust-sharpness').val() || this.default.sharpness,
             hue = nightMode ? '180deg' : '0deg',
             invert = nightMode ? '1' : '0';
         let f = `contrast(${contrast}) brightness(${brightness}) saturate(${saturation}) hue-rotate(${hue}) invert(${invert})`;
-        if (sharpen === true && $('#adjust-sharpness').val() !== '0') {
+        if (sharpen === true && sharpness !== '0') {
             f = f + ' url(#sharpen)';
         }
         return f;
@@ -3300,7 +3301,7 @@ class PdfMainView extends View {
             let pageWidth = $('.pdfviewer-right').width() - 30,
                 imgWidth = 0.5 * $('.pdfviewer-page > img').eq(0).attr('width'),
                 tempZoom = 100 * pageWidth / imgWidth;
-            [100, 125, 150, 200, 250, 300].forEach(function(v) {
+            [50, 75, 100, 125, 150, 200, 250, 300].forEach(function(v) {
                 if (v <= tempZoom) {
                     zoom = v.toString();
                 }
@@ -3315,6 +3316,9 @@ class PdfMainView extends View {
      * @param {number|string} zoom
      */
     pageZoom(zoom) {
+        if (zoom === 'screen') {
+            zoom = 'auto';
+        }
         let pageBefore = this.page, imgZoom;
         $('#pdfviewer-zoom').val(zoom);
         store.save('il.pageZoom', zoom);
