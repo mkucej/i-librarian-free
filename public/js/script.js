@@ -3638,9 +3638,9 @@ class PdfMainView extends View {
         $('#pdfviewer-results').addClass('d-none');
         This.redrawNoteLine();
         This.redrawSnippetLine();
-        let pageWidth = 230;
+        let pageWidth = 200;
         $('.pdfviewer-thumb > img').each(function () {
-            if (this.style.width === '230px') {
+            if (this.style.width === '200px') {
                 return;
             }
             // Image size.

@@ -153,7 +153,7 @@ EOT;
         $this->cache = $this->di->getShared('FileCache');
 
         $this->cache->context('pages');
-        $key = $this->cache->key(['preview', $item_id, $number]);
+        $key = $this->cache->key(['preview2', $item_id, $number]);
 
         // We must provide the PDF hash to not get a stale page.
         $page = $this->cache->get($key, $hash);
@@ -163,7 +163,23 @@ EOT;
 
             $pdf_file = $this->idToPdfPath($item_id);
             $this->pdf_obj = $this->di->get('Pdf', $pdf_file);
-            $temp_page = $this->pdf_obj->pageToImage($number, 'jpg', 48);
+            $temp_page = $this->pdf_obj->pagePreview($number);
+
+            // Fix odd-pixel size images.
+            /** @var Image $img */
+            $img = $this->di->get('Image');
+            $img->createFromFile($temp_page);
+
+            $new_width = $img->width % 2 !== 0 ? $img->width + 1 : $img->width;
+            $new_height = $img->height % 2 !== 0 ? $img->height + 1 : $img->height;
+
+            // If we need to add 1px (this compensates the Chrome blurry image downscaling bug).
+            if ($new_width !== $img->width || $new_height !== $img->height) {
+
+                $img->crop(0, 0, $new_width, $new_height);
+            }
+
+            $img->save($temp_page, 80);
 
             // Save created page to the cache.
             $save = $this->cache->set($key, $temp_page, $hash);

@@ -494,6 +494,38 @@ SQL;
     }
 
     /**
+     * Create small page preview. We use pdftoppm, because it can correctly apply cropbox dimensions when extracting
+     * image from a PDF page.
+     *
+     * @param int $page
+     * @param int $width
+     * @return string
+     * @throws Exception
+     */
+    public function pagePreview(int $page = 1, int $width = 400): string {
+
+        $img_path = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('thumb_');
+
+        $this->queue->wait('binary');
+
+        // Create image.
+        exec($this->binary->pdftoppm()
+            . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=100 -cropbox"
+            . " -scale-to-x {$width} -scale-to-y -1 -W {$width} "
+            . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
+
+        $this->queue->release('binary');
+
+        // Image must exist -> error.
+        if (!is_file($img_path . '.jpg')) {
+
+            throw new Exception("PDF to image page conversion failed", 500);
+        }
+
+        return $img_path . '.jpg';
+    }
+
+    /**
      * Get bookmarks.
      *
      * @return array

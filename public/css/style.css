@@ -206,7 +206,7 @@ h5 {
     position: relative;
     margin-bottom: 15px;
     cursor: pointer;
-    width: 230px;
+    width: 200px;
     height: auto;
 }
 
@@ -215,6 +215,11 @@ h5 {
     bottom: 0;
     left: 30%;
     width: 40%;
+}
+
+.pdfviewer-thumb > img {
+    width: 200px;
+    height: auto;
 }
 
 #pdfviewer-thumbs {
