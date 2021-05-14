@@ -2318,7 +2318,7 @@ EOT;
             $item_ordering .= "WHEN {$item_id} THEN {$key}" . PHP_EOL;
         }
 
-        if ($display_action === 'title' || $display_action === 'icon') {
+        if ($display_action === 'title' || $display_action === 'icon' || $display_action === 'table') {
 
             $sql = <<<EOT
 SELECT
@@ -2328,6 +2328,7 @@ SELECT
        secondary_titles.secondary_title,
        tertiary_titles.tertiary_title,
        items.publication_date,
+       items.reference_type,
        items.file_hash
     FROM items
     LEFT JOIN primary_titles ON items.primary_title_id = primary_titles.id
@@ -2356,6 +2357,7 @@ EOT;
                     'title'   => $row['title'],
                     'publication_title' => $publication,
                     'publication_date'  => substr($row['publication_date'], 0, 4),
+                    'reference_type'  => $row['reference_type'],
                     'has_pdf' => !empty($row['file_hash']),
                     'snippet' => $item_rows[$i]['snippet'] ?? ''
                 ];
@@ -2411,6 +2413,7 @@ SELECT
        primary_titles.primary_title,
        secondary_titles.secondary_title,
        tertiary_titles.tertiary_title,
+       items.reference_type,
        items.publication_date,
        items.file_hash
     FROM items
@@ -2441,6 +2444,7 @@ EOT;
                     'abstract' => $row['abstract'],
                     'publication_title' => $publication,
                     'publication_date'  => substr($row['publication_date'], 0, 4),
+                    'reference_type'  => $row['reference_type'],
                     'has_pdf'  => !empty($row['file_hash']),
                     'snippet'  => $item_rows[$i]['snippet'] ?? ''
                 ];

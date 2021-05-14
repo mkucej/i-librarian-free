@@ -114,6 +114,10 @@ class ItemsView extends TextView {
                 $items = $this->summaryList($input['items']);
                 break;
 
+            case 'table':
+                $items = $this->tableList($input['items']);
+                break;
+
             default:
                 $items = $this->titleList($input['items']);
         }
@@ -952,7 +956,7 @@ EOT;
             $authors = $item['authors'] === [] ? $this->lang->t9n('No authors') : join('<span class="ml-0"> &hellip;</span>', $item['authors']);
 
             // Publication.
-            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $this->lang->t9n('No publication title');
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $item['reference_type'];
             $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
 
             // Top HTML structure.
@@ -981,6 +985,108 @@ EOT;
         }
 
         return "<div class=\"col\">$titles</div>";
+    }
+
+    /**
+     * Display items as a table.
+     *
+     * @param array $items
+     * @return string
+     * @throws Exception
+     */
+    private function tableList(array $items): string {
+
+        $titles = <<<EOT
+            <table class="item-container" style="table-layout: fixed;width: 100%;box-shadow: none">
+                <thead>
+                    <tr>
+                        <th class="px-3 py-2" style="width: 3rem">&nbsp;</th>
+                        <th class="px-3 py-2 d-none d-md-table-cell" style="width: 12rem">Author</th>
+                        <th class="px-3 py-2">Title</th>
+                        <th class="px-3 py-2 d-none d-xl-table-cell" style="width: 5rem">Year</th>
+                        <th class="px-3 py-2 d-none d-xl-table-cell" style="width: 20%">Publication</th>
+                    </tr>
+                </thead>
+EOT;
+
+        foreach ($items as $key => $item) {
+
+            $IL_BASE_URL = IL_BASE_URL;
+
+            if ($item['has_pdf'] === '1') {
+
+                $get = $this->request->getQueryParams();
+                $search = '';
+
+                if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
+
+                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
+                }
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->elementName('a');
+                $el->href("{$IL_BASE_URL}index.php/pdf?id={$item['id']}" . $search);
+                $el->addClass('border border-primary mr-3');
+                $el->context('primary');
+                $el->html('PDF');
+                $pdf_link = $el->render();
+
+                $el = null;
+
+            } else {
+
+                /** @var Bootstrap\Badge $el */
+                $el = $this->di->get('Badge');
+
+                $el->context('secondary');
+                $el->addClass('border border-secondary mr-3');
+                $el->style('opacity: 0.66');
+                $el->html('PDF');
+                $pdf_link = $el->render();
+
+                $el = null;
+            }
+
+            // Authors.
+            $authors = $item['authors'] === [] ? "<span class=\"text-muted\">{$this->lang->t9n('No authors')}</span>" : $item['authors'][0];
+
+            // Publication.
+            $publication = !empty($item['publication_title']) ? $item['publication_title'] : $item['reference_type'];
+            $date = !empty($item['publication_date']) ? $item['publication_date'] : '';
+
+            $snippet_div = empty($item['snippet']) ? '' : "<div style=\"white-space: normal\">{$this->sanitation->lmth($item['snippet'])}</div>";
+
+            // Top HTML structure.
+
+            $row_class = '';
+
+            if ($key % 2 === 0) {
+
+                $row_class = self::$theme === 'dark' ? 'bg-dark' : 'bg-white';
+            }
+
+            $titles .= <<<EOT
+                <tbody class="{$row_class}">
+                    <tr>
+                        <td class="px-3 py-3">{$pdf_link}</td>
+                        <td class="px-3 py-3 text-truncate d-none d-md-table-cell">{$authors}</td>
+                        <td class="px-3 py-3 text-truncate">
+                            <a href="{$IL_BASE_URL}index.php/item#summary?id={$item['id']}">{$item['title']}</a>
+                        </td>
+                        <td class="px-3 py-3 text-truncate d-none d-xl-table-cell">{$date}</td>
+                        <td class="px-3 py-3 text-truncate d-none d-xl-table-cell">{$publication}</td>
+                    </tr>
+                </tbody>
+EOT;
+        }
+
+        $titles .= <<<EOT
+            </table>
+EOT;
+
+        return "<div class=\"col-12\">$titles</div>";
     }
 
     /**
@@ -1333,7 +1439,7 @@ EOT;
             $authors = $item['authors'] === [] ? $this->lang->t9n('No authors') : join('<span class="ml-0"> &hellip;</span>', $item['authors']);
 
             // Publication.
-            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $this->lang->t9n('No publication title');
+            $publication = !empty($item['publication_title']) ? "<i>{$item['publication_title']}</i>" : $item['reference_type'];
             $date = !empty($item['publication_date']) ? "({$item['publication_date']})" : '';
 
             // Tags.

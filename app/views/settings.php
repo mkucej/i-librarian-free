@@ -318,6 +318,25 @@ class SettingsView extends TextView {
 
         $el = null;
 
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->type('radio');
+        $el->inline(true);
+        $el->id('display_table');
+        $el->name('settings[display_type]');
+        $el->value('table');
+        $el->label($this->lang->t9n('table'));
+
+        if ($user_settings['display_type'] === 'table') {
+
+            $el->checked('checked');
+        }
+
+        $radios_l .= $el->render();
+
+        $el = null;
+
         /*
          * Icons per row.
          */
@@ -1281,6 +1300,25 @@ class SettingsView extends TextView {
         $el->label($this->lang->t9n('icon'));
 
         if ($user_settings['display_type'] === 'icon') {
+
+            $el->checked('checked');
+        }
+
+        $output .= $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Input $el */
+        $el = $this->di->get('Input');
+
+        $el->type('radio');
+        $el->inline(true);
+        $el->id('display_table');
+        $el->name('settings[display_type]');
+        $el->value('table');
+        $el->label($this->lang->t9n('table'));
+
+        if ($user_settings['display_type'] === 'table') {
 
             $el->checked('checked');
         }
