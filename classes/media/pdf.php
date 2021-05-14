@@ -1024,7 +1024,12 @@ EOT;
         }
 
         libxml_use_internal_errors(true);
-        libxml_disable_entity_loader(false);
+
+        if (PHP_MAJOR_VERSION < 8) {
+
+            libxml_disable_entity_loader(false);
+        }
+
         libxml_clear_errors();
 
         $dom = new DOMDocument();
@@ -1161,7 +1166,12 @@ EOT;
         }
 
         libxml_use_internal_errors(true);
-        libxml_disable_entity_loader(false);
+
+        if (PHP_MAJOR_VERSION < 8) {
+
+            libxml_disable_entity_loader(false);
+        }
+
         libxml_clear_errors();
 
         $dom = new DOMDocument();
@@ -1529,7 +1539,12 @@ EOT;
     private function repairCairoSvg(string $filename): void {
 
         libxml_use_internal_errors(true);
-        libxml_disable_entity_loader(false);
+
+        if (PHP_MAJOR_VERSION < 8) {
+
+            libxml_disable_entity_loader(false);
+        }
+
         libxml_clear_errors();
 
         $xml = new DOMDocument();
