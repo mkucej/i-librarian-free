@@ -907,7 +907,7 @@ class FormStyle {
             This.changeState($(this));
         }).off('focus.formstyle').on('focus.formstyle', function () {
             // Show focus for better accessibility.
-            $(this).next().find('.label-text').css('text-decoration', 'dotted underline');
+            $(this).next().find('.label-text').css('text-decoration', 'underline dotted 1px');
         }).off('blur.formstyle').on('blur.formstyle', function () {
             // Remove focus for better accessibility.
             $(this).next().find('.label-text').css('text-decoration', 'none');

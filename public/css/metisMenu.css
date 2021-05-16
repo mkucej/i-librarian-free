@@ -225,6 +225,6 @@
     background: rgba(255, 255, 255, 0.08);
 }
 .metismenu a.clicked {
-    text-decoration: dotted underline;
+    text-decoration: underline dotted 1px;
     background: rgba(255, 255, 255, 0.33);
 }
