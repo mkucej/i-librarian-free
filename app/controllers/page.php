@@ -179,6 +179,16 @@ class PageController extends Controller {
 
         $this->validation->intRange($this->get['height'], 1, 10000);
 
+        if (!isset($this->get['zoom'])) {
+
+            throw new Exception("the parameter <kbd>zoom</kbd> is required", 400);
+        }
+
+        if (in_array($this->get['zoom'], [200, 250, 300]) === false) {
+
+            throw new Exception("incorrect page zoom factor", 422);
+        }
+
         $model = new PageModel($this->di);
 
         $stream = $model->getCroppedPage(
@@ -187,7 +197,8 @@ class PageController extends Controller {
             (int) $this->get['x'],
             (int) $this->get['y'],
             (int) $this->get['width'],
-            (int) $this->get['height']
+            (int) $this->get['height'],
+            (int) $this->get['zoom']
         );
 
         $view = new FileView($this->di, $stream);
@@ -246,15 +257,26 @@ class PageController extends Controller {
 
         $this->validation->intRange($this->post['height'], 1, 10000);
 
+        if (!isset($this->post['zoom'])) {
+
+            throw new Exception("the parameter <kbd>zoom</kbd> is required", 400);
+        }
+
+        if (in_array($this->post['zoom'], [200, 250, 300]) === false) {
+
+            throw new Exception("incorrect page zoom factor", 422);
+        }
+
         $model = new PageModel($this->di);
 
         $stream = $model->getCroppedPage(
-            $this->post['id'],
-            $this->post['page'],
-            $this->post['x'],
-            $this->post['y'],
-            $this->post['width'],
-            $this->post['height']
+            (int) $this->post['id'],
+            (int) $this->post['page'],
+            (int) $this->post['x'],
+            (int) $this->post['y'],
+            (int) $this->post['width'],
+            (int) $this->post['height'],
+            (int) $this->post['zoom']
         );
 
         // Save as supplement.

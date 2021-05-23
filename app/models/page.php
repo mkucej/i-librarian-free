@@ -11,7 +11,7 @@ use Librarian\Media\Pdf;
 /**
  * Model to handle PDF pages.
  *
- * @method StreamInterface getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height)
+ * @method StreamInterface getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height, int $zoom)
  * @method StreamInterface getPage(int $item_id, int $number, int $zoom = 300) Read PDF page.
  * @method StreamInterface getPreview(int $item_id, int $number) PDF page small preview.
  */
@@ -202,10 +202,11 @@ EOT;
      * @param int $y
      * @param int $width
      * @param int $height
+     * @param int $zoom
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height) {
+    protected function _getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height, int $zoom) {
 
         $this->db_main->beginTransaction();
 
@@ -220,7 +221,7 @@ EOT;
 
         $pdf_file = $this->idToPdfPath($item_id);
         $this->pdf_obj = $this->di->get('Pdf', $pdf_file);
-        $cropped = $this->pdf_obj->cropPageToImage($number, $x, $y, $width, $height);
+        $cropped = $this->pdf_obj->cropPageToImage($number, $x, $y, $width, $height, $zoom);
 
         return $this->readFile($cropped);
     }

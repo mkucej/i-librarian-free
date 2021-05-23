@@ -585,13 +585,37 @@ HTML
 </svg>
 HTML;
 
+        // Image cropping buttons.
+
+        /** @var Bootstrap\Button $el */
+        $el = $this->di->get('Button');
+
+        $el->context('primary');
+        $el->id('copy-image-btn-temp');
+        $el->addClass('d-none mr-1');
+        $el->html($this->lang->t9n('Download'));
+        $crop_btn = $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Button $el */
+        $el = $this->di->get('Button');
+
+        $el->context('danger');
+        $el->id('save-image-btn-temp');
+        $el->addClass('d-none');
+        $el->html($this->lang->t9n('Save'));
+        $crop_btn .= $el->render();
+
+        $el = null;
+
         if ($this->contentType() === 'html') {
 
             $this->styleLink('css/plugins.css');
 
             $this->head();
 
-            $this->append("<div class=\"container-fluid\">{$row}</div>{$filter}");
+            $this->append("<div class=\"container-fluid\">{$row}</div>{$filter}{$crop_btn}");
 
             $this->scriptLink('js/plugins.min.js');
 
@@ -609,7 +633,7 @@ EOT;
 
             $this->head();
 
-            $this->append(['html' => $row . $filter]);
+            $this->append(['html' => $row . $filter . $crop_btn]);
         }
 
         return $this->send();

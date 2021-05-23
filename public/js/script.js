@@ -3554,23 +3554,10 @@ class PdfMainView extends View {
                 autoCropArea: 0.5,
                 ready: function () {
                     // Add Copy and Save buttons.
-                    $('.cropper-crop-box')
-                        .append('<button id="copy-image-btn">Copy</button>')
-                        .append('<button id="save-image-btn">Save</button>');
-                    $('#copy-image-btn').addClass('btn btn-primary').css({
-                        position: 'absolute',
-                        bottom: '-36px',
-                        left: 0,
-                        'font-size': '15px',
-                        'line-height': '15px'
-                    });
-                    $('#save-image-btn').addClass('btn btn-danger').css({
-                        position: 'absolute',
-                        bottom: '-36px',
-                        left: '74px',
-                        'font-size': '15px',
-                        'line-height': '15px'
-                    });
+                    let btn1 = $('#copy-image-btn-temp').clone(), btn2 = $('#save-image-btn-temp').clone();
+                    $('.cropper-crop-box').append('<div id="crop-buttons" style="position: absolute;bottom:-3rem;white-space: nowrap"></div>');
+                    btn1.attr('id', 'copy-image-btn').removeClass('d-none').appendTo('#crop-buttons');
+                    btn2.attr('id', 'save-image-btn').removeClass('d-none').appendTo('#crop-buttons');
                 }
             });
             // Remove night mode.
@@ -3591,13 +3578,13 @@ class PdfMainView extends View {
         }
     }
     getCroppedImage(e) {
-        let This = e.data.object, data = This.cropper.getData(true);
-        _.assign(data, {id: $('body').data('id'), page: This.page});
+        let This = e.data.object, data = This.cropper.getData(true), img = new URL(This.cropper.url);
+        _.assign(data, {id: $('body').data('id'), page: This.page, zoom: img.searchParams.get('zoom')});
         location.assign(window.IL_BASE_URL + 'index.php/page/loadcrop?' + $.param(data));
     }
     saveCroppedImage(e) {
-        let This = e.data.object, data = This.cropper.getData(true);
-        _.assign(data, {id: $('body').data('id'), page: This.page});
+        let This = e.data.object, data = This.cropper.getData(true), img = new URL(This.cropper.url);
+        _.assign(data, {id: $('body').data('id'), page: This.page, zoom: img.searchParams.get('zoom')});
         model.save({
             url: window.IL_BASE_URL + 'index.php/page/savecrop',
             data: $.param(data)

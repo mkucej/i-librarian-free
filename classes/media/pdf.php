@@ -427,10 +427,11 @@ SQL;
      * @return string
      * @throws Exception
      */
-    public function cropPageToImage(int $page, int $x, int $y, int $w, int $h): string {
+    public function cropPageToImage(int $page, int $x, int $y, int $w, int $h, int $zoom): string {
 
         // The pages in the viewer are are 288 dpi. To make the image 300 dpi, we must multiply the args.
-        $ratio = 300 / 288;
+        $resolution = ceil($zoom * 96 / 100);
+        $ratio = 300 / $resolution;
         $x = round($ratio * $x);
         $y = round($ratio * $y);
         $w = round($ratio * $w);
