@@ -105,7 +105,8 @@ BODY
             <p class="mt-3 text-muted">$check_db</p>
             <p class="text-muted">$defragment</p>
             <p class="text-danger">$reindex {$this->lang->t9n('Do not use, unless instructed after upgrade')}.</p>
-            <p class="text-danger">$reextract {$this->lang->t9n('Do not use, unless instructed after upgrade')}.</p>
+            <p class="text-danger">$reextract <br> {$this->lang->t9n('Do not use, unless instructed after upgrade')}.
+              {$this->lang->t9n('This action will erase the existing index, including all OCR data')}</p>
 FOOTER
         );
         $card = $el->render();
