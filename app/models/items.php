@@ -3121,7 +3121,7 @@ README
         }
 
         $json_file = "window.created = '" . time() . "';\n";
-        $json_file .= 'window.jsonItems = ' . \Librarian\Http\Client\json_encode($exported_items) . ';';
+        $json_file .= 'window.jsonItems = ' . Client\Utils::jsonEncode($exported_items) . ';';
 
         $zip->addFromString('data/items.js', $json_file);
         $zip->setCompressionName('data/items.js', ZipArchive::CM_STORE);
