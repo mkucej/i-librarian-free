@@ -255,7 +255,7 @@ class ExternalView extends TextView {
                 $el->type('checkbox');
                 $el->inline(true);
                 $el->label($project['project']);
-                $el->name('projects[]');
+                $el->name("projects[{$project['id']}]");
                 $el->value($project['id']);
                 $project_checks .= $el->render();
 
@@ -337,7 +337,7 @@ HTML;
 
                 $el->id("tag-checkbox-$i-$j");
                 $el->type('checkbox');
-                $el->name("tags[]");
+                $el->name("tags[{$j}]");
                 $el->value($tag_id);
                 $el->label($tag);
                 $el->inline(true);

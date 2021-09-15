@@ -2901,14 +2901,14 @@ class EditMainView extends View {
         });
     }
     _selectAuthor(typeahead) {
-        if ($(typeahead).attr('name') === 'author_last_name[]') {
-            let $first = $(typeahead).closest('.form-row').find('input[name="author_first_name\\[\\]"]');
+        if ($(typeahead).is("[name^='author_last_name']")) {
+            let $first = $(typeahead).closest('.form-row').find('input[name^="author_first_name"]');
             let names = $(typeahead).val().split(',');
             $(typeahead).val($.trim(names[0] || ''));
             $first.val($.trim(names[1] || ''));
         }
-        if ($(typeahead).attr('name') === 'editor_last_name[]') {
-            let $first = $(typeahead).closest('.form-row').find('input[name="editor_first_name\\[\\]"]');
+        if ($(typeahead).is("[name^='editor_last_name']")) {
+            let $first = $(typeahead).closest('.form-row').find('input[name^="editor_first_name"]');
             let names = $(typeahead).val().split(',');
             $(typeahead).val($.trim(names[0] || ''));
             $first.val($.trim(names[1] || ''));

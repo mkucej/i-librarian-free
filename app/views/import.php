@@ -305,7 +305,7 @@ EOT
             $el->type('checkbox');
             $el->inline(true);
             $el->label($project['project']);
-            $el->name('projects[]');
+            $el->name("projects[{$project['id']}]");
             $el->value($project['id']);
             $project_checks .= $el->render();
 
@@ -504,7 +504,7 @@ BODY
         $el->id('new-author-last');
         $el->addClass("input-typeahead");
         $el->groupClass('col');
-        $el->name('author_last_name[]');
+        $el->name('author_last_name[0]');
         $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/author");
         $new_last_name = $el->render();
@@ -516,7 +516,7 @@ BODY
 
         $el->id('new-author-first');
         $el->groupClass('col');
-        $el->name('author_first_name[]');
+        $el->name('author_first_name[0]');
         $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
@@ -550,7 +550,7 @@ EOT;
         $el->id('new-editor-last');
         $el->addClass("input-typeahead");
         $el->groupClass('col');
-        $el->name('editor_last_name[]');
+        $el->name('editor_last_name[0]');
         $el->label($this->lang->t9n('Last name'));
         $el->source(IL_BASE_URL . "index.php/filter/editor");
         $new_last_name = $el->render();
@@ -562,7 +562,7 @@ EOT;
 
         $el->id('new-editor-first');
         $el->groupClass('col');
-        $el->name('editor_first_name[]');
+        $el->name('editor_first_name[0]');
         $el->label($this->lang->t9n('First name'));
         $new_first_name = $el->render();
 
@@ -594,7 +594,7 @@ EOT;
         $el = $this->di->get('Select');
 
         $el->groupClass('col-sm-3');
-        $el->name('uid_types[]');
+        $el->name('uid_types[0]');
         $el->id('new-uid-type');
         $el->label($this->lang->t9n('UID type'));
         $el->option('', '');
@@ -611,7 +611,7 @@ EOT;
 
         $el->id('new-uid');
         $el->groupClass('col-sm-9');
-        $el->name('uids[]');
+        $el->name('uids[0]');
         $el->label('UID');
         $uid_html .= $el->render();
 
@@ -863,7 +863,7 @@ EOT;
             $el->type('checkbox');
             $el->inline(true);
             $el->label($project['project']);
-            $el->name('projects[]');
+            $el->name("projects[{$project['id']}]");
             $el->value($project['id']);
             $project_checks .= $el->render();
 
@@ -928,7 +928,7 @@ EOT;
 
             $el->id('tag-checkbox-' . $i);
             $el->type('checkbox');
-            $el->name("tags[]");
+            $el->name("tags[{$i}]");
             $el->value($tag_id);
             $el->label($tag);
             $el->inline(true);
@@ -1162,7 +1162,7 @@ EOT
             $el->type('checkbox');
             $el->inline(true);
             $el->label($project['project']);
-            $el->name('projects[]');
+            $el->name("projects[{$project['id']}]");
             $el->value($project['id']);
             $project_checks .= $el->render();
 
@@ -1395,7 +1395,7 @@ BODY
             $el->type('checkbox');
             $el->inline(true);
             $el->label($project['project']);
-            $el->name('projects[]');
+            $el->name("projects[{$project['id']}]");
             $el->value($project['id']);
             $project_checks .= $el->render();
 
