@@ -967,6 +967,7 @@ EOT;
         $columns = [];
         $join_collection = '';
         $where_collection = '';
+        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：";
 
         // Modify query based on boolean type.
         switch ($search['search_boolean'][0]) {
@@ -983,20 +984,25 @@ EOT;
 
                     foreach ($fields as $field) {
 
-                        $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-
                         // Authors/editors have comma separators. Users may or may not provide a comma in the query.
                         if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($term, ',') === false) {
 
+                            $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
                             $columns[] = "% {$term}, %";
 
                         } elseif ($field === 'items.publication_date') {
 
+                            $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
                             $columns[] = "{$term}%";
 
                         } else {
 
+                            $field_placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
+                            $columns[] = "%{$term}%";
                             $columns[] = "% {$term} %";
+                            $columns[] = "* [{$extra_characters}]{$term} *";
+                            $columns[] = "* {$term}[{$extra_characters}] *";
+                            $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
                         }
                     }
 
@@ -1012,20 +1018,25 @@ EOT;
 
                 foreach ($fields as $field) {
 
-                    $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-
                     // Authors/editors have comma separators. Users may or may not provide a comma in the query.
                     if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($query, ',') === false) {
 
+                        $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
                         $columns[] = "% {$query}, %";
 
                     } elseif ($field === 'items.publication_date') {
 
+                        $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
                         $columns[] = "{$query}%";
 
                     } else {
 
+                        $field_placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
+                        $columns[] = "%{$query}%";
                         $columns[] = "% {$query} %";
+                        $columns[] = "* [{$extra_characters}]{$query} *";
+                        $columns[] = "* {$query}[{$extra_characters}] *";
+                        $columns[] = "* [{$extra_characters}]{$query}[{$extra_characters}] *";
                     }
                 }
 
@@ -1575,6 +1586,7 @@ EOT;
         $columns = [];
         $join_collection = '';
         $where_collection = '';
+        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：";
 
         foreach ($search['search_query'] as $key => $search_query) {
 
@@ -1626,16 +1638,24 @@ EOT;
 
                             foreach ($field as $field_part) {
 
-                                $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\'";
+                                $placeholders[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
+                                $columns[] = "%{$term}%";
                                 $columns[] = "% {$term} %";
+                                $columns[] = "* [{$extra_characters}]{$term} *";
+                                $columns[] = "* {$term}[{$extra_characters}] *";
+                                $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
                             }
 
                             $placeholders[] = '(' . join(' OR ', $placeholder_parts) . ')';
 
                         } else {
 
-                            $placeholders[] = "{$field} LIKE ? ESCAPE '\'";
+                            $placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
+                            $columns[] = "%{$term}%";
                             $columns[] = "% {$term} %";
+                            $columns[] = "* [{$extra_characters}]{$term} *";
+                            $columns[] = "* {$term}[{$extra_characters}] *";
+                            $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
                         }
                     }
 
@@ -1654,22 +1674,39 @@ EOT;
                         $search_query = "{$search_query},";
                     }
 
+                    // N.B. TI+AB, and AU+ED.
                     if (is_array($field)) {
 
                         $placeholder_parts = [];
 
                         foreach ($field as $field_part) {
 
-                            $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\'";
+                            $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
+                            $columns[] = "%{$search_query}%";
                             $columns[] = "% {$search_query} %";
+                            $columns[] = "* [{$extra_characters}]{$search_query} *";
+                            $columns[] = "* {$search_query}[{$extra_characters}] *";
+                            $columns[] = "* [{$extra_characters}]{$search_query}[{$extra_characters}] *";
                         }
 
                         $placeholder .= '(' . join(' OR ', $placeholder_parts) . ')';
 
                     } else {
 
-                        $placeholder .= "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = $search['search_type'][$key] === 'YR' ? "{$search_query}%" : "% {$search_query} %";
+                        if ($search['search_type'][$key] === 'YR') {
+
+                            $placeholder .= "{$field} LIKE ? ESCAPE '\'";
+                            $columns[] = "{$search_query}%";
+
+                        } else {
+
+                            $placeholder .= "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
+                            $columns[] = "%{$search_query}%";
+                            $columns[] = "% {$search_query} %";
+                            $columns[] = "* [{$extra_characters}]{$search_query} *";
+                            $columns[] = "* {$search_query}[{$extra_characters}] *";
+                            $columns[] = "* [{$extra_characters}]{$search_query}[{$extra_characters}] *";
+                        }
                     }
 
                     break;
