@@ -829,7 +829,9 @@ EOT;
 
                 if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
+                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
+                    $query_tokens = explode(' ', $query);
+                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
                 }
 
                 /** @var Bootstrap\Button $el */
@@ -1020,7 +1022,9 @@ EOT;
 
                 if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
+                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
+                    $query_tokens = explode(' ', $query);
+                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
                 }
 
                 /** @var Bootstrap\Badge $el */
@@ -1220,7 +1224,9 @@ EOT;
 
             if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
+                $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
+                $query_tokens = explode(' ', $query);
+                $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
             }
 
             /** @var Bootstrap\Card $el */
@@ -1295,7 +1301,9 @@ EOT
 
                 if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
 
-                    $search = '&search=' . rawurlencode(str_replace('*', '', trim(join(' ', $get['search_query']))));
+                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
+                    $query_tokens = explode(' ', $query);
+                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
                 }
 
                 /** @var Bootstrap\Button $el */
