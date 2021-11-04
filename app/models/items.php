@@ -30,11 +30,6 @@ use ZipArchive;
 class ItemsModel extends AppModel {
 
     /**
-     * @var ScalarUtils
-     */
-    private $scalar_utils;
-
-    /**
      * Basic item paging.
      *
      * @param string $collection Library or clipboard.
@@ -53,7 +48,7 @@ class ItemsModel extends AppModel {
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         $output = [
             'items' => [],
@@ -279,7 +274,7 @@ EOT;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         $output = [
             'items' => [],
@@ -596,7 +591,7 @@ EOT;
      * @param array $filters
      * @return array
      */
-    private function translateFilters(array $filters) {
+    private function translateFilters(array $filters): array {
 
         // Translate filters from ids to strings.
         $output = [];
@@ -865,7 +860,7 @@ EOT;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         // Item ID search.
         if ($search['search_type'][0] === 'itemid') {
@@ -915,10 +910,16 @@ EOT;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         /** @var FileCache $cache */
         $cache = $this->di->get('FileCache');
+
+        /** @var Sanitation $sanitation */
+        $sanitation = $this->di->getShared('Sanitation');
+
+        /** @var ScalarUtils $scalar_utils */
+        $scalar_utils = $this->di->getShared('ScalarUtils');
 
         $output = [
             'items' => [],
@@ -956,12 +957,7 @@ EOT;
             array_pop($fields);
         }
 
-        /** @var Sanitation $sanitation */
-        $sanitation = $this->di->getShared('Sanitation');
-        $query = $sanitation->queryLike($search['search_query'][0]);
-
-        $this->scalar_utils = $this->di->getShared('ScalarUtils');
-        $query = $this->scalar_utils->deaccent($query, false);
+        $query = $scalar_utils->deaccent($search['search_query'][0], false);
 
         $placeholder = '';
         $columns = [];
@@ -981,6 +977,7 @@ EOT;
                 foreach ($query_parts as $term) {
 
                     $field_placeholders = [];
+                    $term_like = $sanitation->queryLike($term);
 
                     foreach ($fields as $field) {
 
@@ -988,18 +985,18 @@ EOT;
                         if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($term, ',') === false) {
 
                             $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                            $columns[] = "% {$term}, %";
+                            $columns[] = "% {$term_like}, %";
 
                         } elseif ($field === 'items.publication_date') {
 
                             $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                            $columns[] = "{$term}%";
+                            $columns[] = "{$term_like}%";
 
                         } else {
 
                             $field_placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
-                            $columns[] = "%{$term}%";
-                            $columns[] = "% {$term} %";
+                            $columns[] = "%{$term_like}%";
+                            $columns[] = "% {$term_like} %";
                             $columns[] = "* [{$extra_characters}]{$term} *";
                             $columns[] = "* {$term}[{$extra_characters}] *";
                             $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
@@ -1015,6 +1012,7 @@ EOT;
             case 'PHRASE':
 
                 $field_placeholders = [];
+                $query_like = $sanitation->queryLike($query);
 
                 foreach ($fields as $field) {
 
@@ -1022,18 +1020,18 @@ EOT;
                     if (($field === 'ind_items.authors_index' || $field === 'ind_items.editors_index') && strpos($query, ',') === false) {
 
                         $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "% {$query}, %";
+                        $columns[] = "% {$query_like}, %";
 
                     } elseif ($field === 'items.publication_date') {
 
                         $field_placeholders[] = "{$field} LIKE ? ESCAPE '\'";
-                        $columns[] = "{$query}%";
+                        $columns[] = "{$query_like}%";
 
                     } else {
 
                         $field_placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
-                        $columns[] = "%{$query}%";
-                        $columns[] = "% {$query} %";
+                        $columns[] = "%{$query_like}%";
+                        $columns[] = "% {$query_like} %";
                         $columns[] = "* [{$extra_characters}]{$query} *";
                         $columns[] = "* {$query}[{$extra_characters}] *";
                         $columns[] = "* [{$extra_characters}]{$query}[{$extra_characters}] *";
@@ -1087,7 +1085,6 @@ SELECT
     ORDER BY {$order}
     LIMIT ?
 EOT;
-
 
         $columns[] = (integer) $this->app_settings->getGlobal('max_items');
 
@@ -1181,7 +1178,7 @@ SQL;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         $output = [
             'items' => [],
@@ -1362,7 +1359,7 @@ EOT;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         $output = [
             'items' => [],
@@ -1530,7 +1527,7 @@ EOT;
      * @param string $orderby
      * @param int $limit
      * @param int $offset
-     * @param string $display_action
+     * @param string|array|null $display_action
      * @param int|null $project_id
      * @return array
      * @throws Exception
@@ -1543,7 +1540,16 @@ EOT;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
+
+        /** @var Sanitation $sanitation */
+        $sanitation = $this->di->getShared('Sanitation');
+
+        /** @var ScalarUtils $scalar_utils */
+        $scalar_utils = $this->di->getShared('ScalarUtils');
+
+        /** @var FileCache $cache */
+        $cache = $this->di->get('FileCache');
 
         $output = [
             'items' => [],
@@ -1575,13 +1581,6 @@ EOT;
             'FT' => 'ind_items.full_text_index'
         ];
 
-        /** @var Sanitation $sanitation */
-        $sanitation = $this->di->getShared('Sanitation');
-        $this->scalar_utils = $this->di->getShared('ScalarUtils');
-
-        /** @var FileCache $cache */
-        $cache = $this->di->get('FileCache');
-
         $placeholder = '';
         $columns = [];
         $join_collection = '';
@@ -1595,8 +1594,7 @@ EOT;
                 continue;
             }
 
-            $search_query = $sanitation->queryLike($search_query);
-            $search_query = $this->scalar_utils->deaccent($search_query, false);
+            $search_query = $scalar_utils->deaccent($search_query, false);
 
             // Advanced search glue: AND/OR/NOT.
             if (isset($search['search_glue'][$key]) && in_array($search['search_glue'][$key], ['AND', 'OR', 'NOT']) === false) {
@@ -1629,6 +1627,8 @@ EOT;
 
                     foreach ($query_parts as $term) {
 
+                        $term_like = $sanitation->queryLike($term);
+
                         // Placeholder.
                         $field = $fields[$search['search_type'][$key]];
 
@@ -1639,8 +1639,8 @@ EOT;
                             foreach ($field as $field_part) {
 
                                 $placeholders[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
-                                $columns[] = "%{$term}%";
-                                $columns[] = "% {$term} %";
+                                $columns[] = "%{$term_like}%";
+                                $columns[] = "% {$term_like} %";
                                 $columns[] = "* [{$extra_characters}]{$term} *";
                                 $columns[] = "* {$term}[{$extra_characters}] *";
                                 $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
@@ -1651,8 +1651,8 @@ EOT;
                         } else {
 
                             $placeholders[] = "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
-                            $columns[] = "%{$term}%";
-                            $columns[] = "% {$term} %";
+                            $columns[] = "%{$term_like}%";
+                            $columns[] = "% {$term_like} %";
                             $columns[] = "* [{$extra_characters}]{$term} *";
                             $columns[] = "* {$term}[{$extra_characters}] *";
                             $columns[] = "* [{$extra_characters}]{$term}[{$extra_characters}] *";
@@ -1674,6 +1674,8 @@ EOT;
                         $search_query = "{$search_query},";
                     }
 
+                    $search_query_like = $sanitation->queryLike($search_query);
+
                     // N.B. TI+AB, and AU+ED.
                     if (is_array($field)) {
 
@@ -1682,8 +1684,8 @@ EOT;
                         foreach ($field as $field_part) {
 
                             $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
-                            $columns[] = "%{$search_query}%";
-                            $columns[] = "% {$search_query} %";
+                            $columns[] = "%{$search_query_like}%";
+                            $columns[] = "% {$search_query_like} %";
                             $columns[] = "* [{$extra_characters}]{$search_query} *";
                             $columns[] = "* {$search_query}[{$extra_characters}] *";
                             $columns[] = "* [{$extra_characters}]{$search_query}[{$extra_characters}] *";
@@ -1696,13 +1698,13 @@ EOT;
                         if ($search['search_type'][$key] === 'YR') {
 
                             $placeholder .= "{$field} LIKE ? ESCAPE '\'";
-                            $columns[] = "{$search_query}%";
+                            $columns[] = "{$search_query_like}%";
 
                         } else {
 
                             $placeholder .= "{$field} LIKE ? ESCAPE '\' AND ({$field} LIKE ? ESCAPE '\' OR {$field} GLOB ? OR {$field} GLOB ? OR {$field} GLOB ?)";
-                            $columns[] = "%{$search_query}%";
-                            $columns[] = "% {$search_query} %";
+                            $columns[] = "%{$search_query_like}%";
+                            $columns[] = "% {$search_query_like} %";
                             $columns[] = "* [{$extra_characters}]{$search_query} *";
                             $columns[] = "* {$search_query}[{$extra_characters}] *";
                             $columns[] = "* [{$extra_characters}]{$search_query}[{$extra_characters}] *";
@@ -1863,7 +1865,7 @@ SQL;
      * @param string $orderby
      * @param int $limit
      * @param int $offset
-     * @param string $display_action
+     * @param string|array|null $display_action
      * @param int|null $project_id
      * @return array
      * @throws Exception
@@ -1876,7 +1878,7 @@ SQL;
         int $offset = 0,
         $display_action = 'title',
         int $project_id = null
-    ) {
+    ): array {
 
         $output = [
             'items' => [],
@@ -2303,7 +2305,7 @@ EOT;
      * @return string
      * @throws Exception
      */
-    private function orderByColumn(string $orderby) {
+    private function orderByColumn(string $orderby): string {
 
         switch ($orderby) {
 
@@ -2727,7 +2729,7 @@ EOT;
      * @param  array $items
      * @return array
      */
-    private function clipboardFlags(array $items) {
+    private function clipboardFlags(array $items): array {
 
         // Clipboard flag.
         $sql = <<<EOT
@@ -2752,7 +2754,13 @@ EOT;
         return $items;
     }
 
-    private function addNotes(array $items) {
+    /**
+     * Add notes to item list.
+     *
+     * @param array $items
+     * @return array
+     */
+    private function addNotes(array $items): array {
 
         // Item notes.
         $sql = <<<EOT
@@ -2877,7 +2885,12 @@ EOT;
         return $items;
     }
 
-    protected function _maxId() {
+    /**
+     * Get max item id.
+     *
+     * @return array
+     */
+    protected function _maxId(): array {
 
         $sql = <<<EOT
 SELECT id
@@ -2966,7 +2979,7 @@ EOT;
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _exportZip(array $items, $locale = 'en_US'): StreamInterface {
+    protected function _exportZip(array $items, string $locale = 'en_US'): StreamInterface {
 
         /** @var ScalarUtils $scalar_utils */
         $scalar_utils = $this->di->getShared('ScalarUtils');
@@ -3185,7 +3198,8 @@ README
      */
     protected function _resetBibtexIds(): void {
 
-        $this->scalar_utils = $this->di->getShared('ScalarUtils');
+        /** @var ScalarUtils $scalar_utils */
+        $scalar_utils = $this->di->getShared('ScalarUtils');
 
         // Bibtex ID format.
         $sql_bibtex_fromat = <<<SQL
@@ -3262,7 +3276,7 @@ EOT;
             $this->db_main->run($sql, [$i, min($total, $i + $transaction_size)]);
             $output = $this->db_main->getResultRows();
 
-            foreach ($output as $key => $item) {
+            foreach ($output as $item) {
 
                 $this->db_main->run($sql_authors, [$item['id']]);
 
@@ -3280,7 +3294,7 @@ EOT;
                     $item[ItemMeta::COLUMN['EDITOR_FIRST_NAME']][] = $row['first_name'];
                 }
 
-                $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
+                $bibtex_id = $scalar_utils->customBibtexId($format, $item);
                 $this->db_main->run($sql_update, [$bibtex_id, $item['id']]);
             }
 
