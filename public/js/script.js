@@ -2063,7 +2063,7 @@ class ItemsMainView extends View {
                     let terms = p[1].split(' ');
                     for (let t of terms) {
                         sel.collapse(document.getElementsByClassName('item-container')[0], 0);
-                        t = t.replace('*', '');
+                        t = t.replace('*', '').replace('%2A', '');
                         if (t.length > 1) {
                             while (window.find(t, false)) {
                                 document.execCommand('hiliteColor', false, '#ffff9bbf');
