@@ -118,7 +118,7 @@ EOT;
 
         $this->db_main->run($sql, $columns);
         $compressed = $this->db_main->getResult();
-        $text = gzdecode($compressed);
+        $text = empty($compressed) ? '' : gzdecode($compressed);
 
         $output['info']['text'] = mb_strlen($text) > 3000 ? mb_substr($text, 0, 3000) . '...' : $text;
 
@@ -1178,7 +1178,8 @@ EOT;
         ];
 
         $this->db_main->run($sql_sel, $columns_ins);
-        $pdf_text = gzdecode($this->db_main->getResult());
+        $compressed = $this->db_main->getResult();
+        $pdf_text = empty($compressed) ? '' : gzdecode($compressed);
 
         if (empty($pdf_text)) {
 
