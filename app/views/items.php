@@ -824,14 +824,13 @@ EOT;
 
             if ($item['has_pdf'] === '1') {
 
+                // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();
                 $search = '';
 
-                if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
+                if (isset($get['search_query'])) {
 
-                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
-                    $query_tokens = explode(' ', $query);
-                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
+                    $search = '&search=' . rawurlencode($this->toPdfSearch($get));
                 }
 
                 /** @var Bootstrap\Button $el */
@@ -1017,14 +1016,13 @@ EOT;
 
             if ($item['has_pdf'] === '1') {
 
+                // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();
                 $search = '';
 
-                if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
+                if (isset($get['search_query'])) {
 
-                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
-                    $query_tokens = explode(' ', $query);
-                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
+                    $search = '&search=' . rawurlencode($this->toPdfSearch($get));
                 }
 
                 /** @var Bootstrap\Badge $el */
@@ -1219,14 +1217,13 @@ EOT;
                 }
             }
 
+            // Active search, convert to PDF search.
             $get = $this->request->getQueryParams();
             $search = '';
 
-            if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
+            if (isset($get['search_query'])) {
 
-                $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
-                $query_tokens = explode(' ', $query);
-                $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
+                $search = '&search=' . rawurlencode($this->toPdfSearch($get));
             }
 
             /** @var Bootstrap\Card $el */
@@ -1296,14 +1293,13 @@ EOT
 
             if ($item['has_pdf'] === '1') {
 
+                // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();
                 $search = '';
 
-                if (isset($get['search_query']) && $get['search_type'][0] !== 'itemid') {
+                if (isset($get['search_query'])) {
 
-                    $query = str_replace('*', '', trim(join(' ', $get['search_query'])));
-                    $query_tokens = explode(' ', $query);
-                    $search = '&search=' . rawurlencode($query_tokens[0] ?? '');
+                    $search = '&search=' . rawurlencode($this->toPdfSearch($get));
                 }
 
                 /** @var Bootstrap\Button $el */
@@ -2367,5 +2363,44 @@ SCRIPT;
         }
 
         return $search_name;
+    }
+
+    /**
+     * Convert search array parameters to a PDF string search.
+     *
+     * @param array $get
+     * @return string
+     */
+    private function toPdfSearch(array $get): string {
+
+        $search = '';
+
+        // Get the first valid search query.
+        foreach ($get['search_query'] as $key => $query) {
+
+            if (empty($query) || $get['search_type'][$key] === 'itemid') {
+
+                continue;
+            }
+
+            // Remove wildcards.
+            $search = trim(str_replace('*', '', $query));
+
+            // Get only first token, if query is not a phrase.
+            if ($get['search_boolean'][$key] !== 'PHRASE') {
+
+                $query_tokens = explode(' ', $query);
+                $search = $query_tokens[0] ?? '';
+            }
+
+            if (empty($search)) {
+
+                continue;
+            }
+
+            break;
+        }
+
+        return $search;
     }
 }
