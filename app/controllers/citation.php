@@ -93,7 +93,7 @@ class CitationController extends Controller {
 
         // Authorization.
         $this->authorization->signedId(true);
-        $this->authorization->permissions('A');
+        $this->authorization->permissions('U');
 
         // Model.
         $model = new CitationModel($this->di);

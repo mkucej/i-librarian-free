@@ -2296,8 +2296,8 @@ SCRIPT;
 
         $el = null;
 
-        // Only admin can delete.
-        if ($this->session->data('permissions') === 'A') {
+        // Only admins, and users can delete.
+        if ($this->session->data('permissions') === 'A' || $this->session->data('permissions') === 'U') {
 
             $inputs .= "<div class=\"mt-3 mb-2 cursor-pointer text-danger\" data-toggle=\"collapse\" data-target=\"#delete-all\">$arrow<b>{$this->lang->t9n('Delete all')}</b></div>";
 

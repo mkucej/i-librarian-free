@@ -2959,8 +2959,8 @@ EOT;
 
                 case 'delete':
 
-                    // Only admin can delete.
-                    if ($this->permissions === 'A') {
+                    // Only admins, and users can delete.
+                    if ($this->permissions === 'A' || $this->permissions === 'U') {
 
                         $model = new ItemModel($this->di);
                         $model->delete($item_ids);

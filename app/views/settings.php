@@ -1550,7 +1550,7 @@ HTML
         $el->label(
 <<<HTML
 {$this->lang->t9n('user')}
-<span class="text-secondary">({$this->lang->t9n('adds, edits items')}; {$this->lang->t9n('cannot delete items')})</span>
+<span class="text-secondary">({$this->lang->t9n('adds, edits, deletes items')})</span>
 HTML
         );
 

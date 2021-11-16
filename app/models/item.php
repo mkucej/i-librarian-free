@@ -1362,8 +1362,8 @@ SQL;
      */
     protected function _delete($item_ids): void {
 
-        // Only admin can do this.
-        if ($this->permissions !== 'A') {
+        // Only admins, and users can do this.
+        if ($this->permissions !== 'A' && $this->permissions !== 'U') {
 
             return;
         }

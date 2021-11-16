@@ -548,6 +548,10 @@ HTML
                 , 'link' => '#',
                 'submenu' => [
                     [
+                        'label' => $this->lang->t9n('Find duplicates'),
+                        'link'  => '#duplicates/main'
+                    ],
+                    [
                         'label' => $this->lang->t9n('Citation styles'),
                         'link' => '#citation/main'
                     ],
@@ -586,10 +590,6 @@ HTML
                     [
                         'label' => $this->lang->t9n('User management'),
                         'link'  => '#users/main'
-                    ],
-                    [
-                        'label' => $this->lang->t9n('Find duplicates'),
-                        'link'  => '#duplicates/main'
                     ],
                     [
                         'label' => $this->lang->t9n('Software details'),

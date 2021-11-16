@@ -260,7 +260,7 @@ class PdfController extends Controller {
 
         // Authorization.
         $this->authorization->signedId(true);
-        $this->authorization->permissions('A');
+        $this->authorization->permissions('U');
 
         // Check id.
         // Validate id.

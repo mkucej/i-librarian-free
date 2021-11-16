@@ -10,7 +10,7 @@ use PDO;
  * Class DuplicatesModel.
  *
  * @method array identical()
- * @method void  merge(array $item_ids)
+ * @method void  merge(array $item_ids, string $id_to_keep)
  * @method array pdfs()
  * @method array similar()
  */
@@ -173,13 +173,10 @@ SQL;
      * Attempt to merge duplicates.
      *
      * @param array $item_ids
+     * @param string $id_to_keep
      * @throws Exception
      */
-    protected function _merge(array $item_ids): void {
-
-        // Shift the smallest item id.
-        sort($item_ids);
-        $first_id = array_shift($item_ids);
+    protected function _merge(array $item_ids, string $id_to_keep): void {
 
         // Merge tags.
         $sql_tag = <<<SQL
@@ -215,7 +212,7 @@ SQL;
         foreach ($item_ids as $item_id) {
 
             $columns = [
-                $first_id,
+                $id_to_keep,
                 $item_id
             ];
 
@@ -256,13 +253,14 @@ SQL;
 
         // Get notes to be merged.
         $this->db_main->run($sql_note_get, $item_ids);
+        $notes = $this->db_main->getResultRows();
 
-        while ($row = $this->db_main->getResultRow()) {
+        foreach ($notes as $note) {
 
-            // Does a note exist for the first id?
+            // Does a note exist for the id to keep?
             $columns = [
-                $first_id,
-                $row['user_id']
+                $id_to_keep,
+                $note['user_id']
             ];
 
             $this->db_main->run($sql_note_exists, $columns);
@@ -272,19 +270,18 @@ SQL;
 
                 // Create empty note, if does not exist.
                 $columns = [
-                    $row['user_id'],
-                    $first_id
+                    $note['user_id'],
+                    $id_to_keep
                 ];
 
                 $this->db_main->run($sql_note_insert, $columns);
-
             }
 
             // Merge notes.
             $columns = [
-                $row['note'],
-                $first_id,
-                $row['user_id']
+                $note['note'],
+                $id_to_keep,
+                $note['user_id']
             ];
 
             $this->db_main->run($sql_note_update, $columns);
@@ -303,7 +300,7 @@ SQL;
             foreach ($files as $file) {
 
                 $basename = substr(basename($file), 9);
-                $newfilepath = $this->idToSupplementPath($first_id) . $basename;
+                $newfilepath = $this->idToSupplementPath($id_to_keep) . $basename;
 
                 // Windows fix.
                 if (is_writable($newfilepath)) {

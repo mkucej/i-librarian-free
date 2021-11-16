@@ -199,6 +199,14 @@ HTML
 
         $el = null;
 
+        // No duplicates.
+        if (count($duplicates) === 0) {
+
+            $this->append(['html' => "$bc"]);
+
+            return $this->send();
+        }
+
         $cards = '';
         $IL_BASE_URL = IL_BASE_URL;
 
@@ -227,7 +235,7 @@ HTML
                 $el = null;
             }
 
-            foreach ($items as $item) {
+            foreach ($items as $key => $item) {
 
                 /** @var Bootstrap\Badge $el */
                 $el = $this->di->get('Badge');
@@ -240,7 +248,21 @@ HTML
 
                 $el = null;
 
-                $body .= "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$item['id']}\" target=\"_blank\">{$item['title']}</a></h5>";
+                $title = "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$item['id']}\" target=\"_blank\">{$item['title']}</a></h5>";
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->type('radio');
+                $el->id("id-to-keep-{$item['id']}");
+                $el->name('id_to_keep');
+                $el->style('width: 5rem');
+                $el->label($title);
+                $el->value($item['id']);
+                $el->checked(($key === 0 ? 'checked' : null));
+                $body .= $el->render();
+
+                $el = null;
 
                 /** @var Bootstrap\Input $el */
                 $el = $this->di->get('Input');
@@ -253,20 +275,12 @@ HTML
                 $el = null;
             }
 
-            /** @var Bootstrap\Icon $el */
-            $el = $this->di->get('Icon');
-
-            $el->icon('arrow-up-circle');
-            $arrow = $el->render();
-
-            $el = null;
-
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
+            $el->html($this->lang->t9n('Merge'));
             $merge = $el->render();
 
             $el = null;
@@ -276,6 +290,7 @@ HTML
 
             $el->addClass('merge-form');
             $el->action($IL_BASE_URL . 'index.php/duplicates/merge');
+            $el->append($body);
             $el->append($hidden);
             $el->append($merge);
             $form = $el->render();
@@ -286,8 +301,8 @@ HTML
             $el = $this->di->get('Card');
 
             $el->addClass('mb-3');
-            $el->body($warning . $body, null, 'pt-3 pb-0');
-            $el->footer($form);
+            $el->header("<b>{$this->lang->t9n('Select an item to keep')}</b>", 'text-uppercase');
+            $el->body($warning . $form);
             $cards .= $el->render();
 
             $el = null;
@@ -328,6 +343,14 @@ HTML
 
         $el = null;
 
+        // No duplicates.
+        if (count($duplicates) === 0) {
+
+            $this->append(['html' => "$bc"]);
+
+            return $this->send();
+        }
+
         $cards = '';
         $IL_BASE_URL = IL_BASE_URL;
 
@@ -356,7 +379,7 @@ HTML
                 $el = null;
             }
 
-            foreach ($items as $ids) {
+            foreach ($items as $key => $ids) {
 
                 /** @var Bootstrap\Badge $el */
                 $el = $this->di->get('Badge');
@@ -369,7 +392,21 @@ HTML
 
                 $el = null;
 
-                $body .= "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$ids['id']}\" target=\"_blank\">{$title}</a></h5>";
+                $line = "<h5>$badge <a href=\"{$IL_BASE_URL}index.php/item/#summary?id={$ids['id']}\" target=\"_blank\">{$title}</a></h5>";
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->type('radio');
+                $el->id("id-to-keep-{$ids['id']}");
+                $el->name('id_to_keep');
+                $el->style('width: 5rem');
+                $el->label($line);
+                $el->value($ids['id']);
+                $el->checked(($key === 0 ? 'checked' : null));
+                $body .= $el->render();
+
+                $el = null;
 
                 /** @var Bootstrap\Input $el */
                 $el = $this->di->get('Input');
@@ -382,20 +419,12 @@ HTML
                 $el = null;
             }
 
-            /** @var Bootstrap\Icon $el */
-            $el = $this->di->get('Icon');
-
-            $el->icon('arrow-up-circle');
-            $arrow = $el->render();
-
-            $el = null;
-
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
+            $el->html($this->lang->t9n('Merge'));
             $merge = $el->render();
 
             $el = null;
@@ -405,6 +434,7 @@ HTML
 
             $el->addClass('merge-form');
             $el->action($IL_BASE_URL . 'index.php/duplicates/merge');
+            $el->append($body);
             $el->append($hidden);
             $el->append($merge);
             $form = $el->render();
@@ -415,8 +445,8 @@ HTML
             $el = $this->di->get('Card');
 
             $el->addClass('mb-3');
-            $el->body($warning . $body, null, 'pt-3 pb-0');
-            $el->footer($form);
+            $el->header("<b>{$this->lang->t9n('Select an item to keep')}</b>", 'text-uppercase');
+            $el->body($warning . $form);
             $cards .= $el->render();
 
             $el = null;
@@ -457,6 +487,14 @@ HTML
 
         $el = null;
 
+        // No duplicates.
+        if (count($duplicates) === 0) {
+
+            $this->append(['html' => "$bc"]);
+
+            return $this->send();
+        }
+
         /** @var Bootstrap\Alert $el */
         $el = $this->di->get('Alert');
 
@@ -479,7 +517,7 @@ HTML
             $body = '';
             $hidden = '';
 
-            foreach ($items as $item) {
+            foreach ($items as $key => $item) {
 
                 /** @var Bootstrap\Badge $el */
                 $el = $this->di->get('Badge');
@@ -492,7 +530,21 @@ HTML
 
                 $el = null;
 
-                $body .= "<h5>$badge <a href='{$IL_BASE_URL}index.php/item/#pdf/main?id={$item['id']}'>{$item['title']}</a></h5>";
+                $line = "<h5>$badge <a href='{$IL_BASE_URL}index.php/item/#pdf/main?id={$item['id']}'>{$item['title']}</a></h5>";
+
+                /** @var Bootstrap\Input $el */
+                $el = $this->di->get('Input');
+
+                $el->type('radio');
+                $el->id("id-to-keep-{$item['id']}");
+                $el->name('id_to_keep');
+                $el->style('width: 5rem');
+                $el->label($line);
+                $el->value($item['id']);
+                $el->checked(($key === 0 ? 'checked' : null));
+                $body .= $el->render();
+
+                $el = null;
 
                 /** @var Bootstrap\Input $el */
                 $el = $this->di->get('Input');
@@ -505,20 +557,12 @@ HTML
                 $el = null;
             }
 
-            /** @var Bootstrap\Icon $el */
-            $el = $this->di->get('Icon');
-
-            $el->icon('arrow-up-circle');
-            $arrow = $el->render();
-
-            $el = null;
-
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->type('submit');
             $el->context('danger');
-            $el->html("{$arrow} {$this->lang->t9n('Merge')}");
+            $el->html("{$this->lang->t9n('Merge')}");
             $merge = $el->render();
 
             $el = null;
@@ -528,6 +572,7 @@ HTML
 
             $el->addClass('merge-form');
             $el->action($IL_BASE_URL . 'index.php/duplicates/merge');
+            $el->append($body);
             $el->append($hidden);
             $el->append($merge);
             $form = $el->render();
@@ -538,8 +583,8 @@ HTML
             $el = $this->di->get('Card');
 
             $el->addClass('mb-3');
-            $el->body($body, null, 'pt-3 pb-0');
-            $el->footer($form);
+            $el->header("<b>{$this->lang->t9n('Select an item to keep')}</b>", 'text-uppercase');
+            $el->body($form);
             $cards .= $el->render();
 
             $el = null;

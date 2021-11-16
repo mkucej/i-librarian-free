@@ -70,7 +70,7 @@ class ItemController extends Controller {
 
         // Authorization.
         $this->authorization->signedId(true);
-        $this->authorization->permissions('A');
+        $this->authorization->permissions('U');
 
         $model = new ItemModel($this->di);
         $model->delete($this->post['id']);

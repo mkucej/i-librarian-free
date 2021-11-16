@@ -154,9 +154,13 @@ class SupplementsController extends Controller {
 
         $this->validation->dirname($this->post['newname']);
 
-        // Save the file.
-        $model = new SupplementsModel($this->di);
-        $model->rename($this->post['id'], $this->post['filename'], $this->post['newname']);
+        // Only continue, if new name is different.
+        if ($this->post['filename'] !== $this->post['newname']) {
+
+            // Save the file.
+            $model = new SupplementsModel($this->di);
+            $model->rename($this->post['id'], $this->post['filename'], $this->post['newname']);
+        }
 
         $view = new DefaultView($this->di);
         return $view->main();
@@ -171,7 +175,7 @@ class SupplementsController extends Controller {
     public function deleteAction(): string {
 
         // Authorization.
-        $this->authorization->permissions('A');
+        $this->authorization->permissions('U');
 
         // Check id.
         if (isset($this->post['id']) === false) {

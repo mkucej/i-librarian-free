@@ -22,7 +22,7 @@ class DuplicatesController extends Controller {
 
         // Authorization.
         $this->authorization->signedId(true);
-        $this->authorization->permissions('A');
+        $this->authorization->permissions('U');
     }
 
     /**
@@ -88,19 +88,26 @@ class DuplicatesController extends Controller {
             $this->validation->id($id);
         }
 
+        $this->validation->id($this->post['id_to_keep']);
+
+        if (in_array($this->post['id_to_keep'], $this->post['ids']) === false) {
+
+            throw new Exception("item id mismatch", 422);
+        }
+
+        // Remove id to keep from duplicate items array, so it is not deleted.
+        unset($this->post['ids'][array_search($this->post['id_to_keep'], $this->post['ids'])]);
+        // Reset array keys.
+        $this->post['ids'] = array_values($this->post['ids']);
+
         // Merge duplicates.
         $model = new DuplicatesModel($this->di);
-        $model->merge($this->post['ids']);
+        $model->merge($this->post['ids'], $this->post['id_to_keep']);
         $model = null;
-
-        // Remove the smallest item id, so it is not deleted.
-        $ids = $this->post['ids'];
-        sort($ids);
-        $first_id = array_shift($ids);
 
         // Delete duplicate ids.
         $model = new ItemModel($this->di);
-        $model->delete($ids);
+        $model->delete($this->post['ids']);
         $model = null;
 
         $view = new DefaultView($this->di);

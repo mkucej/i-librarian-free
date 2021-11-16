@@ -256,7 +256,7 @@ class SupplementsView extends TextView {
 
             $delete_button = '';
 
-            if ($this->session->data('permissions') === 'A') {
+            if (in_array($this->session->data('permissions'), ['A', 'U']) === true) {
 
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');

@@ -2530,6 +2530,9 @@ class DuplicatesFindView extends View {
             'submit .merge-form': 'merge'
         };
     }
+    afterRender(data) {
+        formStyle.init();
+    }
     merge(e) {
         e.preventDefault();
         let $f = $(this);
