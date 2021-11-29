@@ -83,6 +83,8 @@ class Bibtex {
         $entry[ItemMeta::COLUMN['BIBTEX_ID']] = strrpos($bibtex_key, ',') === false ? $bibtex_key : substr($bibtex_key, 0, -1);
 
         // Remove line breaks from pretty-printed input.
+        // Some entries can have a space after the comma and before the line break.
+        $inner = str_replace(", \n", ",\n", $inner);
         $inner = preg_replace('/(?<![}"\d],)\n/u', ' ', $inner);
         $inner = preg_replace('/ {2,}/u', ' ', $inner);
 
