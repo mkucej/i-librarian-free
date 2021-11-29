@@ -83,7 +83,7 @@ class Bibtex {
         $entry[ItemMeta::COLUMN['BIBTEX_ID']] = strrpos($bibtex_key, ',') === false ? $bibtex_key : substr($bibtex_key, 0, -1);
 
         // Remove line breaks from pretty-printed input.
-        $inner = preg_replace("/(?<!},)\n/u", ' ', $inner);
+        $inner = preg_replace('/(?<![}"\d],)\n/u', ' ', $inner);
         $inner = preg_replace('/ {2,}/u', ' ', $inner);
 
         // Separate into tags.
@@ -99,7 +99,7 @@ class Bibtex {
                 continue;
             }
 
-            $left = trim($final_parts[0]);
+            $left = strtolower(trim($final_parts[0]));
             $right = trim($final_parts[1]);
 
             // Get first char in tag content.
