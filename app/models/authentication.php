@@ -48,20 +48,24 @@ class AuthenticationModel extends AppModel {
         // Allow sign in using username, or email.
         switch (filter_var($username, FILTER_VALIDATE_EMAIL)) {
 
-            // Email is case-insensitive.
+            // Email is case-insensitive. Email could be used as username too.
             case true:
                 $sql = <<<'EOT'
 SELECT id, id_hash, password, permissions, status
     FROM users
-    WHERE email LIKE ? ESCAPE '\'
+    WHERE email LIKE ? ESCAPE '\' OR username LIKE ? ESCAPE '\'
 EOT;
 
+                $escaped_username = str_replace(["\\", "%", "_"], ["\\\\", "\%", "\_"], $username);
+
                 $columns = [
-                    str_replace(["\\", "%", "_"], ["\\\\", "\%", "\_"], $username)
+                    $escaped_username,
+                    $escaped_username
                 ];
 
                 break;
 
+            // Username is case-sensitive.
             case false:
                 $sql = <<<'EOT'
 SELECT id, id_hash, password, permissions, status
