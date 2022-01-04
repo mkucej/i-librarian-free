@@ -54,6 +54,7 @@ final class FileTools {
      */
     public function getMime($file): string {
 
+        $mime = '';
         $this->addFile($file);
 
         // MIME types not correctly recognized.
@@ -80,7 +81,7 @@ final class FileTools {
             $chunk = $this->stream->read(1024);
             $this->stream->rewind();
 
-            return $info->buffer($chunk);
+            $mime = $info->buffer($chunk);
 
         } elseif (is_object($this->file) === true) {
 
@@ -93,11 +94,20 @@ final class FileTools {
                 throw new Exception('cannot get MIME type, file is not readable', 500);
             }
 
-            return $info->file($this->file->getPathname());
+            $mime = $info->file($this->file->getPathname());
 
         } else {
 
             throw new Exception('cold not load filename or stream', 500);
         }
+
+        /**
+         * Compensate for PHP bug #77784
+         * @see https://bugs.php.net/bug.php?id=77784
+         */
+        $mime_1 = substr($mime, 0, strlen($mime) / 2);
+        $mime_2 = substr($mime, -1 * strlen($mime) / 2);
+
+        return $mime_1 === $mime_2 ? $mime_1 : $mime;
     }
 }
