@@ -60,3 +60,11 @@ Alias /librarian "C:\I, Librarian\public"
 * These may include Apache, Nginx, and PHP - using package managers like Apt, Homebrew, or Macports will make this task easier. **Note: You might have other programs using these. Only remove if sure.**
 * Delete *I, Librarian* directory.
 
+### Development
+* From root project execute:
+```
+docker build . -t librarian-dev -f docker/Dockerfile 
+docker run --rm --name libra-dev -p 8082:80 -v $(pwd)/app:/usr/share/i-librarian/app -v $(pwd)/classes:/usr/share/i-librarian/classes -v $(pwd)/public:/usr/share/i-librarian/public -it librarian-dev
+```
+
+This will startup a Docker instance __libra-dev__ ready to debug php from VS Code using the extension: _xdebug.php-debug_
