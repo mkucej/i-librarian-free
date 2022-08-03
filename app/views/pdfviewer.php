@@ -570,7 +570,7 @@ EOT;
     <div class="pdfviewer-results-container"></div>
 </div>
 HTML
-            , 'd-none col-auto p-0 pdfviewer-left overflow-scroll');
+            , 'd-none col-auto p-0 pdfviewer-left overflow-scroll border-darker-right');
         $el->column($images, 'col pdfviewer-right');
         $row .= $el->render();
 
