@@ -676,18 +676,18 @@ class SettingsView extends TextView {
         $el = $this->di->get('Input');
 
         $el->type('checkbox');
-        $el->id('dashboard-stats');
-        $el->name('settings[dashboard_remove_stats]');
+        $el->id('dashboard-import');
+        $el->name('settings[dashboard_remove_import]');
         $el->value('1');
-        $el->label($this->lang->t9n('Logs'));
+        $el->label($this->lang->t9n('Import-VERB'));
         $el->inline(true);
 
-        if (isset($user_settings['dashboard_remove_stats']) && $user_settings['dashboard_remove_stats'] === '1') {
+        if (isset($user_settings['dashboard_remove_import']) && $user_settings['dashboard_remove_import'] === '1') {
 
             $el->checked('checked');
         }
 
-        $radios_l .= $el->render() . '<br>';
+        $radios_l .= $el->render();
 
         $el = null;
 

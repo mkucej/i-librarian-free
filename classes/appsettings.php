@@ -34,7 +34,7 @@ final class AppSettings {
         'connect_scopus'   => '1',
         'custom_filename'  => ['author', '_', 'year', '_', 'title'],
         'dashboard_remove_search' => '0',
-        'dashboard_remove_stats' => '0',
+        'dashboard_remove_import' => '0',
         'dashboard_remove_items' => '0',
         'dashboard_remove_projects' => '0',
         'dashboard_remove_item_notes' => '0',

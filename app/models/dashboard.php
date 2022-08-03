@@ -2,9 +2,7 @@
 
 namespace LibrarianApp;
 
-use DateTime;
 use Exception;
-use Librarian\Logger\Reporter;
 use PDO;
 
 /**
@@ -13,11 +11,6 @@ use PDO;
  * @method array get()
  */
 class DashboardModel extends AppModel {
-
-    /**
-     * @var Reporter
-     */
-    private $reporter;
 
     /**
      * Get.
@@ -35,9 +28,7 @@ class DashboardModel extends AppModel {
             'last_discussed' => [],
             'last_discussed_projects' => [],
             'last_notes'     => [],
-            'last_project_notes' => [],
-            'activity'       => [],
-            'pages_read'     => []
+            'last_project_notes' => []
         ];
 
         $this->db_main->beginTransaction();
@@ -223,37 +214,6 @@ EOT;
                 'note' => $note
             ];
         }
-
-        /*
-         * Activity data.
-         */
-
-        $key_format = 'Y-m';
-        $period = $this->reporter->timePeriod(12);
-
-        $sql_activity = <<<EOT
-SELECT substr(added_time, 1, 7) AS yearmonth, count(*) AS count
-    FROM items
-    WHERE added_time >= date('now', '-13 months')
-    GROUP BY yearmonth
-    ORDER BY yearmonth
-EOT;
-
-        $this->db_main->run($sql_activity);
-        $rows = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
-
-        $activity_dates = [];
-
-        /** @var DateTime $date */
-        foreach ($period as $date) {
-
-            $activity_dates[$date->format($key_format)] = 0;
-        }
-
-        // Merge arrays.
-        $output['activity'] = array_replace($activity_dates, $rows);
-        ksort($output['activity']);
-        $output['activity'] = array_slice($output['activity'], -13);
 
         /*
          * Last projects discussed.

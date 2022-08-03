@@ -33,7 +33,6 @@ jQuery.fn.extend({
 
 // IL namespace.
 window.IL = [];
-window.charts = [];
 window.tables = [];
 // Lodash.
 let _ = window._;
@@ -1294,167 +1293,6 @@ class Sidebar {
 
 let sidebar = new Sidebar();
 
-class ILChart {
-    constructor() {
-        // Chart.js is not always loaded.
-        if (window.Chart !== undefined) {
-            window.Chart.defaults.global.defaultFontFamily = 'Noto Sans';
-            window.Chart.defaults.global.defaultFontColor = '#777777';
-            window.Chart.plugins.register({
-                beforeDatasetsDraw: function(chartInstance, easing) {
-                    let ctx = chartInstance.chart.ctx;
-                    let chartArea = chartInstance.chartArea;
-                    if (chartInstance.options.drawBorder) { // custom option to turn on drawing
-                        ctx.strokeStyle = chartInstance.options.borderColor; // custom option for color
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(
-                            chartArea.left + 0.5,
-                            chartArea.top + 0.5,
-                            chartArea.right - chartArea.left - 0.5,
-                            chartArea.bottom - chartArea.top - 0.5
-                        );
-                    }
-                }
-            });
-        }
-    }
-    draw(elementId, labels, title1, dataset1, title2, dataset2) {
-        let $el = $('#' + elementId),
-            legend = typeof title1 !== 'undefined' && title1 !== null,
-            datasets = [];
-        if ($el.length === 1) {
-            let ctx = $el.get(0).getContext('2d');
-            datasets.push(chart._dataset1(dataset1, title1));
-            if(dataset2 !== undefined && dataset2 !== null) {
-                datasets.push(chart._dataset2(dataset2, title2));
-            }
-            if (typeof window.charts[elementId] !== 'undefined') {
-                window.charts[elementId].destroy();
-            }
-            window.charts[elementId] = new window.Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: chart._options(labels, legend, dataset2)
-            });
-        }
-    }
-    _dataset1(data, title) {
-        let primaryColor = '#2f8ded';
-        return {
-            label: title,
-            data: data,
-            yAxisID: 'y-axis-1',
-            fill: false,
-            borderWidth: 2,
-            backgroundColor: primaryColor,
-            borderColor: primaryColor,
-            lineTension: 0.2,
-            pointBorderColor: primaryColor,
-            pointBackgroundColor: primaryColor,
-            pointHoverBackgroundColor: primaryColor,
-            pointHoverBorderColor: primaryColor,
-            pointHitRadius: 8,
-            pointRadius: 2
-        };
-    }
-    _dataset2(data, title) {
-        let secondaryColor = '#ed9b25';
-        return {
-            label: title,
-            data: data,
-            yAxisID: 'y-axis-2',
-            fill: false,
-            borderWidth: 2,
-            backgroundColor: secondaryColor,
-            borderColor: secondaryColor,
-            lineTension: 0.2,
-            pointBorderColor: secondaryColor,
-            pointBackgroundColor: secondaryColor,
-            pointHoverBackgroundColor: secondaryColor,
-            pointHoverBorderColor: secondaryColor,
-            pointHitRadius: 8,
-            pointRadius: 2
-        };
-    }
-    _options (labels, legend, dataset2) {
-        let yAxes = [], yAxis1 = {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            id: 'y-axis-1',
-            gridLines: {
-                color: '#999',
-                tickMarkLength: 0
-            },
-            ticks: {
-                maxTicksLimit: 5,
-                beginAtZero: true,
-                precision: 0,
-                padding: 8
-            }
-        }, yAxis2 = {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            id: 'y-axis-2',
-            gridLines: {
-                drawOnChartArea: false,
-                color: '#999',
-                tickMarkLength: 0
-            },
-            ticks: {
-                maxTicksLimit: 5,
-                beginAtZero: true,
-                precision: 0,
-                padding: 8
-            }
-        };
-        yAxes.push(yAxis1);
-        if(dataset2 !== undefined && dataset2 !== null) {
-            yAxes.push(yAxis2);
-        }
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            stacked: false,
-            legend: {
-                display: legend
-            },
-            drawBorder: true,
-            borderColor: '#999',
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        displayFormats: {
-                            'hour': 'M/D',
-                            'day': 'M/D',
-                            'week': 'M/D',
-                            'month': 'YYYY/M',
-                            'quarter': 'YYYY/M',
-                            'year': 'YYYY'
-                        },
-                        unit: labels.length > 13 ? 'day' : 'month'
-                    },
-                    gridLines: {
-                        color: '#999',
-                        tickMarkLength: 0
-                    },
-                    ticks: {
-                        padding: 8
-                    }
-                }],
-                yAxes: yAxes
-            }
-        };
-    }
-}
-
-let chart = new ILChart();
-
 /**
  * Image CSS filter formatter.
  */
@@ -1849,17 +1687,6 @@ class DashboardMainView extends View {
         formStyle.init();
         quicksearch.init();
         advancedsearch.init();
-        let pages_read = typeof data.pages_read === 'undefined' ||
-            data.pages_read.length === 0 ? null : Object.values(Object.values(data.pages_read)[0]),
-            pages_read_label = pages_read === null ? null : Object.keys(data.pages_read);
-        chart.draw(
-            'myChart',
-            Object.keys(Object.values(data.activity)[0]),
-            Object.keys(data.activity),
-            Object.values(Object.values(data.activity)[0]),
-            pages_read_label,
-            pages_read
-        );
         sessionStore.delete('il.idList');
     }
 }
@@ -4998,46 +4825,6 @@ class LogsMainView extends View {
     constructor() {
         super();
         this.parent = '#content-col';
-        this.events = {
-            'submit .form-chart': 'submitForm',
-            'submit #form-list': 'drawTable'
-        };
-    }
-    afterRender(data) {
-        formStyle.init();
-        chart.draw('chart-opens', _.keys(data.opens), null, _.values(data.opens));
-        chart.draw('chart-pages', _.keys(data.pages), null, _.values(data.pages));
-        chart.draw('chart-downloads', _.keys(data.downloads), null, _.values(data.downloads));
-        window.tables['table-logs'] = $('#table-logs').DataTable({
-            "deferRender": true,
-            "order": [[2, 'desc'],[0, 'asc']]
-        });
-    }
-    submitForm(e) {
-        e.preventDefault();
-        let $f = $(this);
-        $.when(model.load({
-            url: $f.attr('action'),
-            data: $f.serialize()
-        })).done(function (data) {
-            if (typeof data.opens !== 'undefined') {
-                chart.draw('chart-opens', _.keys(data.opens), null, _.values(data.opens));
-            } else if (typeof data.pages !== 'undefined') {
-                chart.draw('chart-pages', _.keys(data.pages), null, _.values(data.pages));
-            } else if (typeof data.downloads !== 'undefined') {
-                chart.draw('chart-downloads', _.keys(data.downloads), null, _.values(data.downloads));
-            }
-        });
-    }
-    drawTable(e) {
-        e.preventDefault();
-        let $f = $(this);
-        $.when(model.load({
-            url: $f.attr('action'),
-            data: $f.serialize()
-        })).done(function (data) {
-            window.tables['table-logs'].clear().rows.add(data).draw();
-        });
     }
 }
 

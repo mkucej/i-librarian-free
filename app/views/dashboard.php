@@ -92,26 +92,107 @@ HTML
         }
 
         /*
-         * Activity.
+         * Import panel.
          */
 
-        if ($this->app_settings->getUser('dashboard_remove_stats') === '0') {
+        if ($this->app_settings->getUser('dashboard_remove_import') === '0') {
 
-            $count = $this->scalar_utils->formatNumber($data['count']);
+            $button_class = $this::$theme === 'dark' ? 'outline-' : '';
+
+            /** @var Bootstrap\Button $el */
+            $el = $this->di->get('Button');
+
+            $el->elementName('a');
+            $el->href('#import/uid');
+            $el->context($button_class . 'light');
+            $el->addClass('btn-block mb-4 py-3');
+            $el->html(
+<<<EOT
+<h5>DOI, Pubmed ID&hellip;</h5>
+<span class="text-secondary">10.2234/26548.225</span>
+EOT
+                );
+            $card_uid = $el->render();
+
+            $el = null;
+
+            /** @var Bootstrap\Button $el */
+            $el = $this->di->get('Button');
+
+            $el->elementName('a');
+            $el->href('#import/file');
+            $el->context($button_class . 'light');
+            $el->addClass('btn-block mb-4 py-3');
+            $el->html(
+<<<EOT
+<h5>{$this->lang->t9n('Published PDFs')}</h5>
+<span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
+<span class="text-secondary">+ 10.2234/2654.225</span>
+EOT
+            );
+            $card_file = $el->render();
+
+            $el = null;
+
+            /** @var Bootstrap\Button $el */
+            $el = $this->di->get('Button');
+
+            $el->elementName('a');
+            $el->href('#import/text');
+            $el->context($button_class . 'light');
+            $el->addClass('btn-block mb-4 py-3');
+            $el->html(
+<<<EOT
+<h5>RIS, BibTex, Endnote</h5>
+<span class="text-secondary">@article{Smith2011</span>
+EOT
+            );
+            $card_text = $el->render();
+
+            $el = null;
+
+            /** @var Bootstrap\Button $el */
+            $el = $this->di->get('Button');
+
+            $el->elementName('a');
+            $el->href('#import/manual');
+            $el->context($button_class . 'light');
+            $el->addClass('btn-block mb-4 py-3');
+            $el->html(
+<<<EOT
+<h5>{$this->lang->t9n('Unpublished file')}</h5>
+<span class="mdi mdi-24px mdi-file-word-box text-secondary"></span>
+<span class="mdi mdi-24px mdi-image text-secondary"></span>
+<span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
+EOT
+            );
+            $card_manual = $el->render();
+
+            $el = null;
+
+            /** @var Bootstrap\Row $el */
+            $el = $this->di->get('Row');
+
+            $el->column($card_uid, 'col-sm-6');
+            $el->column($card_file, 'col-sm-6');
+            $el->column($card_manual, 'col-sm-6');
+            $el->column($card_text, 'col-sm-6');
+            $button_row = $el->render();
+
+            $el = null;
 
             /** @var Bootstrap\Card $el */
             $el = $this->di->get('Card');
 
             $el->addClass('h-100');
             $el->header(
-<<<HTML
+                <<<HTML
 <span>
-    <b class="text-uppercase">$count {$this->lang->t9n('Items')}</b>
-    <a class="ml-3" href='#logs/main'>{$this->lang->t9n('Usage logs')}</a>
+    <b class="text-uppercase">{$this->lang->t9n('Import')}</b>
 </span>
 HTML
-            , 'px-4 pt-3');
-            $el->body('<div style="position:relative;width:100%;height:190px"><canvas id="myChart"></canvas></div>', null, 'px-4 pb-4');
+                , 'px-4 pt-3');
+            $el->body($button_row, null, 'px-4 pb-2');
             $cards[] = $el->render();
 
             $el = null;
@@ -601,9 +682,7 @@ HTML;
 
         $this->append([
             'html'       => $content,
-            'id_list'    => $id_list,
-            'activity'   => [$this->lang->t9n('Items added') => $data['activity']],
-            'pages_read' => [$this->lang->t9n('Pages read') => $data['pages_read']]
+            'id_list'    => $id_list
         ]);
 
         return $this->send();
