@@ -3,16 +3,17 @@
 namespace LibrarianApp;
 
 use Exception;
+use GuzzleHttp\Psr7\Utils;
 use Librarian\Container\DependencyInjector;
 use Librarian\External\Crossref;
 use Librarian\External\Nasaads;
 use Librarian\External\Pmc;
 use Librarian\External\Pubmed;
 use Librarian\External\Xplore;
-use Librarian\Http\Client;
-use Librarian\Http\Client\Cookie\CookieJar;
-use Librarian\Http\Client\Exception\GuzzleException;
-use Librarian\Http\Client\Psr7\Response;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\Pdf;
 use Librarian\Mvc\Controller;
@@ -126,7 +127,7 @@ class ImportController extends Controller {
 
             $jar = new CookieJar();
 
-            /** @var Client\Client $client */
+            /** @var Client $client */
             $client = $this->di->get('HttpClient', [
                 [
                     'timeout' => 30,
@@ -169,7 +170,7 @@ class ImportController extends Controller {
 
                     $line = fgets($ft);
 
-                    preg_match_all('/10\.\d{4,5}\.?\d*\/\S+/ui', $line, $match, PREG_PATTERN_ORDER);
+                    preg_match_all('/10\.\d{4,5}\.?\d*\/\s?\S+/ui', $line, $match, PREG_PATTERN_ORDER);
 
                     if (count($match[0]) > 0) {
 
@@ -185,7 +186,7 @@ class ImportController extends Controller {
                         // Extract DOI from parentheses.
                         if (substr($doi, -1) === ')' || substr($doi, -1) === ']') {
 
-                            preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\S+)/ui', $line, $match2, PREG_PATTERN_ORDER);
+                            preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\s?\S+)/ui', $line, $match2, PREG_PATTERN_ORDER);
 
                             if (substr($doi, -1) === ')' && isset($match2[1][0]) === true && $match2[1][0] === '(') {
 
@@ -197,6 +198,8 @@ class ImportController extends Controller {
                                 $doi = substr($doi, 0, -1);
                             }
                         }
+
+                        $doi = str_replace(' ', '', $doi);
 
                         break;
                     }
@@ -277,8 +280,8 @@ class ImportController extends Controller {
         if (!empty($result['item_id'])) {
 
             // Open stream for the temp file.
-            $fp = Client\Psr7\Utils::tryFopen($temp_filename, 'rb');
-            $stream = Client\Psr7\Utils::streamFor($fp);
+            $fp = Utils::tryFopen($temp_filename, 'rb');
+            $stream = Utils::streamFor($fp);
 
             // Save the file.
             $model = new PdfModel($this->di);
@@ -324,7 +327,7 @@ class ImportController extends Controller {
 
                 $jar = new CookieJar();
 
-                /** @var Client\Client $client */
+                /** @var Client $client */
                 $client = $this->di->get('HttpClient', [
                     [
                         'timeout' => 30,
@@ -380,7 +383,7 @@ class ImportController extends Controller {
         // Save from the wizard UID input.
         if (isset($this->post['metadata'])) {
 
-            $metadata = Client\Utils::jsonDecode($this->post['metadata'], JSON_OBJECT_AS_ARRAY);
+            $metadata = \GuzzleHttp\Utils::jsonDecode($this->post['metadata'], JSON_OBJECT_AS_ARRAY);
             $this->post = $this->post + $metadata;
         }
 

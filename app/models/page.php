@@ -4,7 +4,7 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Cache\FileCache;
-use Librarian\Http\Psr\Message\StreamInterface;
+use Psr\Http\Message\StreamInterface;
 use Librarian\Media\Image;
 use Librarian\Media\Pdf;
 

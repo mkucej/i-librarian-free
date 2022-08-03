@@ -52,6 +52,7 @@ WITH cte AS (
         FROM temp_authors
         GROUP BY sound
         HAVING sound != '' AND count(*) > 1
+        LIMIT 100
 )
 SELECT temp_authors.sound, temp_authors.id, temp_authors.first_name, temp_authors.last_name
     FROM temp_authors
@@ -102,6 +103,7 @@ WITH cte AS (
         FROM temp_editors
         GROUP BY sound
         HAVING sound != '' AND count(*) > 1
+        LIMIT 100
 )
 SELECT temp_editors.sound, temp_editors.id, temp_editors.first_name, temp_editors.last_name
     FROM temp_editors
@@ -157,6 +159,7 @@ WITH cte AS (
         FROM temp_{$type}_titles
         GROUP BY sound
         HAVING sound != '' AND count(*) > 1
+        LIMIT 100
 )
 SELECT temp_{$type}_titles.sound, temp_{$type}_titles.id, temp_{$type}_titles.{$type}_title
     FROM temp_{$type}_titles

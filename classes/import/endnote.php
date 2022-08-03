@@ -229,7 +229,7 @@ class Endnote {
         // Custom.
         for ($i = 1;  $i <= 7; $i++) {
 
-            $custom = $record->custom{$i} ?? null;
+            $custom = $record->{"custom{$i}"} ?? null;
 
             if ($custom !== null) {
 

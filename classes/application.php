@@ -5,7 +5,7 @@ namespace Librarian;
 use ErrorException;
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\ServerRequest;
 
 /**
  * Class Application.

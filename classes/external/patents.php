@@ -6,9 +6,9 @@ use DOMDocument;
 use DOMElement;
 use DOMNodeList;
 use Exception;
-use Librarian\Http\Client\Client;
-use Librarian\Http\Client\Exception\ClientException;
-use Librarian\Http\Client\Exception\GuzzleException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 

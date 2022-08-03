@@ -2,7 +2,7 @@
 
 namespace Librarian\Http;
 
-use Librarian\Http\Client\Psr7\ServerRequest as Request;
+use GuzzleHttp\Psr7\ServerRequest as Request;
 
 /**
  * URL related methods.

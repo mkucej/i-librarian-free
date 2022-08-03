@@ -3,8 +3,8 @@
 namespace Librarian\External;
 
 use Exception;
-use Librarian\Http\Client\Client;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Client;
+use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 
@@ -108,8 +108,13 @@ final class Ol extends ExternalDatabase implements ExternalDatabaseInterface {
         $i = 0;
         $article = current($array);
 
+        if (isset($article['title']) === false) {
+
+            return $output;
+        }
+
         // Title.
-        $output['items'][$i][ItemMeta::COLUMN['TITLE']] = str_replace(["\r\n", "\n", "\r"], ' ', $article['title'] ?? null);
+        $output['items'][$i][ItemMeta::COLUMN['TITLE']] = str_replace(["\r\n", "\n", "\r"], ' ', $article['title']);
 
         // Get UIDs.
         if (isset($article['identifiers'])) {

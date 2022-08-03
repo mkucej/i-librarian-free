@@ -4,9 +4,9 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Psr\Message\StreamInterface;
+use Psr\Http\Message\StreamInterface;
 use Librarian\Mvc\Controller;
-use Librarian\Http\Client\Psr7\Utils;
+use GuzzleHttp\Psr7\Utils;
 
 /**
  * Class PageController

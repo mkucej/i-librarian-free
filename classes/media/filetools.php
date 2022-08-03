@@ -4,7 +4,7 @@ namespace Librarian\Media;
 
 use Exception;
 use finfo;
-use Librarian\Http\Psr\Message\StreamInterface;
+use Psr\Http\Message\StreamInterface;
 use SplFileObject;
 
 final class FileTools {
@@ -105,8 +105,8 @@ final class FileTools {
          * Compensate for PHP bug #77784
          * @see https://bugs.php.net/bug.php?id=77784
          */
-        $mime_1 = substr($mime, 0, strlen($mime) / 2);
-        $mime_2 = substr($mime, -1 * strlen($mime) / 2);
+        $mime_1 = substr($mime, 0, ceil(strlen($mime) / 2));
+        $mime_2 = substr($mime, -1 * ceil(strlen($mime) / 2));
 
         return $mime_1 === $mime_2 ? $mime_1 : $mime;
     }

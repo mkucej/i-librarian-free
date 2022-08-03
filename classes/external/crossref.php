@@ -3,10 +3,10 @@
 namespace Librarian\External;
 
 use Exception;
-use Librarian\Http\Client\Client;
-use Librarian\Http\Client\Exception\ClientException;
-use Librarian\Http\Client\Exception\GuzzleException;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 
@@ -263,7 +263,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
         foreach ($items as $article) {
 
             // Title.
-            $output['items'][$i][ItemMeta::COLUMN['TITLE']] = str_replace(["\r\n", "\n", "\r"], ' ', $article['title'][0] ?? null);
+            $output['items'][$i][ItemMeta::COLUMN['TITLE']] = str_replace(["\r\n", "\n", "\r"], ' ', $article['title'][0] ?? '');
 
             // Get UIDs.
             if (isset($article['alternative-id'])) {

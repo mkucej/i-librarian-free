@@ -3,8 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
+use GuzzleHttp\Utils;
 use Librarian\Cache\FileCache;
-use Librarian\Http\Client;
 use Librarian\Import\Bibtex;
 use Librarian\Import\Endnote;
 use Librarian\Import\Ris;
@@ -102,7 +102,7 @@ EOT;
         $output = $this->db_main->getResultRow();
 
         // Edit URLs.
-        $output['urls'] = explode('|', $output['urls']);
+        $output['urls'] = explode('|', (string) $output['urls']);
 
         // UIDs.
         $sql_uids = <<<EOT
@@ -471,7 +471,7 @@ SQL;
 
             } else {
 
-                $format = Client\Utils::jsonDecode($format_json, true);
+                $format = Utils::jsonDecode($format_json, true);
             }
 
             $this->scalar_utils = $this->di->getShared('ScalarUtils');
@@ -944,7 +944,7 @@ SQL;
 
             } else {
 
-                $format = Client\Utils::jsonDecode($format_json, true);
+                $format = Utils::jsonDecode($format_json, true);
             }
 
             $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
@@ -1499,7 +1499,7 @@ EOT;
                 if (is_readable($pdf_file)) {
 
                     $fp = fopen($pdf_file, 'rb');
-                    $stream = Client\Psr7\Utils::streamFor($fp);
+                    $stream = \GuzzleHttp\Psr7\Utils::streamFor($fp);
 
                     $pdf_object->save($item['item_id'], $stream);
 

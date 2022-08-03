@@ -323,7 +323,6 @@ EOT;
         $row = $this->db_main->getResultRow();
         $output['title'] = $row['title'];
         $abstract = $row['abstract'];
-        $row = null;
 
         // List of all tags.
         $sql = <<<'EOT'
@@ -348,7 +347,7 @@ EOT;
         $output['item_tags'] = $this->db_main->getResultRows(PDO::FETCH_KEY_PAIR);
 
         // List of recommended tags. Limit word pool to 999.
-        $columns = array_slice(str_word_count($abstract, 1), 0, 999);
+        $columns = array_slice(str_word_count((string) $abstract, 1), 0, 999);
         $placeholder_arr = array_fill(0, count($columns), '?');
         $placeholders = join(',', $placeholder_arr);
 

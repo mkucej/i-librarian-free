@@ -4,7 +4,7 @@ namespace LibrarianApp;
 
 use Exception;
 use InvalidArgumentException;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Utils;
 
 /**
  * Settings model.

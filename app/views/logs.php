@@ -37,7 +37,7 @@ class LogsView extends TextView {
         $el->html(<<<ALERT
             User activity logs are available in <i>I, Librarian Pro</i> only. <a href="https://i-librarian.net">Upgrade now</a>
 ALERT
-);
+        );
         $alert = $el->render();
 
         $el = null;

@@ -4,8 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Cache\FileCache;
-use \Librarian\Http\Client\Psr7;
-use Librarian\Http\Psr\Message\StreamInterface;
+use GuzzleHttp\Psr7;
+use Psr\Http\Message\StreamInterface;
 use Librarian\Logger\Logger;
 use Librarian\Logger\Reporter;
 use Librarian\Media\Pdf;
@@ -35,6 +35,7 @@ use ZipArchive;
  * @method void  saveNote(int $item_id, string $text, int $page = null, int $top = null, int $left = null, int $note_id = null)
  * @method void  saveOcrText(int $item_id, string $text)
  * @method void  saveOcrBoxes(int $item_id, string $boxes)
+ * @method array scanDOIAndSave(int $item_id)
  * @method array search(int $item_id, string $query, int $page_from)
  */
 class PdfModel extends AppModel {
@@ -1186,7 +1187,7 @@ EOT;
             return $output;
         }
 
-        preg_match('/10\.\d{4,5}\.?\d*\/\S+/ui', $pdf_text, $match, PREG_OFFSET_CAPTURE);
+        preg_match('/10\.\d{4,5}\.?\d*\/\s?\S+/ui', $pdf_text, $match, PREG_OFFSET_CAPTURE);
 
         if (isset($match[0][0])) {
 
@@ -1213,6 +1214,8 @@ EOT;
                     $doi = substr($doi, 0, -1);
                 }
             }
+
+            $doi = str_replace(' ', '', $doi);
 
             // Save DOI to item.
             if (!empty($doi)) {

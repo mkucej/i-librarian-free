@@ -10,7 +10,7 @@ use Librarian\Export\Ris;
 use Librarian\Html\Bootstrap;
 use Librarian\Html\Bootstrap\Icon;
 use Librarian\Html\Element;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
 use Librarian\Media\Temporal;
 use Librarian\Mvc\TextView;
@@ -1767,9 +1767,9 @@ EOT;
                 "issued" => [
                     'date-parts' => [
                         [
-                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 0, 4),
-                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 5, 2),
-                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']], 8, 2),
+                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? '', 0, 4),
+                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? '', 5, 2),
+                            (int) substr($item[ItemMeta::COLUMN['PUBLICATION_DATE']] ?? '', 8, 2),
                         ]
                     ]
                 ],

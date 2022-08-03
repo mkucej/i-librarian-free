@@ -166,10 +166,10 @@ final class ErrorView extends TextView {
 
             $el->addClass("h-100 text-center $center_class pt-2");
             $el->column(
-                <<<I18N
+<<<I18N
 <h1>{$alert_icon}{$this->lang->t9n('Oops')}!</h1>$message
 I18N
-                , 'col col-xl-8 offset-xl-2 pb-5');
+            , 'col col-xl-8 offset-xl-2 pb-5');
             $row = $el->render();
 
             $el = null;

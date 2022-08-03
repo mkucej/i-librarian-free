@@ -7,7 +7,7 @@ use DOMElement;
 use DomXpath;
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Utils;
 use Librarian\Queue\Queue;
 use Librarian\Storage\Database;
 use PDO;
@@ -719,7 +719,7 @@ SQL;
 
         $db->close();
 
-        $processed_pages = json_decode($has_text, JSON_OBJECT_AS_ARRAY);
+        $processed_pages = json_decode((string) $has_text, JSON_OBJECT_AS_ARRAY);
         $unprocessed = is_null($processed_pages) ? $pages : array_diff($pages, $processed_pages);
 
         // Boxes have never been processed.
@@ -748,7 +748,7 @@ SQL;
         $db->run($sql_select);
         $has_text = $db->getResult();
 
-        $processed_pages = json_decode($has_text, JSON_OBJECT_AS_ARRAY);
+        $processed_pages = json_decode((string) $has_text, JSON_OBJECT_AS_ARRAY);
         $unprocessed = is_null($processed_pages) ? $pages : array_diff($pages, $processed_pages);
 
         if (count($unprocessed) > 0) {
@@ -808,7 +808,7 @@ SQL;
 
         $db->close();
 
-        $processed_pages = json_decode($has_text, JSON_OBJECT_AS_ARRAY);
+        $processed_pages = json_decode((string) $has_text, JSON_OBJECT_AS_ARRAY);
 
         $chunk = 50;
         $bin = $chunk * floor(($page_from - 1) / $chunk) + 1;
@@ -824,7 +824,7 @@ SQL;
         $db->run($sql_select);
         $has_text = $db->getResult();
 
-        $processed_pages = json_decode($has_text, JSON_OBJECT_AS_ARRAY);
+        $processed_pages = json_decode((string) $has_text, JSON_OBJECT_AS_ARRAY);
 
         if (is_null($processed_pages) || in_array($page_from, $processed_pages) === false) {
 

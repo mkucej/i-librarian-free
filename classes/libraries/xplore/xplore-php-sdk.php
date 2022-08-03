@@ -530,11 +530,12 @@ class XPLORE {
 
 
     /**
-     * @param \Librarian\Http\Client\Client $client
+     * @param \GuzzleHttp\Client $client
      * @param bool $debugModeOff
      * @return mixed $formattedData   Either raw result string, SimpleXML or JSON object, or array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function callAPI(\Librarian\Http\Client\Client $client, $debugModeOff=true) {
+    public function callAPI(\GuzzleHttp\Client $client, $debugModeOff=true) {
 
         if ($this->usingOpenAccess) {
 
@@ -671,10 +672,12 @@ class XPLORE {
 
 
     /**
-     *   @param string $str     Full URL to pass to API
-     *   @return string $data   Result string from API
+     * @param string $str Full URL to pass to API
+     * @param \GuzzleHttp\Client $client
+     * @return string $data   Result string from API
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function queryAPI($str, \Librarian\Http\Client\Client $client) {
+    protected function queryAPI($str, \GuzzleHttp\Client $client) {
 
         $response = $client->get($str);
         $data = $response->getBody()->getContents();

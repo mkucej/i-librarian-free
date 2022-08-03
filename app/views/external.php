@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Html\Element;
 use Librarian\Html\Bootstrap;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
 use Librarian\Mvc\TextView;
 

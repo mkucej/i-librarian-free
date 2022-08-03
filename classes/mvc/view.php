@@ -4,8 +4,8 @@ namespace Librarian\Mvc;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Psr7\Response;
-use Librarian\Http\Client\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use Librarian\Media\Language;
 
 /**

@@ -4,7 +4,7 @@ namespace Librarian;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Utils;
 use Librarian\Security\Session;
 
 /**

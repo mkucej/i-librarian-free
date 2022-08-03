@@ -14,6 +14,14 @@ final class Loader {
     public function register(): void {
 
         spl_autoload_register([$this, "autoLoad"]);
+
+        // Guzzle.
+        include IL_CLASS_PATH . DIRECTORY_SEPARATOR
+            . 'libraries' . DIRECTORY_SEPARATOR
+            . 'guzzle' . DIRECTORY_SEPARATOR
+            . 'vendor/autoload.php';
+
+        spl_autoload_register(['ComposerAutoloaderInit38f17354523cafcea8bc817e08278a8d', 'getLoader']);
     }
 
     /**

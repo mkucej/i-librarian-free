@@ -2,7 +2,7 @@
 
 namespace Librarian\Http;
 
-use Librarian\Http\Client\Psr7\Response;
+use GuzzleHttp\Psr7\Response;
 
 final class ResponseDecorator {
 

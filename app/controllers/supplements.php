@@ -4,8 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Client;
-use Librarian\Http\Client\Exception\GuzzleException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Librarian\Mvc\Controller;
 
 class SupplementsController extends Controller {

@@ -4,7 +4,7 @@ namespace Librarian\External;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Client;
+use GuzzleHttp\Client;
 use Librarian\ItemMeta;
 use Librarian\Media\ScalarUtils;
 

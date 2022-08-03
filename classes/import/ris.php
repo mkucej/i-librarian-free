@@ -197,7 +197,7 @@ class Ris {
                         $entry[ItemMeta::COLUMN['AUTHOR_LAST_NAME']][] = trim($parts[0]);
                     }
 
-                    if (!empty(trim($parts[1])))  {
+                    if (isset($parts[1]) && !empty(trim($parts[1])))  {
 
                         $entry[ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][] = trim($parts[1]);
                     }
@@ -212,7 +212,7 @@ class Ris {
                         $entry[ItemMeta::COLUMN['EDITOR_LAST_NAME']][] = trim($parts[0]);
                     }
 
-                    if (!empty(trim($parts[1])))  {
+                    if (isset($parts[1]) && !empty(trim($parts[1])))  {
 
                         $entry[ItemMeta::COLUMN['EDITOR_FIRST_NAME']][] = trim($parts[1]);
                     }

@@ -66,7 +66,7 @@ final class Factory {
 
         $this->di->set('ServerRequest', function () {
 
-            return \Librarian\Http\Client\Psr7\ServerRequest::fromGlobals();
+            return \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
         });
 
         $this->di->set('Validation', function () {
@@ -81,12 +81,12 @@ final class Factory {
 
         $this->di->set('Response', function () {
 
-            return new \Librarian\Http\Client\Psr7\Response();
+            return new \GuzzleHttp\Psr7\Response();
         });
 
         $this->di->set('ResponseStream', function ($resource = null, $options = []) {
 
-            return \Librarian\Http\Client\Psr7\Utils::streamFor($resource, $options);
+            return \GuzzleHttp\Psr7\Utils::streamFor($resource, $options);
         });
 
         $this->di->set('Session', function () {
@@ -106,11 +106,6 @@ final class Factory {
         $this->di->set('Element', function () {
 
             return new \Librarian\Html\Element();
-        });
-
-        $this->di->set('HttpClient', function (array $config = []) {
-
-            return new \Librarian\Http\Client\Client($config);
         });
 
         $this->di->set('Authorization', function () {
@@ -527,6 +522,12 @@ final class Factory {
      * Third-party SDK libraries.
      */
     private function libraries(): void {
+
+        // Guzzle
+        $this->di->set('HttpClient', function (array $settings = []) {
+
+            return new \GuzzleHttp\Client($settings);
+        });
 
         // HTMLPurifier used to sanitize external HTML input.
         $this->di->set('HtmlPurifier', function () {

@@ -4,9 +4,9 @@ namespace Librarian\External;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Client;
-use Librarian\Http\Client\Exception\GuzzleException;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
 use const JSON_OBJECT_AS_ARRAY;
 

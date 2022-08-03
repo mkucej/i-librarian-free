@@ -76,7 +76,7 @@ EOT;
 
         $this->db_main->run($sql, $columns);
 
-        return $this->db_main->getResult() === '0' ? false : true;
+        return (int) $this->db_main->getResult() === 0 ? false : true;
     }
 
     /**

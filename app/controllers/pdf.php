@@ -4,9 +4,9 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Http\Client\Cookie\CookieJar;
-use Librarian\Http\Client\Psr7\Response;
-use Librarian\Http\Client\Utils;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Utils;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\ScalarUtils;
 use Librarian\Media\TesseractOcr;

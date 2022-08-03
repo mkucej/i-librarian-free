@@ -3,9 +3,9 @@
 namespace LibrarianApp;
 
 use Exception;
+use GuzzleHttp\Utils;
 use Librarian\Cache\FileCache;
-use Librarian\Http\Client;
-use Librarian\Http\Psr\Message\StreamInterface;
+use Psr\Http\Message\StreamInterface;
 use Librarian\ItemMeta;
 use Librarian\Media\Language;
 use Librarian\Media\ScalarUtils;
@@ -2395,7 +2395,7 @@ EOT;
                     'id'      => $row['id'],
                     'title'   => $row['title'],
                     'publication_title' => $publication,
-                    'publication_date'  => substr($row['publication_date'], 0, 4),
+                    'publication_date'  => substr((string) $row['publication_date'], 0, 4),
                     'reference_type'  => $row['reference_type'],
                     'has_pdf' => !empty($row['file_hash']),
                     'snippet' => $item_rows[$i]['snippet'] ?? ''
@@ -2482,7 +2482,7 @@ EOT;
                     'title'    => $row['title'],
                     'abstract' => $row['abstract'],
                     'publication_title' => $publication,
-                    'publication_date'  => substr($row['publication_date'], 0, 4),
+                    'publication_date'  => substr((string) $row['publication_date'], 0, 4),
                     'reference_type'  => $row['reference_type'],
                     'has_pdf'  => !empty($row['file_hash']),
                     'snippet'  => $item_rows[$i]['snippet'] ?? ''
@@ -2705,7 +2705,7 @@ EOT;
                 $output[$i]['tags'] = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
 
                 // Urls.
-                $urls = explode('|', $output[$i][ItemMeta::COLUMN['URLS']]);
+                $urls = explode('|', (string) $output[$i][ItemMeta::COLUMN['URLS']]);
                 $output[$i][ItemMeta::COLUMN['URLS']] = $urls;
 
                 if (!empty($output[$i]['file_hash'])) {
@@ -2746,9 +2746,9 @@ EOT;
             ];
 
             $this->db_main->run($sql, $columns);
-            $clipboard = $this->db_main->getResult();
+            $clipboard = (int) $this->db_main->getResult();
 
-            $items[$i]['in_clipboard'] = $clipboard === '1' ? true : false;
+            $items[$i]['in_clipboard'] = $clipboard === 1 ? true : false;
         }
 
         return $items;
@@ -2872,7 +2872,7 @@ EOT;
                 ];
 
                 $this->db_main->run($sql, $columns);
-                $in_project = $this->db_main->getResult() === '1' ? 'Y' : 'N';
+                $in_project = (int) $this->db_main->getResult() === 1 ? 'Y' : 'N';
 
                 $items[$i]['projects'][] = [
                     'project_id' => $project_id,
@@ -3188,7 +3188,7 @@ README
         clearstatcache($zip_file);
         $zp = fopen($zip_file, 'rb');
 
-        return Client\Psr7\Utils::streamFor($zp);
+        return \GuzzleHttp\Psr7\Utils::streamFor($zp);
     }
 
     /**
@@ -3211,7 +3211,7 @@ SQL;
         $this->db_main->run($sql_bibtex_fromat);
         $format_json = $this->db_main->getResult();
 
-        $format = Client\Utils::jsonDecode($format_json, true);
+        $format = Utils::jsonDecode($format_json, true);
 
         $transaction_size = 10;
 

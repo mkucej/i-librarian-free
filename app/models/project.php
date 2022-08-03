@@ -124,7 +124,7 @@ EOT;
         $sql = <<<EOT
 SELECT ifnull(trim(first_name || ' ' || last_name), username) as name, id_hash
     FROM users
-    WHERE id != ?
+    WHERE id != ? AND status = 'A'
     ORDER BY name COLLATE utf8Collation
 EOT;
 
@@ -367,9 +367,9 @@ EOT;
         ];
 
         $this->db_main->run($sql, $columns);
-        $count = $this->db_main->getResult();
+        $count =  (int) $this->db_main->getResult();
 
-        if ($count === '0') {
+        if ($count === 0) {
 
             $this->db_main->rollBack();
             throw new Exception('this project is not open access', 403);
@@ -415,9 +415,9 @@ EOT;
         ];
 
         $this->db_main->run($sql, $columns);
-        $count = $this->db_main->getResult();
+        $count = (int) $this->db_main->getResult();
 
-        if ($count === '0') {
+        if ($count === 0) {
 
             $this->db_main->rollBack();
             throw new Exception('this project is not open access', 403);

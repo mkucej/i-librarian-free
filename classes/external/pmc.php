@@ -3,7 +3,7 @@
 namespace Librarian\External;
 
 use Exception;
-use Librarian\Http\Client\Client;
+use GuzzleHttp\Client;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 use Librarian\Media\Xml;

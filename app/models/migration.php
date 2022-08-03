@@ -3,7 +3,7 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Http\Client\Psr7;
+use GuzzleHttp\Psr7;
 use Librarian\Media\ScalarUtils;
 use Librarian\Security\Encryption;
 use PDO;

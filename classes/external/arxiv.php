@@ -4,7 +4,7 @@ namespace Librarian\External;
 
 use DateTime;
 use Exception;
-use Librarian\Http\Client\Client;
+use GuzzleHttp\Client;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 use SimpleXMLIterator;

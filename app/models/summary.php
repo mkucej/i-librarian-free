@@ -141,7 +141,7 @@ EOT;
             $output[ItemMeta::COLUMN['KEYWORDS']] = $this->db_main->getResultRows(PDO::FETCH_COLUMN);
 
             // Urls.
-            $urls = explode('|', $output[ItemMeta::COLUMN['URLS']]);
+            $urls = explode('|', (string) $output[ItemMeta::COLUMN['URLS']]);
             $output[ItemMeta::COLUMN['URLS']] = $urls;
 
             if (!empty($output['file_hash'])) {
@@ -218,7 +218,7 @@ SELECT
 EOT;
 
             $this->db_main->run($sql, [$item_id, $this->user_id]);
-            $output['in_clipboard'] = $this->db_main->getResult() === '1' ? 'Y' : 'N';
+            $output['in_clipboard'] = (int) $this->db_main->getResult() === 1 ? 'Y' : 'N';
 
             // Projects.
             $sql = <<<EOT
@@ -253,7 +253,7 @@ EOT;
                 ];
 
                 $this->db_main->run($sql, $columns);
-                $in_project = $this->db_main->getResult() === '1' ? 'Y' : 'N';
+                $in_project = (int) $this->db_main->getResult() === 1 ? 'Y' : 'N';
 
                 $output['projects'][] = [
                     'project_id' => $project_id,

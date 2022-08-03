@@ -267,7 +267,7 @@ class ClipboardController extends Controller {
         // Max clipboard size.
         $info = ['max_count' => false];
 
-        if ($response['max_count'] === '1') {
+        if ($response['max_count'] === true) {
 
             $info = [
                 'info' => 'clipboard maximum size was reached',

@@ -66,7 +66,7 @@ final class Sanitation {
      */
     protected function _attr(&$value) {
 
-        $value = htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES, 'UTF-8');
+        $value = htmlspecialchars((string) $value, ENT_HTML5 | ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -76,7 +76,7 @@ final class Sanitation {
      */
     protected function _emptyToNull(&$value) {
 
-        $value = trim($value) === '' ? null : $value;
+        $value = trim((string) $value) === '' ? null : $value;
     }
 
     /**
@@ -86,7 +86,7 @@ final class Sanitation {
      */
     protected function _html(&$value) {
 
-        $value = htmlspecialchars($value, ENT_HTML5, 'UTF-8');
+        $value = htmlspecialchars((string) $value, ENT_HTML5, 'UTF-8');
 
         // Allowed tags. No attributes allowed.
         foreach (['b', 'i', 'sup', 'sub', 'u'] as $tag) {
@@ -111,7 +111,7 @@ final class Sanitation {
         $length = isset($this->options) && is_int($this->options) ? $this->options : 10 * 1024 * 1024;
 
         // UTF-8-safe substring.
-        $value = mb_substr($value, 0, $length, 'UTF-8');
+        $value = mb_substr((string) $value, 0, $length, 'UTF-8');
     }
 
     /**
@@ -124,7 +124,7 @@ final class Sanitation {
      */
     protected function _lmth(&$value) {
 
-        $value = htmlspecialchars_decode($value, ENT_HTML5 | ENT_QUOTES);
+        $value = htmlspecialchars_decode((string) $value, ENT_HTML5 | ENT_QUOTES);
     }
 
     /**
@@ -145,7 +145,7 @@ final class Sanitation {
             "\u{001F}", "\u{000D}",
         ];
 
-        $value = str_replace($chars, '', $value);
+        $value = str_replace($chars, '', (string) $value);
     }
 
     /**
@@ -155,7 +155,7 @@ final class Sanitation {
      */
     protected function _trim(&$value) {
 
-        $value = trim($value);
+        $value = trim((string) $value);
     }
 
     /**
@@ -165,7 +165,7 @@ final class Sanitation {
      */
     protected function _urlquery(&$value) {
 
-        $value = rawurlencode($value);
+        $value = rawurlencode((string) $value);
     }
 
     /**
@@ -175,7 +175,7 @@ final class Sanitation {
      */
     protected function _xml(&$value) {
 
-        $value = htmlspecialchars($value, ENT_XML1 | ENT_NOQUOTES | ENT_DISALLOWED, 'UTF-8');
+        $value = htmlspecialchars((string) $value, ENT_XML1 | ENT_NOQUOTES | ENT_DISALLOWED, 'UTF-8');
     }
 
     /**
@@ -185,7 +185,7 @@ final class Sanitation {
      */
     protected function _queryLike(&$value) {
 
-        $esc = str_replace(["\\", "%", "_"], ["\\\\", "\%", "\_"], $value);
+        $esc = str_replace(["\\", "%", "_"], ["\\\\", "\%", "\_"], (string) $value);
         $value = str_replace("*", "%", $esc);
     }
 }

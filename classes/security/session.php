@@ -5,7 +5,7 @@ namespace Librarian\Security;
 use Exception;
 use FilesystemIterator;
 use Librarian\AppSettings;
-use Librarian\Http\Client\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\ServerRequest;
 
 /**
  * Session class.
