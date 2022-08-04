@@ -224,6 +224,30 @@ class ProjectsView extends TextView {
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
+                $el->addClass('my-2');
+                $el->style('min-width: 6rem');
+                $el->componentSize('small');
+                $el->html($this->lang->t9n('Edit'));
+
+                if ($this->session->data('user_id') !== $project['id_hash']) {
+
+                    $el->context('outline-secondary');
+                    $el->disabled('disabled');
+
+                } else {
+
+                    $el->elementName('a');
+                    $el->context('outline-danger');
+                    $el->href($IL_BASE_URL . "index.php/project#project/edit?id=" . $this->sanitation->attr($project['id']));
+                }
+
+                $edit = $el->render();
+
+                $el = null;
+
+                /** @var Bootstrap\Button $el */
+                $el = $this->di->get('Button');
+
                 $el->context('outline-danger');
                 $el->addClass('delete my-2');
                 $el->attr('data-project-id', $this->sanitation->attr($project['id']));
@@ -247,7 +271,7 @@ class ProjectsView extends TextView {
                         <h5><a class="active-project" href="{$IL_BASE_URL}index.php/project#project/browse?id={$project['id']}">{$project['project']}</a></h5>
                         <b>{$this->lang->t9n('Owner')}:</b> {$project['name']} &middot;
                         <b>{$this->lang->t9n('Created')}:</b> $date <br>
-                        $inactivate $leave $delete
+                        $inactivate $leave $edit $delete
                     </div>
 ACTIVE;
 
