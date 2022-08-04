@@ -963,7 +963,7 @@ EOT;
         $columns = [];
         $join_collection = '';
         $where_collection = '';
-        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：";
+        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：#$&()/<>=@^{}[]|";
 
         // Modify query based on boolean type.
         switch ($search['search_boolean'][0]) {
@@ -1585,7 +1585,7 @@ EOT;
         $columns = [];
         $join_collection = '';
         $where_collection = '';
-        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：";
+        $extra_characters = "'\"“”＂«‹›»-˗‐‑‒–−➖Ⲻ﹘!ǃⵑ！?.,;;:：#$&()/<>=@^{}[]|";
 
         foreach ($search['search_query'] as $key => $search_query) {
 
