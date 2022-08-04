@@ -2397,8 +2397,7 @@ EOT;
                     'publication_title' => $publication,
                     'publication_date'  => substr((string) $row['publication_date'], 0, 4),
                     'reference_type'  => $row['reference_type'],
-                    'has_pdf' => !empty($row['file_hash']),
-                    'snippet' => $item_rows[$i]['snippet'] ?? ''
+                    'has_pdf' => !empty($row['file_hash'])
                 ];
 
                 $i++;
@@ -2448,6 +2447,7 @@ EOT;
 SELECT
        items.id,
        items.title,
+       items.urls,
        items.abstract,
        primary_titles.primary_title,
        secondary_titles.secondary_title,
@@ -2472,20 +2472,22 @@ EOT;
 
             while ($row = $this->db_main->getResultRow()) {
 
-                $publication = !empty($row['primary_title']) ? $row['primary_title'] : $row['secondary_title'];
-                $publication = !empty($publication) ? $publication : $row['tertiary_title'];
+                $publication = !empty($row[ItemMeta::COLUMN['PRIMARY_TITLE']]) ?
+                    $row[ItemMeta::COLUMN['PRIMARY_TITLE']] :
+                    $row[ItemMeta::COLUMN['SECONDARY_TITLE']];
+                $publication = !empty($publication) ? $publication : $row[ItemMeta::COLUMN['TERTIARY_TITLE']];
                 $publication = !empty($publication) ? $publication : '';
 
                 // Add row to the items array.
-                $output[] = [
-                    'id'       => $row['id'],
-                    'title'    => $row['title'],
-                    'abstract' => $row['abstract'],
+                $output[$i] = [
+                    'id'                => $row['id'],
+                    'title'             => $row[ItemMeta::COLUMN['TITLE']],
+                    'urls'              => explode('|', (string) $row[ItemMeta::COLUMN['URLS']]),
+                    'abstract'          => $row[ItemMeta::COLUMN['ABSTRACT']],
                     'publication_title' => $publication,
-                    'publication_date'  => substr((string) $row['publication_date'], 0, 4),
-                    'reference_type'  => $row['reference_type'],
-                    'has_pdf'  => !empty($row['file_hash']),
-                    'snippet'  => $item_rows[$i]['snippet'] ?? ''
+                    'publication_date'  => substr((string) $row[ItemMeta::COLUMN['PUBLICATION_DATE']], 0, 4),
+                    'reference_type'    => $row[ItemMeta::COLUMN['REFERENCE_TYPE']],
+                    'has_pdf'           => !empty($row['file_hash'])
                 ];
 
                 $i++;
@@ -2518,6 +2520,28 @@ EOT;
                 } else {
 
                     $output[$i]['authors'] = [$first_author, $last_author];
+                }
+            }
+
+            // Add UIDs.
+            $sql_uids = <<<EOT
+SELECT
+    uid_type, uid
+    FROM uids
+    WHERE item_id = ?
+EOT;
+
+            for ($i = 0; $i < count($item_ids); $i++) {
+
+                $this->db_main->run($sql_uids, [$item_ids[$i]]);
+
+                $output[$i][ItemMeta::COLUMN['UID_TYPES']] = [];
+                $output[$i][ItemMeta::COLUMN['UIDS']] = [];
+
+                while ($uids = $this->db_main->getResultRow()) {
+
+                    $output[$i][ItemMeta::COLUMN['UID_TYPES']][] = $uids['uid_type'];
+                    $output[$i][ItemMeta::COLUMN['UIDS']][] = $uids['uid'];
                 }
             }
 

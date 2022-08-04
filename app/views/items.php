@@ -1058,8 +1058,6 @@ EOT;
             $publication = !empty($item['publication_title']) ? $item['publication_title'] : $item['reference_type'];
             $date = !empty($item['publication_date']) ? $item['publication_date'] : '';
 
-            $snippet_div = empty($item['snippet']) ? '' : "<div style=\"white-space: normal\">{$this->sanitation->lmth($item['snippet'])}</div>";
-
             // Top HTML structure.
 
             $row_class = '';
@@ -1363,6 +1361,8 @@ EOT;
 EOT;
             }
 
+            $links = $this->sharedLinkList($item);
+
             /** @var Bootstrap\Input $el */
             $el = $this->di->get('Input');
 
@@ -1485,9 +1485,10 @@ EOT;
                             </td>
                         </tr>
                         <tr>
-                            <td class="pt-0 pb-3 pr-5">
+                            <td class="pt-0 pr-5">
                                 <p style="text-align:justify;columns: 2 300px;column-gap: 30px;">{$abstract}</p>
                                 <p>{$tags}</p>
+                                <p>{$links}</p>
                             </td>
                         </tr>
                         <tr>

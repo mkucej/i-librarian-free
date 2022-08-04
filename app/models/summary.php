@@ -193,6 +193,10 @@ EOT;
             $this->db_main->run($sql, [$item_id]);
             $output = $this->db_main->getResultRow();
 
+            // Urls.
+            $urls = explode('|', (string) $output[ItemMeta::COLUMN['URLS']]);
+            $output[ItemMeta::COLUMN['URLS']] = $urls;
+
             // UIDs.
             $sql_uids = <<<EOT
 SELECT

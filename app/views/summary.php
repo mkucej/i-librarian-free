@@ -11,6 +11,8 @@ use Librarian\Mvc\TextView;
 
 class SummaryView extends TextView {
 
+    use SharedHtmlView;
+
     /**
      * @var Temporal
      */
@@ -145,63 +147,7 @@ EOT;
         }
 
         // Links.
-        $links = '';
-
-        // External UIDs.
-        if (!empty($item[ItemMeta::COLUMN['UID_TYPES']])) {
-
-            foreach ($item[ItemMeta::COLUMN['UID_TYPES']] as $key => $type) {
-
-                $value = $item[ItemMeta::COLUMN['UIDS']][$key];
-
-                switch ($type) {
-
-                    case 'DOI':
-                        $doi_lmth = $this->sanitation->lmth($value);
-                        $doi_url = $this->sanitation->urlquery($doi_lmth);
-                        $doi_attr = $this->sanitation->attr($doi_url);
-                        $links .= empty($doi_url) ? "" : "<a class=\"mr-3\" href=\"https://dx.doi.org/{$doi_attr}\">{$this->lang->t9n('Publisher')}</a>";
-                        break;
-
-                    case 'PMID':
-                        $name = 'Pubmed';
-                        $value_lmth = $this->sanitation->lmth($value);
-                        $value_url = $this->sanitation->urlquery($value_lmth);
-                        $value_html = $this->sanitation->attr($value_url);
-                        $href = 'https://www.ncbi.nlm.nih.gov/pubmed/' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">$name</a> ";
-                        $href = 'https://www.ncbi.nlm.nih.gov/pubmed?linkname=pubmed_pubmed&from_uid=' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">{$this->lang->t9n('Similar')}</a> ";
-                        $href = 'https://www.ncbi.nlm.nih.gov/pubmed?linkname=pubmed_pubmed_citedin&from_uid=' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">{$this->lang->t9n('Cited in')}</a> ";
-                        break;
-
-                    case 'PMCID':
-                        $name = 'PMC';
-                        $value_lmth = $this->sanitation->lmth($value);
-                        $value_url = $this->sanitation->urlquery($value_lmth);
-                        $value_html = $this->sanitation->attr($value_url);
-                        $href = 'https://www.ncbi.nlm.nih.gov/pmc/' . $value_html;
-                        $links .= "<a class=\"mr-3\" href=\"$href\">$name</a> ";
-                        break;
-
-
-                }
-            }
-        }
-
-        if (!empty($item['urls'])) {
-
-            $url_arr = explode('|', $item['urls']);
-
-            foreach ($url_arr as $url) {
-
-                $links .= "<a class=\"mr-3\" href=\"$url\">" . parse_url($url, PHP_URL_HOST) . "</a> ";
-            }
-        }
-
-        // I, Librarian stable link.
-        $links .= "<a class=\"mr-3\" href=\"{$IL_BASE_URL}stable.php?id={$item['id']}\">{$this->lang->t9n('Stable link')}</a>";
+        $links = $this->sharedLinkList($item);
 
         // Project button.
         /** @var Bootstrap\Icon $el */
