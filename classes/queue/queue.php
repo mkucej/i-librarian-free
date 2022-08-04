@@ -34,7 +34,10 @@ final class Queue {
 
         foreach ($sem_keys as $name => $key) {
 
-            $this->semaphores[$name] = sem_get($key);
+            // Allow two threads for binaries.
+            $threads = $name === 'binary' ? 2 : 1;
+
+            $this->semaphores[$name] = sem_get($key, $threads);
         }
 
         // Create shared vars.
