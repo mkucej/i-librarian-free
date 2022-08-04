@@ -455,6 +455,20 @@ EOT;
         // UIDs.
         $dark_table = self::$theme === 'dark' ? 'table-dark' : '';
 
+        // Update citation key button.
+        /** @var Bootstrap\Button $el */
+        $btn = $this->di->get('Button');
+
+        $btn->context('outline-danger');
+        $btn->componentSize('small');
+        $btn->addClass('update-key ml-2 mb-1');
+        $btn->attr('data-url', "{$IL_BASE_URL}index.php/item/updatebibtexid");
+        $btn->attr('data-id', $item['id']);
+        $btn->html($this->lang->t9n('Update'));
+        $update_key_btn = $btn->render();
+
+        $btn = null;
+
         $uids = <<<UIDS
             <table class="table {$dark_table} table-borderless table-sm w-100 m-0">
                 <tr>
@@ -468,7 +482,7 @@ EOT;
                 <tr>
                     <td class="px-4">
                         <b>{$this->lang->t9n('Citation key')}</b><br>
-                        {$item[ItemMeta::COLUMN['BIBTEX_ID']]}
+                        {$item[ItemMeta::COLUMN['BIBTEX_ID']]} $update_key_btn
                     </td>
                     <td>
                     </td>

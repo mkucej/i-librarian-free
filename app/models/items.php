@@ -3226,16 +3226,8 @@ README
         $scalar_utils = $this->di->getShared('ScalarUtils');
 
         // Bibtex ID format.
-        $sql_bibtex_fromat = <<<SQL
-SELECT setting_value
-    FROM settings
-    WHERE setting_name = 'custom_bibtex'
-SQL;
-
-        $this->db_main->run($sql_bibtex_fromat);
-        $format_json = $this->db_main->getResult();
-
-        $format = Utils::jsonDecode($format_json, true);
+        $setting = $this->getGlobalSetting('custom_bibtex');
+        $format = is_array($setting) ? $setting : Utils::jsonDecode($setting, true);
 
         $transaction_size = 10;
 

@@ -2,6 +2,7 @@
 
 namespace LibrarianApp;
 
+use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Mvc\Model;
 
@@ -77,6 +78,38 @@ EOT;
         $this->db_main->run($sql, $columns);
 
         return (int) $this->db_main->getResult() === 0 ? false : true;
+    }
+
+    /**
+     * @param string $name
+     * @return string|array
+     * @throws Exception
+     */
+    protected function getGlobalSetting(string $name) {
+
+        // Get setting from the db.
+        $sql = <<<SQL
+SELECT setting_value
+    FROM settings
+    WHERE setting_name = ?
+SQL;
+
+        $this->db_main->run($sql, [$name]);
+        $setting_value = $this->db_main->getResult();
+
+        // If not found, get default setting.
+        if (empty($setting_value)) {
+
+            $setting_value = $this->app_settings->default_global_settings[$name];
+        }
+
+        // Error, we must have a setting value.
+        if (empty($setting_value)) {
+
+            throw new Exception("could not find global setting", 500);
+        }
+
+        return $setting_value;
     }
 
     /**

@@ -223,4 +223,38 @@ class ItemController extends Controller {
         $view = new DefaultView($this->di);
         return $view->main(['info' => 'item was updated']);
     }
+
+    /**
+     * Update Bibtex ID.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function updatebibtexidAction(): string {
+
+        // POST request is required.
+        if ($this->request->getMethod() !== 'POST') {
+
+            throw new Exception("request method must be POST", 405);
+        }
+
+        if (isset($this->post['id']) === false) {
+
+            throw new Exception("id parameter is required", 400);
+        }
+
+        $this->validation->id($this->post['id']);
+
+        // Authorization.
+        $this->authorization->signedId(true);
+        $this->authorization->permissions('U');
+
+        // Update Bibtex ID.
+        $model = new ItemModel($this->di);
+        $model->updateBibtexId($this->post['id']);
+
+        // Render view.
+        $view = new DefaultView($this->di);
+        return $view->main(['info' => 'item was updated']);
+    }
 }

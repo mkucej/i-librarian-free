@@ -22,6 +22,7 @@ use PDO;
  * @method array save(array $item)
  * @method array uidsExist(array $items)
  * @method void  update(array $item)
+ * @method void  updateBibtexId(int $item_id)
  */
 class ItemModel extends AppModel {
 
@@ -455,25 +456,8 @@ SQL;
 
         if (empty($bibtex_id)) {
 
-            // Bibtex ID.
-            $sql_bibtex_fromat = <<<SQL
-SELECT setting_value
-    FROM settings
-    WHERE setting_name = 'custom_bibtex'
-SQL;
-
-            $this->db_main->run($sql_bibtex_fromat);
-            $format_json = $this->db_main->getResult();
-
-            if (empty($format_json)) {
-
-                $format = $this->app_settings->default_global_settings['custom_bibtex'];
-
-            } else {
-
-                $format = Utils::jsonDecode($format_json, true);
-            }
-
+            $setting = $this->getGlobalSetting('custom_bibtex');
+            $format = is_array($setting) ? $setting : Utils::jsonDecode($setting, true);
             $this->scalar_utils = $this->di->getShared('ScalarUtils');
             $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
         }
@@ -929,24 +913,9 @@ EOT;
         if (empty($bibtex_id)) {
 
             // Bibtex ID.
-            $sql_bibtex_fromat = <<<SQL
-SELECT setting_value
-    FROM settings
-    WHERE setting_name = 'custom_bibtex'
-SQL;
-
-            $this->db_main->run($sql_bibtex_fromat);
-            $format_json = $this->db_main->getResult();
-
-            if (empty($format_json)) {
-
-                $format = $this->app_settings->default_global_settings['custom_bibtex'];
-
-            } else {
-
-                $format = Utils::jsonDecode($format_json, true);
-            }
-
+            $setting = $this->getGlobalSetting('custom_bibtex');
+            $format = is_array($setting) ? $setting : Utils::jsonDecode($setting, true);
+            $this->scalar_utils = $this->di->getShared('ScalarUtils');
             $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
         }
 
@@ -1568,5 +1537,37 @@ SQL;
         }
 
         return $output;
+    }
+
+    /**
+     * Update item BibtexID.
+     *
+     * @param int $item_id
+     * @return void
+     * @throws Exception
+     */
+    protected function _updateBibtexId(int $item_id): void {
+
+        // Get id format.
+        $setting = $this->getGlobalSetting('custom_bibtex');
+        $format = is_array($setting) ? $setting : Utils::jsonDecode($setting, true);
+
+        // Read item data.
+        $item = $this->_get($item_id);
+
+        // Get formatted Bibtex id
+        $this->scalar_utils = $this->di->getShared('ScalarUtils');
+        $bibtex_id = $this->scalar_utils->customBibtexId($format, $item);
+
+        // Save Bibtex ID.
+        $sql = <<<EOT
+UPDATE items
+    SET bibtex_id = ?,
+        changed_by = ?,
+        changed_time = CURRENT_TIMESTAMP
+    WHERE id = ?
+EOT;
+
+        $this->db_main->run($sql, [$bibtex_id, $this->user_id, $item_id]);
     }
 }

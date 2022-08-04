@@ -2436,7 +2436,8 @@ class SummaryMainView extends View {
             'click #open-export': exportform.init,
             'submit .form-uid': 'submitForm',
             'click .open-notes': 'openNotes',
-            'click .rescan-pdf': 'rescanPdf'
+            'click .rescan-pdf': 'rescanPdf',
+            'click .update-key': 'updateKey'
         };
     }
     afterRender(data) {
@@ -2630,6 +2631,11 @@ class SummaryMainView extends View {
     rescanPdf() {
         let link = $(this).data('url');
         $.when(model.load({url: link})).done(function () {
+            B.history.loadUrl();
+        });
+    }
+    updateKey() {
+        $.when(model.save({url: $(this).data('url'), data: {id: $(this).data('id')}})).done(function () {
             B.history.loadUrl();
         });
     }
