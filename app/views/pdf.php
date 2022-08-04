@@ -176,24 +176,24 @@ EOT;
 
         $el = null;
 
-        /** @var Bootstrap\Form $el */
-        $el = $this->di->get('Form');
-
-        $el->id('upload-form');
-        $el->method('POST');
-        $el->action(IL_BASE_URL . 'index.php/pdf/save');
-        $el->append("$file_input $id_input $csrf_input $upload_button");
-        $form = $el->render();
-
-        $el = null;
-
         $add_replace = !empty($item['info']['name']) ? 'Replace PDF' : 'Add PDF';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
         $el->header("<b class=\"text-uppercase\">{$this->lang->t9n($add_replace)}</b>");
-        $el->body($form);
+        $el->body("$file_input $id_input $csrf_input $upload_button");
+        $form_card = $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Form $el */
+        $el = $this->di->get('Form');
+
+        $el->id('upload-form');
+        $el->method('POST');
+        $el->action(IL_BASE_URL . 'index.php/pdf/save');
+        $el->append($form_card);
         $form_card = $el->render();
 
         $el = null;

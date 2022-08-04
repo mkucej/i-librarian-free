@@ -750,6 +750,10 @@ small {
     opacity: 0.5
 }
 
+.outline-standout {
+    outline: solid rgba(0,89,182,0.66) 4px;
+}
+
 .overflow-scroll {
     overflow-y: scroll;
 }

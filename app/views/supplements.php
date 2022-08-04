@@ -85,23 +85,23 @@ class SupplementsView extends TextView {
 
         $el = null;
 
+        /** @var Bootstrap\Card $el */
+        $el = $this->di->get('Card');
+
+        $el->id('upload-card');
+        $el->header("<b>{$this->lang->t9n('Upload files')}</b>", 'px-4 pt-3 text-uppercase');
+        $el->body("$file_input $graphical_abstract $id_input $csrf_input $upload_button", null, 'px-4 pb-4');
+        $upload_card = $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Form $el */
         $el = $this->di->get('Form');
 
         $el->id('upload-form');
         $el->method('POST');
         $el->action(IL_BASE_URL . 'index.php/supplements/save');
-        $el->append("$file_input $graphical_abstract $id_input $csrf_input $upload_button");
-        $form = $el->render();
-
-        $el = null;
-
-        /** @var Bootstrap\Card $el */
-        $el = $this->di->get('Card');
-
-        $el->id('upload-card');
-        $el->header("<b>{$this->lang->t9n('Upload files')}</b>", 'px-4 pt-3 text-uppercase');
-        $el->body($form, null, 'px-4 pb-4');
+        $el->append($upload_card);
         $upload_card = $el->render();
 
         $el = null;

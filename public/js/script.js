@@ -592,6 +592,8 @@ $.widget("il.uploadable", {
             multiple: uploadable.options.multiple,
             multipleSelect: uploadable.options.multiple,
             autoSubmit: false,
+            dropzone: uploadable.element,
+            dragClass: 'outline-standout',
             onChange: function (filename, extension, uploadBtn, fileSize, fileObj) {
                 // Clear queue, if mutiple not allowed.
                 if (uploadable.options.multiple === false) {
