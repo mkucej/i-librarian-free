@@ -4465,6 +4465,9 @@ class ImportFileView extends View {
     constructor() {
         super();
         this.parent = '#content-col';
+        this.events = {
+            'submit #upload-form': 'saveRepository'
+        };
     }
     afterRender(data) {
         formStyle.init();
@@ -4487,6 +4490,11 @@ class ImportFileView extends View {
                 });
             }
         });
+        $('#upload-form').find('input[name="repository"]').val([store.load('il.repository')]);
+        formStyle.updateForm($('#upload-form'));
+    }
+    saveRepository() {
+        store.save('il.repository', $('#upload-form').find('input[name="repository"]:checked').val());
     }
 }
 
