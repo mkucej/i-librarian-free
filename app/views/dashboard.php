@@ -97,19 +97,20 @@ HTML
 
         if ($this->app_settings->getUser('dashboard_remove_import') === '0') {
 
-            $button_class = $this::$theme === 'dark' ? 'outline-' : '';
+            $button_class = $this::$theme === 'dark' ? 'secondary' : 'light';
+            $help_class = $this::$theme === 'dark' ? 'dark' : 'secondary';
 
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
 
             $el->elementName('a');
             $el->href('#import/uid');
-            $el->context($button_class . 'light');
-            $el->addClass('btn-block mb-4 py-3');
+            $el->context($button_class);
+            $el->addClass('btn-block mb-4 py-3 rounded-0');
             $el->html(
 <<<EOT
 <h5>DOI, Pubmed ID&hellip;</h5>
-<span class="text-secondary">10.2234/26548.225</span>
+<span class="text-{$help_class}">10.2234/26548.225</span>
 EOT
                 );
             $card_uid = $el->render();
@@ -121,13 +122,13 @@ EOT
 
             $el->elementName('a');
             $el->href('#import/file');
-            $el->context($button_class . 'light');
-            $el->addClass('btn-block mb-4 py-3');
+            $el->context($button_class);
+            $el->addClass('btn-block mb-4 py-3 rounded-0');
             $el->html(
 <<<EOT
 <h5>{$this->lang->t9n('Published PDFs')}</h5>
-<span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
-<span class="text-secondary">+ 10.2234/2654.225</span>
+<span class="mdi mdi-24px mdi-file-pdf-box text-{$help_class}"></span>
+<span class="text-{$help_class}">+ 10.2234/2654.225</span>
 EOT
             );
             $card_file = $el->render();
@@ -139,12 +140,12 @@ EOT
 
             $el->elementName('a');
             $el->href('#import/text');
-            $el->context($button_class . 'light');
-            $el->addClass('btn-block mb-4 py-3');
+            $el->context($button_class);
+            $el->addClass('btn-block mb-4 py-3 rounded-0');
             $el->html(
 <<<EOT
 <h5>RIS, BibTex, Endnote</h5>
-<span class="text-secondary">@article{Smith2011</span>
+<span class="text-{$help_class}">@article{Smith2011</span>
 EOT
             );
             $card_text = $el->render();
@@ -156,14 +157,14 @@ EOT
 
             $el->elementName('a');
             $el->href('#import/manual');
-            $el->context($button_class . 'light');
-            $el->addClass('btn-block mb-4 py-3');
+            $el->context($button_class);
+            $el->addClass('btn-block mb-4 py-3 rounded-0');
             $el->html(
 <<<EOT
 <h5>{$this->lang->t9n('Unpublished file')}</h5>
-<span class="mdi mdi-24px mdi-file-word-box text-secondary"></span>
-<span class="mdi mdi-24px mdi-image text-secondary"></span>
-<span class="mdi mdi-24px mdi-file-pdf-box text-secondary"></span>
+<span class="mdi mdi-24px mdi-file-word-box text-{$help_class}"></span>
+<span class="mdi mdi-24px mdi-image text-{$help_class}"></span>
+<span class="mdi mdi-24px mdi-file-pdf-box text-{$help_class}"></span>
 EOT
             );
             $card_manual = $el->render();
