@@ -15,17 +15,17 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
     /**
      * @var string API key is mail address.
      */
-    private $api_key;
+    private string $api_key;
 
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var string API URL.
      */
-    private $url;
+    private string $url;
 
     /**
      * Arxiv constructor.
@@ -76,7 +76,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
         foreach ($dois as $key => $doi) {
 
-            $dois[$key] = "doi:{$doi}";
+            $dois[$key] = "doi:$doi";
         }
 
         $doi_filter = join(',', $dois);
@@ -140,7 +140,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
             $value = current($term);
 
             $params['query.' . $name] = $value;
-            $search_name .= "{$name}: {$value} ";
+            $search_name .= "$name: $value ";
 
             // DOI search is special.
             if ($name === 'doi') {
@@ -165,9 +165,9 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
                     $from = date('Y-m-d', time() - $days * 86400);
 
-                    $params['filter'] = "from-created-date:{$from}";
+                    $params['filter'] = "from-created-date:$from";
                     $plural = $days === '1' ? '' : 's';
-                    $search_name .= "\u{2022} last {$days} day{$plural} ";
+                    $search_name .= "\u{2022} last $days day$plural ";
                 }
             }
         }
@@ -223,7 +223,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
         $items['items'] = array_slice($items['items'], $slice_start, $rows);
 
         // Add search name.
-        $items['search_name'] = $search_name . " • sort: {$sort}";
+        $items['search_name'] = $search_name . " • sort: $sort";
 
         return $items;
     }
@@ -364,7 +364,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
                 $month = isset($date_arr[1]) ? str_pad($date_arr[1], 2, '0', STR_PAD_LEFT) : '01';
                 $day = isset($date_arr[2]) ? str_pad($date_arr[2], 2, '0', STR_PAD_LEFT) : '01';
-                $date = "{$year}-{$month}-{$day}";
+                $date = "$year-$month-$day";
             }
 
             $output['items'][$i][ItemMeta::COLUMN['PUBLICATION_DATE']] = $date;

@@ -14,7 +14,7 @@ final class Validation {
     /**
      * @var int HTTP status code for all errors.
      */
-    private $http_code = 422;
+    private int $http_code = 422;
 
     /**
      * URL.

@@ -22,7 +22,7 @@ class PdfViewerView extends TextView {
         $this->title('PDF - ' . $info['title']);
 
         // No PDF.
-        if (array_key_exists('page_count', $info['info']) === false) {
+        if (array_key_exists('page_count', $info['pdf_info']) === false) {
 
             /** @var Bootstrap\Alert $el */
             $el = $this->di->get('Alert');
@@ -360,7 +360,7 @@ HTML;
 
         $el = null;
 
-        $page_count = $info['info']['page_count'];
+        $page_count = $info['pdf_info']['page_count'];
 
         $page_num = <<<EOT
             <input
@@ -458,8 +458,8 @@ EOT;
         // Pages.
 
         // First page is not lazy loaded.
-        $w = $info['info']['page_sizes'][1]['width'];
-        $h = $info['info']['page_sizes'][1]['height'];
+        $w = $info['pdf_info']['page_sizes'][1]['width'];
+        $h = $info['pdf_info']['page_sizes'][1]['height'];
 
         $IL_BASE_URL = IL_BASE_URL;
 
@@ -496,8 +496,8 @@ EOT;
         for ($i = 2; $i <= $page_count; $i++) {
 
             $number = $i;
-            $w = $info['info']['page_sizes'][$i]['width'];
-            $h = $info['info']['page_sizes'][$i]['height'];
+            $w = $info['pdf_info']['page_sizes'][$i]['width'];
+            $h = $info['pdf_info']['page_sizes'][$i]['height'];
             $tw = round(0.4 * $w);
             $th = round(0.4 * $h);
 

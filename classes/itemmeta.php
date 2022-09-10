@@ -104,7 +104,7 @@ final class ItemMeta {
     /**
      * @var array Input labels for different item types.
      */
-    private $labels = [
+    private array $labels = [
         'article'     => [
             'secondary_title'  => 'Journal full name'
         ],
@@ -167,7 +167,7 @@ final class ItemMeta {
     /**
      * @var array Item type translation map.
      */
-    public $type_map = [
+    public array $type_map = [
         [
             'il'      => 'article',
             'bibtex'  => 'article',
@@ -264,7 +264,7 @@ final class ItemMeta {
     /**
      * @var AppSettings
      */
-    private $app_settings;
+    private AppSettings $app_settings;
 
     /**
      * Constructor.

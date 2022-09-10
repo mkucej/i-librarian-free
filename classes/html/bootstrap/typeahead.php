@@ -9,8 +9,6 @@ use Librarian\Mvc\TextView;
  */
 final class Typeahead extends Input {
 
-    protected $groupClass;
-
     /**
      * Constructor.
      */
@@ -35,7 +33,7 @@ final class Typeahead extends Input {
         return $this->attr('data-source');
     }
 
-    public function minLength($minLength = null) {
+    public function minLength($minLength = null): string {
 
         // Setter.
         if (isset($minLength)) {
@@ -47,7 +45,7 @@ final class Typeahead extends Input {
         return $this->attr('data-min-length');
     }
 
-    public function delay($delay = null) {
+    public function delay($delay = null): string {
 
         // Setter.
         if (isset($delay)) {
@@ -57,11 +55,6 @@ final class Typeahead extends Input {
 
         // Getter.
         return $this->attr('data-delay');
-    }
-
-    public function groupClass($class): void {
-
-        $this->groupClass = $class;
     }
 
     /**
@@ -99,10 +92,10 @@ final class Typeahead extends Input {
         }
 
         // Label is optional.
-        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">{$this->label}</label>";
+        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">$this->label</label>";
 
         // Hint is optional.
-        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">{$this->hint}</small>";
+        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">$this->hint</small>";
 
         // Listbox ARIA attr.
         $this->attr('aria-controls', "{$this->id()}-listbox");
@@ -116,18 +109,16 @@ final class Typeahead extends Input {
          */
 
         // Compile HTML.
-        $html = <<<EOT
-            <div class="form-group dropdown typeahead {$this->groupClass}">
+        return <<<EOT
+            <div class="form-group dropdown typeahead $this->groupClass">
                 <div role="combobox" aria-expanded="false" aria-owns="{$this->id()}-listbox" aria-haspopup="true">
                     $labelTag
                     {$this->startTag()}
                     $hint
                 </div>
-                <div id="{$this->id()}-listbox" role="listbox" tabindex="-1" class="dropdown-menu rounded-0 py-0 {$input_theme_classes}"></div>
+                <div id="{$this->id()}-listbox" role="listbox" tabindex="-1" class="dropdown-menu rounded-0 py-0 $input_theme_classes"></div>
             </div>
 EOT;
-
-        return $html;
     }
 
 }

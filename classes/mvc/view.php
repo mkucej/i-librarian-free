@@ -4,9 +4,9 @@ namespace Librarian\Mvc;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use Librarian\Media\Language;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Base View class.
@@ -16,27 +16,27 @@ abstract class View {
     /**
      * @var DependencyInjector
      */
-    protected $di;
+    protected DependencyInjector $di;
 
     /**
      * @var Language
      */
-    protected $lang;
+    protected Language $lang;
 
     /**
      * @var ServerRequest
      */
-    protected $request;
+    protected ServerRequest $request;
 
     /**
-     * @var Response
+     * @var ResponseInterface
      */
-    protected $response;
+    protected ResponseInterface $response;
 
     /**
      * @var array
      */
-    protected $cache_settings;
+    protected array $cache_settings;
 
     /**
      * Constructor.

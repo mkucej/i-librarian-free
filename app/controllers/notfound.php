@@ -3,10 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\ErrorView;
-use Librarian\Mvc\Controller;
 
-class NotFoundController extends Controller {
+class NotFoundController extends AppController {
 
     /**
      * Main. Not found error view.

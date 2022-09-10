@@ -3,10 +3,9 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 use Librarian\Security\Ldap;
 
-class AuthenticationController extends Controller {
+class AuthenticationController extends AppController {
 
     /**
      * @var Ldap

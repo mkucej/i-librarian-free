@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class IconController extends Controller {
+class IconController extends AppController {
 
     /**
      * IconController constructor.

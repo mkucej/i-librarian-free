@@ -11,7 +11,7 @@ use Librarian\Mvc\TextView;
  */
 final class ListGroup extends Component {
 
-    private $theme_class = '';
+    private string $theme_class = '';
 
     /**
      * Constructor.
@@ -32,7 +32,7 @@ final class ListGroup extends Component {
      * Unordered list. Adds a <li> element.
      *
      * @param string $html
-     * @param string $class
+     * @param string|null $class
      */
     public function li(string $html, string $class = null): void {
 
@@ -41,7 +41,7 @@ final class ListGroup extends Component {
         $class = isset($class) ? "$class" : "";
 
         $this->append(<<<EOT
-            <li class="list-group-item rounded-0 {$this->theme_class} {$class}">{$html}</li>
+            <li class="list-group-item rounded-0 $this->theme_class $class">$html</li>
 EOT
         );
     }
@@ -50,8 +50,8 @@ EOT
      * List of buttons. Adds a <button> element.
      *
      * @param string $html
-     * @param string $class
-     * @param string $attrs
+     * @param string|null $class
+     * @param string|null $attrs
      */
     public function button(string $html, string $class = null, string $attrs = null): void {
 
@@ -61,7 +61,7 @@ EOT
         $attrs = isset($attrs) ? " $attrs" : "";
 
         $this->append(<<<EOT
-            <button type="button" class="list-group-item rounded-0 {$this->theme_class} {$class}" {$attrs}>{$html}</button>
+            <button type="button" class="list-group-item rounded-0 $this->theme_class $class" $attrs>$html</button>
 EOT
         );
     }
@@ -71,7 +71,7 @@ EOT
      *
      * @param string $url
      * @param string $html
-     * @param string $class
+     * @param string|null $class
      */
     public function link(string $url, string $html, string $class = null): void {
 
@@ -80,7 +80,7 @@ EOT
         $class = isset($class) ? " $class" : "";
 
         $this->append(<<<EOT
-            <a href="$url" class="list-group-item list-group-item-action rounded-0 {$this->theme_class} {$class}">{$html}</a>
+            <a href="$url" class="list-group-item list-group-item-action rounded-0 $this->theme_class $class">$html</a>
 EOT
         );
     }
@@ -89,16 +89,16 @@ EOT
      * List of divs. Adds a <div> element.
      *
      * @param string $html
-     * @param string $class
+     * @param string|null $class
      */
-    public function div(string $html, $class = null): void {
+    public function div(string $html, string $class = null): void {
 
         $this->element_name = 'div';
 
         $class = isset($class) ? " $class" : "";
 
         $this->append(<<<EOT
-            <div class="list-group-item rounded-0 {$this->theme_class} {$class}">{$html}</div>
+            <div class="list-group-item rounded-0 $this->theme_class $class">$html</div>
 EOT
         );
     }

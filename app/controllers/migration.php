@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-final class MigrationController extends Controller {
+final class MigrationController extends AppController {
 
     /**
      * MigrationController constructor.

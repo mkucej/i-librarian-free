@@ -822,7 +822,7 @@ EOT;
 
             $IL_BASE_URL = IL_BASE_URL;
 
-            if ($item['has_pdf'] === '1') {
+            if ((int) $item['has_pdf'] === 1) {
 
                 // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();
@@ -1014,7 +1014,7 @@ EOT;
 
             $IL_BASE_URL = IL_BASE_URL;
 
-            if ($item['has_pdf'] === '1') {
+            if ((int) $item['has_pdf'] === 1) {
 
                 // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();
@@ -1289,7 +1289,7 @@ EOT
 
             $IL_BASE_URL = IL_BASE_URL;
 
-            if ($item['has_pdf'] === '1') {
+            if ((int) $item['has_pdf'] === 1) {
 
                 // Active search, convert to PDF search.
                 $get = $this->request->getQueryParams();

@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Pagination extends Component {
 
-    private $pages = [];
+    private array $pages = [];
 
     /**
      * Constructor.
@@ -58,7 +58,7 @@ EOT;
         foreach ($this->pages as $page) {
 
             $html .= <<<EOT
-                <li class="page-item"><a class="page-link" href="#">{$page}</a></li>
+                <li class="page-item"><a class="page-link" href="#">$page</a></li>
 EOT;
         }
 

@@ -6,9 +6,9 @@ use GuzzleHttp\Psr7\Response;
 
 final class ResponseDecorator {
 
-    private $response;
+    private Response $response;
 
-    public static $mimetypes = [
+    public static array $mimetypes = [
         '7z' => 'application/x-7z-compressed',
         'aac' => 'audio/x-aac',
         'ai' => 'application/postscript',

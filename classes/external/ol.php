@@ -3,46 +3,10 @@
 namespace Librarian\External;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
-use Librarian\Container\DependencyInjector;
 
 final class Ol extends ExternalDatabase implements ExternalDatabaseInterface {
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var string API URL.
-     */
-    private $url;
-
-    /**
-     * Arxiv constructor.
-     *
-     * @param DependencyInjector $di
-     * @throws Exception
-     */
-    public function __construct(DependencyInjector $di) {
-
-        parent::__construct($di);
-
-        $this->client = $this->di->get('HttpClient', [
-            [
-                'timeout' => 30,
-                'curl'    => [
-                    CURLOPT_PROXY        => $this->app_settings->proxyUrl(),
-                    CURLOPT_PROXYUSERPWD => $this->app_settings->proxyUserPwd(),
-                    CURLOPT_PROXYAUTH    => $this->app_settings->proxyAuthType()
-                ]
-            ]
-        ]);
-
-        $this->url = '';
-    }
 
     /**
      * Fetch single record based on an ID.

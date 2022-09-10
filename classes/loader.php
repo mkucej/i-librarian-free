@@ -42,7 +42,7 @@ final class Loader {
             $className = str_replace('Librarian', '', $class);
             $className = str_replace('\\', DIRECTORY_SEPARATOR, strtolower($className));
 
-            require IL_CLASS_PATH . "{$className}.php";
+            require IL_CLASS_PATH . "$className.php";
 
         } elseif (strpos($class, 'LibrarianApp\\') === 0) {
 
@@ -71,7 +71,7 @@ final class Loader {
                 throw new Exception("invalid class name");
             }
 
-            $class_file = IL_APP_PATH . DIRECTORY_SEPARATOR . "{$classPath}.php";
+            $class_file = IL_APP_PATH . DIRECTORY_SEPARATOR . "$classPath.php";
 
             if (!is_readable($class_file)) {
 

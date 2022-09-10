@@ -550,13 +550,19 @@ $.widget("il.uploadable", {
     },
     maxFilesMessage: 'Maximum number of files reached.',
     maxSizeMessage:  'File <b>{{filename}}</b> exceeds the size limit of {{limit}} MB.',
-    fileItem: `<div data-file="{{filename}}">
-                   <div class="text-truncate">
+    fileItem: `<div class="file-container" data-file="{{filename}}">
+                   <div class="text-truncate mt-1">
                         {{filename}}
                    </div>
-                   <div class="progress rounded-0 mb-2 bg-darker-5" style="height: 4px">
-                       <div class="progress-bar" role="progressbar" style="width: 1%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
-                   </div>
+                   <div style="height: 2rem">
+                       <div class="progress rounded-0 mb-1 bg-darker-5" style="height: 4px">
+                           <div class="progress-bar" role="progressbar" style="width: 1%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+                       </div>
+                       <span class="d-none spinner-border spinner-border-sm text-danger" role="status" style="margin-bottom: 0.2rem">
+                           <span class="sr-only">Saving...</span>
+                       </span>
+                       <span class="d-none mdi mdi-18px mdi-content-save text-danger ml-1"></span>
+                    </div>
                </div>`,
     _getCreateOptions: function() {
         return {
@@ -620,6 +626,16 @@ $.widget("il.uploadable", {
             onSubmit: function (filename) {
                 this.setProgressContainer(uploadable.element.find('div[data-file="' + _.escape(filename) + '"]'));
                 this.setProgressBar(uploadable.element.find('div[data-file="' + _.escape(filename) + '"] .progress-bar'));
+            },
+            onProgress(pct) {
+                if (pct === 100) {
+                    const $fileDiv = uploadable.element.find('.file-container');
+                    $fileDiv.each(function() {
+                        if($(this).find('.progress-bar').attr('style') !== 'width: 1%') {
+                            $(this).find('.spinner-border, .mdi').removeClass('d-none');
+                        }
+                    });
+                }
             },
             onSizeError: function (filename, fileSize) {
                 let message = uploadable.maxSizeMessage.replace(/{{filename}}/, _.escape(filename)).replace(/{{limit}}/, maxSize / (1024 * 1024));

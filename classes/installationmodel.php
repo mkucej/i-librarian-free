@@ -9,7 +9,6 @@ use PDO;
 /**
  * Class InstallationModel
  *
- * @method void createFolders()
  * @method void createReferenceTypeIndex()
  * @method void createTables(bool $force = false)
  */
@@ -20,7 +19,7 @@ class InstallationModel extends Model {
      *
      * @throws Exception
      */
-    protected function _createFolders(): void {
+    public function createFolders(): void {
 
         // Check if IL_DATA_PATH exists and is writable.
         if (is_writable(IL_DATA_PATH) === false) {
@@ -48,7 +47,7 @@ class InstallationModel extends Model {
 
                 if ($mkdir === false) {
 
-                    throw new Exception("directory <kbd>{$folder}</kbd> could not be created", 500);
+                    throw new Exception("directory <kbd>$folder</kbd> could not be created", 500);
                 }
             }
         }
@@ -61,7 +60,7 @@ class InstallationModel extends Model {
      * @return void
      * @throws Exception
      */
-    protected function _createTables($force = false): void {
+    protected function _createTables(bool $force = false): void {
 
         /*
          * Main db.
@@ -190,7 +189,7 @@ class InstallationModel extends Model {
 
             if (is_readable($sql_file) === false) {
 
-                throw new Exception("update failed: could not read the <kbd>{$sql_file}</kbd> file");
+                throw new Exception("update failed: could not read the <kbd>$sql_file</kbd> file");
             }
 
             $sql = file_get_contents($sql_file);

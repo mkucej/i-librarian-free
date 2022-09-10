@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class DuplicatesController extends Controller {
+class DuplicatesController extends AppController {
 
     /**
      * DuplicatesController constructor.

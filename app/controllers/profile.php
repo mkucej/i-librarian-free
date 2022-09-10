@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class ProfileController extends Controller {
+class ProfileController extends AppController {
 
     /**
      * ProfileController constructor.

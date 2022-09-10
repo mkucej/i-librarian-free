@@ -10,19 +10,14 @@ use SimpleXMLIterator;
 class Endnote {
 
     /**
-     * @var string Imported file contents.
-     */
-    private $input;
-
-    /**
      * @var ItemMeta
      */
-    private $item_meta;
+    private ItemMeta $item_meta;
 
     /**
      * @var SimpleXMLIterator
      */
-    private $iterator;
+    private SimpleXMLIterator $iterator;
 
     /**
      * Endnote constructor.
@@ -34,7 +29,6 @@ class Endnote {
      */
     public function __construct(Xml $xml, ItemMeta $item_meta, string $input) {
 
-        $this->input = $input;
         $this->item_meta = $item_meta;
 
         // Extract xml tag content and feed it to iterator.
@@ -125,13 +119,13 @@ class Endnote {
         if ($entry[ItemMeta::COLUMN['REFERENCE_TYPE']] === 'article') {
 
             $primary = $record->periodical->{'abbr-1'} ?? null;
-            $secondary = $record->periodical->{'full-title'} ?? null;
 
         } else {
 
             $primary = null;
-            $secondary = $record->periodical->{'full-title'} ?? null;
         }
+
+        $secondary = $record->periodical->{'full-title'} ?? null;
 
         $tertiary = $record->titles->{'tertiary-title'} ?? null;
 
@@ -229,7 +223,7 @@ class Endnote {
         // Custom.
         for ($i = 1;  $i <= 7; $i++) {
 
-            $custom = $record->{"custom{$i}"} ?? null;
+            $custom = $record->{"custom$i"} ?? null;
 
             if ($custom !== null) {
 

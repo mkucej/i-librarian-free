@@ -4,14 +4,13 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
 /**
  * Class NotesController
  *
  * Item notes.
  */
-class NotesController extends Controller {
+class NotesController extends AppController {
 
     /**
      * NotesController constructor.

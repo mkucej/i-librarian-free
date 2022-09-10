@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Pubmed;
-use Librarian\Mvc\Controller;
 
-class PubmedController extends Controller {
+class PubmedController extends AppController {
 
     /**
      * @var Pubmed

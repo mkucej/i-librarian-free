@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class NormalizeController extends Controller {
+class NormalizeController extends AppController {
 
     public function __construct(DependencyInjector $di) {
 

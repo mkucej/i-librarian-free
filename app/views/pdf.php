@@ -40,7 +40,7 @@ class PdfView extends TextView {
             $this->styleLink('css/plugins.css');
             $this->head();
 
-            if (array_key_exists('page_count', $item['info']) === false) {
+            if (array_key_exists('page_count', $item['pdf_info']) === false) {
 
                 // No PDF.
 
@@ -79,7 +79,7 @@ EOT;
 
             $this->head();
 
-            if (array_key_exists('page_count', $item['info']) === false) {
+            if (array_key_exists('page_count', $item['pdf_info']) === false) {
 
                 /** @var Bootstrap\Alert $el */
                 $el = $this->di->get('Alert');
@@ -176,7 +176,7 @@ EOT;
 
         $el = null;
 
-        $add_replace = !empty($item['info']['name']) ? 'Replace PDF' : 'Add PDF';
+        $add_replace = !empty($item['pdf_info']['name']) ? 'Replace PDF' : 'Add PDF';
 
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
@@ -198,7 +198,7 @@ EOT;
 
         $el = null;
 
-        if (!empty($item['info']['name'])) {
+        if (!empty($item['pdf_info']['name'])) {
 
             /** @var Bootstrap\Button $el */
             $el = $this->di->get('Button');
@@ -303,13 +303,15 @@ TEXT
 
             $el = null;
 
-            $text = empty(trim($item['info']['text'])) ? "<div class=\"text-secondary text-uppercase\">{$this->lang->t9n('No text')}</div>" : $item['info']['text'];
+            $text = empty(trim($item['pdf_info']['text'])) ?
+                "<div class=\"text-secondary text-uppercase\">{$this->lang->t9n('No text')}</div>" :
+                $this->sanitation->attr($this->sanitation->lmth($item['pdf_info']['text']));
 
             /** @var Bootstrap\ListGroup $el */
             $el = $this->di->get('ListGroup');
 
             $el->addClass('mb-3');
-            $el->div("<b>{$item['info']['name']}</b> $del_button", 'd-flex justify-content-between align-items-center');
+            $el->div("<b>{$item['pdf_info']['name']}</b> $del_button", 'd-flex justify-content-between align-items-center');
             $el->div("<b>{$this->lang->t9n('Indexed text')}</b> <span>$rei_button $ocr_button</span>", 'd-flex justify-content-between align-items-center');
             $el->div($text);
             $card = $el->render();

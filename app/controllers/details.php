@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Media\Binary;
-use Librarian\Mvc\Controller;
 
-class DetailsController extends Controller {
+class DetailsController extends AppController {
 
     /**
      * @var Binary

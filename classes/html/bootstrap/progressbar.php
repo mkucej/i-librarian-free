@@ -7,8 +7,8 @@ namespace Librarian\Html\Bootstrap;
  */
 final class ProgressBar extends Component {
 
-    protected $label;
-    protected $value;
+    protected $label = '';
+    protected int    $value = 0;
 
     /**
      * Constructor.
@@ -23,7 +23,7 @@ final class ProgressBar extends Component {
     /**
      * Set label.
      *
-     * True for default (value%), or string for custom label.
+     * Default (value%), or string for custom label.
      *
      * @param  string|null $label
      * @return string
@@ -41,14 +41,14 @@ final class ProgressBar extends Component {
     /**
      * Set value.
      *
-     * @param  integer $value
+     * @param int|null $value
      * @return integer
      */
     public function value(int $value = null): int {
 
         if (isset($value)) {
 
-            $this->value = (integer) $value;
+            $this->value = $value;
         }
 
         return $this->value;
@@ -62,28 +62,25 @@ final class ProgressBar extends Component {
     public function render(): string {
 
         // Context.
-        $context = empty($this->context) ? "" : " bg-{$this->context}";
+        $context = empty($this->context) ? "" : " bg-$this->context";
 
         // Label.
-        $label = "";
-
         if ($this->label === true) {
 
-            $label = "{$this->value}%";
+            $label = "$this->value%";
 
-        } elseif (!empty($this->label) && is_string($this->label)) {
+        } else {
 
             $label = $this->label;
         }
 
         // Inner HTML.
         $html = <<<EOT
-            <div class="progress-bar{$context}" role="progressbar" style="width: {$this->value}%" aria-valuenow="{$this->value}" aria-valuemin="0" aria-valuemax="100">{$label}</div>
+            <div class="progress-bar$context" role="progressbar" style="width: $this->value%" aria-valuenow="$this->value" aria-valuemin="0" aria-valuemax="100">$label</div>
 EOT;
 
         $this->html($html);
 
         return parent::render();
     }
-
 }

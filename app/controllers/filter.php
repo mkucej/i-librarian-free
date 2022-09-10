@@ -5,14 +5,13 @@ namespace LibrarianApp;
 use DateTimeZone;
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
 /**
  * Typeahead filters.
  *
  * @todo Do we want filter in collections?
  */
-class FilterController extends Controller {
+class FilterController extends AppController {
 
     /**
      * FilterController constructor.

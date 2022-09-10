@@ -10,9 +10,25 @@ use Exception;
 final class Encryption {
 
     /**
-     * @var integer Password Argon2 time cost.
+     * Hashing presets.
+     *
+     * @var array
      */
-    private $cost = 5;
+    private array $algorithms = [
+        '2y' => [
+            'cost' => 11
+        ],
+        'argon2i' => [
+            'memory_cost' => 10000,
+            'threads'     => 1,
+            'time_cost'   => 5
+        ],
+        'argon2id' => [
+            'memory_cost' => 10000,
+            'threads'     => 1,
+            'time_cost'   => 5
+        ]
+    ];
 
     /**
      * Generate cryptographically-sound random hexadecimal/raw key, 8 to 512 chars long.
@@ -44,11 +60,9 @@ final class Encryption {
      */
     public function hashPassword(string $password): string {
 
-        return password_hash($password, PASSWORD_ARGON2I, [
-            'memory_cost' => 10000,
-            'threads'     => 1,
-            'time_cost'   => $this->cost
-        ]);
+        $algo = $this->getAlgorithm();
+
+        return password_hash($password, key($algo), current($algo));
     }
 
     /**
@@ -73,11 +87,9 @@ final class Encryption {
      */
     public function rehashPassword(string $password, string $storedPassword) {
 
-        if (password_needs_rehash($storedPassword, PASSWORD_ARGON2I, [
-            'memory_cost' => 10000,
-            'threads'     => 1,
-            'time_cost'   => $this->cost
-        ]) === true) {
+        $algo = $this->getAlgorithm();
+
+        if (password_needs_rehash($storedPassword, key($algo), current($algo)) === true) {
 
             return $this->hashPassword($password);
         }
@@ -141,9 +153,23 @@ final class Encryption {
         if (empty($encrypted_str) || empty($iv)) {
 
             // Encrypted string must have an IV attached.
-            throw new Exception('invalid enrcypted string', 500);
+            throw new Exception('invalid encrypted string', 500);
         }
 
         return openssl_decrypt($encrypted_str, 'aes-256-cbc', $key, 0, hex2bin($iv));
+    }
+
+    /**
+     * Select the strongest available hashing algorithm.
+     *
+     * @return array
+     */
+    private function getAlgorithm(): array {
+
+        $algorithms = password_algos();
+        $best_algorithm = array_pop($algorithms);
+
+        // Pluck the preset from the array.
+        return array_intersect_key($this->algorithms, [$best_algorithm => '']);
     }
 }

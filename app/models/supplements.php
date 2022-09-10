@@ -26,7 +26,7 @@ class SupplementsModel extends AppModel {
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _download(int $item_id, string $filename) {
+    protected function _download(int $item_id, string $filename): StreamInterface {
 
         $this->db_main->beginTransaction();
 

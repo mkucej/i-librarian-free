@@ -22,44 +22,44 @@ abstract class TextView extends View {
     /**
      * @var AppSettings
      */
-    protected $app_settings;
+    protected AppSettings $app_settings;
 
     /**
      * @var Sanitation
      */
-    protected $sanitation;
+    protected Sanitation $sanitation;
 
     /**
      * @var Session
      */
-    protected $session;
+    protected Session $session;
 
     /**
      * @var Psr7\Stream
      */
-    protected $stream;
+    protected Psr7\Stream $stream;
 
     /**
      * @var ScalarUtils
      */
-    protected $scalar_utils;
+    protected ScalarUtils $scalar_utils;
 
     /**
      * @var string Permission level A|U|G
      */
-    public $permissions;
+    public string $permissions;
 
     /**
      * @var Validation
      */
     protected $validation;
 
-    protected $content_type;
-    protected $head_links;
-    protected $script;
-    protected $script_links;
-    protected $style;
-    protected $title;
+    protected string $content_type = '';
+    protected string $head_links = '';
+    protected string $script = '';
+    protected string $script_links = '';
+    protected string $style = '';
+    protected string $title = '';
 
     /**
      * @var string Dark or light theme.
@@ -208,7 +208,7 @@ abstract class TextView extends View {
                 <!DOCTYPE HTML>
                 <html lang="en">
                     <head>
-                        <title>{$this->title}</title>
+                        <title>$this->title</title>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -220,9 +220,9 @@ abstract class TextView extends View {
                         <link rel="shortcut icon" href="{$IL_BASE_URL}img/favicon.ico?v=$IL_VERSION">
                         <meta name="msapplication-config" content="{$IL_BASE_URL}img/browserconfig.xml?v=$IL_VERSION">
                         <meta name="theme-color" content="#333333">
-                        {$this->head_links}
+                        $this->head_links
                         <link href="{$IL_BASE_URL}css/style.css?v=$IL_VERSION" rel="stylesheet">
-                        <style>{$this->style}</style>
+                        <style>$this->style</style>
                     </head>
                     <body class="$theme_class">
 EOT
@@ -281,7 +281,7 @@ EOT
             // Get the whole stream contents and decode to array.
             $this->stream->rewind();
 
-            $stream_arr = Utils::jsonDecode($this->stream, true);
+            $stream_arr = Utils::jsonDecode($this->stream->getContents(), true);
 
             if (is_array($stream_arr) === false) {
 
@@ -387,9 +387,9 @@ EOT
             $MAX_POST    = $this->scalar_utils->unformatBytes(ini_get('post_max_size'));
 
             $csrf_script = <<<EOT
-                var IL_BASE_URL = '{$IL_BASE_URL}',
-                    MAX_UPLOAD = {$MAX_UPLOAD},
-                    MAX_POST = {$MAX_POST},
+                var IL_BASE_URL = '$IL_BASE_URL',
+                    MAX_UPLOAD = $MAX_UPLOAD,
+                    MAX_POST = $MAX_POST,
                     csrfToken='{$this->session->data('token')}';
                 $.ajaxPrefilter(function (s, o, x) {
                     if (s.type.toLowerCase() === 'post' && typeof csrfToken === 'string') {
@@ -421,10 +421,10 @@ EOT;
         }
 
         $this->stream->write(<<<EOT
-                    {$this->script_links}
+                    $this->script_links
                     <script src="{$IL_BASE_URL}js/script.min.js?v=$IL_VERSION"></script>
                     <script>
-                        {$this->script}
+                        $this->script
                     </script>
                 </body>
             </html>
@@ -442,50 +442,24 @@ EOT
         // Fallback type.
         $this->contentType('html');
 
-        /*
-         * XHR request override.
-         */
-
-        $server_params = $this->request->getServerParams();
-
-        if (!empty($server_params['HTTP_X_REQUESTED_WITH'])
-            && strtolower($server_params['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-
-            // Set content type based on the client Accept header.
-            $accept_header = empty($server_params['HTTP_ACCEPT']) ? '*/*' : $server_params['HTTP_ACCEPT'];
-            $accept_header_arr = explode(',', $accept_header);
-            $accept = $accept_header_arr[0];
-
-            switch ($accept) {
-
-                case 'text/html':
-                    $this->contentType('html');
-                    break;
-
-                case 'application/json':
-                    $this->contentType('json');
-                    break;
-
-                case 'text/plain':
-                    $this->contentType('text');
-                    break;
-            }
-        }
-
-        /*
-         * SSE.
-         */
+        // Accept header.
         $header = $this->request->getHeader('Accept');
+        $accept = $header[0] ?? 'text/html';
 
-        if (isset($header[0]) && strpos($header[0], 'text/event-stream') !== false) {
+        if (strpos($accept, 'application/json') === 0) {
+
+            $this->contentType('json');
+
+        } elseif (strpos($accept, 'text/plain') === 0) {
+
+            $this->contentType('text');
+
+        } elseif (strpos($accept, 'text/event-stream') === 0) {
 
             $this->contentType('event-stream');
         }
 
-        /*
-         * Non-XHR requests can have an 'as' query parameter to override.
-         */
-
+        // Requests can have an 'as' query parameter to request content type.
         $getParams = $this->request->getQueryParams();
 
         if (isset($getParams['as'])) {
@@ -493,10 +467,6 @@ EOT
             $as = empty($getParams['as']) ? 'html' : $getParams['as'];
 
             switch ($as) {
-
-                case 'html':
-                    $this->contentType('html');
-                    break;
 
                 case 'json':
                     $this->contentType('json');
@@ -583,7 +553,7 @@ EOT
     }
 
     /**
-     * Send stream line. Used for SSE.
+     * Send a stream line. Used for SSE.
      *
      * @param int $size
      * @throws Exception

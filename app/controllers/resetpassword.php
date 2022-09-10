@@ -3,14 +3,13 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class ResetpasswordController
  *
  * Reset password page and actions. User.
  */
-class ResetpasswordController extends Controller {
+class ResetpasswordController extends AppController {
 
     /**
      * Main action is to send the registration HTML view.

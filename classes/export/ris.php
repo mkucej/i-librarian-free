@@ -11,12 +11,12 @@ class Ris {
     /**
      * @var ItemMeta
      */
-    private $item_meta;
+    private ItemMeta $item_meta;
 
     /**
      * @var Sanitation
      */
-    private $sanitation;
+    private Sanitation $sanitation;
 
     public function __construct(ItemMeta $item_meta, Sanitation $sanitation) {
 
@@ -179,7 +179,7 @@ class Ris {
 
                 if (!empty($item[ItemMeta::COLUMN['CUSTOM' . $i]])) {
 
-                    $output .= "C{$i}  - " . $item[ItemMeta::COLUMN['CUSTOM' . $i]] . PHP_EOL;
+                    $output .= "C$i  - " . $item[ItemMeta::COLUMN['CUSTOM' . $i]] . PHP_EOL;
                 }
             }
 

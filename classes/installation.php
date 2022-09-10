@@ -2,9 +2,11 @@
 
 namespace Librarian;
 
+use Exception;
+
 final class Installation {
 
-    private $model;
+    private InstallationModel $model;
 
     public function __construct(InstallationModel $model) {
 
@@ -13,6 +15,7 @@ final class Installation {
 
     /**
      * Execute all installation actions.
+     * @throws Exception
      */
     public function install(): void {
 
@@ -25,6 +28,8 @@ final class Installation {
 
     /**
      * Upgrade.
+     *
+     * @throws Exception
      */
     public function upgrade(): void {
 

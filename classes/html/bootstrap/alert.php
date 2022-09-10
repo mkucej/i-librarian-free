@@ -7,9 +7,8 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Alert extends Component {
 
-    private $dismissable;
-
-    private $heading;
+    private bool   $dismissable = false;
+    private string $heading = '';
 
     /**
      * Constructor.
@@ -24,7 +23,7 @@ final class Alert extends Component {
     /**
      * Set/get heading.
      *
-     * @param  string $heading
+     * @param string|null $heading
      * @return string
      */
     public function heading(string $heading = null): string {
@@ -63,7 +62,7 @@ final class Alert extends Component {
         // Context.
         if (!empty($this->context)) {
 
-            $this->addClass("text-{$this->context} border-{$this->context}");
+            $this->addClass("text-$this->context border-$this->context");
         }
 
         // Heading.
@@ -71,12 +70,12 @@ final class Alert extends Component {
 
         if (!empty($this->heading)) {
 
-            $heading = "<h5 class=\"alert-heading text-uppercase\"><b>{$this->heading}</b></h5>";
+            $heading = "<h5 class=\"alert-heading text-uppercase\"><b>$this->heading</b></h5>";
         }
 
         $this->html(<<<EOT
             <span class="d-inline-block mdi mdi-alert-decagram-outline mdi-24px mr-2"></span>
-            <div class="alert-content w-100">{$heading}{$this->html()}</div>
+            <div class="alert-content w-100">$heading{$this->html()}</div>
 EOT
         );
 

@@ -38,15 +38,15 @@ class TagsModel extends AppModel {
 
             case 'library':
 
-            // Select all.
-            $sql0 = <<<'EOT'
+                // Select all.
+                $sql0 = <<<'EOT'
 SELECT id, tag
     FROM tags
     ORDER BY tag COLLATE utf8Collation
 EOT;
 
-            // Filter with 1 tag_id.
-            $sql1 = <<<'EOT'
+                // Filter with 1 tag_id.
+                $sql1 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -58,8 +58,8 @@ SELECT id, tag
     ORDER BY tag  COLLATE utf8Collation
 EOT;
 
-            // Filter with 2 tag_ids.
-            $sql2 = <<<'EOT'
+                // Filter with 2 tag_ids.
+                $sql2 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -75,8 +75,8 @@ SELECT id, tag
     ORDER BY tag COLLATE utf8Collation
 EOT;
 
-            // Filter with 3 tag_ids.
-            $sql3 = <<<'EOT'
+                // Filter with 3 tag_ids.
+                $sql3 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -101,7 +101,7 @@ EOT;
             case 'clipboard':
 
                 // Select all.
-            $sql0 = <<<'EOT'
+                $sql0 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -111,8 +111,8 @@ SELECT id, tag
     ORDER BY tag COLLATE utf8Collation
 EOT;
 
-            // Filter with 1 tag_id.
-            $sql1 = <<<'EOT'
+                // Filter with 1 tag_id.
+                $sql1 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -127,8 +127,8 @@ SELECT id, tag
     ORDER BY tag COLLATE utf8Collation
 EOT;
 
-            // Filter with 2 tag_ids.
-            $sql2 = <<<'EOT'
+                // Filter with 2 tag_ids.
+                $sql2 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id
@@ -147,8 +147,8 @@ SELECT id, tag
     ORDER BY tag COLLATE utf8Collation
 EOT;
 
-            // Filter with 3 tag_ids.
-            $sql3 = <<<'EOT'
+                // Filter with 3 tag_ids.
+                $sql3 = <<<'EOT'
 SELECT id, tag
     FROM tags
     INNER JOIN items_tags ON tags.id=items_tags.tag_id

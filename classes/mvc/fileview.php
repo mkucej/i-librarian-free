@@ -15,7 +15,7 @@ abstract class FileView extends View {
     /**
      * @var string Custom filename.
      */
-    public $filename;
+    public string $filename;
 
     /**
      * @var FileTools
@@ -25,7 +25,7 @@ abstract class FileView extends View {
     /**
      * @var StreamInterface
      */
-    private $stream;
+    private StreamInterface $stream;
 
     /**
      * Constructor.
@@ -42,6 +42,40 @@ abstract class FileView extends View {
     }
 
     /**
+     * Read filename from the Stream.
+     *
+     * @return string
+     */
+    public function filenameFromStream(): string {
+
+        $filename = '';
+
+        $metadata = $this->stream->getMetadata();
+
+        if (isset($metadata['wrapper_data'])) {
+
+            // Filename coming from remote model.
+            foreach ($metadata['wrapper_data'] as $header) {
+
+                if (strpos($header, 'Content-Disposition') === 0) {
+
+                    $header_parts = explode(';', $header);
+                    $filename_part = trim($header_parts[1] ?? '');
+                    $filename = substr($filename_part, 17);
+                    break;
+                }
+            }
+
+        } elseif (isset($metadata['uri'])) {
+
+            // Local filename.
+            $filename = basename($metadata['uri']);
+        }
+
+        return $filename;
+    }
+
+    /**
      * Set file disposition to attachment. Default is inline.
      *
      * @param string $disposition
@@ -49,41 +83,40 @@ abstract class FileView extends View {
      */
     protected function setDisposition(string $disposition = 'inline'): void {
 
+        // Disposition is set by the controller, never by model.
         $disposition_header = $disposition === 'attachment' ? 'attachment' : 'inline';
+
+        // Filename default.
+        $filename = 'file.txt';
 
         $metadata = $this->stream->getMetadata();
 
-        // Get filename.
-        switch ($metadata['wrapper_type']) {
+        if (!empty($this->filename)) {
 
-            case 'plainfile':
-                $filename = empty($this->filename) ? basename($metadata['uri']) : $this->filename;
-                $filename = rawurlencode($filename);
-                $this->response = $this->response->withHeader('Content-Disposition', "$disposition_header; filename*=UTF-8''$filename");
-                break;
+            // Filename set by the controller overrides everything.
+            $filename = rawurlencode($this->filename);
 
-            case 'http':
-                if (!empty($this->filename)) {
-                    $filename = rawurlencode($this->filename);
-                    $this->response = $this->response->withHeader('Content-Disposition', "$disposition_header; filename*=UTF-8''$filename");
+        } elseif (isset($metadata['wrapper_data'])) {
+
+            // Filename coming from remote model.
+            foreach ($metadata['wrapper_data'] as $header) {
+
+                if (strpos($header, 'Content-Disposition') === 0) {
+
+                    $header_parts = explode(';', $header);
+                    $filename_part = trim($header_parts[1] ?? '');
+                    $filename = substr($filename_part, 17);
                     break;
                 }
-                foreach ($metadata['wrapper_data'] as $header) {
+            }
 
-                    if (strpos($header, 'Content-Disposition') === 0) {
+        } elseif (isset($metadata['uri'])) {
 
-                        $header_parts = explode(':', $header);
-                        $content_disposition = trim($header_parts[1]);
-                        $this->response = $this->response->withHeader('Content-Disposition', $content_disposition);
-                        break;
-                    }
-                }
-                break;
-
-            default:
-                $filename = rawurlencode('file.txt');
-                $this->response = $this->response->withHeader('Content-Disposition', "$disposition_header; filename*=UTF-8''$filename");
+            // Local filename.
+            $filename = rawurlencode(basename($metadata['uri']));
         }
+
+        $this->response = $this->response->withHeader('Content-Disposition', "$disposition_header; filename*=UTF-8''$filename");
     }
 
     /**
@@ -97,22 +130,21 @@ abstract class FileView extends View {
 
         $metadata = $this->stream->getMetadata();
 
-        switch ($metadata['wrapper_type']) {
+        if (isset($metadata['wrapper_data'])) {
 
-            case 'plainfile':
-                $last_modified = gmdate('D, d M Y H:i:s', filemtime($metadata['uri'])) . ' GMT';
-                break;
+            foreach ($metadata['wrapper_data'] as $header) {
 
-            case 'http':
-                foreach ($metadata['wrapper_data'] as $header) {
+                if (strpos($header, 'Last-Modified') === 0) {
 
-                    if (strpos($header, 'Last-Modified') === 0) {
-
-                        $header_parts = explode(':', $header);
-                        $last_modified = trim($header_parts[1]);
-                        break;
-                    }
+                    $header_parts = explode('Last-Modified:', $header);
+                    $last_modified = trim($header_parts[1]);
+                    break;
                 }
+            }
+
+        } elseif (isset($metadata['uri'])) {
+
+            $last_modified = gmdate('D, d M Y H:i:s', filemtime($metadata['uri'])) . ' GMT';
         }
 
         $this->response = $this->response->withHeader('Last-Modified', $last_modified);
@@ -130,22 +162,21 @@ abstract class FileView extends View {
 
         $metadata = $this->stream->getMetadata();
 
-        switch ($metadata['wrapper_type']) {
+        if (isset($metadata['wrapper_data'])) {
 
-            case 'plainfile':
-                $content_type = $this->file_tools->getMime($metadata['uri']);
-                break;
+            foreach ($metadata['wrapper_data'] as $header) {
 
-            case 'http':
-                foreach ($metadata['wrapper_data'] as $header) {
+                if (strpos($header, 'Content-Type') === 0) {
 
-                    if (strpos($header, 'Content-Type') === 0) {
-
-                        $header_parts = explode(':', $header);
-                        $content_type = trim($header_parts[1]);
-                        break;
-                    }
+                    $header_parts = explode('Content-Type:', $header);
+                    $content_type = trim($header_parts[1]);
+                    break;
                 }
+            }
+
+        } elseif (isset($metadata['uri'])) {
+
+            $content_type = $this->file_tools->getMime($metadata['uri']);
         }
 
         $this->response = $this->response->withHeader('Content-Type', $content_type);
@@ -162,22 +193,21 @@ abstract class FileView extends View {
 
         $metadata = $this->stream->getMetadata();
 
-        switch ($metadata['wrapper_type']) {
+        if (isset($metadata['wrapper_data'])) {
 
-            case 'plainfile':
-                $size = filesize($metadata['uri']);
-                break;
+            foreach ($metadata['wrapper_data'] as $header) {
 
-            case 'http':
-                foreach ($metadata['wrapper_data'] as $header) {
+                if (strpos($header, 'Content-Length') === 0) {
 
-                    if (strpos($header, 'Content-Length') === 0) {
-
-                        $header_parts = explode(':', $header);
-                        $size = trim($header_parts[1]);
-                        break;
-                    }
+                    $header_parts = explode('Content-Length:', $header);
+                    $size = trim($header_parts[1]);
+                    break;
                 }
+            }
+
+        } elseif (isset($metadata['uri'])) {
+
+            $size = filesize($metadata['uri']);
         }
 
         if ($size > 0) {

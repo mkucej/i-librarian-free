@@ -22,27 +22,27 @@ final class FileCache {
     /**
      * @var string Key hashing algorithm.
      */
-    private $algo;
+    private string $algo;
 
     /**
      * @var string Cache context.
      */
-    private $context;
+    private string $context;
 
     /**
      * @var array Allowed cache contexts.
      */
-    private $contexts;
+    private array $contexts;
 
     /**
      * @var string File prefix.
      */
-    private $prefix;
+    private string $prefix;
 
     /**
      * @var int Default time to live.
      */
-    private $ttl;
+    private int $ttl;
 
     /**
      * Constructor. Install database, if empty. Set algorithm, TTL.
@@ -86,7 +86,7 @@ final class FileCache {
 
             // Expires.
 
-            $files = glob("{$this->prefix}{$key}_*", GLOB_NOSORT);
+            $files = glob("$this->prefix{$key}_*", GLOB_NOSORT);
 
             if (isset($files[0]) && is_writable($files[0])) {
 
@@ -106,18 +106,18 @@ final class FileCache {
 
             // Hash.
 
-            if (is_writable("{$this->prefix}{$key}_{$match}")) {
+            if (is_writable("$this->prefix{$key}_$match")) {
 
-                return $this->loadContent("{$this->prefix}{$key}_{$match}");
+                return $this->loadContent("$this->prefix{$key}_$match");
             }
 
         } elseif (is_numeric($match) === true && (integer) $match > 1500000000) {
 
             // Modified.
 
-            if (is_writable("{$this->prefix}{$key}_{$match}")) {
+            if (is_writable("$this->prefix{$key}_$match")) {
 
-                return $this->loadContent("{$this->prefix}{$key}_{$match}");
+                return $this->loadContent("$this->prefix{$key}_$match");
             }
 
         } else {
@@ -139,7 +139,7 @@ final class FileCache {
      * @return bool         True on success and false on failure.
      * @throws Exception   Thrown if the $key string is not a legal value.
      */
-    public function set(string $key, $value, $match = null) {
+    public function set(string $key, $value, $match = null): bool {
 
         if ($this->isValidKey($key) === false) {
 
@@ -157,7 +157,7 @@ final class FileCache {
             // Expires.
 
             $expires = isset($match) ? time() + $match : time() + $this->ttl;
-            $filename = "{$this->prefix}{$key}_{$expires}";
+            $filename = "$this->prefix{$key}_$expires";
 
             return $this->saveContent($filename, $value);
 
@@ -165,7 +165,7 @@ final class FileCache {
 
             // Hash.
 
-            $filename = "{$this->prefix}{$key}_{$match}";
+            $filename = "$this->prefix{$key}_$match";
 
             return $this->saveContent($filename, $value);
 
@@ -173,7 +173,7 @@ final class FileCache {
 
             // Modified.
 
-            $filename = "{$this->prefix}{$key}_{$match}";
+            $filename = "$this->prefix{$key}_$match";
 
             return $this->saveContent($filename, $value);
 
@@ -190,7 +190,7 @@ final class FileCache {
      * @return bool        True if the item was removed, false otherwise.
      * @throws Exception  Thrown if the $key string is not a legal value.
      */
-    public function delete(string $key) {
+    public function delete(string $key): bool {
 
         if ($this->isValidKey($key) === false) {
 
@@ -202,7 +202,7 @@ final class FileCache {
             throw new Exception('valid context must be set for this cache object');
         }
 
-        $files = glob("{$this->prefix}{$key}_*", GLOB_NOSORT);
+        $files = glob("$this->prefix{$key}_*", GLOB_NOSORT);
 
         if (isset($files[0]) && is_writable($files[0])) {
 
@@ -218,14 +218,14 @@ final class FileCache {
      * @return bool True on success, false on failure.
      * @throws Exception
      */
-    public function clear() {
+    public function clear(): bool {
 
         if (isset($this->prefix) === false) {
 
             throw new Exception('valid context must be set for this cache object');
         }
 
-        $files = glob("{$this->prefix}*", GLOB_NOSORT);
+        $files = glob("$this->prefix*", GLOB_NOSORT);
 
         foreach ($files as $file) {
 
@@ -241,7 +241,7 @@ final class FileCache {
      * @param  string|array $input
      * @return string
      */
-    public function key($input) {
+    public function key($input): string {
 
         return hash($this->algo, serialize($input));
     }
@@ -253,7 +253,7 @@ final class FileCache {
      * @param  string $key
      * @return boolean
      */
-    private function isValidKey(string $key) {
+    private function isValidKey(string $key): bool {
 
         if (strlen(hash($this->algo, 'foo')) === strlen($key) && ctype_xdigit($key) === true) {
 
@@ -266,10 +266,10 @@ final class FileCache {
     /**
      * Get/set cache context. Set storage file prefix.
      *
-     * @param  string $context [default, searches, repositories]
+     * @param string|null $context [default, searches, repositories]
      * @return string
      */
-    public function context(string $context = null) {
+    public function context(string $context = null): string {
 
         if (isset($context) === true && in_array($context, $this->contexts) === true) {
 
@@ -303,7 +303,7 @@ final class FileCache {
      * @return boolean
      * @throws Exception
      */
-    private function saveContent(string $filename, $value) {
+    private function saveContent(string $filename, $value): bool {
 
         if (isset($this->context) === false) {
 
@@ -325,7 +325,7 @@ final class FileCache {
             default:
                 // Value is a scalar, or array. Serialize value and write to file.
                 $bytes = file_put_contents($filename, serialize($value), LOCK_EX);
-                return $bytes === false ? false : true;
+                return is_int($bytes);
         }
     }
 

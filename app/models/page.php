@@ -5,7 +5,7 @@ namespace LibrarianApp;
 use Exception;
 use Librarian\Cache\FileCache;
 use Psr\Http\Message\StreamInterface;
-use Librarian\Media\Image;
+use Librarian\Media\Image\Image;
 use Librarian\Media\Pdf;
 
 /**
@@ -36,7 +36,7 @@ final class PageModel extends AppModel {
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _getPage(int $item_id, int $number, int $zoom = 300) {
+    protected function _getPage(int $item_id, int $number, int $zoom = 300): StreamInterface {
 
         $this->db_main->beginTransaction();
 
@@ -120,7 +120,7 @@ EOT;
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _getPreview(int $item_id, int $number) {
+    protected function _getPreview(int $item_id, int $number): StreamInterface {
 
         $this->db_main->beginTransaction();
 
@@ -206,7 +206,7 @@ EOT;
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height, int $zoom) {
+    protected function _getCroppedPage(int $item_id, int $number, int $x, int $y, int $width, int $height, int $zoom): StreamInterface {
 
         $this->db_main->beginTransaction();
 

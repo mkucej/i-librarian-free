@@ -37,8 +37,8 @@ final class Sanitation {
      */
     public function __call(string $method, array $args) {
 
-        $input = isset($args[0]) ? $args[0] : null;
-        $this->options = isset($args[1]) ? $args[1] : null;
+        $input = $args[0] ?? null;
+        $this->options = $args[1] ?? null;
 
         if (method_exists($this, "_$method") === false) {
 
@@ -91,7 +91,7 @@ final class Sanitation {
         // Allowed tags. No attributes allowed.
         foreach (['b', 'i', 'sup', 'sub', 'u'] as $tag) {
 
-            $value = str_ireplace(["&lt;{$tag}&gt;", "&lt;/{$tag}&gt;"], ["<{$tag}>", "</{$tag}>"], $value);
+            $value = str_ireplace(["&lt;$tag&gt;", "&lt;/$tag&gt;"], ["<$tag>", "</$tag>"], $value);
         }
     }
 

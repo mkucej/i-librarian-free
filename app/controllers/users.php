@@ -3,7 +3,6 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 use Librarian\Security\Encryption;
 
 /**
@@ -11,7 +10,7 @@ use Librarian\Security\Encryption;
  *
  * Admin's user management.
  */
-class UsersController extends Controller {
+class UsersController extends AppController {
 
     /**
      * Main action provides settings form with current settings.

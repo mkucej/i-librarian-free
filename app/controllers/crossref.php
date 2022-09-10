@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Crossref;
-use Librarian\Mvc\Controller;
 
-class CrossrefController extends Controller {
+class CrossrefController extends AppController {
 
     /**
      * @var Crossref

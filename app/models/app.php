@@ -5,6 +5,7 @@ namespace LibrarianApp;
 use Exception;
 use Librarian\Container\DependencyInjector;
 use Librarian\Mvc\Model;
+use Librarian\Security\Session;
 
 /**
  * Class AppModel
@@ -12,6 +13,16 @@ use Librarian\Mvc\Model;
  * Top model class in app.
  */
 class AppModel extends Model {
+
+    /**
+     * @var string An id hash. Most models will require authorization against it.
+     */
+    protected string $id_hash;
+
+    /**
+     * @var Session
+     */
+    protected Session $session;
 
     public function __construct(DependencyInjector $di) {
 
@@ -26,7 +37,9 @@ class AppModel extends Model {
         $this->db_logs->connect();
 
         // User id and permissions.
-        if (is_object($this->session) && $this->session->data('user_id') !== null) {
+        $this->session = $this->di->getShared('Session');
+
+        if ($this->session->data('user_id') !== null) {
 
             // From the application session.
             $id_hash = $this->session->data('user_id');

@@ -12,31 +12,31 @@ class Database {
     /**
      * @var PDO
      */
-    private $dbh;
+    private PDO $dbh;
 
     /**
      * Current PDOStatement.
      *
      * @var PDOStatement
      */
-    private $stmt;
+    private PDOStatement $stmt;
 
-    private $engine    = 'sqlite';       // Database engine (mysql, pgsql, sqlite)
-    private $host      = '127.0.0.1';    // Database server host.
-    private $port      = '3306';         // Database server port.
-    private $username;                   // Database user name.
-    private $password;                   // Database password.
-    private $dbname;                     // Database name (SQLite file name).
-    private $options   = [];             // Connection options.
-    private $functions = [];             // Custom functions.
-    private $collations = [];            // Custom collations.
+    private string $engine     = 'sqlite';       // Database engine (mysql, pgsql, sqlite)
+    private string $host       = '127.0.0.1';    // Database server host.
+    private string $port       = '3306';         // Database server port.
+    private string $username   = '';             // Database username.
+    private string $password   = '';             // Database password.
+    private string $dbname     = '';             // Database name (SQLite file name).
+    private array  $options    = [];             // Connection options.
+    private array  $functions  = [];             // Custom functions.
+    private array  $collations = [];             // Custom collations.
 
     /**
      * Inject db settings.
      *
      * @param array $args
      */
-    public function __construct($args) {
+    public function __construct(array $args) {
 
         // Inject database connection settings.
         $this->engine     = empty($args['engine'])     ? $this->engine     : $args['engine'];
@@ -60,7 +60,7 @@ class Database {
         switch ($this->engine) {
 
             case 'sqlite':
-                $this->dbh = new PDO("sqlite:{$this->dbname}", null, null, $this->options);
+                $this->dbh = new PDO("sqlite:$this->dbname", null, null, $this->options);
 
                 // Default PRAGMAs.
                 $this->dbh->exec('PRAGMA secure_delete = OFF');
@@ -82,22 +82,22 @@ class Database {
                 break;
 
             case 'mysql':
-                $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8";
+                $dsn = "mysql:host=$this->host;port=$this->port;dbname=$this->dbname;charset=utf8";
                 $this->dbh = new PDO($dsn, $this->username, $this->password, $this->options);
                 break;
 
             case 'pgsql':
                 $this->dbh = new PDO(
-                    "pgsql:host={$this->host};" .
-                    "port={$this->port};" .
-                    "dbname={$this->dbname};" .
-                    "user={$this->username};" .
-                    "password={$this->password}"
+                    "pgsql:host=$this->host;" .
+                    "port=$this->port;" .
+                    "dbname=$this->dbname;" .
+                    "user=$this->username;" .
+                    "password=$this->password"
                 );
                 break;
 
             default:
-                throw new Exception("unknown database driver <kbd>{$this->engine}</kbd>", 500);
+                throw new Exception("unknown database driver <kbd>$this->engine</kbd>", 500);
         }
 
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -109,7 +109,7 @@ class Database {
     public function beginTransaction(): void {
 
         // MySQL may require closing the cursor.
-        if (is_object($this->stmt)) {
+        if (isset($this->stmt)) {
 
             $this->stmt->closeCursor();
         }
@@ -133,7 +133,10 @@ class Database {
      */
     public function commit(): void {
 
-        $this->dbh->commit();
+        if ($this->dbh->inTransaction() === true) {
+
+            $this->dbh->commit();
+        }
     }
 
     /**
@@ -141,28 +144,28 @@ class Database {
      */
     public function close(): void {
 
-        $this->stmt  = null;
-        $this->dbh   = null;
+        unset($this->stmt);
+        unset($this->dbh);
     }
 
     /**
      * Export PDO object to use PDO functions not implemented in this class.
      *
-     * @return PDO|null
+     * @return PDO
      */
-    public function getPDO() {
+    public function getPDO(): PDO {
 
-        return is_object($this->dbh) ? $this->dbh : null;
+        return $this->dbh;
     }
 
     /**
      * Export the current PDOStatement object to use PDO functions not implemented in this class.
      *
-     * @return PDOStatement|null
+     * @return PDOStatement
      */
-    public function getPDOStatement() {
+    public function getPDOStatement(): PDOStatement {
 
-        return is_object($this->stmt) ? $this->stmt : null;
+        return $this->stmt;
     }
 
     /**
@@ -172,38 +175,41 @@ class Database {
      */
     private function bind(array $columns): void {
 
-        for ($i = 0; $i < count($columns); $i++) {
+        // Sanitize keys.
+        $columns = array_values($columns);
+
+        foreach ($columns as $i => $column) {
 
             // Default parameter type is string.
             $PARAM = PDO::PARAM_STR;
 
-            if (is_bool($columns[$i])) {
+            if (is_bool($column)) {
 
                 // Boolean type.
                 $PARAM = PDO::PARAM_BOOL;
 
-            } elseif (is_null($columns[$i])) {
+            } elseif (is_null($column)) {
 
                 // NULL type.
                 $PARAM = PDO::PARAM_NULL;
 
-            } elseif (is_int($columns[$i]) || is_float($columns[$i])) {
+            } elseif (is_int($column)) {
 
-                // Integer/float type.
+                // Integer type.
                 $PARAM = PDO::PARAM_INT;
 
-            } elseif (is_resource($columns[$i])) {
+            } elseif (is_resource($column)) {
 
                 // Stream.
                 $PARAM = PDO::PARAM_LOB;
 
-            } elseif (bin2hex(mb_substr($columns[$i], 0, 3)) === '1f8b08') {
+            } elseif (bin2hex(mb_substr($column, 0, 3)) === '1f8b08') {
 
                 // GZ encoded bytes.
                 $PARAM = PDO::PARAM_LOB;
             }
 
-            $bound = $this->stmt->bindValue($i + 1, $columns[$i], $PARAM);
+            $bound = $this->stmt->bindValue($i + 1, $column, $PARAM);
 
             // On fail.
             if ($bound === false) {
@@ -218,20 +224,20 @@ class Database {
      * Method for simple queries. Complex queries can be done with PDO methods.
      *
      * @param string $sql
-     * @param array $columns
+     * @param array|null $columns
      * @return bool
      */
-    public function run($sql, array $columns = null): bool {
-
-        $this->stmt = $this->dbh->prepare($sql);
-
-        // Bind parameters.
-        if (isset($columns)) {
-
-            $this->bind($columns);
-        }
+    public function run(string $sql, array $columns = null): bool {
 
         try {
+
+            $this->stmt = $this->dbh->prepare($sql);
+
+            // Bind parameters.
+            if (isset($columns)) {
+
+                $this->bind($columns);
+            }
 
             // Execute statement.
             $execute = $this->stmt->execute();
@@ -255,11 +261,11 @@ class Database {
     /**
      * Get last inserted ID. May not work in PostgreSQL.
      *
-     * @return string
+     * @return int
      */
-    public function lastInsertId(): string {
+    public function lastInsertId(): int {
 
-        return $this->dbh->lastInsertId();
+        return (int) $this->dbh->lastInsertId();
     }
 
     /**
@@ -278,7 +284,7 @@ class Database {
      * @param  int $FETCH_STYLE
      * @return array|false
      */
-    public function getResultRow($FETCH_STYLE = PDO::FETCH_ASSOC) {
+    public function getResultRow(int $FETCH_STYLE = PDO::FETCH_ASSOC) {
 
         return $this->stmt->fetch($FETCH_STYLE);
     }
@@ -287,10 +293,10 @@ class Database {
      * All rows from results.
      *
      * @param int $FETCH_STYLE
-     * @param string $FETCH_ARG
+     * @param $FETCH_ARG
      * @return array|false
      */
-    public function getResultRows($FETCH_STYLE = PDO::FETCH_ASSOC, $FETCH_ARG = null) {
+    public function getResultRows(int $FETCH_STYLE = PDO::FETCH_ASSOC, $FETCH_ARG = null) {
 
         if (isset($FETCH_ARG)) {
 

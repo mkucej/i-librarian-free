@@ -5,6 +5,7 @@ namespace Librarian\External;
 use DateTime;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 use SimpleXMLIterator;
@@ -19,7 +20,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
     /**
      * @var string API URL.
      */
-    private $url;
+    private string $url;
 
     /**
      * Arxiv constructor.
@@ -50,6 +51,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
      * @param string $uid
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
     public function fetch(string $uid): array {
 
@@ -62,6 +64,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
      * @param array $uids
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
     public function fetchMultiple(array $uids): array {
 
@@ -103,9 +106,10 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
      * @param array $terms Search terms [[name => term]].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [[name => value]].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [[name => value]].
+     * @param string|null $sort Optional sorting string.
      * @return array
+     * @throws GuzzleException
      * @throws Exception
      */
     public function search(
@@ -116,7 +120,8 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
         string $sort = null
     ): array {
 
-        $maximum_rows = 100;
+        // Max rows to fetch (100) can be overridden with $rows.
+        $maximum_rows = max(100, $rows);
 
         $allowed_params = [
             'abs'     => 'Abstract',
@@ -177,15 +182,15 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
                     if (in_array($part, ['AND', 'OR', 'NOT', 'ANDNOT']) === true) {
 
                         // OPERATOR.
-                        $query .= " {$part}";
+                        $query .= " $part";
 
                     } else {
 
                         // Term.
-                        $query .= " {$name}: {$part}";
+                        $query .= " $name: $part";
 
                         // Account for parentheses.
-                        $query = str_replace("{$name}: (", "({$name}: ", $query);
+                        $query = str_replace("$name: (", "($name: ", $query);
                     }
                 }
 
@@ -196,7 +201,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
                 foreach ($parts as $part) {
 
-                    $subqueries[] = "{$name}: {$part}";
+                    $subqueries[] = "$name: $part";
                 }
 
                 $query = join(' AND ', $subqueries);
@@ -225,9 +230,9 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
                     $from = date('Ymd', time() - $days * 86400);
                     $now = date('Ymd', time() - 86400);
 
-                    $params['search_query'] .= " AND submittedDate: [{$from} TO {$now}]";
+                    $params['search_query'] .= " AND submittedDate: [$from TO $now]";
                     $plural = $days === '1' ? '' : 's';
-                    $human_readable .= "\u{2022} last {$days} day{$plural} ";
+                    $human_readable .= "\u{2022} last $days day$plural ";
                 }
             }
         }
@@ -279,7 +284,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
         $items['items'] = array_slice($items['items'], $slice_start, $rows);
 
         // Add search name.
-        $items['search_name'] = $human_readable . " • sort: {$sort}";
+        $items['search_name'] = $human_readable . " • sort: $sort";
 
         return $items;
     }
@@ -304,12 +309,9 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
         $opensearch = $xml_doc->children('opensearch', true);
 
         $output = [
-            'found' => 0,
+            'found' => (int) $opensearch->totalResults,
             'items' => []
         ];
-
-        // Found.
-        $output['found'] = (int) $opensearch->totalResults;
 
         // Articles.
         $i = 0;

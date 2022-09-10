@@ -27,7 +27,7 @@ use ZipArchive;
  * @method array links(int $item_id, int $page_from, int $page_number)
  * @method void  logPage($item_id, $page)
  * @method array manage(int $item_id)
- * @method Psr7\Stream modifiedPdf(int $item_id, bool $annotations, bool $supplements)
+ * @method StreamInterface modifiedPdf(int $item_id, bool $annotations, bool $supplements)
  * @method string pageImage(int $item_id, int $page)
  * @method void  pdfDownloaded($item_id)
  * @method void  save(int $item_id, StreamInterface $file, string $client_filename = null)
@@ -70,7 +70,7 @@ class PdfModel extends AppModel {
     protected function _manage(int $item_id): array {
 
         $output = [
-            'info' => [
+            'pdf_info' => [
                 'name' => '',
                 'text' => ''
             ]
@@ -121,12 +121,12 @@ EOT;
         $compressed = $this->db_main->getResult();
         $text = empty($compressed) ? '' : gzdecode($compressed);
 
-        $output['info']['text'] = mb_strlen($text) > 3000 ? mb_substr($text, 0, 3000) . '...' : $text;
+        $output['pdf_info']['text'] = mb_strlen($text) > 3000 ? mb_substr($text, 0, 3000) . '...' : $text;
 
         $this->db_main->commit();
 
         $pdfpath = $this->idToPdfPath($item_id);
-        $output['info']['name'] = basename($pdfpath);
+        $output['pdf_info']['name'] = basename($pdfpath);
 
         return $output;
     }
@@ -141,7 +141,7 @@ EOT;
     protected function _info(int $item_id): array {
 
         $output = [
-            'info' => []
+            'pdf_info' => []
         ];
 
         $this->db_main->beginTransaction();
@@ -180,7 +180,7 @@ EOT;
         // PDF info.
         $this->pdf_object = $this->di->get('Pdf', $pdfpath);
 
-        $output['info'] = $this->pdf_object->info();
+        $output['pdf_info'] = $this->pdf_object->info();
 
         // Last page read.
         $this->reporter = $this->di->get('Reporter');
@@ -190,7 +190,7 @@ EOT;
     }
 
     /**
-     * Save file.
+     * Save PDF file.
      *
      * @param int $item_id
      * @param StreamInterface $file
@@ -198,6 +198,15 @@ EOT;
      * @throws Exception
      */
     protected function _save(int $item_id, StreamInterface $file, string $client_filename = null): void {
+
+        /** @var FileTools $file_tools */
+        $file_tools = $this->di->get('FileTools');
+        $mime = $file_tools->getMime($file);
+
+        if ($mime !== 'application/pdf') {
+
+            throw new Exception('this file is not a PDF', 400);
+        }
 
         $this->db_main->beginTransaction();
 
@@ -213,60 +222,6 @@ EOT;
         // Save PDF first.
         $filepath = $this->idToPdfPath($item_id);
         $this->writeFile($filepath, $file);
-
-        // File not a PDF?
-        setlocale(LC_ALL,'en_US.UTF-8');
-
-        $mime = $this->file_tools->getMime($filepath);
-
-        if ($mime !== 'application/pdf') {
-
-            // Client filename.
-            $client_basename = pathinfo($client_filename, PATHINFO_FILENAME);
-            $client_extension = strtolower(pathinfo($client_filename, PATHINFO_EXTENSION));
-
-            // Rename PDF with client extension.
-            $parts = pathinfo($filepath);
-            $new_path = $parts['dirname'] . DIRECTORY_SEPARATOR . "{$parts['filename']}.{$client_extension}";
-            $this->renameFile($filepath, $new_path);
-
-            // Only some MIME types allowed.
-            if (in_array($mime, $this->app_settings->extra_mime_types) === true) {
-
-                // Try to convert to PDF. Get converted file path.
-                $converted = $this->convertToPdf($new_path);
-
-                if ($converted === '') {
-
-                    // Fail. Delete file.
-                    $this->deleteFile($new_path);
-                    throw new Exception('error converting to PDF', 400);
-                }
-
-                // Successful conversion. Move converted PDF to PDF folder.
-                $this->renameFile($converted, $filepath);
-
-                // Save the original file as a supplement.
-
-                /*
-                 * Shorten the client filename. Filenames are stored encoded in RFC 3986. Some
-                 * UTF-8 filenames can be longer than allowed in this format.
-                 */
-                while (strlen(rawurlencode($client_basename)) > 240) {
-
-                    $client_basename = trim(mb_substr($client_basename, 0, -1, 'UTF-8'));
-                }
-
-                $supp_filepath = $this->idToSupplementPath($item_id) . rawurlencode($client_basename . '.' . $client_extension);
-                $this->renameFile($new_path, $supp_filepath);
-
-            } else {
-
-                // This MIME not allowed. Delete file.
-                $this->deleteFile($new_path);
-                throw new Exception('uploaded file is not a PDF or a supported type', 400);
-            }
-        }
 
         // Extract full text.
         $this->pdf_object = $this->di->get('Pdf', $filepath);
@@ -306,7 +261,7 @@ UPDATE items
 EOT;
 
         $pdf_stream = $this->readFile($filepath);
-        $pdf_hash = Psr7\Utils::hash($pdf_stream, 'md5');
+        $pdf_hash = Utils::hash($pdf_stream, 'md5');
 
         $columns_update = [
             $pdf_hash,
@@ -882,10 +837,10 @@ EOT;
      * @param int $item_id
      * @param bool $annotations
      * @param bool $supplements
-     * @return Psr7\Stream
+     * @return StreamInterface
      * @throws Exception
      */
-    protected function _modifiedPdf(int $item_id, bool $annotations, bool $supplements): Psr7\Stream {
+    protected function _modifiedPdf(int $item_id, bool $annotations, bool $supplements): StreamInterface {
 
         $this->db_main->beginTransaction();
 
@@ -1035,12 +990,12 @@ EOT;
             clearstatcache($zip_file);
 
             $zp = fopen($zip_file, 'rb');
-            return Psr7\Utils::streamFor($zp);
+            return Utils::streamFor($zp);
 
         } else {
 
             $fp = fopen($pdf_file, 'r');
-            return Psr7\Utils::streamFor($fp);
+            return Utils::streamFor($fp);
         }
     }
 

@@ -3,14 +3,13 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class SummaryController
  *
  * Item summary.
  */
-class SummaryController extends Controller {
+class SummaryController extends AppController {
 
     /**
      * Main. Show item summary, or export it.

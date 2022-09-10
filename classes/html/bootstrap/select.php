@@ -9,9 +9,9 @@ use Librarian\Mvc\TextView;
  */
 final class Select extends Component {
 
-    private $groupClass;
-    private $hint;
-    private $label;
+    private string $groupClass = '';
+    private string $hint = '';
+    private string $label = '';
 
     /**
      * Constructor.
@@ -31,7 +31,7 @@ final class Select extends Component {
         $optionInner = !empty($option) ? $option : '&nbsp;';
 
         $this->append(<<<EOT
-            <option value="$value"{$selectedAttr}>$optionInner</option>
+            <option value="$value"$selectedAttr>$optionInner</option>
 EOT
         );
     }
@@ -96,20 +96,18 @@ EOT
         }
 
         // Label is optional.
-        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">{$this->label}</label>";
+        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">$this->label</label>";
 
         // Hint  is optional.
-        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">{$this->hint}</small>";
+        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">$this->hint</small>";
 
         // Compile HTML.
-        $html = <<<EOT
-            <div class="form-group {$this->groupClass}">
+        return <<<EOT
+            <div class="form-group $this->groupClass">
                 $labelTag
                 {$this->startTag()}{$this->html()}{$this->endTag()}
                 $hint
             </div>
 EOT;
-
-        return $html;
     }
 }

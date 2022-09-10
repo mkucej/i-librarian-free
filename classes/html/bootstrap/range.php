@@ -9,12 +9,10 @@ use Exception;
  */
 class Range extends Component {
 
-    protected $groupClass;
-    protected $hint;
-    protected $inline;
-    protected $min;
-    protected $max;
-    protected $label;
+    protected string $groupClass = '';
+    protected string $hint = '';
+    protected bool   $inline = false;
+    protected string $label = '';
 
     /**
      * Constructor.
@@ -84,18 +82,18 @@ class Range extends Component {
             $labelRequired = 'label-required';
         }
 
-        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">{$this->hint}</small>";
+        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">$this->hint</small>";
 
         // Compile HTML.
         return
 <<<HTML
-    <div class="form-group mb-2 {$this->groupClass}">
-        <label for="{$this->attr('id')}" class="{$labelRequired}">
-            <span class="label-text">{$this->label}</span>
+    <div class="form-group mb-2 $this->groupClass">
+        <label for="{$this->attr('id')}" class="$labelRequired">
+            <span class="label-text">$this->label</span>
         </label>
         {$this->startTag()}
         <div class="range-divider">&nbsp;</div>
-        {$hint}
+        $hint
     </div>
 HTML;
     }

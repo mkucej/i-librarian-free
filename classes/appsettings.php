@@ -16,12 +16,12 @@ final class AppSettings {
     /**
      * @var DependencyInjector
      */
-    private $di;
+    private DependencyInjector $di;
 
     /**
      * Default user settings.
      */
-    public $default_user_settings = [
+    public array $default_user_settings = [
         'connect_arxiv'    => '1',
         'connect_crossref' => '1',
         'connect_xplore'   => '1',
@@ -54,7 +54,7 @@ final class AppSettings {
     /**
      * Default global settings.
      */
-    public $default_global_settings = [
+    public array $default_global_settings = [
         'api_crossref'        => '',
         'api_ieee'            => '',
         'api_nasa'            => '',
@@ -84,11 +84,11 @@ final class AppSettings {
         'wpad_url'            => ''
     ];
 
-    public $extra_file_types = [
+    public array $extra_file_types = [
         'doc', 'docx', 'vsd', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'jpg', 'png'
     ];
 
-    public $extra_mime_types = [
+    public array $extra_mime_types = [
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.visio',
@@ -106,7 +106,7 @@ final class AppSettings {
     /**
      * @var array Array to hold app settings.
      */
-    public $settings;
+    public array $settings;
 
     /**
      * Constructor.
@@ -320,27 +320,27 @@ final class AppSettings {
     /**
      * Get proxy user:password string.
      *
-     * @return string|null
+     * @return string
      * @throws Exception
      */
-    public function proxyUserPwd() {
+    public function proxyUserPwd(): string {
 
         // Non-manual proxy settings.
         if ($this->getGlobal('connection') !== 'manual') {
 
-            return null;
+            return '';
         }
 
         if (empty($this->getGlobal('proxy_username'))) {
 
-            return null;
+            return '';
 
         } else {
 
             $user = rawurlencode($this->getGlobal('proxy_username'));
             $pass = rawurlencode($this->getGlobal('proxy_password'));
 
-            return "{$user}:{$pass}";
+            return "$user:$pass";
         }
     }
 

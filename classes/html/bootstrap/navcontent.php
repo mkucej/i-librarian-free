@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class NavContent extends Component {
 
-    private $items = [];
+    private array $items = [];
 
     /**
      * Constructor.
@@ -45,10 +45,10 @@ final class NavContent extends Component {
 
             $html .= <<<EOT
                 <div
-                    id="{$item[1]}"
-                    class="tab-pane{$class}{$activeClass}"
+                    id="$item[1]"
+                    class="tab-pane$class$activeClass"
                     role="tabpanel"
-                    aria-labelledby="{$item[1]}-nav">{$item[0]}</div>
+                    aria-labelledby="$item[1]-nav">$item[0]</div>
 EOT;
         }
 

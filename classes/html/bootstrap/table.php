@@ -37,9 +37,9 @@ final class Table extends Component {
             $innerHead .= "<th$attr>$cell[0]</th>";
         }
 
-        $head_classes = empty($classes) ? "" : " class=\"{$classes}\"";
+        $head_classes = empty($classes) ? "" : " class=\"$classes\"";
 
-        return $this->append("<thead{$head_classes}><tr>{$innerHead}</tr></thead>");
+        return $this->append("<thead$head_classes><tr>$innerHead</tr></thead>");
     }
 
     public function bodyRow(array $cells = [], string $classes = ''): string {
@@ -52,24 +52,24 @@ final class Table extends Component {
             $innerHead .= "<td$attr>$cell[0]</td>";
         }
 
-        $row_classes = empty($classes) ? "" : " class=\"{$classes}\"";
+        $row_classes = empty($classes) ? "" : " class=\"$classes\"";
 
-        return $this->append("<tr{$row_classes}>{$innerHead}</tr>");
+        return $this->append("<tr$row_classes>$innerHead</tr>");
     }
 
-    public function foot(array $cells = [], string $classes = '') {
+    public function foot(array $cells = [], string $classes = ''): string {
 
         $innerHead = '';
 
         foreach ($cells as $cell) {
 
             $attr = isset($cell[1]) ? " $cell[1]" : "";
-            $innerHead .= "<td{$attr}>{$cell[0]}</td>";
+            $innerHead .= "<td$attr>$cell[0]</td>";
         }
 
-        $foot_classes = empty($classes) ? "" : " class=\"{$classes}\"";
+        $foot_classes = empty($classes) ? "" : " class=\"$classes\"";
 
-        return $this->append("<tfoot{$foot_classes}><tr>{$innerHead}</tr></tfoot>");
+        return $this->append("<tfoot$foot_classes><tr>$innerHead</tr></tfoot>");
     }
 
     public function render(): string {

@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
-class MainController extends Controller {
+class MainController extends AppController {
 
     /**
      * Main. HTML base view.

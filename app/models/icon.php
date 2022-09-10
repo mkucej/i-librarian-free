@@ -31,7 +31,7 @@ final class IconModel extends AppModel {
      * @return StreamInterface
      * @throws Exception
      */
-    protected function _readIcon(int $item_id) {
+    protected function _readIcon(int $item_id): StreamInterface {
 
         $this->db_main->beginTransaction();
 

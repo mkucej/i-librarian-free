@@ -10,7 +10,7 @@ final class Logger {
     /**
      * @var Database
      */
-    protected $db_log;
+    protected Database $db_log;
 
     /**
      * Logger constructor.

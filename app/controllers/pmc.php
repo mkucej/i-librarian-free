@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Pmc;
-use Librarian\Mvc\Controller;
 
-class PmcController extends Controller {
+class PmcController extends AppController {
 
     /**
      * @var Pmc

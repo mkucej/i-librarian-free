@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class ItemdiscussionController extends Controller {
+class ItemdiscussionController extends AppController {
 
     /**
      * ItemdiscussionContoller constructor.

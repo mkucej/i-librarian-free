@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class IconButton extends Component {
 
-    private $icons = [];
+    private array $icons = [];
 
     /**
      * Constructor.
@@ -48,7 +48,7 @@ final class IconButton extends Component {
         // Context.
         if (!empty($this->context)) {
 
-            $this->addClass("btn-{$this->context}");
+            $this->addClass("btn-$this->context");
         }
 
         // Size.

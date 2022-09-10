@@ -5,7 +5,6 @@ namespace LibrarianApp;
 use Exception;
 use Librarian\Container\DependencyInjector;
 use Psr\Http\Message\StreamInterface;
-use Librarian\Mvc\Controller;
 use GuzzleHttp\Psr7\Utils;
 
 /**
@@ -13,7 +12,7 @@ use GuzzleHttp\Psr7\Utils;
  *
  * Deals with PDF single page tasks. It is used by PDF viewer.
  */
-class PageController extends Controller {
+class PageController extends AppController {
 
     /**
      * PageController constructor.

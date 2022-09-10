@@ -9,12 +9,12 @@ final class GarbageCollector {
     /**
      * @var string Directory to clean.
      */
-    private $dir;
+    private string $dir;
 
     /**
      * @var int Number of files to keep.
      */
-    private $keep;
+    private int $keep;
 
     /**
      * Randomly clean one of the cache folders.
@@ -147,10 +147,10 @@ final class GarbageCollector {
             return;
         }
 
-        // Sort by modified time, newest files first.
+        // Sort by modified time, the newest files first.
         arsort($files);
 
-        // Keep the $this->keep newest files, delete the rest.
+        // Keep the $this->keep the newest files, delete the rest.
         $files_slice = array_slice($files, $this->keep);
 
         $files = null;

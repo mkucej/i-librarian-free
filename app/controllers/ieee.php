@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Xplore;
-use Librarian\Mvc\Controller;
 
-class IEEEController extends Controller {
+class IEEEController extends AppController {
 
     /**
      * @var Xplore

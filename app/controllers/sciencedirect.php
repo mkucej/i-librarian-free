@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
-class SciencedirectController extends Controller {
+class SciencedirectController extends AppController {
 
     /**
      * Main. Search form and list of searches.

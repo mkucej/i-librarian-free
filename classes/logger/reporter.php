@@ -14,7 +14,7 @@ final class Reporter {
     /**
      * @var Database
      */
-    protected $db_log;
+    protected Database $db_log;
 
     /**
      * Reporter constructor.
@@ -56,11 +56,11 @@ SQL;
     /**
      * Get time period based on time.
      *
-     * @param $time
+     * @param int $time
      * @return DatePeriod
      * @throws Exception
      */
-    public function timePeriod($time = 30): DatePeriod {
+    public function timePeriod(int $time = 30): DatePeriod {
 
         switch ($time) {
 
@@ -72,7 +72,6 @@ SQL;
                 $end = new DateTime('now', new DateTimeZone('UTC'));
                 $end->modify('first day of next month');
                 $interval = new DateInterval('P1M');
-                $period = new DatePeriod($start, $interval, $end);
                 break;
 
             default:
@@ -82,11 +81,10 @@ SQL;
                 $end = new DateTime('now', new DateTimeZone('UTC'));
                 $end->modify('tomorrow');
                 $interval = new DateInterval('P1D');
-                $period = new DatePeriod($start, $interval, $end);
                 break;
         }
 
-        return $period;
+        return new DatePeriod($start, $interval, $end);
     }
 
     /**

@@ -9,11 +9,9 @@ use Exception;
  */
 final class Dropdown extends Component {
 
-    private $label;
-
-    private $menu_items = [];
-
-    private $types;
+    private string $label = '';
+    private array  $menu_items = [];
+    private array  $types;
 
     /**
      * Constructor.
@@ -36,7 +34,7 @@ final class Dropdown extends Component {
     /**
      * Set/get button text.
      *
-     * @param string $label
+     * @param string|null $label
      * @return string
      */
     public function label(string $label = null): string {
@@ -146,7 +144,7 @@ final class Dropdown extends Component {
 
         if (!empty($this->context)) {
 
-            $contextClass = "btn-{$this->context}";
+            $contextClass = "btn-$this->context";
         }
 
         // Size.
@@ -158,8 +156,8 @@ final class Dropdown extends Component {
         }
 
         $html .= <<<EOT
-            <button class="btn {$contextClass} dropdown-toggle{$sizeClass}" type="button" id="{$subId}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {$this->label}
+            <button class="btn $contextClass dropdown-toggle$sizeClass" type="button" id="$subId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                $this->label
             </button>
 EOT;
 
@@ -168,7 +166,7 @@ EOT;
          */
 
         $html .= <<<EOT
-            <div class="dropdown-menu rounded-0" aria-labelledby="{$subId}">
+            <div class="dropdown-menu rounded-0" aria-labelledby="$subId">
 EOT;
 
         foreach ($this->menu_items as $item) {
@@ -177,20 +175,20 @@ EOT;
 
                 case 'link':
                     $html .= <<<EOT
-                    <a class="dropdown-item" href="{$item[2]}">{$item[1]}</a>
+                    <a class="dropdown-item" href="$item[2]">$item[1]</a>
 EOT;
                     break;
 
                 case 'span':
                     $html .= <<<EOT
-                    <span class="dropdown-item-text">{$item[1]}</span>
+                    <span class="dropdown-item-text">$item[1]</span>
 EOT;
                     break;
 
                 case 'button':
                     $class = $item[2] ?? '';
                     $html .= <<<EOT
-                    <button class="dropdown-item {$class}" type="button">{$item[1]}</button>
+                    <button class="dropdown-item $class" type="button">$item[1]</button>
 EOT;
                     break;
 
@@ -202,7 +200,7 @@ EOT;
 
                 case 'form':
                     $html .= <<<EOT
-                {$item[1]}
+                $item[1]
 EOT;
                     break;
             }

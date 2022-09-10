@@ -3,14 +3,13 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class CitationController
  *
  * This controller deals with CSL styles.
  */
-class CitationController extends Controller {
+class CitationController extends AppController {
 
     /**
      * Get a list of CSL styles. Tools page.

@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Patents;
-use Librarian\Mvc\Controller;
 
-class PatentsController extends Controller {
+class PatentsController extends AppController {
 
     /**
      * @var Patents

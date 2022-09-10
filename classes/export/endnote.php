@@ -11,12 +11,12 @@ class Endnote {
     /**
      * @var ItemMeta
      */
-    private $item_meta;
+    private ItemMeta $item_meta;
 
     /**
      * @var Sanitation
      */
-    private $sanitation;
+    private Sanitation $sanitation;
 
     public function __construct(ItemMeta $item_meta, Sanitation $sanitation) {
 
@@ -162,7 +162,7 @@ class Endnote {
 
                 if (!empty($item[ItemMeta::COLUMN['CUSTOM' . $i]])) {
 
-                    $output .= "%{$i} " . $item[ItemMeta::COLUMN['CUSTOM' . $i]] . PHP_EOL;
+                    $output .= "%$i " . $item[ItemMeta::COLUMN['CUSTOM' . $i]] . PHP_EOL;
                 }
             }
 

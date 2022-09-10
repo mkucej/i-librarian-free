@@ -12,22 +12,16 @@ class Bibtex {
     /**
      * @var AppSettings
      */
-    private $app_settings;
-
-    /**
-     * @var ItemMeta
-     */
-    private $item_meta;
+    private AppSettings $app_settings;
 
     /**
      * @var Sanitation
      */
-    private $sanitation;
+    private Sanitation $sanitation;
 
-    public function __construct(ItemMeta $item_meta, Sanitation $sanitation, AppSettings $app_settings) {
+    public function __construct(Sanitation $sanitation, AppSettings $app_settings) {
 
         $this->app_settings = $app_settings;
-        $this->item_meta = $item_meta;
         $this->sanitation = $sanitation;
     }
 
@@ -235,7 +229,7 @@ class Bibtex {
 
     private function prettyTag(string $tag): string {
 
-        return str_repeat(' ', 2) . str_pad($tag, 10, ' ', STR_PAD_RIGHT) . '= ';
+        return str_repeat(' ', 2) . str_pad($tag, 10) . '= ';
     }
 
     private function prettyValue(string $value): string {

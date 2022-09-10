@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
-class KeyboardController extends Controller {
+class KeyboardController extends AppController {
 
     /**
      * Main. Keyboard popup.

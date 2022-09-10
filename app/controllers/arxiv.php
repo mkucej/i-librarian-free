@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Arxiv;
-use Librarian\Mvc\Controller;
 
-class ArxivController extends Controller {
+class ArxivController extends AppController {
 
     /**
      * @var Arxiv

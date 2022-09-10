@@ -4,6 +4,7 @@ namespace Librarian\External;
 
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
 use Librarian\Media\Xml;
@@ -19,8 +20,8 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
     /**
      * @var string API URLs.
      */
-    private $url_fetch;
-    private $url_search;
+    private string $url_fetch;
+    private string $url_search;
 
     /**
      * Pubmed constructor.
@@ -43,7 +44,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             ]
         ]);
 
-        $api_key_url      = empty($api_key) ? '' : "api_key={$api_key}&";
+        $api_key_url      = empty($api_key) ? '' : "api_key=$api_key&";
         $this->url_fetch  = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?' . $api_key_url;
         $this->url_search = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?' . $api_key_url;
     }
@@ -54,6 +55,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
      * @param string $uid
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
     public function fetch(string $uid): array {
 
@@ -66,8 +68,9 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
      * @param array $uids
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
-    public function fetchMultiple($uids): array {
+    public function fetchMultiple(array $uids): array {
 
         $params = [
             'db'      => 'pmc',
@@ -83,9 +86,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
         $this->queue->release('pubmed');
 
-        $items = $this->formatMetadata($response->getBody()->getContents());
-
-        return $items;
+        return $this->formatMetadata($response->getBody()->getContents());
     }
 
     /**
@@ -94,9 +95,10 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
      * @param array $terms Search terms [name => term].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [name => value].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [name => value].
+     * @param string|null $sort Optional sorting string.
      * @return array
+     * @throws GuzzleException
      * @throws Exception
      */
     public function search(
@@ -154,12 +156,12 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             if ($name === 'boolean' && !empty($value)) {
 
                 $queries = [$value];
-                $search_name = "{$value} ";
+                $search_name = "$value ";
                 break;
             }
 
-            $queries[] = "{$value} [{$name}]";
-            $search_name .= "{$allowed_params[$name]}: $value ";
+            $queries[] = "$value [$name]";
+            $search_name .= "$allowed_params[$name]: $value ";
         }
 
         // Add filters.
@@ -179,9 +181,9 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
                     $from = date('Y/m/d', time() - $days * 86400);
                     $now = date('Y/m/d', time() - 86400);
 
-                    $queries[] = "{$from}:{$now}[PMCLIVEDATE]";
+                    $queries[] = "$from:$now[PMCLIVEDATE]";
                     $plural = $days === '1' ? '' : 's';
-                    $search_name .= "\u{2022} last {$days} day{$plural} ";
+                    $search_name .= "\u{2022} last $days day$plural ";
                 }
             }
         }
@@ -351,7 +353,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
                 if ((string) $attrs->{'pub-id-type'} === 'pmc') {
 
                     $pmcid = (string) $id;
-                    $pmcid = is_numeric($id) ? "PMC{$pmcid}" : $pmcid;
+                    $pmcid = is_numeric($id) ? "PMC$pmcid" : $pmcid;
 
                     $output['items'][$i][ItemMeta::COLUMN['UID_TYPES']][] = 'PMCID';
                     $output['items'][$i][ItemMeta::COLUMN['UIDS']][] = $pmcid;
@@ -374,7 +376,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             if (!empty($start_page)) {
 
                 $pages = $start_page;
-                $pages = $pages . (!empty($end_page) ? "-{$end_page}" : '');
+                $pages = $pages . (!empty($end_page) ? "-$end_page" : '');
             }
 
             $output['items'][$i][ItemMeta::COLUMN['PAGES']] = $pages;

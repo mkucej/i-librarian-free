@@ -18,7 +18,7 @@ trait SharedHtmlView {
     /**
      * @var DependencyInjector
      */
-    protected $di;
+    protected DependencyInjector $di;
 
     /**
      * @var Validation

@@ -203,12 +203,10 @@ HTML
          * Last items.
          */
 
-        $id_list = [];
-
         if ($this->app_settings->getUser('dashboard_remove_items') === '0') {
 
             $last5_html =
-<<<HTML
+                <<<HTML
 <table style="table-layout: fixed;width:100%;line-height: 2rem">
     <tbody>
 HTML;
@@ -216,7 +214,7 @@ HTML;
             if (count($data['last_items']) === 0) {
 
                 $last5_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td style="height: 10rem" class="text-center text-secondary text-uppercase pb-4 align-middle">
                 {$this->lang->t9n('No items')}
@@ -227,19 +225,38 @@ HTML;
 
             foreach ($data['last_items'] as $item) {
 
-                $id_list[] = $item['id'];
-
                 $item_url = IL_BASE_URL . 'index.php/item#summary?id=' . $item['id'];
-                $pdf_button = '<span class="badge border border-secondary text-secondary rounded-0 mr-2">PDF</span>';
 
-                if ($item['has_pdf'] === '1') {
+                if ((int) $item['has_pdf'] === 1) {
+
+                    /** @var Bootstrap\Badge $el */
+                    $el = $this->di->get('Badge');
+
+                    $el->context('warning');
+                    $el->addClass('mr-2 border border-warning');
+                    $el->html('PDF');
+                    $pdf_badge = $el->render();
+
+                    $el = null;
 
                     $pdf_url = IL_BASE_URL . 'index.php/pdf?id=' . $item['id'];
-                    $pdf_button = "<a href=\"{$pdf_url}\"><span class=\"badge badge-warning rounded-0 mr-2\">PDF</span></a>";
+                    $pdf_button = "<a href=\"{$pdf_url}\">{$pdf_badge}</a>";
+
+                } else {
+
+                    /** @var Bootstrap\Badge $el */
+                    $el = $this->di->get('Badge');
+
+                    $el->context('default');
+                    $el->addClass('mr-2 border border-secondary text-secondary');
+                    $el->html('PDF');
+                    $pdf_button = $el->render();
+
+                    $el = null;
                 }
 
                 $last5_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td class="text-truncate">
                 $pdf_button
@@ -250,7 +267,7 @@ HTML;
             }
 
             $last5_html .=
-<<<HTML
+                <<<HTML
     </tbody>
 </table>
 HTML;
@@ -260,15 +277,15 @@ HTML;
 
             $el->addClass('h-100');
             $el->header(
-<<<HTML
+                <<<HTML
 <span>
     <b class="text-uppercase">{$this->lang->t9n('Items')}</b>
     <a class="mx-3" href="#items/main">{$this->lang->t9n('List-NOUN')}</a>
     <a href="#items/filter">{$this->lang->t9n('Filter-NOUN')}</a>
 </span>
 HTML
-            , 'px-4 pt-3');
-            $el->body($last5_html, null, 'px-4 pb-4');
+                , 'px-4 pt-3 pb-3');
+            $el->body($last5_html, null, 'px-4 pt-1 pb-4');
             $cards[] = $el->render();
 
             $el = null;
@@ -281,7 +298,7 @@ HTML
         if ($this->app_settings->getUser('dashboard_remove_projects') === '0') {
 
             $project_html =
-<<<HTML
+                <<<HTML
 <table style="table-layout: fixed;width:100%;line-height: 2rem">
     <tbody>
 HTML;
@@ -289,7 +306,7 @@ HTML;
             if (count($data['last_projects']) === 0) {
 
                 $project_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td style="height: 10rem" class="align-middle text-center text-uppercase text-secondary pb-4">
                 {$this->lang->t9n('No projects')}
@@ -303,7 +320,7 @@ HTML;
                 $item_url = IL_BASE_URL . 'index.php/project#project/browse?id=' . $project['id'];
 
                 $project_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td class="text-truncate">
                 <a href="{$item_url}">{$project['project']}</a>
@@ -313,7 +330,7 @@ HTML;
             }
 
             $project_html .=
-<<<HTML
+                <<<HTML
     </tbody>
 </table>
 HTML;
@@ -323,13 +340,13 @@ HTML;
 
             $el->addClass('h-100');
             $el->header(
-<<<HTML
+                <<<HTML
 <span>
     <b class="text-uppercase">{$this->lang->t9n('Projects')}</b>
     <a class="mx-3" href="#projects/main">{$this->lang->t9n('List-NOUN')}</a>
 </span>
 HTML
-            , 'px-4 pt-3');
+                , 'px-4 pt-3');
             $el->body($project_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -390,7 +407,7 @@ HTML;
 <<<HTML
 <b class="text-uppercase">{$this->lang->t9n('Item notes')}</b>
 HTML
-            , 'px-4 pt-3');
+                , 'px-4 pt-3');
             $el->body($notes_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -404,7 +421,7 @@ HTML
         if ($this->app_settings->getUser('dashboard_remove_project_notes') === '0') {
 
             $project_notes =
-<<<HTML
+                <<<HTML
 <table style="table-layout: fixed;width:100%;line-height: 2rem">
     <tbody>
 HTML;
@@ -412,7 +429,7 @@ HTML;
             if (count($data['last_project_notes']) === 0) {
 
                 $project_notes .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td style="height: 10rem" class="text-center text-secondary text-uppercase align-middle pb-4">
                 {$this->lang->t9n('No notes')}
@@ -426,7 +443,7 @@ HTML;
                 $item_url = IL_BASE_URL . 'index.php/project#project/notes?id=' . $project['id'];
 
                 $project_notes .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td class="text-truncate">
                 <a href="{$item_url}">{$project['note']}</a>
@@ -436,7 +453,7 @@ HTML;
             }
 
             $project_notes .=
-<<<HTML
+                <<<HTML
     </tbody>
 </table>
 HTML;
@@ -446,10 +463,10 @@ HTML;
 
             $el->addClass('h-100');
             $el->header(
-<<<HTML
+                <<<HTML
 <b class="text-uppercase">{$this->lang->t9n('Project notes')}</b>
 HTML
-            , 'px-4 pt-3');
+                , 'px-4 pt-3');
             $el->body($project_notes, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -508,7 +525,7 @@ HTML;
 <<<HTML
 <b class="text-uppercase">{$this->lang->t9n('Item discussions')}</b>
 HTML
-            , 'px-4 pt-3');
+                , 'px-4 pt-3');
             $el->body($discussed_html, null, 'px-4 pb-4');
             $cards[] = $el->render();
 
@@ -522,7 +539,7 @@ HTML
         if ($this->app_settings->getUser('dashboard_remove_project_discussions') === '0') {
 
             $discussed_html =
-<<<HTML
+                <<<HTML
 <table style="table-layout: fixed;width:100%;line-height: 2rem">
     <tbody>
 HTML;
@@ -530,7 +547,7 @@ HTML;
             if (count($data['last_discussed_projects']) === 0) {
 
                 $discussed_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td style="height: 10rem" class="text-center text-secondary text-uppercase pb-4 align-middle">
                 {$this->lang->t9n('No posts')}
@@ -544,7 +561,7 @@ HTML;
                 $item_url = IL_BASE_URL . 'index.php/project#project/discussion?id=' . $project['project_id'];
 
                 $discussed_html .=
-<<<HTML
+                    <<<HTML
         <tr>
             <td class="text-truncate">
                 <a href="{$item_url}">{$project['message']}</a>
@@ -554,7 +571,7 @@ HTML;
             }
 
             $discussed_html .=
-<<<HTML
+                <<<HTML
     </tbody>
 </table>
 HTML;
@@ -564,7 +581,7 @@ HTML;
 
             $el->addClass('h-100');
             $el->header(
-<<<HTML
+                <<<HTML
 <b class="text-uppercase">{$this->lang->t9n('Project discussions')}</b>
 HTML
                 , 'px-4 pt-3');
@@ -682,8 +699,7 @@ HTML;
         $el = null;
 
         $this->append([
-            'html'       => $content,
-            'id_list'    => $id_list
+            'html' => $content
         ]);
 
         return $this->send();

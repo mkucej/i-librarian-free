@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class SideMenu extends Component {
 
-    private $menu = [];
+    private array $menu = [];
 
     /**
      * Constructor.
@@ -38,7 +38,7 @@ final class SideMenu extends Component {
                     <a href="{$link['link']}" class="has-arrow" aria-expanded="false">
                         {$link['label']}
                     </a>
-                    {$subMenu}
+                    $subMenu
                 </li>
 EOT;
         } else {

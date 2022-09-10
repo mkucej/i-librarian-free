@@ -4,14 +4,13 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Ol;
-use Librarian\Mvc\Controller;
 
 /**
  * Class OlController.
  *
  * Open Library.
  */
-class OlController extends Controller {
+class OlController extends AppController {
 
     /**
      * @var Ol

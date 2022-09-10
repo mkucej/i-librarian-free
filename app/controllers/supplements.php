@@ -6,9 +6,8 @@ use Exception;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Librarian\Mvc\Controller;
 
-class SupplementsController extends Controller {
+class SupplementsController extends AppController {
 
     /**
      * @var Client

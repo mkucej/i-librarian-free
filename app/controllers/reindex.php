@@ -4,14 +4,13 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
 /**
  * Class ReindexController
  *
  * Rebuild database indexes.
  */
-class ReindexController extends Controller {
+class ReindexController extends AppController {
 
     public function __construct(DependencyInjector $di) {
 

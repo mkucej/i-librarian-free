@@ -7,14 +7,14 @@ use Exception;
 /**
  * Server-wide queue and throttling.
  *
- * In case of multi-server setup, integrate beanstalkd.
+ * In case of multiserver setup, integrate beanstalkd.
  */
 final class Queue {
 
-    private $delays;
-    private $lane;
-    private $semaphores;
-    private $shmvars;
+    private array $delays;
+    private string $lane;
+    private array $semaphores;
+    private array $shmvars;
 
     public function __construct() {
 
@@ -240,16 +240,16 @@ final class Queue {
     /**
      * Set the last time the script was released as UNIX timestamp float.
      *
-     * @return bool|null
+     * @return void
      */
-    private function setLastAccess() {
+    private function setLastAccess(): void {
 
         if (function_exists('sem_get') === false) {
 
-            return null;
+            return;
         }
 
-        return shm_put_var($this->shmvars[$this->lane], 1, microtime(true));
+        shm_put_var($this->shmvars[$this->lane], 1, microtime(true));
     }
 
     /**
@@ -273,11 +273,11 @@ final class Queue {
         }
     }
 
-    public function raiseCount() {
+    public function raiseCount(): void {
 
         if (function_exists('sem_get') === false) {
 
-            return null;
+            return;
         }
 
         if (shm_has_var($this->shmvars[$this->lane], 2) === false) {
@@ -290,16 +290,14 @@ final class Queue {
             $count++;
         }
 
-        return shm_put_var($this->shmvars[$this->lane], 2, $count);
+        shm_put_var($this->shmvars[$this->lane], 2, $count);
     }
 
-    public function resetCount(): bool {
+    public function resetCount(): void {
 
         if (function_exists('sem_get')) {
 
-            return shm_put_var($this->shmvars[$this->lane], 2, 0);
+            shm_put_var($this->shmvars[$this->lane], 2, 0);
         }
-
-        return false;
     }
 }

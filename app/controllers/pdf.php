@@ -10,7 +10,6 @@ use GuzzleHttp\Utils;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\ScalarUtils;
 use Librarian\Media\TesseractOcr;
-use Librarian\Mvc\Controller;
 use Throwable;
 
 /**
@@ -18,7 +17,7 @@ use Throwable;
  *
  * PDF related tasks.
  */
-class PdfController extends Controller {
+class PdfController extends AppController {
 
     /**
      * @var ScalarUtils
@@ -60,7 +59,7 @@ class PdfController extends Controller {
         $info = $model->info($this->get['id']);
 
         // Corrupt PDFs with 0 page count throw error.
-        if (isset($info['info']['page_count']) && $info['info']['page_count'] === 0) {
+        if (isset($info['pdf_info']['page_count']) && $info['pdf_info']['page_count'] === 0) {
 
             throw new Exception('invalid PDF file');
         }
@@ -123,10 +122,6 @@ class PdfController extends Controller {
 
             $stream = $pdf_model->modifiedPdf($this->get['id'], $annotations, $supplements);
             $pdf_model = null;
-
-            // Change extension (could be ZIP).
-            $meta = $stream->getMetadata();
-            $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . pathinfo($meta['uri'], PATHINFO_EXTENSION);
         }
 
         // Send disposition to the View.
@@ -134,6 +129,9 @@ class PdfController extends Controller {
 
         // View.
         $view = new FileView($this->di, $stream);
+
+        // Change extension (could be ZIP).
+        $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . pathinfo($view->filenameFromStream(), PATHINFO_EXTENSION);
         $view->filename = $filename;
         return $view->main($disposition);
     }
@@ -196,9 +194,12 @@ class PdfController extends Controller {
         $client_name = null;
 
         // Uploaded file.
+        /** @var UploadedFile $uploaded_file */
         $uploaded_file = $this->getUploadedFile('file');
 
         // Remote URL?
+        $temp_save = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('remote_pdf_');
+
         if (!empty($this->post['remote_url'])) {
 
             // Safe link?
@@ -217,12 +218,17 @@ class PdfController extends Controller {
 
             /** @var Response $response */
             $jar = new CookieJar();
-            $response = $client->request('GET', $this->post['remote_url'], ['stream' => true, 'cookies' => $jar]);
-            $stream = $response->getBody();
+
+            /** @var Response $response */
+            $response = $client->get($this->post['remote_url'], ['sink' => $temp_save, 'cookies' => $jar]);
 
             // Client filename.
             $decorator = new ResponseDecorator($response);
             $client_name = $decorator->getFilename();
+
+            // Open stream.
+            $fp = \GuzzleHttp\Psr7\Utils::tryFopen($temp_save, 'r');
+            $stream = \GuzzleHttp\Psr7\Utils::streamFor($fp);
 
         } elseif(isset($uploaded_file)) {
 
@@ -230,18 +236,105 @@ class PdfController extends Controller {
             $client_name = $uploaded_file->getClientFilename();
         }
 
-        $view = new DefaultView($this->di);
+        // Save the PDF to model.
+        $this->save($this->post['id'], $stream, $client_name);
 
-        if ($stream === null) {
+        if (is_writable($temp_save)) {
 
-            return $view->main();
+            unlink($temp_save);
         }
 
-        // Save the file.
-        $model = new PdfModel($this->di);
-        $model->save($this->post['id'], $stream, $client_name);
-
+        $view = new DefaultView($this->di);
         return $view->main(['info' => 'new PDF was saved']);
+    }
+
+    /**
+     * This is a method that takes an imported file stream, and sends it to the model.
+     *
+     * @param int $item_id
+     * @param StreamInterface $stream
+     * @param string $client_name
+     * @return void
+     * @throws Exception
+     */
+    public function save(int $item_id, StreamInterface $stream, string $client_name): void {
+
+        /*
+         * Shorten the client filename. Filenames are stored encoded in RFC 3986. Some
+         * UTF-8 filenames can be longer than allowed in this format.
+         */
+        while (strlen(rawurlencode($client_name)) > 240) {
+
+            $client_filename  = pathinfo($client_name, PATHINFO_FILENAME);
+            $client_extension = strtolower(pathinfo($client_name, PATHINFO_EXTENSION));
+
+            $client_filename = trim(mb_substr($client_filename, 0, -1, 'UTF-8'));
+            $client_name = $client_filename . '.' . $client_extension;
+        }
+
+        // File not a PDF?
+        setlocale(LC_ALL,'en_US.UTF-8');
+
+        /** @var FileTools $file_tools */
+        $file_tools = $this->di->get('FileTools');
+        $mime = $file_tools->getMime($stream);
+
+        if ($mime === 'application/pdf') {
+
+            /*
+             * PDF files.
+             */
+
+            // Just send it to the PDF model.
+            $model = new PdfModel($this->di);
+            $model->save($item_id, $stream, $client_name);
+
+        } else {
+
+            /*
+             * Non-PDF files.
+             */
+
+            // Only some MIME types allowed.
+            if (in_array($mime, $this->app_settings->extra_mime_types) === true) {
+
+                // Save stream to temp file.
+                $temp_path = IL_TEMP_PATH . DIRECTORY_SEPARATOR . $client_name;
+                $file_tools->writeFile($temp_path, $stream);
+
+                // Try to convert the file to PDF. Get converted file path.
+                $converted_path = $this->convertToPdf($temp_path);
+
+                if ($converted_path !== '') {
+
+                    // Success! Save PDF to model.
+                    $fp = \GuzzleHttp\Psr7\Utils::tryFopen($converted_path, 'r');
+                    $pdf_stream = \GuzzleHttp\Psr7\Utils::streamFor($fp);
+
+                    $model = new PdfModel($this->di);
+                    $model->save($item_id, $pdf_stream, $client_name);
+                }
+
+                // Save the original file as a supplement.
+                $supplement_model = new SupplementsModel($this->di);
+                $supplement_model->save($item_id, $stream, $client_name);
+
+                // Delete files when done.
+                if (is_writable($temp_path)) {
+
+                    unlink($temp_path);
+                }
+
+                if (is_writable($converted_path)) {
+
+                    unlink($converted_path);
+                }
+
+            } else {
+
+                throw new Exception('uploaded file is not a PDF or a supported type', 400);
+            }
+        }
     }
 
     /**
@@ -353,7 +446,7 @@ class PdfController extends Controller {
         // Get page count.
         $pdf_model = new PdfModel($this->di);
         $info = $pdf_model->info($this->post['id']);
-        $page_count = $info['info']['page_count'] ?? 0;
+        $page_count = $info['pdf_info']['page_count'] ?? 0;
 
         if ($page_count === 0) {
 
@@ -635,11 +728,11 @@ class PdfController extends Controller {
 
         $chunk = 50;
 
-        for ($i = 1; $i <= $info['info']['page_count']; $i = $i + $chunk) {
+        for ($i = 1; $i <= $info['pdf_info']['page_count']; $i = $i + $chunk) {
 
             $divs = [
                 'boxes'     => [],
-                'last_page' => min($i + $chunk - 1, $info['info']['page_count']),
+                'last_page' => min($i + $chunk - 1, $info['pdf_info']['page_count']),
                 'snippets'  => []
             ];
 
@@ -746,7 +839,7 @@ HTML;
         $view = new DefaultView($this->di);
         $chunk = 100;
 
-        for ($i = 1; $i <= $info['info']['page_count']; $i = $i + $chunk) {
+        for ($i = 1; $i <= $info['pdf_info']['page_count']; $i = $i + $chunk) {
 
             $divs = [];
             $links = $model->links($this->get['id'], $i, $chunk);

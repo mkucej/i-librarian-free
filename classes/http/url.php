@@ -12,12 +12,12 @@ final class Url {
     /**
      * @var Request
      */
-    private $request;
+    private Request $request;
 
     /**
      * @var array Server super globals.
      */
-    private  $server;
+    private array $server;
 
     public function __construct(Request $request) {
 
@@ -41,12 +41,12 @@ final class Url {
 
         // Add port.
         $port = $url->getPort();
-        $port = $port === '80' || $port === '443' || empty($port) ? '' : ":{$port}";
+        $port = $port === '80' || $port === '443' || empty($port) ? '' : ":$port";
 
         // Add scheme. Check for the scheme that client sent to a reverse proxy.
         $scheme = !empty($this->server['HTTP_X_FORWARDED_PROTO']) ? strtolower($this->server['HTTP_X_FORWARDED_PROTO']) : $url->getScheme();
 
-        return "{$scheme}://{$url->getHost()}{$port}{$base_path}";
+        return "$scheme://{$url->getHost()}$port$base_path";
     }
 
     /**

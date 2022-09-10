@@ -16,17 +16,17 @@ final class Router {
     /**
      * @var DependencyInjector We need the DI for controller instantiation.
      */
-    private $di;
+    private DependencyInjector $di;
 
     /**
      * @var array Array of route components.
      */
-    public  $route = [];
+    public array $route = [];
 
     /**
      * @var Validation
      */
-    private $validation;
+    private Validation $validation;
 
     /**
      * Constructor.

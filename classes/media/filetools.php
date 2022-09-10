@@ -4,6 +4,7 @@ namespace Librarian\Media;
 
 use Exception;
 use finfo;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
 use SplFileObject;
 
@@ -12,14 +13,14 @@ final class FileTools {
     /**
      * @var SplFileObject
      */
-    private $file;
+    private SplFileObject $file;
 
     /**
      * @var StreamInterface
      */
     private $stream;
 
-    private $wrong_mime_types = [
+    private array $wrong_mime_types = [
         'webma' => 'audio/webm'
     ];
 
@@ -54,7 +55,6 @@ final class FileTools {
      */
     public function getMime($file): string {
 
-        $mime = '';
         $this->addFile($file);
 
         // MIME types not correctly recognized.
@@ -109,5 +109,74 @@ final class FileTools {
         $mime_2 = substr($mime, -1 * ceil(strlen($mime) / 2));
 
         return $mime_1 === $mime_2 ? $mime_1 : $mime;
+    }
+
+    /**
+     * Make dir.
+     *
+     * @param string $dir
+     * @return void
+     * @throws Exception
+     */
+    public function makeDir(string $dir): void {
+
+        if (!is_dir($dir)) {
+
+            $mkdir = mkdir($dir, 0755, true);
+
+            if ($mkdir === false) {
+
+                throw new Exception('could not create the directory', 500);
+            }
+        }
+    }
+
+    /**
+     * Write file from Stream.
+     *
+     * @param string $filepath
+     * @param StreamInterface $stream
+     * @return int
+     * @throws Exception
+     */
+    public function writeFile(string $filepath, StreamInterface $stream): int {
+
+        setlocale(LC_ALL,'en_US.UTF-8');
+
+        // Make sure the dir exists.
+        $this->makeDir(pathinfo($filepath, PATHINFO_DIRNAME));
+
+        $written = 0;
+
+        if (strlen(basename($filepath)) > 250) {
+
+            throw new Exception('filename is too long', 400);
+        }
+
+        try {
+
+            $fp = Utils::tryFopen($filepath, 'w');
+
+        } catch (Exception $exc) {
+
+            $exc = null;
+            throw new Exception('could not write file', 500);
+        }
+
+        while (!$stream->eof()) {
+
+            $fwrite = fwrite($fp, $stream->read(4096));
+
+            if ($fwrite === false) {
+
+                throw new Exception('could not write file', 500);
+            }
+
+            $written += $fwrite;
+        }
+
+        fclose($fp);
+
+        return $written;
     }
 }

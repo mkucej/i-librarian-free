@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class TagsController extends Controller {
+class TagsController extends AppController {
 
     /**
      * TagsController constructor.

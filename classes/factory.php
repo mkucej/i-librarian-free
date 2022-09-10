@@ -12,7 +12,7 @@ final class Factory {
     /**
      * @var DependencyInjector
      */
-    private $di;
+    private DependencyInjector $di;
 
     /**
      * Constructor.
@@ -93,9 +93,8 @@ final class Factory {
 
             $appSettings = $this->di->getShared('AppSettings');
             $encryption  = $this->di->getShared('Encryption');
-            $request     = $this->di->getShared('ServerRequest');
 
-            return new \Librarian\Security\Session($appSettings, $encryption, $request);
+            return new \Librarian\Security\Session($appSettings, $encryption);
         });
 
         $this->di->set('Encryption', function () {
@@ -122,7 +121,7 @@ final class Factory {
 
         $this->di->set('ErrorView', function () {
 
-            return new \Librarian\ErrorView($this->di);
+            return new \LibrarianApp\ErrorView($this->di);
         });
 
         $this->di->set('Installation', function () {
@@ -251,7 +250,7 @@ final class Factory {
 
         $this->di->set('Image', function () {
 
-            return new \Librarian\Media\Image();
+            return \Librarian\Media\Image\Image::driver('gd');
         });
 
         $this->di->set('Logger', function () {
@@ -288,9 +287,8 @@ final class Factory {
         $this->di->set('BibtexExport', function () {
 
             $app_settings = $this->di->get('AppSettings');
-            $item_meta = $this->di->get('ItemMeta');
             $sanitation = $this->di->get('Sanitation');
-            return new \Librarian\Export\Bibtex($item_meta, $sanitation, $app_settings);
+            return new \Librarian\Export\Bibtex($sanitation, $app_settings);
         });
 
         $this->di->set('EndnoteExport', function () {

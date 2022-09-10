@@ -14,7 +14,7 @@ final class Authorization {
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
 
     /**
      * Constructor.
@@ -33,7 +33,7 @@ final class Authorization {
      * @return boolean
      * @throws Exception
      */
-    public function authorize($requirements = []): bool {
+    public function authorize(array $requirements = []): bool {
 
         if (isset($requirements['signed_in'])) {
 

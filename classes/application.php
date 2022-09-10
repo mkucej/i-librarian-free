@@ -17,7 +17,7 @@ final class Application {
     /**
      * @var DependencyInjector
      */
-    private $di;
+    private DependencyInjector $di;
 
     /**
      * Constructor.
@@ -112,7 +112,7 @@ final class Application {
      * @param integer $e_line
      * @throws ErrorException
      */
-    public function errorHandler($e_no, $e_str, $e_file, $e_line) {
+    public function errorHandler(int $e_no, string $e_str, string $e_file, int $e_line) {
 
         throw new ErrorException($e_str, 500, $e_no, $e_file, $e_line);
     }

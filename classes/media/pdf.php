@@ -15,29 +15,21 @@ use SimpleXMLElement;
 
 final class Pdf {
 
-    private $bookmarks = [];
-
-    /**
-     * @var Binary
-     */
-    private $binary;
-    private $di;
-    private $file;
-    public  $page_resolution;
-
-    /**
-     * @var Queue
-     */
-    private $queue;
+    private Binary $binary;
+    private array $bookmarks = [];
+    private DependencyInjector $di;
+    private string $file;
+    public  int $page_resolution;
+    private Queue $queue;
 
     /**
      * Pdf constructor.
      *
      * @param DependencyInjector $di
-     * @param $file
+     * @param string $file
      * @throws Exception
      */
-    public function __construct(DependencyInjector $di, $file) {
+    public function __construct(DependencyInjector $di, string $file) {
 
         if (mime_content_type($file) !== 'application/pdf') {
 
@@ -329,16 +321,16 @@ SQL;
      *
      * @param int|string$pageNumber
      * @param string $type
-     * @param int|string|null $resolution
+     * @param int|null $resolution
      * @param string $engine pdftoppm or gs
      * @return string
      * @throws Exception
      */
-    public function pageToImage($pageNumber, $type = 'jpg', $resolution = null, $engine = 'pdftoppm'): string {
+    public function pageToImage($pageNumber, string $type = 'jpg', int $resolution = null, string $engine = 'pdftoppm'): string {
 
         $this->queue->wait('binary');
 
-        $resolution = isset($resolution) ? $resolution : $this->page_resolution;
+        $resolution = $resolution ?? $this->page_resolution;
         $imagePath = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid();
 
         // Create image.
@@ -352,30 +344,30 @@ SQL;
                     $device = $type === 'jpg' ? 'jpeg -jpegopt quality=85' : 'png';
 
                     exec($this->binary->pdftocairo()
-                        . " -f {$pageNumber} -l {$pageNumber} -singlefile -cropbox "
-                        . " -r {$resolution} -{$device} "
+                        . " -f $pageNumber -l $pageNumber -singlefile -cropbox "
+                        . " -r $resolution -$device "
                         . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
 
-                    $imagePath = "{$imagePath}.{$type}";
+                    $imagePath = "$imagePath.$type";
 
                 } elseif ($engine === 'pdftoppm') {
 
                     $device = $type === 'jpg' ? 'jpeg -jpegopt quality=100' : 'png';
 
                     exec($this->binary->pdftoppm()
-                        . " -f {$pageNumber} -l {$pageNumber} -singlefile -cropbox "
-                        . " -r {$resolution} -{$device} "
+                        . " -f $pageNumber -l $pageNumber -singlefile -cropbox "
+                        . " -r $resolution -$device "
                         . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
 
-                    $imagePath = "{$imagePath}.{$type}";
+                    $imagePath = "$imagePath.$type";
 
                 } else {
 
                     $device = $type === 'jpg' ? '-sDEVICE=jpeg -dJPEGQ=85' : '-sDEVICE=png16m';
 
-                    exec($this->binary->ghostscript() . " {$device} -r{$resolution}"
+                    exec($this->binary->ghostscript() . " $device -r$resolution"
                         . " -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dDOINTERPOLATE -dUseCropBox"
-                        . " -dFirstPage={$pageNumber} -dLastPage={$pageNumber} -o "
+                        . " -dFirstPage=$pageNumber -dLastPage=$pageNumber -o "
                         . escapeshellarg($imagePath). " " . escapeshellarg($this->file));
                 }
 
@@ -383,19 +375,19 @@ SQL;
 
             case 'svg':
 
-                exec($this->binary->pdftocairo() . " -svg -f {$pageNumber} -l {$pageNumber} "
+                exec($this->binary->pdftocairo() . " -svg -f $pageNumber -l $pageNumber "
                     . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
 
-                // Cairo library has serious bugs, let's try to repair the SVG.
+                // Cairo's library has serious bugs, let's try to repair the SVG.
                 $this->repairCairoSvg($imagePath);
 
                 break;
 
             case 'pnggray':
 
-                exec($this->binary->ghostscript() . " -sDEVICE=pnggray -r{$resolution}"
+                exec($this->binary->ghostscript() . " -sDEVICE=pnggray -r$resolution"
                     . " -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dDOINTERPOLATE -dUseCropBox"
-                    . " -dFirstPage={$pageNumber} -dLastPage={$pageNumber} -o "
+                    . " -dFirstPage=$pageNumber -dLastPage=$pageNumber -o "
                     . escapeshellarg($imagePath). " " . escapeshellarg($this->file));
 
                 break;
@@ -419,17 +411,18 @@ SQL;
      * Crop PDF page to an image. Used by a JS PDF cropper. We use pdftoppm, because it can correctly apply cropbox
      * dimensions when extracting image from a PDF page.
      *
-     * @param  int $page
-     * @param  int $x
-     * @param  int $y
-     * @param  int $w
-     * @param  int $h
+     * @param int $page
+     * @param int $x
+     * @param int $y
+     * @param int $w
+     * @param int $h
+     * @param int $zoom
      * @return string
      * @throws Exception
      */
     public function cropPageToImage(int $page, int $x, int $y, int $w, int $h, int $zoom): string {
 
-        // The pages in the viewer are are 288 dpi. To make the image 300 dpi, we must multiply the args.
+        // The pages in the viewer are 288 dpi. To make the image 300 dpi, we must multiply the args.
         $resolution = ceil($zoom * 96 / 100);
         $ratio = 300 / $resolution;
         $x = round($ratio * $x);
@@ -443,8 +436,8 @@ SQL;
 
         // Create image.
         exec($this->binary->pdftoppm()
-            . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=90"
-            . " -r 300 -x {$x} -y {$y} -W {$w} -H {$h} -cropbox "
+            . " -singlefile -f $page -l $page -jpeg -jpegopt quality=90"
+            . " -r 300 -x $x -y $y -W $w -H $h -cropbox "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 
         $this->queue->release('binary');
@@ -479,8 +472,8 @@ SQL;
 
         // Create image.
         exec($this->binary->pdftoppm()
-            . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=80 -r 96 -cropbox"
-            . " -scale-to-x {$width} -scale-to-y -1 -x 0 -y 0 -W {$width} -H {$height} "
+            . " -singlefile -f $page -l $page -jpeg -jpegopt quality=80 -r 96 -cropbox"
+            . " -scale-to-x $width -scale-to-y -1 -x 0 -y 0 -W $width -H $height "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 
         $this->queue->release('binary');
@@ -511,8 +504,8 @@ SQL;
 
         // Create image.
         exec($this->binary->pdftoppm()
-            . " -singlefile -f {$page} -l {$page} -jpeg -jpegopt quality=100 -cropbox"
-            . " -scale-to-x {$width} -scale-to-y -1 -W {$width} "
+            . " -singlefile -f $page -l $page -jpeg -jpegopt quality=100 -cropbox"
+            . " -scale-to-x $width -scale-to-y -1 -W $width "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 
         $this->queue->release('binary');
@@ -765,7 +758,7 @@ SQL;
 SELECT
     page, position, top, `left`, height, width, text
     FROM boxes
-    WHERE page IN ({$placeholders})
+    WHERE page IN ($placeholders)
     ORDER BY page
 EOT;
 
@@ -847,15 +840,15 @@ SQL;
 
         foreach ($terms as $key => $term) {
 
-            $columns[] = "%{$term}%";
-            $columns[] = "%{$deaccented_terms[$key]}%";
+            $columns[] = "%$term%";
+            $columns[] = "%$deaccented_terms[$key]%";
         }
 
         $sql_search = <<<EOT
 SELECT
     page, position, top, left, height, width, CASE WHEN text_ind = '' THEN text ELSE text_ind END AS text
     FROM boxes
-    WHERE page >= ? AND page < ? AND ({$like_param})
+    WHERE page >= ? AND page < ? AND ($like_param)
     ORDER BY page, position
 EOT;
 
@@ -1011,7 +1004,7 @@ EOT;
 
         $this->queue->wait('binary');
 
-        exec($this->binary->pdftotext() . " -bbox -enc \"UTF-8\" -f {$page_from} -l {$page_end} "
+        exec($this->binary->pdftotext() . " -bbox -enc \"UTF-8\" -f $page_from -l $page_end "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($html_file));
 
         $this->queue->release('binary');
@@ -1151,7 +1144,7 @@ EOT;
 
         $this->queue->wait('binary');
 
-        exec($this->binary->pdftohtml() . " -nodrm -q -enc \"UTF-8\" -nomerge -i -hidden -xml -f {$page_from} -l {$page_end} "
+        exec($this->binary->pdftohtml() . " -nodrm -q -enc \"UTF-8\" -nomerge -i -hidden -xml -f $page_from -l $page_end "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xml_file));
 
         $this->queue->release('binary');
@@ -1267,15 +1260,15 @@ EOT;
         $pages = '';
         $xmlFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . '.xml';
 
-        if (isset($page) && is_int($page)) {
+        if (isset($page)) {
 
-            $pages = "-f {$page} -l {$page}";
-            $xmlFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . "p{$page}.xml";
+            $pages = "-f $page -l $page";
+            $xmlFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . "p$page.xml";
         }
 
         $this->queue->wait('binary');
 
-        exec($this->binary->pdftohtml() . " -nodrm {$pages} -enc UTF-8 -nomerge -i -hidden -xml "
+        exec($this->binary->pdftohtml() . " -nodrm $pages -enc UTF-8 -nomerge -i -hidden -xml "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xmlFile));
 
         $this->queue->release('binary');
@@ -1294,9 +1287,7 @@ EOT;
 
         // Repair XML string.
         $xml_obj = $this->di->getShared('Xml');
-        $string = $xml_obj->repair($string);
-
-        return $string;
+        return $xml_obj->repair($string);
     }
 
     /**
@@ -1305,7 +1296,7 @@ EOT;
      * @param SimpleXMLElement $outline
      * @param int $level
      */
-    private function traverseXMLOutline(SimpleXMLElement $outline, $level = 1) {
+    private function traverseXMLOutline(SimpleXMLElement $outline, int $level = 1) {
 
         foreach ($outline->children() as $child) {
 
@@ -1353,10 +1344,10 @@ EOT;
             $y_max = $y_min + 20;
 
             $annotation = strtoupper(bin2hex(mb_convert_encoding($note['annotation'], 'UCS-2BE', 'UTF-8')));
-            $rectangle = "{$x_min} {$y_min} {$x_max} {$y_max}";
+            $rectangle = "$x_min $y_min $x_max $y_max";
 
             file_put_contents($pdfmark_file, <<<NOTE
-                [ /Contents <FEFF{$annotation}>
+                [ /Contents <FEFF$annotation>
                   /Rect [ $rectangle ]
                   /Subtype /Text
                   /Name /Comment
@@ -1380,8 +1371,8 @@ NOTE
             $y_max = round(((1000 - $note['marker_top']) / 1000) * $page_h);
             $y_min = $y_max - round(($note['marker_height'] / 1000) * $page_h);
 
-            $rectangle = "{$x_min} {$y_min} {$x_max} {$y_max}";
-            $quad = "{$x_min} {$y_max} {$x_max} {$y_max} {$x_min} {$y_min} {$x_max} {$y_min}";
+            $rectangle = "$x_min $y_min $x_max $y_max";
+            $quad = "$x_min $y_max $x_max $y_max $x_min $y_min $x_max $y_min";
 
             switch ($note['marker_color']) {
 
@@ -1410,7 +1401,7 @@ NOTE
                   /Subtype /Highlight
                   /QuadPoints [ $quad ]
                   /SrcPg {$note['page']}
-                  /Color [ {$color} ]
+                  /Color [ $color ]
                   /ANN pdfmark
 
 NOTE
@@ -1569,7 +1560,7 @@ EOT;
             $surface_id = $surface->getAttribute('id');
 
             // Find g where the surface is used.
-            $g_use = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#{$surface_id}')]")->item(0);
+            $g_use = $xpath->query("//*[name()='use' and starts-with(@xlink:href, '#$surface_id')]")->item(0);
 
             if (empty($g_use)) {
 
@@ -1630,7 +1621,7 @@ EOT;
 
             // Find clip path for this mask.
             /** @var DOMElement $g_clip */
-            $g_mask = $xpath->query("//*[@mask=\"url(#{$mask_id})\"]")->item(0);
+            $g_mask = $xpath->query("//*[@mask=\"url(#$mask_id)\"]")->item(0);
 
             if (empty($g_mask)) {
 
@@ -1646,7 +1637,7 @@ EOT;
 
                 // Parse clip path starting point, width and height.
                 /** @var DOMElement $clip_path */
-                $clip_path = $xpath->query("//*[@id=\"{$clip_id}\"]")->item(0);
+                $clip_path = $xpath->query("//*[@id=\"$clip_id\"]")->item(0);
 
                 if (empty($clip_path)) {
 
@@ -1714,7 +1705,7 @@ EOT;
 
             // Get image original dimensions.
             /** @var DOMElement $image */
-            $image = $xpath->query("//*[@id=\"{$image_id}\"]")->item(0);
+            $image = $xpath->query("//*[@id=\"$image_id\"]")->item(0);
 
             if ($image === null) {
 
@@ -1729,7 +1720,7 @@ EOT;
             $c = round($dh / $img_h, 6);
 
             // Update the transform matrix.
-            $use[0]->setAttribute('transform', "matrix({$a},0,0,{$c},{$tx},{$ty})");
+            $use[0]->setAttribute('transform', "matrix($a,0,0,$c,$tx,$ty)");
         }
 
         $xml->save($filename);

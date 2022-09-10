@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Row extends Component {
 
-    private $rows = [];
+    private array $rows = [];
 
     /**
      * Constructor.
@@ -23,13 +23,13 @@ final class Row extends Component {
      * Add column. Default class is col-lg.
      *
      * @param string $html
-     * @param string $class
+     * @param string|null $class
      */
     public function column(string $html, string $class = null): void {
 
         $this->rows[] = [
             $html,
-            isset($class) ? $class : 'col-xl'
+            $class ?? 'col-xl'
         ];
     }
 
@@ -46,7 +46,7 @@ final class Row extends Component {
         foreach ($this->rows as $row) {
 
             $html .= <<<EOT
-            <div class="{$row[1]}">{$row[0]}</div>
+            <div class="$row[1]">$row[0]</div>
 EOT;
         }
 

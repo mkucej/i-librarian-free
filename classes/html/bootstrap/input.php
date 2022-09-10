@@ -9,11 +9,11 @@ use Librarian\Mvc\TextView;
  */
 class Input extends Component {
 
-    protected $groupClass;
-    protected $hint;
-    protected $inline;
-    protected $inputIcon;
-    protected $label;
+    protected string $groupClass = '';
+    protected string $hint = '';
+    protected bool   $inline = false;
+    protected string $inputIcon = '';
+    protected string $label = '';
 
     /**
      * Constructor.
@@ -156,20 +156,20 @@ class Input extends Component {
                 $inlineClass = $this->inline === true ? ' form-check-inline' : '';
 
                 // Hint  is optional.
-                $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\" style='transform: translateX(4px)'>{$this->hint}</small>";
+                $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\" style='transform: translateX(4px)'>$this->hint</small>";
 
                 // Compile HTML.
                 $html = <<<EOT
-                    <div class="form-check{$inlineClass} mb-2 {$this->groupClass}">
+                    <div class="form-check$inlineClass mb-2 $this->groupClass">
                         {$this->startTag()}
                         <label
                             for="{$this->attr('id')}"
-                            class="form-check-label {$disabledClass} {$labelRequired}">
+                            class="form-check-label $disabledClass $labelRequired">
                             <span class="mdi mdi-18px" aria-hidden="true"></span>
-                            <span class="label-text">{$this->label}</span>
+                            <span class="label-text">$this->label</span>
                         </label>
                         $hint
-                        {$this->inner_html}
+                        $this->inner_html
                     </div>
 EOT;
                 break;
@@ -187,7 +187,7 @@ EOT;
 
                 if (!empty($this->inputIcon)) {
 
-                    $inputIcon = "<span class=\"mdi mdi-18px mdi-{$this->inputIcon} opacity-50\" style=\"position: absolute;top:10px;right:5px\"></span>";
+                    $inputIcon = "<span class=\"mdi mdi-18px mdi-$this->inputIcon opacity-50\" style=\"position: absolute;top:10px;right:5px\"></span>";
 
                     $this->attr('style', $this->attr('style') . ';padding-right: 25px');
                 }
@@ -197,19 +197,19 @@ EOT;
                 $this->addClass($inputClass);
 
                 // Label is optional.
-                $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">{$this->label}</label>";
+                $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">$this->label</label>";
 
                 // Hint  is optional.
-                $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">{$this->hint}</small>";
+                $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">$this->hint</small>";
 
                 // Compile HTML.
                 $html = <<<EOT
-                    <div class="form-group {$this->groupClass}" style="position: relative">
+                    <div class="form-group $this->groupClass" style="position: relative">
                         $labelTag
                         {$this->startTag()}
                         $hint
                         $inputIcon
-                        {$this->inner_html}
+                        $this->inner_html
                     </div>
 EOT;
         }

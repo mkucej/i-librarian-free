@@ -6,14 +6,19 @@ ini_set('display_errors', 1);
 /*
  * I, Librarian version.
  */
-define('IL_VERSION', '5.10.1');
+const IL_VERSION = '5.10.1';
 
-/*
+/**
  * Define paths.
+ *
+ * Coming from in paths.php:
+ * @var string $IL_PRIVATE_PATH Defined in paths.php
+ * @var string $IL_CONFIG_PATH
+ * @var string $IL_DATA_PATH
  */
 
 // PUBLIC. This file's directory.
-define('IL_PUBLIC_PATH', __DIR__);
+const IL_PUBLIC_PATH = __DIR__;
 
 // PRIVATE.
 if (is_dir(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'app')) {
@@ -35,8 +40,8 @@ if (!is_dir(IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app')) {
     exit;
 }
 
-define('IL_APP_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app');
-define('IL_CLASS_PATH', IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'classes');
+const IL_APP_PATH = IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'app';
+const IL_CLASS_PATH = IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'classes';
 
 // CONFIG.
 if (is_dir(dirname(IL_PUBLIC_PATH) . DIRECTORY_SEPARATOR . 'config')) {
@@ -88,11 +93,11 @@ if (!is_dir(IL_DATA_PATH)) {
     exit;
 }
 
-define('IL_CACHE_PATH', IL_DATA_PATH . DIRECTORY_SEPARATOR . 'cache');
-define('IL_DB_PATH', IL_DATA_PATH . DIRECTORY_SEPARATOR . 'database');
-define('IL_PDF_PATH', IL_DATA_PATH . DIRECTORY_SEPARATOR . 'pdfs');
-define('IL_SUPPLEMENT_PATH', IL_DATA_PATH . DIRECTORY_SEPARATOR . 'supplements');
-define('IL_TEMP_PATH', IL_CACHE_PATH . DIRECTORY_SEPARATOR . 'temp');
+const IL_CACHE_PATH = IL_DATA_PATH . DIRECTORY_SEPARATOR . 'cache';
+const IL_DB_PATH = IL_DATA_PATH . DIRECTORY_SEPARATOR . 'database';
+const IL_PDF_PATH = IL_DATA_PATH . DIRECTORY_SEPARATOR . 'pdfs';
+const IL_SUPPLEMENT_PATH = IL_DATA_PATH . DIRECTORY_SEPARATOR . 'supplements';
+const IL_TEMP_PATH = IL_CACHE_PATH . DIRECTORY_SEPARATOR . 'temp';
 
 /*----------------------------------------------------------------------------*/
 
@@ -101,7 +106,7 @@ define('IL_TEMP_PATH', IL_CACHE_PATH . DIRECTORY_SEPARATOR . 'temp');
  */
 
 use Librarian\Application;
-use Librarian\ErrorView;
+use LibrarianApp\ErrorView;
 use Librarian\Http\Url;
 use Librarian\Loader;
 use Librarian\Container\DependencyInjector;

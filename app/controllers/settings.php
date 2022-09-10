@@ -4,14 +4,13 @@ namespace LibrarianApp;
 
 use DateTimeZone;
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class SettingsController
  *
  * User settings.
  */
-class SettingsController extends Controller {
+class SettingsController extends AppController {
 
     /**
      * Main action provides settings form with current settings.

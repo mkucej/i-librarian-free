@@ -11,9 +11,8 @@ use Librarian\External\Pmc;
 use Librarian\External\Pubmed;
 use Librarian\External\Xplore;
 use Librarian\ItemMeta;
-use Librarian\Mvc\Controller;
 
-class ItemController extends Controller {
+class ItemController extends AppController {
 
     /**
      * ItemController constructor.

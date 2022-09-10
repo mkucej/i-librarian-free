@@ -10,17 +10,17 @@ class Ris {
     /**
      * @var string Imported file contents.
      */
-    private $input;
+    private string $input;
 
     /**
      * @var ItemMeta
      */
-    private $item_meta;
+    private ItemMeta $item_meta;
 
     /**
      * @var array Entry offsets.
      */
-    private $offsets;
+    private array $offsets;
 
     public function __construct(ItemMeta $item_meta, string $input) {
 

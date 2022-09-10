@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Enter your custom paths below, if I, Librarian can't find them on it's own.
+ * Enter your custom paths below, if I, Librarian can't find them on its own.
  */
 
 // Path where the 'config' folder is, e.g. /etc/i-librarian.

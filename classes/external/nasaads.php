@@ -23,7 +23,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
     /**
      * @var array Return fields.
      */
-    private $fields = [
+    private array $fields = [
         'abstract',
         'aff',
         'author',
@@ -40,7 +40,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         'volume'
     ];
 
-    private $url_search = 'https://api.adsabs.harvard.edu/v1/search/query';
+    private string $url_search = 'https://api.adsabs.harvard.edu/v1/search/query';
 //    private $url_fetch  = 'https://api.adsabs.harvard.edu/v1/export/refabsxml';
 
     /**
@@ -112,7 +112,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         $this->queue->release('nasa');
 
         // No more requests allowed.
-        if ((integer) $limit_remaining === 1) {
+        if ($limit_remaining === 1) {
 
             $hours_remaining = ceil(($limit_reset - time()) / 3600);
             throw new Exception("maximum number of queries to NASA reached, try again in {$hours_remaining}h");
@@ -181,12 +181,12 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
             if ($name === 'boolean' && !empty($value)) {
 
                 $queries = [$value];
-                $search_name = "{$value} ";
+                $search_name = "$value ";
                 break;
             }
 
-            $queries[] = "{$name}: {$value}";
-            $search_name .= "{$allowed_params[$name]}: $value ";
+            $queries[] = "$name: $value";
+            $search_name .= "$allowed_params[$name]: $value ";
         }
 
         // Add filters. Only last submitted filter.
@@ -206,9 +206,9 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
                     $from = date('Y-m-d', time() - $days * 86400);
                     $now = date('Y-m-d', time() - 86400);
 
-                    $queries[] = "entdate:[{$from} TO {$now}]";
+                    $queries[] = "entdate:[$from TO $now]";
                     $plural = $days === '1' ? '' : 's';
-                    $search_name .= "\u{2022} last {$days} day{$plural} ";
+                    $search_name .= "\u{2022} last $days day$plural ";
                 }
             }
         }
@@ -217,15 +217,13 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
 
         $params = [
             'q'     => $query,
-            'start' => $start,
+            // Total rows to fetch per search. This does not equal I, Librarian page size.
+            'start' => floor($start / $maximum_rows) * $maximum_rows,
             'fq'    => $filters,
             'rows'  => $maximum_rows,
             'fl'    => join(',', $this->fields),
             'sort'  => $sort
         ];
-
-        // Total rows to fetch per search. This does not equal the I, Librarian page size.
-        $params['start'] = floor($start / $maximum_rows) * $maximum_rows;
 
         // Try to get records from Cache.
         $this->cache->context('searches');
@@ -257,7 +255,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
             $this->queue->release('nasa');
 
             // No more requests allowed.
-            if ((integer) $limit_remaining === 1) {
+            if ($limit_remaining === 1) {
 
                 $hours_remaining = ceil(($limit_reset - time()) / 3600);
                 throw new Exception("maximum number of queries to NASA reached, try again in {$hours_remaining}h");
@@ -277,7 +275,7 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
 
         // Add search name.
         $sort = empty($sort) ? 'relevance' : $sort;
-        $items['search_name'] = $search_name . " • sort: {$sort}";
+        $items['search_name'] = $search_name . " • sort: $sort";
 
         return $items;
     }
@@ -291,14 +289,14 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
      */
     public function formatMetadata($input): array {
 
+        // Response is JSON. Convert to array.
+        $json = Utils::jsonDecode($input, JSON_OBJECT_AS_ARRAY);
+
         $output = [
-            'found' => 0,
+            'found' => $json['response']['numFound'] ?? 0,
             'items' => []
         ];
 
-        // Response is JSON. Convert to array.
-        $json = Utils::jsonDecode($input, JSON_OBJECT_AS_ARRAY);
-        $output['found'] =  $json['response']['numFound'] ?? 0;
         $docs = $json['response']['docs'] ?? [];
 
         $i = 0;

@@ -5,7 +5,6 @@ namespace Librarian\Security;
 use Exception;
 use FilesystemIterator;
 use Librarian\AppSettings;
-use GuzzleHttp\Psr7\ServerRequest;
 
 /**
  * Session class.
@@ -15,37 +14,30 @@ final class Session {
     /**
      * @var AppSettings
      */
-    private $app_settings;
+    private AppSettings $app_settings;
 
     /**
      * @var Encryption
      */
-    private $encryption;
-
-    /**
-     * @var ServerRequest
-     */
-    private $request;
+    private Encryption $encryption;
 
     /*
      * Scalars.
      */
-    private $lifetime = 604800;    // 604800 Session lifetime is 7 days.
-    private $save_path;            // Session save path.
+    private int $lifetime = 604800;    // 604800 Session lifetime is 7 days.
+    private string $save_path;         // Session save path.
 
     /**
      * Constructor.
      *
      * @param AppSettings $appSettings
      * @param Encryption $encryption
-     * @param ServerRequest $request
      * @throws Exception
      */
-    public function __construct(AppSettings $appSettings, Encryption $encryption, ServerRequest $request) {
+    public function __construct(AppSettings $appSettings, Encryption $encryption) {
 
         $this->app_settings = $appSettings;
         $this->encryption   = $encryption;
-        $this->request      = $request;
 
         // Session settings.
         $cookie_secure = $this->app_settings->getIni('session', 'cookie_secure');
@@ -145,7 +137,7 @@ final class Session {
             $_SESSION['il'][$name] = $value;
         }
 
-        return isset($_SESSION['il'][$name]) ? $_SESSION['il'][$name] : null;
+        return $_SESSION['il'][$name] ?? null;
     }
 
     /**
@@ -166,7 +158,7 @@ final class Session {
      */
     public function destroy(): bool {
 
-        // Unset all of the session variables.
+        // Unset all the session variables.
         $_SESSION = [];
 
         // If it's desired to kill the session, also delete the session cookie.
@@ -245,7 +237,7 @@ final class Session {
     }
 
     /**
-     * Read all session files for the logged in user.
+     * Read all session files for the logged-in user.
      *
      * File contents: il|serialized session array
      *
@@ -258,7 +250,7 @@ final class Session {
 
         foreach ($session_ids as $session_id) {
 
-            $file = $this->save_path . DIRECTORY_SEPARATOR . "sess_{$session_id}";
+            $file = $this->save_path . DIRECTORY_SEPARATOR . "sess_$session_id";
 
             if (is_readable($file) === false) {
 

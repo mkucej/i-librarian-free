@@ -10,12 +10,12 @@ use Librarian\Mvc\TextView;
  */
 final class Card extends Component {
 
-    private $body_classes;
-    private $footer;
-    private $footer_classes;
-    private $header;
-    private $header_classes;
-    private $items = [];
+    private $body_classes = '';
+    private $footer = '';
+    private $footer_classes = '';
+    private $header = '';
+    private $header_classes = '';
+    private array  $items = [];
 
     /**
      * Constructor.
@@ -118,14 +118,14 @@ final class Card extends Component {
 
             $html .= <<<EOT
                 <div
-                    class="card-header d-flex justify-content-between align-items-center border-0 bg-transparent {$this->header_classes}">
-                    {$this->header}
+                    class="card-header d-flex justify-content-between align-items-center border-0 bg-transparent $this->header_classes">
+                    $this->header
                 </div>
 EOT;
         }
 
         // Card items.
-        foreach ($this->items as $key => $item) {
+        foreach ($this->items as $item) {
 
             switch ($item['type']) {
 
@@ -138,7 +138,7 @@ EOT;
                 case 'body':
                     $title = empty($item['title']) ? "" : "<h5 class=\"card-title\">{$item['title']}</h5>";
                     $html .= <<<EOT
-                        <div class="card-body pt-0 {$this->body_classes}">
+                        <div class="card-body pt-0 $this->body_classes">
                             $title
                             <div class="card-text">{$item['text']}</div>
                         </div>
@@ -158,7 +158,7 @@ EOT;
         if (!empty($this->footer)) {
 
             $html .= <<<EOT
-                <div class="card-footer border-0 bg-transparent pb-4 {$this->footer_classes}">{$this->footer}</div>
+                <div class="card-footer border-0 bg-transparent pb-4 $this->footer_classes">$this->footer</div>
 EOT;
         }
 

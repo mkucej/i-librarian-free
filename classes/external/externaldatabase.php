@@ -25,7 +25,7 @@ abstract class ExternalDatabase implements ExternalDatabaseInterface {
     /**
      * @var DependencyInjector
      */
-    protected $di;
+    protected DependencyInjector $di;
 
     /**
      * @var ItemMeta
@@ -77,11 +77,11 @@ abstract class ExternalDatabase implements ExternalDatabaseInterface {
     /**
      * Search database and return an array of records.
      *
-     * @param  array  $terms   Search terms [name => term].
-     * @param  int    $start   Starting record for this page.
-     * @param  int    $rows    Optional number of records per page.
-     * @param  array  $filters Optional array of filters [name => value].
-     * @param  string $sort    Optional sorting string.
+     * @param array $terms Search terms [name => term].
+     * @param int $start Starting record for this page.
+     * @param int $rows Optional number of records per page.
+     * @param array|null $filters Optional array of filters [name => value].
+     * @param string|null $sort Optional sorting string.
      * @return array
      */
     abstract function search(

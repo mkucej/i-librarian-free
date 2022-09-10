@@ -53,15 +53,15 @@ namespace Librarian\Html;
  */
 class Element {
 
-    protected $attrs = [];
+    protected array $attrs = [];
 
-    protected $classes = [];
+    protected array $classes = [];
 
-    protected $element_name = '';
+    protected string $element_name = '';
 
-    protected $inner_html = '';
+    protected string $inner_html = '';
 
-    protected $uses_name = [
+    protected array $uses_name = [
         'button',
         'form',
         'fieldset',
@@ -77,7 +77,7 @@ class Element {
         'param'
     ];
 
-    protected $void_elements = [
+    protected array $void_elements = [
         'area',
         'base',
         'br',
@@ -121,7 +121,7 @@ class Element {
             $method = strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $method));
         }
 
-        $value = isset($args[0]) ? $args[0] : null;
+        $value = $args[0] ?? null;
 
         return $this->attr($method, $value);
     }
@@ -191,7 +191,7 @@ class Element {
     /**
      * Style attr alternative.
      *
-     * @param string $css
+     * @param string|null $css
      * @return string
      */
     public function css(string $css = null): string {
@@ -286,7 +286,7 @@ class Element {
      */
     protected function startTag(): string {
 
-        $startTag = "<{$this->element_name}";
+        $startTag = "<$this->element_name";
 
         $attrs = $this->attrs;
 
@@ -330,7 +330,7 @@ class Element {
      */
     protected function endTag(): string {
 
-        return "</{$this->element_name}>";
+        return "</$this->element_name>";
     }
 
     /**

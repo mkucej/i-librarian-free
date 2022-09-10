@@ -9,13 +9,13 @@ use Librarian\Html\Element;
  */
 class Component extends Element {
 
-    protected $context = 'default';
-    protected $size = '';
+    protected string $context = 'default';
+    protected string $size = '';
 
     /**
      * Bootstrap's context.
      *
-     * @param string $context default, primary, secondary, success, danger, warning, info, light, dark
+     * @param string|null $context default, primary, secondary, success, danger, warning, info, light, dark
      * @return string
      */
     public function context(string $context = null): string {
@@ -33,7 +33,7 @@ class Component extends Element {
     /**
      * Bootstrap's component size.
      *
-     * @param string $size large, small
+     * @param string|null $size large, small
      * @return string
      */
     public function componentSize(string $size = null): string {
@@ -68,7 +68,7 @@ class Component extends Element {
      * Bootstrap's popover.
      *
      * @param string $content
-     * @param string $title
+     * @param string|null $title
      * @param string $placement
      * @param string $container
      */

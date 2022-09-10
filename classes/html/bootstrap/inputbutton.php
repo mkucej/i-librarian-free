@@ -7,9 +7,9 @@ namespace Librarian\Html\Bootstrap;
  */
 class InputButton extends Component {
 
-    protected $group_class;
-    protected $inline;
-    protected $label;
+    protected string $group_class = '';
+    protected bool   $inline = false;
+    protected string $label = '';
 
     /**
      * Constructor.
@@ -85,15 +85,13 @@ class InputButton extends Component {
         $disabledClass = $this->attr('disabled') === 'disabled' ? 'disabled' : '';
 
         // Compile HTML.
-        $html = <<<EOT
-            <div class="d-inline btn-group-toggle {$this->group_class} {$disabledClass}" data-toggle="buttons">
-                <label class="btn btn-{$this->context} {$size_class} btn-icon border-0">
+        return <<<EOT
+            <div class="d-inline btn-group-toggle $this->group_class $disabledClass" data-toggle="buttons">
+                <label class="btn btn-$this->context $size_class btn-icon border-0">
                     {$this->startTag()}
-                    {$this->label}
+                    $this->label
                 </label>
             </div>
 EOT;
-
-        return $html;
     }
 }

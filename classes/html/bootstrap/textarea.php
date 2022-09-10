@@ -5,12 +5,12 @@ namespace Librarian\Html\Bootstrap;
 use Librarian\Mvc\TextView;
 
 /**
- * Bootstrap's input.
+ * Bootstrap's textarea.
  */
 final class Textarea extends Component {
 
-    private $hint;
-    private $label;
+    private string $hint = '';
+    private string $label = '';
 
     /**
      * Constructor.
@@ -71,21 +71,19 @@ final class Textarea extends Component {
         }
 
         // Label is optional.
-        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">{$this->label}</label>";
+        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\">$this->label</label>";
 
         // Hint  is optional.
-        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">{$this->hint}</small>";
+        $hint = empty($this->hint) ? "" : "<small class=\"form-text text-muted\">$this->hint</small>";
 
         // Compile HTML.
-        $html = <<<EOT
+        return <<<EOT
             <div class="form-group">
                 $labelTag
                 {$this->startTag()}{$this->html()}{$this->endTag()}
                 $hint
             </div>
 EOT;
-
-        return $html;
     }
 
 }

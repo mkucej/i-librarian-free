@@ -16,12 +16,12 @@ final class Language {
     /**
      * @var string Default ICU language code.
      */
-    private $language = 'en_US';
+    private string $language = 'en_US';
 
     /**
      * @var array Translations.
      */
-    private $tokens;
+    private array $tokens;
 
     /**
      * Controller provides IETF language code, which is converted into an ICU locale.

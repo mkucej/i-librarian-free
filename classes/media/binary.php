@@ -19,7 +19,7 @@ final class Binary {
     /**
      * @var string  WINDOWS|MAC|LINUX
      */
-    private $os;
+    private string $os;
 
     /**
      * Binary constructor.
@@ -144,7 +144,7 @@ final class Binary {
             $this->isInstalled($binary);
         }
 
-        return "\"{$binary}\"";
+        return "\"$binary\"";
     }
 
     /**
@@ -160,7 +160,7 @@ final class Binary {
 
             if (is_executable($this->withPath($binary)) === false) {
 
-                throw new Exception("the program <kbd>{$binary}</kbd> not found", 500);
+                throw new Exception("the program <kbd>$binary</kbd> not found", 500);
             }
 
         } else {
@@ -168,7 +168,7 @@ final class Binary {
             if (is_string(shell_exec(sprintf("which %s", escapeshellarg($binary)))) === false &&
                 is_executable($this->withPath($binary)) === false) {
 
-                throw new Exception("the program <kbd>{$binary}</kbd> not found", 500);
+                throw new Exception("the program <kbd>$binary</kbd> not found", 500);
             }
         }
 
@@ -197,6 +197,12 @@ final class Binary {
 
                 }
 
+                // CentOS
+                if (is_executable('/usr/bin/' . $binary) === true) {
+
+                    return '/usr/bin/' . $binary;
+                }
+
                 return $binary;
 
             case 'pdfinfo':
@@ -205,20 +211,25 @@ final class Binary {
             case 'pdftocairo':
             case 'pdftoppm':
 
-                $name = $this->os === 'WINDOWS' ? "{$binary}.exe" : $binary;
+                $name = $this->os === 'WINDOWS' ? "$binary.exe" : $binary;
                 $path = IL_PRIVATE_PATH . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'poppler' . DIRECTORY_SEPARATOR . $name;
 
                 if (is_executable($path) === true) {
 
                     return $path;
+                }
 
+                // CentOS
+                if (is_executable('/usr/bin/' . $binary) === true) {
+
+                    return '/usr/bin/' . $binary;
                 }
 
                 return $binary;
 
             case 'tesseract':
 
-                $name = $this->os === 'WINDOWS' ? "{$binary}.exe" : $binary;
+                $name = $this->os === 'WINDOWS' ? "$binary.exe" : $binary;
 
                 if ($this->settings->getGlobal('tesseract_path') !== '') {
 
@@ -234,7 +245,7 @@ final class Binary {
 
             case 'soffice':
 
-                $name = $this->os === 'WINDOWS' ? "{$binary}.exe" : $binary;
+                $name = $this->os === 'WINDOWS' ? "$binary.exe" : $binary;
 
                 if ($this->settings->getGlobal('soffice_path') !== '') {
 

@@ -9,11 +9,11 @@ use Librarian\Mvc\TextView;
  */
 class Inputgroup extends Component {
 
-    protected $appendButton;
-    protected $hint;
-    protected $inline;
-    protected $inputIcon;
-    protected $label;
+    protected string $appendButton = '';
+    protected string $hint = '';
+    protected bool   $inline = false;
+    protected string $inputIcon = '';
+    protected string $label = '';
 
     /**
      * Constructor.
@@ -29,7 +29,7 @@ class Inputgroup extends Component {
     /**
      * Label.
      *
-     * @param  string $label
+     * @param string|null $label
      * @return string
      */
     public function label(string $label = null): string {
@@ -115,7 +115,7 @@ EOT;
 
         if (!empty($this->inputIcon)) {
 
-            $inputIcon = "<span class=\"mdi mdi-18px mdi-{$this->inputIcon} opacity-50\" style=\"position: absolute;top:10px;right:5px\"></span>";
+            $inputIcon = "<span class=\"mdi mdi-18px mdi-$this->inputIcon opacity-50\" style=\"position: absolute;top:10px;right:5px\"></span>";
 
             $this->attr('style', $this->attr('style') . ';padding-right: 25px');
         }
@@ -125,17 +125,16 @@ EOT;
         $this->addClass($inputClass);
 
         // Label is optional.
-        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\"><b>{$this->label}</b></label>";
+        $labelTag = empty($this->label) ? "" : "<label for=\"{$this->id()}\" class=\"$labelRequired\"><b>$this->label</b></label>";
 
         // Compile HTML.
-        $html = <<<EOT
+        return <<<EOT
             $labelTag
             <div class="input-group mb-2" style="position: relative">
                 {$this->startTag()}
-                {$this->appendButton}
+                $this->appendButton
                 $inputIcon
             </div>
 EOT;
-        return $html;
     }
 }

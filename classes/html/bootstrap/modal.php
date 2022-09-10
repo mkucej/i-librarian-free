@@ -13,11 +13,11 @@ final class Modal extends Component {
     /**
      * @var Language
      */
-    private $lang;
+    private Language $lang;
 
-    private $body;
-    private $buttons = [];
-    private $header;
+    private array  $body = [];
+    private array  $buttons = [];
+    private string $header = '';
 
     /**
      * Constructor.
@@ -83,8 +83,8 @@ final class Modal extends Component {
 
         $html =
 <<<HTML
-<div class="modal-dialog modal-dialog-scrollable {$size_class}" role="document">
-    <div class="modal-content rounded-0 {$theme_classes}">
+<div class="modal-dialog modal-dialog-scrollable $size_class" role="document">
+    <div class="modal-content rounded-0 $theme_classes">
 HTML;
 
         // Header.
@@ -93,8 +93,8 @@ HTML;
             $html .=
 <<<I18N
         <div class="modal-header rounded-0 border-0">
-            <h5 class="modal-title d-flex flex-nowrap">{$this->header}</h5>
-            <button type="button" class="btn btn-sm {$theme_btn_classes}" data-dismiss="modal" aria-label="{$this->lang->t9n('Close')}">
+            <h5 class="modal-title d-flex flex-nowrap">$this->header</h5>
+            <button type="button" class="btn btn-sm $theme_btn_classes" data-dismiss="modal" aria-label="{$this->lang->t9n('Close')}">
                 <span class="mdi mdi-18px mdi-close" aria-hidden="true"></span>
             </button>
         </div>
@@ -114,7 +114,7 @@ HTML;
         $html .=
 <<<I18N
         <div class="modal-footer border-0">
-            {$buttons}
+            $buttons
             <button type="button" class="btn btn-secondary" data-dismiss="modal">{$this->lang->t9n('Close')}</button>
         </div>
 I18N;

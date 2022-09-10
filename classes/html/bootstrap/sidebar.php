@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Sidebar extends Component {
 
-    private $menu;
+    private string $menu = '';
 
     /**
      * Constructor.
@@ -65,16 +65,16 @@ EOT
                         } else {
 
                         $dropdownLinks .= <<<EOT
-                            <a class="dropdown-item" href="{$dropdownLink[1]}">{$dropdownLink[0]}</a>
+                            <a class="dropdown-item" href="$dropdownLink[1]">$dropdownLink[0]</a>
 EOT;
                         }
                     }
 
                     // Dropdown.
                     $this->append(<<<EOT
-                        <li class="dropdown nav-item{$link[2]}">
-                            <a id="dropdown-link-{$key}" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$link[0]}</a>
-                            <div class="rounded-0 dropdown-menu" aria-labelledby="dropdown-link-{$key}">
+                        <li class="dropdown nav-item$link[2]">
+                            <a id="dropdown-link-$key" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">$link[0]</a>
+                            <div class="rounded-0 dropdown-menu" aria-labelledby="dropdown-link-$key">
                                 $dropdownLinks
                             </div>
                         </li>
@@ -85,8 +85,8 @@ EOT
 
                     // Link.
                     $this->append(<<<EOT
-                        <li class="nav-item{$link[2]}">
-                            <a class="nav-link" href="{$link[1]}">{$link[0]}</a>
+                        <li class="nav-item$link[2]">
+                            <a class="nav-link" href="$link[1]">$link[0]</a>
                         </li>
 EOT
                     );

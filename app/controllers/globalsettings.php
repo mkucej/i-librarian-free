@@ -3,14 +3,13 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class GlobalSettingsController
  *
  * Admin settings.
  */
-class GlobalSettingsController extends Controller {
+class GlobalSettingsController extends AppController {
 
     /**
      * Main action provides settings form with current settings.

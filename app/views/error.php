@@ -1,6 +1,6 @@
 <?php
 
-namespace Librarian;
+namespace LibrarianApp;
 
 use ErrorException;
 use Exception;
@@ -88,11 +88,7 @@ final class ErrorView extends TextView {
         // Add details.
         if ($level === 'debug') {
 
-            $message .= " in {$exc->getFile()} on line {$exc->getLine()}.";
-
-        } else {
-
-            $message .= ".";
+            $message .= " in {$exc->getFile()} on line {$exc->getLine()}";
         }
 
         // Check, if the request is AJAX.

@@ -13,12 +13,12 @@ final class Temporal {
     /**
      * @var AppSettings
      */
-    private $app_settings;
+    private AppSettings $app_settings;
 
     /**
      * @var Language
      */
-    private $lang;
+    private Language $lang;
 
     public function __construct(AppSettings $app_settings, Language $lang) {
 
@@ -29,7 +29,7 @@ final class Temporal {
     /**
      * Locale-aware datetime formatting and conversion to user time zone.
      *
-     * @param integer $time Can be timestamp, or ISO date.
+     * @param mixed $time Timestamp, or ISO date.
      * @return string
      * @throws Exception
      */
@@ -65,7 +65,7 @@ final class Temporal {
     /**
      * Locale-aware date (no time) formatting and conversion to user time zone.
      *
-     * @param integer $time Can be timestamp, or ISO date.
+     * @param mixed $time Timestamp, or ISO date.
      * @return string
      * @throws Exception
      */
@@ -101,7 +101,7 @@ final class Temporal {
     /**
      * Locale-aware date formatting. No timezone correction. Used mostly for publication dates.
      *
-     * @param string $time Can be timestamp, or ISO date.
+     * @param mixed $time Timestamp, or ISO date.
      * @return string
      * @throws Exception
      */
@@ -133,11 +133,11 @@ final class Temporal {
     /**
      * Get a difference in days of a datetime from today.
      *
-     * @param int|string $time Can be timestamp, or ISO date.
+     * @param mixed $time Timestamp, or ISO date.
      * @return string
      * @throws Exception
      */
-    public function diff($time) {
+    public function diff($time): string {
 
         // Get Timezone objects for later use.
         $timezone = $this->app_settings->getUser('timezone');
@@ -170,7 +170,7 @@ final class Temporal {
 
         } else {
 
-            return "{$diff} {$this->lang->t9n('days ago')}";
+            return "$diff {$this->lang->t9n('days ago')}";
         }
     }
 }

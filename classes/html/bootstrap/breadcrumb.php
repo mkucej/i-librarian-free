@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Breadcrumb extends Component {
 
-    private $breadcrumbs = [];
+    private array $breadcrumbs = [];
 
     /**
      * Constructor.
@@ -24,13 +24,13 @@ final class Breadcrumb extends Component {
      * Add breadcrumb item.
      *
      * @param string $name
-     * @param string $url
+     * @param string|null $url
      */
     public function item(string $name, string $url = null): void {
 
         $this->breadcrumbs[] = [
             $name,
-            isset($url) ? $url : ''
+            $url ?? ''
         ];
     }
 
@@ -49,14 +49,14 @@ final class Breadcrumb extends Component {
 
             $html .= <<<EOT
             <li class="breadcrumb-item d-inline-block text-truncate" style="max-width: 50vw">
-                <a href="{$breadcrumb[1]}">{$breadcrumb[0]}</a>
+                <a href="$breadcrumb[1]">$breadcrumb[0]</a>
             </li>
 EOT;
         }
 
         $html .= <<<EOT
             <li class="breadcrumb-item d-inline-block text-truncate active" style="max-width: 50vw" aria-current="page">
-                {$last_breadcrumb[0]}
+                $last_breadcrumb[0]
             </li>
 EOT;
 

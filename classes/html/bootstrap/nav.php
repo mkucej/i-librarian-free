@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 class Nav extends Component {
 
-    private $items = [];
+    private array $items = [];
 
     /**
      * Constructor.
@@ -46,13 +46,13 @@ class Nav extends Component {
 
             $html .= <<<EOT
                 <span
-                    id="{$item[1]}-nav"
-                    class="cursor-pointer mr-1 border-0 nav-item nav-link{$class}{$activeClass}"
-                    data-target="#{$item[1]}"
+                    id="$item[1]-nav"
+                    class="cursor-pointer mr-1 border-0 nav-item nav-link$class$activeClass"
+                    data-target="#$item[1]"
                     data-toggle="tab"
                     role="tab"
-                    aria-controls="{$item[1]}"
-                    aria-selected="{$item[2]}">{$item[0]}</span>
+                    aria-controls="$item[1]"
+                    aria-selected="$item[2]">$item[0]</span>
 EOT;
         }
 

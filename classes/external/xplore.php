@@ -3,6 +3,7 @@
 namespace Librarian\External;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Client;
 use Librarian\ItemMeta;
@@ -16,14 +17,9 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
     private $client;
 
     /**
-     * @var ScalarUtils
-     */
-    private $scalar_utils;
-
-    /**
      * @var \XPLORE
      */
-    private $xplore;
+    private \XPLORE $xplore;
 
     public function __construct(DependencyInjector $di, string $api_key) {
 
@@ -49,13 +45,15 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
      * @param string $uid
      * @return array
      * @throws Exception
+     * @throws GuzzleException
      */
     public function fetch(string $uid): array {
 
         // DOI vs IEEE ID.
-        $this->scalar_utils = $this->di->getShared('ScalarUtils');
+        /** @var ScalarUtils $scalar_utils */
+        $scalar_utils = $this->di->getShared('ScalarUtils');
 
-        if ($this->scalar_utils->isDoi($uid) === true) {
+        if ($scalar_utils->isDoi($uid) === true) {
 
             return $this->search([
                 ['doi' => $uid]
@@ -88,9 +86,10 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
      * @param array $terms Search terms [name => term].
      * @param int $start Starting record for this page.
      * @param int $rows Optional number of records per I, Librarian page.
-     * @param array $filters Optional array of filters [name => value].
-     * @param string $sort Optional sorting string.
+     * @param array|null $filters Optional array of filters [name => value].
+     * @param string|null $sort Optional sorting string.
      * @return array
+     * @throws GuzzleException
      * @throws Exception
      */
     public function search(
@@ -111,7 +110,7 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
 
             $this->xplore->searchField($name, $value);
 
-            $search_name .= "{$name}: {$value} ";
+            $search_name .= "$name: $value ";
         }
 
         // Add filters.
@@ -124,7 +123,7 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
 
                 $this->xplore->resultsFilter($name, $value);
 
-                $search_name .= "{$name}: {$value} ";
+                $search_name .= "$name: $value ";
             }
         }
 
@@ -138,13 +137,13 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
         $this->xplore->maximumResults($maximum_rows);
 
         // Available sorting is useless. :-(
-        $this->xplore->resultsSorting('article_title', 'asc');
+        $this->xplore->resultsSorting('article_title');
 
         // Get results as JSON.
-        $this->xplore->dataType('json');
+        $this->xplore->dataType();
 
         // Return results as array.
-        $this->xplore->dataFormat('array');
+        $this->xplore->dataFormat();
 
         // Try to get records from Cache.
         $this->cache->context('searches');
@@ -196,12 +195,9 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
     public function formatMetadata($input): array {
 
         $output = [
-            'found' => 0,
+            'found' => $input['total_records'] ?? 0,
             'items' => []
         ];
-
-        // Found.
-        $output['found'] = $input['total_records'] ?? 0;
 
         // Articles.
         $articles = $input['articles'] ?? [];

@@ -6,12 +6,10 @@ use Exception;
 use Librarian\AppSettings;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
 use Librarian\Media\Binary;
 use Librarian\Media\FileTools;
-use Librarian\Queue\Queue;
 use Librarian\Security\Sanitation;
 use Librarian\Security\Session;
 use Librarian\Security\Validation;
@@ -20,79 +18,64 @@ use Librarian\Storage\Database;
 /**
  * Class Model
  *
- * @method Stream readPdf(int $id)
+ * @method StreamInterface readPdf(int $id)
  */
 abstract class Model {
 
     /**
      * @var DependencyInjector
      */
-    protected $di;
+    protected DependencyInjector $di;
 
     /**
      * @var AppSettings
      */
-    protected $app_settings;
+    protected AppSettings $app_settings;
 
     /**
      * @var Binary
      */
-    protected $binary;
+    protected Binary $binary;
 
     /**
      * @var Database main
      */
-    protected $db_main;
+    protected Database $db_main;
 
     /**
      * @var Database logs
      */
-    protected $db_logs;
+    protected Database $db_logs;
 
     /**
      * @var FileTools
      */
-    protected $file_tools;
+    protected FileTools $file_tools;
 
     /**
      * @var string User permissions G|U|A.
      */
-    protected $permissions;
-
-    /**
-     * @var array POST globals.
-     */
-    protected $post;
+    protected string $permissions;
 
     /**
      * @var Sanitation
      */
-    protected $sanitation;
-
-    /**
-     * @var Session
-     */
-    protected $session;
+    protected Sanitation $sanitation;
 
     /**
      * @var Validation
      */
-    protected $validation;
-
-    /**
-     * @var string A id hash. Most models will require authorization against it.
-     */
-    protected $id_hash;
+    protected Validation $validation;
 
     /**
      * @var string A user id.
      */
-    protected $user_id;
+    protected string $user_id;
 
     /**
      * Constructor.
      *
-     * @param  DependencyInjector $di
+     * @param DependencyInjector $di
      * @throws Exception
      */
     public function __construct(DependencyInjector $di) {
@@ -102,7 +85,6 @@ abstract class Model {
         $this->file_tools   = $this->di->get('FileTools');
         $this->sanitation   = $this->di->getShared('Sanitation');
         $this->validation   = $this->di->getShared('Validation');
-        $this->session      = $this->di->getShared('Session');
     }
 
     /**
@@ -140,7 +122,7 @@ abstract class Model {
      * @param  integer|string $item_id
      * @return bool
      */
-    protected function idExists($item_id) {
+    protected function idExists($item_id): bool {
 
         $sql = <<<'EOT'
 SELECT count(*)
@@ -165,7 +147,7 @@ EOT;
      * @return string
      * @throws Exception
      */
-    protected function getSubPath($id) {
+    protected function getSubPath($id): string {
 
         $basename = $this->idToBasename($id);
 
@@ -179,7 +161,7 @@ EOT;
      * @return boolean
      * @throws Exception
      */
-    protected function isFile(string $filepath) {
+    protected function isFile(string $filepath): bool {
 
         if (is_readable($filepath) === false) {
 
@@ -196,7 +178,7 @@ EOT;
      * @return string
      * @throws Exception
      */
-    protected function idToBasename($id) {
+    protected function idToBasename($id): string {
 
         return str_pad($id, 9, '0', STR_PAD_LEFT);
     }
@@ -205,10 +187,10 @@ EOT;
      * Locate PDF file and return PSR Stream.
      *
      * @param integer|string $id
-     * @return Stream
+     * @return StreamInterface
      * @throws Exception
      */
-    protected function _readPdf($id) {
+    protected function _readPdf($id): StreamInterface {
 
         $pdf_file = $this->idToPdfPath($id);
 
@@ -227,7 +209,7 @@ EOT;
      * @return boolean
      * @throws Exception
      */
-    protected function isPdf($id) {
+    protected function isPdf($id): bool {
 
         return $this->isFile($this->idToPdfPath($id));
     }
@@ -236,10 +218,10 @@ EOT;
      * Open local file and return a PSR Stream.
      *
      * @param string $filepath
-     * @return Stream
+     * @return StreamInterface
      * @throws Exception
      */
-    protected function readFile(string $filepath) {
+    protected function readFile(string $filepath): StreamInterface {
 
         try {
 
@@ -342,7 +324,7 @@ EOT;
      * @return bool
      * @throws Exception
      */
-    protected function deleteFile($filepath) {
+    protected function deleteFile($filepath): bool {
 
         if (is_file($filepath) === false) {
 
@@ -371,7 +353,7 @@ EOT;
      * @return string
      * @throws Exception
      */
-    protected function idToPdfPath($id) {
+    protected function idToPdfPath($id): string {
 
         return IL_PDF_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id) . DIRECTORY_SEPARATOR . $this->idToBasename($id) . '.pdf';
     }
@@ -381,7 +363,7 @@ EOT;
      * @return string
      * @throws Exception
      */
-    protected function idToSupplementPath($id) {
+    protected function idToSupplementPath($id): string {
 
         return IL_SUPPLEMENT_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id) . DIRECTORY_SEPARATOR . $this->idToBasename($id);
     }
@@ -391,7 +373,7 @@ EOT;
      * @return bool
      * @throws Exception
      */
-    protected function makeDir($dir) {
+    protected function makeDir($dir): bool {
 
         $this->validation->dirname($dir);
 
@@ -406,49 +388,5 @@ EOT;
         }
 
         return true;
-    }
-
-    /**
-     * Convert supported file types to PDF and return new file pathname.
-     *
-     * @param string $filename
-     * @return string Temporary PDF file path.
-     * @throws Exception
-     */
-    protected function convertToPdf(string $filename): string {
-
-        $this->binary = $this->di->get("Binary");
-
-        // Attempt conversion.
-        if (PHP_OS === 'Linux' || PHP_OS === 'Darwin') {
-
-            putenv('HOME=' . IL_TEMP_PATH);
-        }
-
-        /** @var Queue $queue */
-        $queue = $this->di->getShared('Queue');
-
-        $queue->wait('binary');
-
-        exec($this->binary->soffice() . ' --invisible --convert-to pdf:writer_pdf_Export --outdir ' .
-            escapeshellarg(IL_TEMP_PATH) . ' ' . escapeshellarg($filename)
-        );
-
-        $queue->release('binary');
-
-        if (PHP_OS === 'Linux' || PHP_OS === 'Darwin') {
-
-            putenv('HOME=""');
-        }
-
-        $new_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . pathinfo($filename, PATHINFO_FILENAME) . '.pdf';
-
-        if (is_file($new_file) === false) {
-
-            // Conversion failed, exit.
-            return '';
-        }
-
-        return  $new_file;
     }
 }

@@ -12,12 +12,12 @@ final class DependencyInjector {
     /**
      * @var array Closures with class definitions.
      */
-    private $definitions;
+    private array $definitions;
 
     /**
      * @var array Registry of instantiated singletons.
      */
-    private $objects;
+    private array $objects;
 
     /**
      * Save a class definition in the DI container.
@@ -57,22 +57,21 @@ final class DependencyInjector {
         $params_a = $arguments ?? [];
         $params_b = is_array($params_a) === true ? $params_a : [$params_a];
 
-        switch ($shared) {
+        if ($shared) {
 
-            case true:
-                // Singletons.
-                if ($this->has($name) === false) {
+            // Singletons.
+            if ($this->has($name) === false) {
 
-                    $this->objects[$name] = call_user_func_array($this->definitions[$name], $params_b);
-                }
-                return $this->objects[$name];
+                $this->objects[$name] = call_user_func_array($this->definitions[$name], $params_b);
+            }
 
-            case false:
-                // Regular objects.
-                return call_user_func_array($this->definitions[$name], $params_b);
+            return $this->objects[$name];
+
+        } else {
+
+            // Regular objects.
+            return call_user_func_array($this->definitions[$name], $params_b);
         }
-
-        throw new Exception("could not instantiate shared object $name", 500);
     }
 
     /**
@@ -94,7 +93,7 @@ final class DependencyInjector {
      * @param  string $name
      * @return boolean
      */
-    public function has(string $name) {
+    public function has(string $name): bool {
 
         return isset($this->objects[$name]);
     }

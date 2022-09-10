@@ -35,7 +35,7 @@ final class Button extends Component {
         // Context.
         if (!empty($this->context)) {
 
-            $this->addClass("btn-{$this->context}");
+            $this->addClass("btn-$this->context");
         }
 
         // Size.

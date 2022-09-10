@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\Container\DependencyInjector;
-use Librarian\Mvc\Controller;
 
-class ProjectController extends Controller {
+class ProjectController extends AppController {
 
     /**
      * ProjectController constructor.

@@ -22,12 +22,12 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var string Fetch URL.
      */
-    private $url_fetch;
+    private string $url_fetch;
 
     /**
      * Constructor.

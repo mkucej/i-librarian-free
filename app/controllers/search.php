@@ -3,14 +3,13 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
 /**
  * Class SearchController
  *
  * Manages saved searches.
  */
-class SearchController extends Controller {
+class SearchController extends AppController {
 
     /**
      * @return string

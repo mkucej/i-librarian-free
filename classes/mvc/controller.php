@@ -8,9 +8,7 @@ use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\UploadedFile;
 use Librarian\Media\Language;
-use Librarian\Security\Authorization;
 use Librarian\Security\Sanitation;
-use Librarian\Security\Session;
 use Librarian\Security\Validation;
 use LibrarianApp\SettingsModel;
 
@@ -19,66 +17,56 @@ abstract class Controller {
     /**
      * @var DependencyInjector
      */
-    protected $di;
+    protected DependencyInjector $di;
 
     /**
      * @var AppSettings
      */
-    protected $app_settings;
-
-    /**
-     * @var Authorization
-     */
-    protected $authorization;
+    protected AppSettings $app_settings;
 
     /**
      * @var Language
      */
-    protected $lang;
+    protected Language $lang;
 
     /**
      * @var ServerRequest
      */
-    protected $request;
+    protected ServerRequest $request;
 
     /**
      * @var Sanitation
      */
-    protected $sanitation;
-
-    /**
-     * @var Session
-     */
-    protected $session;
+    protected Sanitation $sanitation;
 
     /**
      * @var Validation
      */
-    protected $validation;
+    protected Validation $validation;
 
     /**
      * GET globals.
      * @var array
      */
-    protected $get;
+    protected array $get;
 
     /**
      * POST globals.
      * @var array
      */
-    protected $post;
+    protected array $post;
 
     /**
      * FILES globals.
      * @var array
      */
-    protected $files;
+    protected array $files;
 
     /**
      * SERVER globals.
      * @var array
      */
-    protected $server;
+    protected array $server;
 
     /**
      * Constructor.
@@ -90,50 +78,13 @@ abstract class Controller {
 
         $this->di            = $di;
         $this->app_settings  = $this->di->getShared('AppSettings');
-        $this->authorization = $this->di->getShared('Authorization');
         $this->lang          = $this->di->getShared('Language');
         $this->request       = $this->di->getShared('ServerRequest');
         $this->sanitation    = $this->di->getShared('Sanitation');
-        $this->session       = $this->di->getShared('Session');
         $this->validation    = $this->di->getShared('Validation');
 
         $this->loadGlobals();
         $this->globalSettings();
-
-        // Session is required for all requests.
-        $this->session->start();
-
-        // Set locale. Must have php-intl, the client header, and user must allow custom locales.
-        $language = 'en_US';
-
-        if (extension_loaded('intl') === true && isset($this->server['HTTP_ACCEPT_LANGUAGE']) === true) {
-
-            $language = locale_accept_from_http($this->server['HTTP_ACCEPT_LANGUAGE']);
-        }
-
-        if ($this->session->data('user_id') !== null && $this->app_settings->getUser('use_en_language') === '1') {
-
-            $language = 'en_US';
-        }
-
-        // Debug.
-//        $language = 'de';
-
-        $this->lang->setLanguage($language);
-
-        // All POST requests must contain CSRF token.
-        if ($this->request->getMethod() === 'POST') {
-
-            if (empty($this->post['csrfToken'])) {
-
-                throw new Exception('missing CSRF token in POST request', 400);
-            }
-
-            if ($this->session->data('token') !== $this->post['csrfToken']) {
-
-                throw new Exception('session has expired, please reload', 401);
-            }
-        }
     }
 
     /**

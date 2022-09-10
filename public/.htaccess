@@ -3,3 +3,8 @@
     php_value post_max_size 900M
     php_value max_input_vars 10000
 </IfModule>
+<IfModule mod_php.c>
+    php_value upload_max_filesize 600M
+    php_value post_max_size 900M
+    php_value max_input_vars 10000
+</IfModule>

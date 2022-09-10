@@ -34,7 +34,7 @@ final class Badge extends Component {
         // Context.
         if (!empty($this->context)) {
 
-            $this->addClass("badge-{$this->context}");
+            $this->addClass("badge-$this->context");
         }
 
         return parent::render();

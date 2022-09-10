@@ -286,7 +286,7 @@ final class Utils
     public static function streamFor($resource = '', array $options = []): StreamInterface
     {
         if (is_scalar($resource)) {
-            $stream = self::tryFopen('php://temp', 'r+');
+            $stream = self::tryFopen('php://temp/maxmemory:5242880', 'r+');
             if ($resource !== '') {
                 fwrite($stream, (string) $resource);
                 fseek($stream, 0);
@@ -303,7 +303,7 @@ final class Utils
 
                 /** @var resource $resource */
                 if ((\stream_get_meta_data($resource)['uri'] ?? '') === 'php://input') {
-                    $stream = self::tryFopen('php://temp', 'w+');
+                    $stream = self::tryFopen('php://temp/maxmemory:5242880', 'w+');
                     stream_copy_to_stream($resource, $stream);
                     fseek($stream, 0);
                     $resource = $stream;
@@ -327,7 +327,7 @@ final class Utils
                 }
                 break;
             case 'NULL':
-                return new Stream(self::tryFopen('php://temp', 'r+'), $options);
+                return new Stream(self::tryFopen('php://temp/maxmemory:5242880', 'r+'), $options);
         }
 
         if (is_callable($resource)) {

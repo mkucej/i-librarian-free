@@ -16,9 +16,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Librarian\Http\ResponseDecorator;
 use Librarian\Media\Pdf;
-use Librarian\Mvc\Controller;
 
-class ImportController extends Controller {
+class ImportController extends AppController {
 
     /**
      * ImportController constructor.

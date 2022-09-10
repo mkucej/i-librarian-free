@@ -7,7 +7,7 @@ namespace Librarian\Html\Bootstrap;
  */
 final class Icon extends Component {
 
-    private $icon_type;
+    private string $icon_type = '';
 
     /**
      * Constructor.
@@ -24,7 +24,7 @@ final class Icon extends Component {
     /**
      * Set/get icon type.
      *
-     * @param  string $icon_type
+     * @param string|null $icon_type
      * @return string
      */
     public function icon(string $icon_type = null): string {
@@ -34,7 +34,7 @@ final class Icon extends Component {
             $this->icon_type = $icon_type;
 
             // Set icon type.
-            $this->addClass("mdi-{$icon_type}");
+            $this->addClass("mdi-$icon_type");
         }
 
         return $this->icon_type;

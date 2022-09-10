@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
-class DashboardController extends Controller {
+class DashboardController extends AppController {
 
     /**
      * Main.

@@ -3,9 +3,8 @@
 namespace LibrarianApp;
 
 use Exception;
-use Librarian\Mvc\Controller;
 
-class ScopusController extends Controller {
+class ScopusController extends AppController {
 
     /**
      * Main. Search form and list of searches.

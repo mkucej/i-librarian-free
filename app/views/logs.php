@@ -9,7 +9,6 @@ use Librarian\Mvc\TextView;
 class LogsView extends TextView {
 
     /**
-     * @param array $data
      * @return string
      * @throws Exception
      */

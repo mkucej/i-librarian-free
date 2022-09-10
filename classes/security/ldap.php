@@ -18,7 +18,7 @@ final class Ldap {
     /**
      * @var Validation
      */
-    private $validation;
+    private Validation $validation;
 
     /**
      * @var array LDAP ini settings.
@@ -117,11 +117,11 @@ final class Ldap {
          */
         if (isset($this->settings['ldap_user_filter']) === false || $this->settings['ldap_user_filter'] === '') {
 
-            $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}={$username}))";
+            $ldap_lookup = "(&(|(objectClass=user)(objectClass=iNetOrgPerson))({$this->settings['ldap_username_attr']}=$username))";
 
         } else {
 
-            $ldap_lookup ="(&" . $this->settings['ldap_user_filter'] . "({$this->settings['ldap_username_attr']}={$username}))";
+            $ldap_lookup ="(&" . $this->settings['ldap_user_filter'] . "({$this->settings['ldap_username_attr']}=$username))";
         }
 
         $ldap_sr = ldap_search(
@@ -231,8 +231,8 @@ final class Ldap {
         return [
             'username'    => $username,
             'first_name'  => $first_name,
-            'last_name'   => isset($usersattributes[0]['sn'][0]) ? $usersattributes[0]['sn'][0] : '',
-            'email'       => isset($usersattributes[0]['mail'][0]) ? $usersattributes[0]['mail'][0] : '',
+            'last_name'   => $usersattributes[0]['sn'][0] ?? '',
+            'email'       => $usersattributes[0]['mail'][0] ?? '',
             'permissions' => $permissions
         ];
     }
@@ -271,7 +271,7 @@ final class Ldap {
         $ldap_sr = @ldap_read(
             $this->ldap_connect,
             $ldap_admingroup_dn,
-            "({$this->settings['ldap_filter']}={$ldap_user_dn})",
+            "({$this->settings['ldap_filter']}=$ldap_user_dn)",
             ['member']
         );
 
@@ -321,7 +321,7 @@ final class Ldap {
         $ldap_sr = @ldap_read(
             $this->ldap_connect,
             $ldap_usergroup_dn,
-            "({$this->settings['ldap_filter']}={$ldap_user_dn})",
+            "({$this->settings['ldap_filter']}=$ldap_user_dn)",
             ['member']
         );
 

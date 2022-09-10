@@ -4,9 +4,8 @@ namespace LibrarianApp;
 
 use Exception;
 use Librarian\External\Nasaads;
-use Librarian\Mvc\Controller;
 
-class NasaController extends Controller {
+class NasaController extends AppController {
 
     /**
      * @var Nasaads

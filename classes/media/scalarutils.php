@@ -15,12 +15,12 @@ final class ScalarUtils {
     /**
      * @var DependencyInjector
      */
-    private $di;
+    private DependencyInjector $di;
 
     /**
      * @var Language
      */
-    protected $lang;
+    protected Language $lang;
 
     public function __construct(DependencyInjector $di, Language $lang) {
 
@@ -28,7 +28,7 @@ final class ScalarUtils {
         $this->lang = $lang;
     }
 
-    public function versionToInteger(string $version) {
+    public function versionToInteger(string $version): string {
 
         $version_parts = explode('.', $version);
 
@@ -118,9 +118,7 @@ ROW;
 TBODY
         );
 
-        $output = $el->render();
-
-        return $output;
+        return $el->render();
     }
 
     public function formatBytes($bytes, int $precision = 1): string {
@@ -183,7 +181,7 @@ TBODY
 
         if (extension_loaded('intl') === false) {
 
-            return number_format($number, $precision, '.', ',');
+            return number_format($number, $precision);
         }
 
         $fmt = new NumberFormatter(
@@ -376,9 +374,7 @@ TBODY
             }
         }
 
-        $output = preg_replace('/[^\p{L}\p{N}\-_]/u', '', $output);
-
-        return $output;
+        return preg_replace('/[^\p{L}\p{N}\-_]/u', '', $output);
     }
 
     /**
@@ -490,6 +486,6 @@ TBODY
 
         $match = preg_match('/10\.\d{4,5}\.?\d*\/\S+/ui', $doi);
 
-        return $match === 1 ? true : false;
+        return $match === 1;
     }
 }
