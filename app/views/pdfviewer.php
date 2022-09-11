@@ -476,8 +476,8 @@ EOT;
 EOT;
 
         // First thumb.
-        $tw = round(0.4 * $w);
-        $th = round(0.4 * $h);
+        $tw = 0.4 * $w;
+        $th = 0.4 * $h;
 
         $thumbs = <<<EOT
             <div class="pdfviewer-thumb img-light-mode position-relative my-3 md-box-shadow-1" data-page="1">
@@ -498,8 +498,8 @@ EOT;
             $number = $i;
             $w = $info['pdf_info']['page_sizes'][$i]['width'];
             $h = $info['pdf_info']['page_sizes'][$i]['height'];
-            $tw = round(0.4 * $w);
-            $th = round(0.4 * $h);
+            $tw = 0.4 * $w;
+            $th = 0.4 * $h;
 
             $images .= <<<EOT
                 <div class="d-inline-block pdfviewer-page mb-3 img-light-mode md-box-shadow-1" data-page="{$number}">

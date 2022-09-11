@@ -206,8 +206,8 @@ SQL;
 
                     if ($page > 0) {
 
-                        $pdfinfo['page_sizes'][$page]['width']  = ceil($this->page_resolution * $match[6] / 72);
-                        $pdfinfo['page_sizes'][$page]['height'] = ceil($this->page_resolution * $match[8] / 72);
+                        $pdfinfo['page_sizes'][$page]['width']  = ($this->page_resolution * $match[6] / 72);
+                        $pdfinfo['page_sizes'][$page]['height'] = ($this->page_resolution * $match[8] / 72);
                     }
 
                 } elseif (strpos($line, "Page") === 0) {
@@ -328,6 +328,21 @@ SQL;
      */
     public function pageToImage($pageNumber, string $type = 'jpg', int $resolution = null, string $engine = 'pdftoppm'): string {
 
+        /*
+         * We have to do some trickery first. The goal is to have images with even pixel numbers, because Chrome is buggy,
+         * and can't properly resize images with odd pixel sizes. The trick is:
+         * 1. Get page sizes from info()
+         * 2. Calculate what the resulting image will be for the given zoom.
+         * 3. If width and/or height are odd, add 1 pixel.
+         * 4. Use pdftoppm scaling ability.
+         */
+        $info = $this->info();
+        $page_size = $info['page_sizes'][$pageNumber];
+        $w = (int) round( ($resolution / 100) * $page_size['width'] );
+        $h = (int) round( ($resolution / 100) * $page_size['height']);
+        $w = $w % 2 === 0 ? $w : $w + 1;
+        $h = $h % 2 === 0 ? $h : $h - 1;
+
         $this->queue->wait('binary');
 
         $resolution = $resolution ?? $this->page_resolution;
@@ -352,11 +367,11 @@ SQL;
 
                 } elseif ($engine === 'pdftoppm') {
 
-                    $device = $type === 'jpg' ? 'jpeg -jpegopt quality=100' : 'png';
+                    $device = $type === 'jpg' ? 'jpeg -jpegopt quality=85' : 'png';
 
                     exec($this->binary->pdftoppm()
                         . " -f $pageNumber -l $pageNumber -singlefile -cropbox "
-                        . " -r $resolution -$device "
+                        . " -scale-to-x $w -scale-to-y -1 -x 0 -y 0 -W $w -H $h -$device "
                         . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
 
                     $imagePath = "$imagePath.$type";
@@ -504,7 +519,7 @@ SQL;
 
         // Create image.
         exec($this->binary->pdftoppm()
-            . " -singlefile -f $page -l $page -jpeg -jpegopt quality=100 -cropbox"
+            . " -singlefile -f $page -l $page -jpeg -jpegopt quality=80 -cropbox"
             . " -scale-to-x $width -scale-to-y -1 -W $width "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 

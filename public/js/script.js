@@ -3069,13 +3069,38 @@ class PdfMainView extends View {
             container: $('#pdfviewer-pages .pdfviewer-left').get(0),
             elements_selector: '.lazy',
             load_delay: 250,
-            threshold: 400
+            threshold: 400,
+            callback_loaded: (el)=>{
+                el.style.width  = '200px';
+                el.style.height = Math.round((200 / el.naturalWidth) * el.naturalHeight) + 'px';
+            }
         });
         this.lazyLoad = new LazyLoad({
             container: document.querySelector('.pdfviewer-right'),
             elements_selector: '.lazy',
             load_delay: 250,
-            threshold: 1000
+            threshold: 1000,
+            callback_loaded: (el)=>{
+                let ratio = 1, zoom = store.load('il.pageZoom');
+                if (zoom === 'auto') {
+                    let pageWidth = $('.pdfviewer-right').width() - 30,
+                        imgWidth = $('.pdfviewer-page > img').eq(0).attr('width'),
+                        tempZoom = Math.max(100 * pageWidth / imgWidth, 50);
+                    [50, 75, 100, 125, 150, 200, 250, 300].forEach(function(v) {
+                        if (v <= tempZoom) {
+                            zoom = v.toString();
+                        }
+                    });
+                }
+                if (zoom < 200) {
+                    ratio = 0.5;
+                }
+                if (zoom < 100) {
+                    ratio = 0.25;
+                }
+                el.style.width  = Math.round(ratio * el.naturalWidth) + 'px';
+                el.style.height = Math.round(ratio * el.naturalHeight) + 'px';
+            }
         });
         // Initial night mode.
         if (store.load('il.nightMode') === true) {
@@ -3206,9 +3231,9 @@ class PdfMainView extends View {
                 imgZoom = '200';
         }
         $('.pdfviewer-page > img').each(function () {
-            // Resize images.
-            this.style.width  = Math.ceil(0.01 * zoom * this.getAttribute('width')) + 'px';
-            this.style.height = Math.ceil(0.01 * zoom * this.getAttribute('height')) + 'px';
+            // Resize images. Initial size, lazy loader will resize precisely on image load.
+            this.style.width  = Math.round(0.01 * zoom * this.getAttribute('width')) + 'px';
+            this.style.height = Math.round(0.01 * zoom * this.getAttribute('height')) + 'px';
             // Reset lazy loading.
             if (this.getAttribute('data-src') !== null) {
                 this.removeAttribute('data-was-processed');
