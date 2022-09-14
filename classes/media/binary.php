@@ -42,6 +42,9 @@ final class Binary {
 
         } elseif (DIRECTORY_SEPARATOR === '/') {
 
+            // Required for CentOS.
+            putenv("LD_LIBRARY_PATH=/");
+
             $this->os = 'LINUX';
         }
     }
@@ -165,7 +168,7 @@ final class Binary {
 
         } else {
 
-            if (is_string(shell_exec(sprintf("which %s", escapeshellarg($binary)))) === false &&
+            if (is_string(shell_exec(sprintf("command -v %s", escapeshellarg($binary)))) === false &&
                 is_executable($this->withPath($binary)) === false) {
 
                 throw new Exception("the program <kbd>$binary</kbd> not found", 500);
@@ -197,12 +200,6 @@ final class Binary {
 
                 }
 
-                // CentOS
-                if (is_executable('/usr/bin/' . $binary) === true) {
-
-                    return '/usr/bin/' . $binary;
-                }
-
                 return $binary;
 
             case 'pdfinfo':
@@ -217,12 +214,6 @@ final class Binary {
                 if (is_executable($path) === true) {
 
                     return $path;
-                }
-
-                // CentOS
-                if (is_executable('/usr/bin/' . $binary) === true) {
-
-                    return '/usr/bin/' . $binary;
                 }
 
                 return $binary;
@@ -253,7 +244,7 @@ final class Binary {
 
                 } elseif($this->os === 'WINDOWS') {
 
-                    return "%PROGRAMFILES%\\LibreOffice 6\\program\\soffice.exe";
+                    return "%PROGRAMFILES%\\LibreOffice\\program\\soffice.exe";
                 }
 
                 return $binary;
