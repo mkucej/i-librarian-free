@@ -3,13 +3,16 @@
 namespace LibrarianApp;
 
 use Exception;
+use GuzzleHttp\Psr7\UploadedFile;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Utils;
 use Librarian\Http\ResponseDecorator;
+use Librarian\Media\FileTools;
 use Librarian\Media\ScalarUtils;
 use Librarian\Media\TesseractOcr;
+use Psr\Http\Message\StreamInterface;
 use Throwable;
 
 /**
@@ -236,16 +239,24 @@ class PdfController extends AppController {
             $client_name = $uploaded_file->getClientFilename();
         }
 
-        // Save the PDF to model.
-        $this->save($this->post['id'], $stream, $client_name);
+        if (is_object($stream)) {
 
-        if (is_writable($temp_save)) {
+            // Save the PDF to model.
+            $this->save($this->post['id'], $stream, $client_name);
 
-            unlink($temp_save);
+            if (is_writable($temp_save)) {
+
+                unlink($temp_save);
+            }
+
+            $view = new DefaultView($this->di);
+            return $view->main(['info' => 'new PDF was saved']);
+
+        } else {
+
+            $view = new DefaultView($this->di);
+            return $view->main([]);
         }
-
-        $view = new DefaultView($this->di);
-        return $view->main(['info' => 'new PDF was saved']);
     }
 
     /**
