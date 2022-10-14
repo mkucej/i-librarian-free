@@ -118,6 +118,9 @@ final class Image {
      */
     public function __destruct() {
 
-        self::$driver->destroy($this->image);
+        if ($this->image !== null) {
+
+            self::$driver->destroy($this->image);
+        }
     }
 }
