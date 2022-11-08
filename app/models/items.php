@@ -862,6 +862,15 @@ EOT;
         int $project_id = null
     ): array {
 
+        // Search is empty.
+        if (join('', $search['search_query']) === '') {
+
+            return [
+                'items' => [],
+                'total_count' => 0
+            ];
+        }
+
         // Item ID search.
         if ($search['search_type'][0] === 'itemid') {
 
@@ -1638,7 +1647,7 @@ EOT;
 
                             foreach ($field as $field_part) {
 
-                                $placeholders[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
+                                $placeholder_parts[] = "{$field_part} LIKE ? ESCAPE '\' AND ({$field_part} LIKE ? ESCAPE '\' OR {$field_part} GLOB ? OR {$field_part} GLOB ? OR {$field_part} GLOB ?)";
                                 $columns[] = "%{$term_like}%";
                                 $columns[] = "% {$term_like} %";
                                 $columns[] = "* [{$extra_characters}]{$term} *";
