@@ -3,6 +3,7 @@
 namespace Librarian\External;
 
 use Exception;
+use GuzzleHttp\Exception\BadResponseException;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -57,16 +58,6 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
         // Acquire green light.
         $this->queue->wait('nasa');
 
-        // Get current request count limit from SHM.
-        $count = $this->queue->count();
-        $max_count = $this->queue->maxCount();
-
-        // Prevent request, if limit reached.
-        if ($count + 1 === $max_count) {
-
-            throw new Exception('maximum number of queries to NASA reached, try again later');
-        }
-
         // Instantiate Client.
         $this->client = $this->di->get('HttpClient', [
             [
@@ -98,29 +89,29 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
             'rows' => 1
         ];
 
-        // Send request to API endpoint.
-        $response = $this->client->get($this->url_search . '?' . http_build_query($query));
+        try {
 
-        // Get limits and save them to SHM.
-        $limit_total = (integer) $response->getHeaderLine('X-RateLimit-Limit');
-        $limit_remaining = (integer) $response->getHeaderLine('X-RateLimit-Remaining');
-        $limit_reset = (integer) $response->getHeaderLine('X-RateLimit-Reset');
+            // Send request to API endpoint.
+            $response = $this->client->get($this->url_search . '?' . http_build_query($query));
+            $this->queue->release('nasa');
 
-        // Save counts to queue.
-        $this->queue->count($limit_total - $limit_remaining);
-        $this->queue->maxCount($limit_total);
-        $this->queue->release('nasa');
+            $json_str = $response->getBody()->getContents();
 
-        // No more requests allowed.
-        if ($limit_remaining === 1) {
+            return $this->formatMetadata($json_str);
 
-            $hours_remaining = ceil(($limit_reset - time()) / 3600);
-            throw new Exception("maximum number of queries to NASA reached, try again in {$hours_remaining}h");
+        } catch (BadResponseException $e) {
+
+            $this->queue->release('nasa');
+
+            if ($e->getCode() === 429) {
+
+                throw new Exception("maximum number of queries to NASA reached, try again in tomorrow");
+
+            } else {
+
+                throw new Exception('NASA server error');
+            }
         }
-
-        $json_str = $response->getBody()->getContents();
-
-        return $this->formatMetadata($json_str);
     }
 
     /**
@@ -241,32 +232,32 @@ class Nasaads extends ExternalDatabase implements ExternalDatabaseInterface {
 
         if (empty($items)) {
 
-            // Send request to API endpoint.
-            $response = $this->client->get($this->url_search . '?' . http_build_query($params));
+            try {
 
-            // Get limits and save them to SHM.
-            $limit_total = (integer) $response->getHeaderLine('X-RateLimit-Limit');
-            $limit_remaining = (integer) $response->getHeaderLine('X-RateLimit-Remaining');
-            $limit_reset = (integer) $response->getHeaderLine('X-RateLimit-Reset');
+                // Send request to API endpoint.
+                $response = $this->client->get($this->url_search . '?' . http_build_query($params));
+                $this->queue->release('nasa');
 
-            // Save counts to queue.
-            $this->queue->count($limit_total - $limit_remaining);
-            $this->queue->maxCount($limit_total);
-            $this->queue->release('nasa');
+                $json_str = $response->getBody()->getContents();
 
-            // No more requests allowed.
-            if ($limit_remaining === 1) {
+                $items = $this->formatMetadata($json_str);
 
-                $hours_remaining = ceil(($limit_reset - time()) / 3600);
-                throw new Exception("maximum number of queries to NASA reached, try again in {$hours_remaining}h");
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                $this->queue->release('nasa');
+
+                if ($e->getCode() === 429) {
+
+                    throw new Exception("maximum number of queries to NASA reached, try again in tomorrow");
+
+                } else {
+
+                    throw new Exception('NASA server error');
+                }
             }
-
-            $json_str = $response->getBody()->getContents();
-
-            $items = $this->formatMetadata($json_str);
-
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
         }
 
         // Paging.

@@ -4,6 +4,7 @@ namespace Librarian\External;
 
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
@@ -22,6 +23,8 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
      */
     private string $url_fetch;
     private string $url_search;
+
+    private int $tries = 0;
 
     /**
      * Pubmed constructor.
@@ -78,15 +81,36 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
             'retmode' => 'xml'
         ];
 
-        // Acquire semaphore.
-        $this->queue->wait('pubmed');
+        try {
 
-        // Get results.
-        $response = $this->client->get($this->url_fetch . http_build_query($params));
+            $this->queue->wait('pubmed');
+            $response = $this->client->get($this->url_fetch . http_build_query($params));
+            $this->queue->release('pubmed');
 
-        $this->queue->release('pubmed');
+            return $this->formatMetadata($response->getBody()->getContents());
 
-        return $this->formatMetadata($response->getBody()->getContents());
+        } catch (BadResponseException $e) {
+
+            if ($e->getCode() === 429) {
+
+                if ($this->tries < 3) {
+
+                    sleep(1);
+                    $this->tries++;
+                    return $this->fetchMultiple($uids);
+
+                } else {
+
+                    $this->queue->release('pubmed');
+                    throw new Exception('Pubmed server is busy, try again later');
+                }
+
+            } else {
+
+                $this->queue->release('pubmed');
+                throw new Exception('Pubmed server error');
+            }
+        }
     }
 
     /**
@@ -228,28 +252,50 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
         if (empty($items)) {
 
-            // Acquire semaphore.
-            $this->queue->wait('pubmed');
+            try {
 
-            // Get results.
-            $response = $this->client->get($this->url_search . http_build_query($params));
+                $this->queue->wait('pubmed');
+                $response = $this->client->get($this->url_search . http_build_query($params));
+                $this->queue->release('pubmed');
 
-            $this->queue->release('pubmed');
+                $contents = $response->getBody()->getContents();
+                $json = json_decode($contents, true);
 
-            $contents = $response->getBody()->getContents();
-            $json = json_decode($contents, true);
+                $items['items'] = [];
 
-            $items['items'] = [];
+                if (!empty($json['esearchresult']['idlist'])) {
 
-            if (!empty($json['esearchresult']['idlist'])) {
+                    usleep(100001);
+                    $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+                }
 
-                $items = $this->fetchMultiple($json['esearchresult']['idlist']);
+                $items['found'] = $json['esearchresult']['count'] ?? 0;
+
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                if ($e->getCode() === 429) {
+
+                    if ($this->tries < 3) {
+
+                        sleep(1);
+                        $this->tries++;
+                        return $this->search($terms, $start, $rows, $filters, $sort);
+
+                    } else {
+
+                        $this->queue->release('pubmed');
+                        throw new Exception('Pubmed server is busy, try again later');
+                    }
+
+                } else {
+
+                    $this->queue->release('pubmed');
+                    throw new Exception('Pubmed server error');
+                }
             }
-
-            $items['found'] = $json['esearchresult']['count'] ?? 0;
-
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
         }
 
         // Paging.

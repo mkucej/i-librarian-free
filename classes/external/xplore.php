@@ -3,6 +3,7 @@
 namespace Librarian\External;
 
 use Exception;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Client;
@@ -20,6 +21,8 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
      * @var \XPLORE
      */
     private \XPLORE $xplore;
+
+    private int $tries = 0;
 
     public function __construct(DependencyInjector $di, string $api_key) {
 
@@ -162,18 +165,39 @@ final class Xplore extends ExternalDatabase implements ExternalDatabaseInterface
 
         if (empty($items)) {
 
-            // Get results from Xplore.
-            $result = $this->xplore->callAPI($this->client);
+            try {
 
-            if (is_array($result) === false) {
+                $this->queue->wait('ieee');
+                $result = $this->xplore->callAPI($this->client);
+                $this->queue->release('ieee');
 
-                throw new Exception('Xplore API search did not work. Please try again later.');
+                $items = $this->formatMetadata($result);
+
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                if ($e->getCode() === 429) {
+
+                    if ($this->tries < 3) {
+
+                        sleep(1);
+                        $this->tries++;
+                        return $this->search($terms, $start, $rows, $filters, $sort);
+
+                    } else {
+
+                        $this->queue->release('ieee');
+                        throw new Exception('IEEE server is busy, try again later');
+                    }
+
+                } else {
+
+                    $this->queue->release('ieee');
+                    throw new Exception('IEEE server error');
+                }
             }
-
-            $items = $this->formatMetadata($result);
-
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
         }
 
         // Paging.

@@ -5,6 +5,7 @@ namespace Librarian\External;
 use DateTime;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
@@ -21,6 +22,8 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
      * @var string API URL.
      */
     private string $url;
+
+    private int $tries = 0;
 
     /**
      * Arxiv constructor.
@@ -87,14 +90,41 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
         if (empty($items)) {
 
-            // Get results from Arxiv.
-            $response = $this->client->get($this->url . http_build_query($params));
-            $xml = $response->getBody()->getContents();
+            try {
 
-            $items = $this->formatMetadata($xml);
+                $this->queue->wait('arxiv');
+                $response = $this->client->get($this->url . http_build_query($params));
+                $this->queue->release('arxiv');
 
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
+                $xml = $response->getBody()->getContents();
+
+                $items = $this->formatMetadata($xml);
+
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                if ($e->getCode() === 429) {
+
+                    if ($this->tries < 3) {
+
+                        sleep(1);
+                        $this->tries++;
+                        return $this->fetchMultiple($uids);
+
+                    } else {
+
+                        $this->queue->release('arxiv');
+                        throw new Exception('arXiv server is busy, try again later');
+                    }
+
+                } else {
+
+                    $this->queue->release('arxiv');
+                    throw new Exception('arXiv server error');
+                }
+            }
         }
 
         return $items;
@@ -269,14 +299,41 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
         if (empty($items)) {
 
-            // Get results from Arxiv.
-            $response = $this->client->get($this->url . http_build_query($params));
-            $xml = $response->getBody()->getContents();
+            try {
 
-            $items = $this->formatMetadata($xml);
+                $this->queue->wait('arxiv');
+                $response = $this->client->get($this->url . http_build_query($params));
+                $this->queue->release('arxiv');
 
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
+                $xml = $response->getBody()->getContents();
+
+                $items = $this->formatMetadata($xml);
+
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                if ($e->getCode() === 429) {
+
+                    if ($this->tries < 3) {
+
+                        sleep(1);
+                        $this->tries++;
+                        return $this->search($terms, $start, $rows, $filters, $sort);
+
+                    } else {
+
+                        $this->queue->release('arxiv');
+                        throw new Exception('arXiv server is busy, try again later');
+                    }
+
+                } else {
+
+                    $this->queue->release('arxiv');
+                    throw new Exception('arXiv server error');
+                }
+            }
         }
 
         // Paging.

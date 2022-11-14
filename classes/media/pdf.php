@@ -606,12 +606,12 @@ SQL;
         $tmpFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . '-temp.txt';
         $txtFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . '.txt';
 
-        $this->queue->wait('binary');
+        $this->queue->wait('pdfextract');
 
         exec($this->binary->pdftotext() . ' -enc UTF-8 '
             . escapeshellarg($this->file) . ' ' . escapeshellarg($tmpFile));
 
-        $this->queue->release('binary');
+        $this->queue->release('pdfextract');
 
         // Binary failed -> quiet exit.
         if (!is_file($tmpFile)) {
@@ -1017,12 +1017,12 @@ EOT;
         // Get boxes.
         $html_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('boxes_') . '.html';
 
-        $this->queue->wait('binary');
+        $this->queue->wait('pdfextract');
 
         exec($this->binary->pdftotext() . " -bbox -enc \"UTF-8\" -f $page_from -l $page_end "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($html_file));
 
-        $this->queue->release('binary');
+        $this->queue->release('pdfextract');
 
         // Binary failed -> quiet exit.
         if (!is_file($html_file)) {
@@ -1157,12 +1157,12 @@ EOT;
         // Add links.
         $xml_file = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('links_') . '.xml';
 
-        $this->queue->wait('binary');
+        $this->queue->wait('pdfextract');
 
         exec($this->binary->pdftohtml() . " -nodrm -q -enc \"UTF-8\" -nomerge -i -hidden -xml -f $page_from -l $page_end "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xml_file));
 
-        $this->queue->release('binary');
+        $this->queue->release('pdfextract');
 
         $db = $this->openDb();
         $db->connect();
@@ -1281,12 +1281,12 @@ EOT;
             $xmlFile = IL_TEMP_PATH . DIRECTORY_SEPARATOR . basename($this->file) . "p$page.xml";
         }
 
-        $this->queue->wait('binary');
+        $this->queue->wait('pdfextract');
 
         exec($this->binary->pdftohtml() . " -nodrm $pages -enc UTF-8 -nomerge -i -hidden -xml "
             . escapeshellarg($this->file) . ' ' . escapeshellarg($xmlFile));
 
-        $this->queue->release('binary');
+        $this->queue->release('pdfextract');
 
         // Binary failed -> quiet exit.
         if (!is_file($xmlFile)) {

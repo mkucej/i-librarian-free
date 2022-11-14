@@ -4,7 +4,7 @@ namespace Librarian\External;
 
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Utils;
 use Librarian\ItemMeta;
@@ -26,6 +26,8 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
      * @var string API URL.
      */
     private string $url;
+
+    private int $tries = 0;
 
     /**
      * Arxiv constructor.
@@ -83,23 +85,43 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
         try {
 
+            $this->queue->wait('crossref');
             $response = $this->client->get($this->url . '?filter=' . $this->sanitation->urlquery($doi_filter) . '&mailto=' . $this->sanitation->urlquery($this->api_key));
+            $this->queue->release('crossref');
+
             $json = $response->getBody()->getContents();
 
             return $this->formatMetadata($json);
 
-        } catch (ClientException $exc) {
+        } catch (BadResponseException $e) {
 
-            if ($exc->getCode() === 404) {
+            if ($e->getCode() === 404) {
 
                 return [
                     'found' => 0,
                     'items' => []
                 ];
+
+            } elseif ($e->getCode() === 429) {
+
+                if ($this->tries < 3) {
+
+                    sleep(1);
+                    $this->tries++;
+                    return $this->fetchMultiple($dois);
+
+                } else {
+
+                    $this->queue->release('crossref');
+                    throw new Exception('Crossref server is busy, try again later');
+                }
+
+            } else {
+
+                $this->queue->release('crossref');
+                throw new Exception('Crossref server error');
             }
         }
-
-        return [];
     }
 
     /**
@@ -208,14 +230,41 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
         if (empty($items)) {
 
-            // Get results.
-            $response = $this->client->get($this->url . '?mailto=' . $this->sanitation->urlquery($this->api_key) . '&' . http_build_query($params));
-            $json = $response->getBody()->getContents();
+            try {
 
-            $items = $this->formatMetadata($json);
+                $this->queue->wait('crossref');
+                $response = $this->client->get($this->url . '?mailto=' . $this->sanitation->urlquery($this->api_key) . '&' . http_build_query($params));
+                $this->queue->release('crossref');
 
-            // Hold in Cache for 24h.
-            $this->cache->set($key, $items, 86400);
+                $json = $response->getBody()->getContents();
+
+                $items = $this->formatMetadata($json);
+
+                // Hold in Cache for 24h.
+                $this->cache->set($key, $items, 86400);
+
+            } catch (BadResponseException $e) {
+
+                if ($e->getCode() === 429) {
+
+                    if ($this->tries < 3) {
+
+                        sleep(1);
+                        $this->tries++;
+                        return $this->search($terms, $start, $rows, $filters, $sort);
+
+                    } else {
+
+                        $this->queue->release('crossref');
+                        throw new Exception('Crossref server is busy, try again later');
+                    }
+
+                } else {
+
+                    $this->queue->release('crossref');
+                    throw new Exception('Crossref server error');
+                }
+            }
         }
 
         // Paging.

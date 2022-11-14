@@ -7,7 +7,7 @@ use DOMElement;
 use DOMNodeList;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
@@ -28,6 +28,8 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
      * @var string Fetch URL.
      */
     private string $url_fetch;
+
+    private int $tries = 0;
 
     /**
      * Constructor.
@@ -64,23 +66,43 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
 
         try {
 
+            $this->queue->wait('patents');
             $response = $this->client->get($this->url_fetch . $this->sanitation->urlquery($number));
+            $this->queue->release('patents');
+
             $html = $response->getBody()->getContents();
 
             return $this->formatMetadataFromHtml($number, $html);
 
-        } catch (ClientException $exc) {
+        } catch (BadResponseException $e) {
 
-            if ($exc->getCode() === 404) {
+            if ($e->getCode() === 404) {
 
                 return [
                     'found' => 0,
                     'items' => []
                 ];
+
+            } elseif ($e->getCode() === 429) {
+
+                if ($this->tries < 3) {
+
+                    sleep(1);
+                    $this->tries++;
+                    return $this->fetch($number);
+
+                } else {
+
+                    $this->queue->release('patents');
+                    throw new Exception('Patent server is busy, try again later');
+                }
+
+            } else {
+
+                $this->queue->release('patents');
+                throw new Exception('Patent server error');
             }
         }
-
-        return [];
     }
 
     /**
