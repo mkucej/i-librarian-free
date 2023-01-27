@@ -327,6 +327,7 @@ class PdfController extends AppController {
                 }
 
                 // Save the original file as a supplement.
+                $stream->rewind();
                 $supplement_model = new SupplementsModel($this->di);
                 $supplement_model->save($item_id, $stream, $client_name);
 
