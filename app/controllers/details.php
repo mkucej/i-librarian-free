@@ -37,7 +37,7 @@ class DetailsController extends AppController {
 
         $details['PHP'] = [
             'present'  => PHP_VERSION,
-            'required' => '7.2.0'
+            'required' => '7.4.0'
         ];
 
         $model = new DetailsModel($this->di);
@@ -45,7 +45,7 @@ class DetailsController extends AppController {
 
         $details['SQLite'] = [
             'present'  => $sqlite['sqlite'],
-            'required' => '3.22.0'
+            'required' => '3.25.0'
         ];
 
         // Extensions.
