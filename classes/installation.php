@@ -35,5 +35,8 @@ final class Installation {
 
         // Create reference type index.
         $this->model->createReferenceTypeIndex();
+
+        // Update items_authors primary index.
+        $this->model->updateItemsAuthorsPrimaryIndex();
     }
 }

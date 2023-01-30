@@ -11,6 +11,7 @@ use PDO;
  *
  * @method void createReferenceTypeIndex()
  * @method void createTables(bool $force = false)
+ * @method void updateItemsAuthorsPrimaryIndex()
  */
 class InstallationModel extends Model {
 
@@ -186,6 +187,34 @@ class InstallationModel extends Model {
 
             // Create DB tables script.
             $sql_file = IL_APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'main_update_1.sql';
+
+            if (is_readable($sql_file) === false) {
+
+                throw new Exception("update failed: could not read the <kbd>$sql_file</kbd> file");
+            }
+
+            $sql = file_get_contents($sql_file);
+
+            /** @var PDO $pdo */
+            $pdo = $this->db_main->getPDO();
+            $pdo->exec($sql);
+        }
+
+        $this->db_main->close();
+    }
+
+    protected function _updateItemsAuthorsPrimaryIndex(): void {
+
+        $this->db_main = $this->di->get('Db_main');
+        $this->db_main->connect();
+
+        $this->db_main->run("SELECT seqno FROM pragma_index_xinfo((SELECT name FROM pragma_index_list('items_authors'))) WHERE name = 'position'");
+        $seqno = $this->db_main->getResult();
+
+        if ((int) $seqno !== 2) {
+
+            // Run update script.
+            $sql_file = IL_APP_PATH . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'main_update_2.sql';
 
             if (is_readable($sql_file) === false) {
 
