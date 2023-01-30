@@ -1089,7 +1089,7 @@ SELECT
     items.id as item_id
     FROM items INNER JOIN ind_items ON items.id=ind_items.id
     {$join_collection}
-    WHERE {$placeholder}
+    WHERE ({$placeholder})
     {$where_collection}
     ORDER BY {$order}
     LIMIT ?
@@ -1273,7 +1273,7 @@ SELECT
     FROM annotations
     INNER JOIN items ON annotations.item_id = items.id
     {$join_collection}
-    WHERE {$placeholder}
+    WHERE ({$placeholder})
     {$where_collection}
     ORDER BY {$order}
     LIMIT ? OFFSET ?
@@ -1454,7 +1454,7 @@ SELECT
     FROM item_notes
     INNER JOIN items ON item_notes.item_id = items.id
     {$join_collection}
-    WHERE {$placeholder}
+    WHERE ({$placeholder})
     {$where_collection}
     ORDER BY {$order}
     LIMIT ? OFFSET ?
@@ -1786,7 +1786,7 @@ SELECT
     FROM items INNER JOIN ind_items ON items.id=ind_items.id
     {$join_collection}
     {$tag_join}
-    WHERE {$placeholder}
+    WHERE ({$placeholder})
     {$where_collection}
     {$tag_where}
     ORDER BY {$order}
