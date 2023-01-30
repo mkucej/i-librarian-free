@@ -853,10 +853,10 @@ SQL;
             $bin + $chunk
         ];
 
-        foreach ($terms as $key => $term) {
+        foreach ($deaccented_terms as $term) {
 
             $columns[] = "%$term%";
-            $columns[] = "%$deaccented_terms[$key]%";
+            $columns[] = "%$term%";
         }
 
         $sql_search = <<<EOT
