@@ -724,8 +724,7 @@ class XPLORE {
 
                 if ($this->outputType == 'xml') {
 
-                    $encodedData = utf8_encode($data);
-                    $obj = simplexml_load_string($encodedData);
+                    $obj = simplexml_load_string($data);
 
                 }
 
@@ -741,8 +740,7 @@ class XPLORE {
 
                 if ($this->outputType == 'xml') {
 
-                    $encodedData = utf8_encode($data);
-                    $obj = simplexml_load_string($encodedData);
+                    $obj = simplexml_load_string($data);
                     $json = json_encode($obj);
                     $arr = json_decode($json, true);
 

@@ -1042,7 +1042,7 @@ EOT;
         libxml_clear_errors();
 
         $dom = new DOMDocument();
-        $dom->loadHTML(mb_convert_encoding(file_get_contents($html_file), 'HTML-ENTITIES', 'UTF-8'));
+        $dom->loadHTML(htmlentities(file_get_contents($html_file)));
         $pages = $dom->getElementsByTagName('page');
 
         $page_number = $page_from;
@@ -1184,7 +1184,7 @@ EOT;
         libxml_clear_errors();
 
         $dom = new DOMDocument();
-        $dom->loadHTML(mb_convert_encoding(file_get_contents($xml_file), 'HTML-ENTITIES', 'UTF-8'));
+        $dom->loadHTML(htmlentities(file_get_contents($xml_file)));
         $pages = $dom->getElementsByTagName('page');
 
         $page_number = $page_from;
