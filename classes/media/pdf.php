@@ -1041,8 +1041,11 @@ EOT;
 
         libxml_clear_errors();
 
+        // Get just the body.
+        preg_match("/<body>.*<\/body>/uism", file_get_contents($html_file), $matches);
+
         $dom = new DOMDocument();
-        $dom->loadHTML(htmlentities(file_get_contents($html_file)));
+        $dom->loadHTML($matches[0] ?? '');
         $pages = $dom->getElementsByTagName('page');
 
         $page_number = $page_from;
@@ -1184,7 +1187,7 @@ EOT;
         libxml_clear_errors();
 
         $dom = new DOMDocument();
-        $dom->loadHTML(htmlentities(file_get_contents($xml_file)));
+        $dom->loadXML(file_get_contents($xml_file));
         $pages = $dom->getElementsByTagName('page');
 
         $page_number = $page_from;

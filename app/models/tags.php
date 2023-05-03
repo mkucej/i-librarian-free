@@ -478,9 +478,9 @@ SQL;
 
         if ($existing_id > 0 && $existing_id !== $tag_id) {
 
-            // It exists. Merge old tag into this existing one.
+            // It exists. Merge old tag into this existing one. Ignore unique errors, tag is being renamed to existing tag name.
             $sql = <<<SQL
-UPDATE
+UPDATE OR IGNORE
     items_tags
     SET tag_id = ?
     WHERE tag_id = ?
