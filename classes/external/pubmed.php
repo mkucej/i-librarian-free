@@ -498,7 +498,11 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
 
                 $output['items'][$i][ItemMeta::COLUMN['AUTHOR_LAST_NAME']][] = (string) $author->LastName ?? $author->CollectiveName;
                 $output['items'][$i][ItemMeta::COLUMN['AUTHOR_FIRST_NAME']][] = (string) $author->ForeName ?? '';
-                $output['items'][$i][ItemMeta::COLUMN['AFFILIATION']] = (string) $author->AffiliationInfo->Affiliation ?? '';
+
+                if ((string) $author->AffiliationInfo->Affiliation !== '') {
+
+                    $output['items'][$i][ItemMeta::COLUMN['AFFILIATION']] = (string) $author->AffiliationInfo->Affiliation;
+                }
             }
 
             foreach ($editors as $editor) {
