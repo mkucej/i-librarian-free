@@ -216,6 +216,17 @@ EOT
 
         $el = null;
 
+        /** @var Bootstrap\Button $el */
+        $el = $this->di->get('Button');
+
+        $el->context('primary');
+        $el->addClass('reload-button primary d-none');
+        $el->attr('onclick', 'window.location.reload()');
+        $el->html($this->lang->t9n('New search'));
+        $reload_button = $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Select $el */
         $el = $this->di->get('Select');
 
@@ -384,13 +395,27 @@ EOT
 
         $tag_checkboxes .= '</td></tr></table>';
 
+        // Alert messages.
+        /** @var Bootstrap\Alert $el */
+        $el = $this->di->get('Alert');
+
+        $el->id('uid-message');
+        $el->context('danger');
+        $el->removeClass('d-flex');
+        $el->addClass('d-none');
+        $el->html($this->lang->t9n('No documents found. Try another UID.'));
+
+        $alert_message = $el->render();
+
+        $el = null;
+
         /** @var Bootstrap\Card $el */
         $el = $this->di->get('Card');
 
         $el->body(<<<BODY
             <div class="import-wizard-uid">
                 $uid_input
-                <div id="uid-message" class="d-none mb-3"></div>
+                $alert_message
                 <div class="collapse" id="select-type">
                     $uid_html
                 </div>
@@ -419,7 +444,7 @@ EOT
             </div>
 BODY
         , null, 'pt-3');
-        $el->footer("$fetch_button $upload_button");
+        $el->footer("$fetch_button $upload_button $reload_button");
         $card = $el->render();
 
         $el = null;
