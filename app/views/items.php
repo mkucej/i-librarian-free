@@ -386,13 +386,15 @@ class ItemsView extends TextView {
                     continue;
                 }
 
+                $get_search_query = $this->sanitation->html($get['search_query'][$i]);
+
                 /** @var Bootstrap\Button $el */
                 $el = $this->di->get('Button');
 
                 $el->context("dark");
                 $el->componentSize("small");
                 $el->addClass("d-inline-block mr-1 mb-2 rounded-0");
-                $el->html("<b>{$this->type_to_readable[$type]}</b> &mdash; {$get['search_query'][$i]}");
+                $el->html("<b>{$this->type_to_readable[$type]}</b> &mdash; {$get_search_query}");
                 $tags_html .= $el->render();
 
                 $el = null;
