@@ -173,6 +173,12 @@ SQL;
             $this->db_main->run($sql_select, $columns);
             $rows = $this->db_main->getResultRows();
 
+            // Result can be empty!
+            if (count($rows) === 0) {
+
+                continue;
+            }
+
             foreach ($rows as $row) {
 
                 $columns = [

@@ -4308,19 +4308,23 @@ class ImportUidView extends View {
                 })).done(function (response) {
                     let item = response.items[0] || [];
                     if (typeof item.title === 'undefined') {
-                        $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find('.reload-button').removeClass('d-none');
                     } else {
                         $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                             + item.title + '</a></h5>');
                         $('.uploadable-url').val(item.urls[1] || '');
                         $('#metadata').val(JSON.stringify(item));
                         $('#fetch-record').addClass('d-none');
-                        $('#upload-form').find(':submit').removeClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                         $('#phase-2').removeClass('d-none');
                     }
                 }).fail(function (xhr) {
                     if (xhr.status === 404) {
-                        $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                     }
                 });
                 break;
@@ -4337,14 +4341,16 @@ class ImportUidView extends View {
                     })).done(function (response) {
                         let item = response.items[0] || [];
                         if (typeof item.title === 'undefined') {
-                            $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                            $('#uid-message').removeClass('d-none').addClass('d-flex');
+                            $('#fetch-record').addClass('d-none');
+                            $('#upload-form').find('.reload-button').removeClass('d-none');
                         } else {
                             $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                                 + item.title + '</a></h5>');
                             $('.uploadable-url').val(item.urls[1] || '');
                             $('#metadata').val(JSON.stringify(item));
                             $('#fetch-record').addClass('d-none');
-                            $('#upload-form').find(':submit').removeClass('d-none');
+                            $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                             $('#phase-2').removeClass('d-none');
                         }
                     });
@@ -4363,14 +4369,16 @@ class ImportUidView extends View {
                     })).done(function (response) {
                         let item = response.items[0] || [];
                         if (typeof item.title === 'undefined') {
-                            $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                            $('#uid-message').removeClass('d-none').addClass('d-flex');
+                            $('#fetch-record').addClass('d-none');
+                            $('#upload-form').find('.reload-button').removeClass('d-none');
                         } else {
                             $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                                 + item.title + '</a></h5>');
                             $('.uploadable-url').val(item.urls[1] || '');
                             $('#metadata').val(JSON.stringify(item));
                             $('#fetch-record').addClass('d-none');
-                            $('#upload-form').find(':submit').removeClass('d-none');
+                            $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                             $('#phase-2').removeClass('d-none');
                         }
                     });
@@ -4389,13 +4397,15 @@ class ImportUidView extends View {
                     })).done(function (response) {
                         let item = response.items[0] || [];
                         if (typeof item.title === 'undefined') {
-                            $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                            $('#uid-message').removeClass('d-none').addClass('d-flex');
+                            $('#fetch-record').addClass('d-none');
+                            $('#upload-form').find('.reload-button').removeClass('d-none');
                         } else {
                             $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                                 + item.title + '</a></h5>');
                             $('#metadata').val(JSON.stringify(item));
                             $('#fetch-record').addClass('d-none');
-                            $('#upload-form').find(':submit').removeClass('d-none');
+                            $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                             $('#phase-2').removeClass('d-none');
                         }
                     });
@@ -4414,13 +4424,15 @@ class ImportUidView extends View {
                     })).done(function (response) {
                         let item = response.items[0] || [];
                         if (typeof item.title === 'undefined') {
-                            $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                            $('#uid-message').removeClass('d-none').addClass('d-flex');
+                            $('#fetch-record').addClass('d-none');
+                            $('#upload-form').find('.reload-button').removeClass('d-none');
                         } else {
                             $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                                 + item.title + '</a></h5>');
                             $('#metadata').val(JSON.stringify(item));
                             $('#fetch-record').addClass('d-none');
-                            $('#upload-form').find(':submit').removeClass('d-none');
+                            $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                             $('#phase-2').removeClass('d-none');
                         }
                     });
@@ -4432,28 +4444,42 @@ class ImportUidView extends View {
                     url: window.IL_BASE_URL + 'index.php/ieee/fetch',
                     data: {uid: xploreid}
                 })).done(function (response) {
-                    let item = response.items[0];
-                    $('.import-wizard-uid').html('Record found:<h5><a href="https://ieeexplore.ieee.org/document/"' + xploreid
-                        + ' target="_blank">' + item.title + '</a></h5>');
-                    $('#metadata').val(JSON.stringify(item));
-                    $('#fetch-record').addClass('d-none');
-                    $('#upload-form').find(':submit').removeClass('d-none');
-                    $('#phase-2').removeClass('d-none');
+                    if (response.items.length === 0) {
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find('.reload-button').removeClass('d-none');
+                    } else {
+                        let item = response.items[0];
+                        $('.import-wizard-uid').html('Record found:<h5><a href="https://ieeexplore.ieee.org/document/"' + xploreid
+                            + ' target="_blank">' + item.title + '</a></h5>');
+                        $('#metadata').val(JSON.stringify(item));
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
+                        $('#phase-2').removeClass('d-none');
+                    }
                 });
                 break;
             case 'ARXIV':
                 let arxivid = uid.replace(/arxiv:\s?/i, '');
                 $.when(model.load({url: arxiv.url + arxivid, cors: true, dataType: 'xml'})).done(function (response) {
                     let entry = $(response).find('entry'), itemTitle = entry.children('title').text();
-                    $('.import-wizard-uid').html('Record found:<h5><a href="' + entry.children('id').text() + '" target="_blank">'
-                        + itemTitle + '</a></h5>');
-                    $('#metadata').val(arxiv.metadata($(response)));
-                    $('#fetch-record').addClass('d-none');
-                    $('#upload-form').find(':submit').removeClass('d-none');
-                    $('#phase-2').removeClass('d-none');
+                    if (itemTitle === '') {
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
+                    } else {
+                        $('.import-wizard-uid').html('Record found:<h5><a href="' + entry.children('id').text() + '" target="_blank">'
+                            + itemTitle + '</a></h5>');
+                        $('#metadata').val(arxiv.metadata($(response)));
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
+                        $('#phase-2').removeClass('d-none');
+                    }
                 }).fail(function (xhr) {
                     if (xhr.status === 400) {
-                        $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                     }
                 });
                 break;
@@ -4464,14 +4490,16 @@ class ImportUidView extends View {
                 })).done(function (response) {
                     let item = response.items[0] || [];
                     if (typeof item.title === 'undefined') {
-                        $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                     } else {
                         $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                             + item.title + '</a></h5>');
                         $('.uploadable-url').val(item.urls[1] || '');
                         $('#metadata').val(JSON.stringify(item));
                         $('#fetch-record').addClass('d-none');
-                        $('#upload-form').find(':submit').removeClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                         $('#phase-2').removeClass('d-none');
                     }
                 });
@@ -4484,14 +4512,16 @@ class ImportUidView extends View {
                 })).done(function (response) {
                     let item = response.items[0] || [];
                     if (typeof item.title === 'undefined') {
-                        $('#uid-message').removeClass('d-none').html('No record found. Try another UID.');
+                        $('#uid-message').removeClass('d-none').addClass('d-flex');
+                        $('#fetch-record').addClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                     } else {
                         $('.import-wizard-uid').html('Record found:<h5><a href="' + item.urls[0] + '" target="_blank">'
                             + item.title + '</a></h5>');
                         $('.uploadable-url').val(item.urls[1] || '');
                         $('#metadata').val(JSON.stringify(item));
                         $('#fetch-record').addClass('d-none');
-                        $('#upload-form').find(':submit').removeClass('d-none');
+                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                         $('#phase-2').removeClass('d-none');
                     }
                 });

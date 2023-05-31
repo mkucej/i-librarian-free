@@ -609,6 +609,7 @@ HTML;
 
             $created = $temporal->toUserTime($active_session['created']);
             $updated = $temporal->toUserTime($active_session['last_accessed']);
+            $user_agent = $this->sanitation->html($active_session['user_agent']);
 
             $sessions_card .=
 <<<HTML
@@ -627,7 +628,7 @@ HTML;
                 <small><b class="text-uppercase">{$this->lang->t9n('Software')}</b></small>
             </td>
             <td>
-                {$active_session['user_agent']}
+                <small>{$user_agent}</small>
             </td>
         </tr>
         <tr>

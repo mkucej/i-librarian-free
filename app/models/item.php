@@ -964,29 +964,15 @@ EOT;
         $this->db_main->run($sql_item, $columns);
 
         // UIDs.
-        $sql_uid_delete = <<<SQL
+
+        /*
+         * UIDs of a single type are unique, except patents, which can have many patent IDs. However, it's not enforced.
+         */
+
+        $sql_uid_delete_all = <<<SQL
 DELETE
     FROM uids
-    WHERE item_id = ? AND uid_type = ?
-SQL;
-
-        $sql_uid_find = <<<SQL
-SELECT id
-    FROM uids
-    WHERE item_id = ? AND uid_type = ? AND uid = ?
-SQL;
-
-        $sql_uid_find2 = <<<SQL
-SELECT id
-    FROM uids
-    WHERE item_id = ? AND uid_type = ?
-SQL;
-
-        $sql_uid_update = <<<SQL
-UPDATE
-    uids
-    SET uid = ?
-    WHERE item_id = ? AND uid_type = ?
+    WHERE item_id = ?
 SQL;
 
         $sql_uid_insert = <<<SQL
@@ -997,6 +983,9 @@ SQL;
 
         if (isset($item[ItemMeta::COLUMN['UIDS']])) {
 
+            // 1. Compile a list of UIDS. Array keys are UIDs (removes duplicates), values are UID types.
+            $uid_array = [];
+
             foreach ($item[ItemMeta::COLUMN['UIDS']] as $i => $uid) {
 
                 // Ignore if no UID type set.
@@ -1005,59 +994,23 @@ SQL;
                     continue;
                 }
 
-                // If empty, delete.
+                // Ignore if no UID set.
                 if (empty($uid)) {
 
-                    $columns_uid = [
-                        $item['id'],
-                        $item[ItemMeta::COLUMN['UID_TYPES']][$i]
-                    ];
-
-                    $this->db_main->run($sql_uid_delete, $columns_uid);
-
                     continue;
                 }
 
-                // If exact match exists, ignore.
+                $uid_array[$uid] = $item[ItemMeta::COLUMN['UID_TYPES']][$i];
+            }
+
+            // 2. Delete all existing UIDs.
+            $this->db_main->run($sql_uid_delete_all, [$item['id']]);
+
+            // 3. Add updated UIDs.
+            foreach ($uid_array as $uid => $type) {
+
                 $columns_uid = [
-                    $item['id'],
-                    $item[ItemMeta::COLUMN['UID_TYPES']][$i],
-                    $uid
-                ];
-
-                $this->db_main->run($sql_uid_find, $columns_uid);
-                $exists = $this->db_main->getResult();
-
-                if (!empty($exists)) {
-
-                    continue;
-                }
-
-                // Change existing UID type.
-                $columns_uid = [
-                    $item['id'],
-                    $item[ItemMeta::COLUMN['UID_TYPES']][$i]
-                ];
-
-                $this->db_main->run($sql_uid_find2, $columns_uid);
-                $exists = $this->db_main->getResult();
-
-                if (!empty($exists)) {
-
-                    $columns_uid = [
-                        $uid,
-                        $item['id'],
-                        $item[ItemMeta::COLUMN['UID_TYPES']][$i]
-                    ];
-
-                    $this->db_main->run($sql_uid_update, $columns_uid);
-
-                    continue;
-                }
-
-                // Finally, add new UID.
-                $columns_uid = [
-                    $item[ItemMeta::COLUMN['UID_TYPES']][$i],
+                    $type,
                     $uid,
                     $item['id']
                 ];

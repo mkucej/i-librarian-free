@@ -361,6 +361,9 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
                 }
             }
 
+            // Affiliation.
+            $output['items'][$i][ItemMeta::COLUMN['AFFILIATION']] = (string) $article->{'article-meta'}->aff ?? '';
+
             // Abstract.
             $abstract = '';
             $first_abstract = $article->{'article-meta'}->abstract[0] ?? [];
@@ -457,13 +460,18 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
 
                 $attrs = $journal_id->attributes();
 
-                if ((string) $attrs->{'journal-id-type'} === 'iso-abbrev') {
+                if ((string) $attrs->{'journal-id-type'} === 'iso-abbrev' || (string) $attrs->{'journal-id-type'} === 'nlm-ta') {
 
                     $output['items'][$i][ItemMeta::COLUMN['PRIMARY_TITLE']] = (string) $journal_id;
                 }
             }
 
-            $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = (string) $article->{'journal-meta'}->{'journal-title-group'}->{'journal-title'} ?? '';
+            $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = (string) $article->{'journal-meta'}->{'journal-title'} ?? '';
+
+            if ($output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] === '') {
+
+                $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = (string)$article->{'journal-meta'}->{'journal-title-group'}->{'journal-title'} ?? '';
+            }
 
             // Publisher.
             $output['items'][$i][ItemMeta::COLUMN['PUBLISHER']] = (string) $article->{'journal-meta'}->{'publisher'}->{'publisher-name'} ?? '';
