@@ -1045,7 +1045,7 @@ EOT;
         preg_match("/<body>.*<\/body>/uism", file_get_contents($html_file), $matches);
 
         $dom = new DOMDocument();
-        $dom->loadHTML($matches[0] ?? '');
+        $dom->loadHTML(isset($matches[0]) ? '<?xml encoding="UTF-8">' . $matches[0] : '');
         $pages = $dom->getElementsByTagName('page');
 
         $page_number = $page_from;
