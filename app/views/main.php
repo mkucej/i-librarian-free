@@ -393,19 +393,28 @@ HTML
 
         if ($this->session->data('permissions') === 'A' || $this->session->data('permissions') === 'U') {
 
-            $external = [];
+            $import = [
+                [
+                    'label' => $this->lang->t9n('Import wizard'),
+                    'link' => '#import/wizard'
+                ],
+                [
+                    'label' => $this->lang->t9n('Manual import'),
+                    'link' => '#import/manual'
+                ],
+            ];
 
             if ($this->app_settings->getUser('connect_arxiv') === '1') {
 
-                $external[] = [
-                    'label' => 'arXiv',
+                $import[] = [
+                    'label' => 'ArXiv',
                     'link' => '#arxiv/main'
                 ];
             }
 
             if ($this->app_settings->getUser('connect_crossref') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'Crossref',
                     'link' => '#crossref/main'
                 ];
@@ -413,7 +422,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_xplore') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'IEEE Xplore',
                     'link' => '#ieee/main'
                 ];
@@ -421,7 +430,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_nasa') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'NASA ADS',
                     'link' => '#nasa/main'
                 ];
@@ -429,7 +438,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_patents') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'Patents',
                     'link' => '#patents/main'
                 ];
@@ -437,7 +446,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_pubmed') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'Pubmed',
                     'link' => '#pubmed/main'
                 ];
@@ -445,7 +454,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_pmc') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'Pubmed Central',
                     'link' => '#pmc/main'
                 ];
@@ -453,7 +462,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_sciencedirect') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'ScienceDirect',
                     'link' => '#sciencedirect/main'
                 ];
@@ -461,7 +470,7 @@ HTML
 
             if ($this->app_settings->getUser('connect_scopus') === '1') {
 
-                $external[] = [
+                $import[] = [
                     'label' => 'Scopus',
                     'link' => '#scopus/main'
                 ];
@@ -473,21 +482,7 @@ HTML
 {$record}{$this->lang->t9n('Import-NOUN')}
 HTML
                 , 'link' => '#',
-                'submenu' => [
-                    [
-                        'label' => $this->lang->t9n('Import wizard'),
-                        'link' => '#import/wizard'
-                    ],
-                    [
-                        'label' => $this->lang->t9n('Manual import'),
-                        'link' => '#import/manual'
-                    ],
-                    [
-                        'label' => $this->lang->t9n('Internet search'),
-                        'link' => '#',
-                        'submenu' => $external
-                    ]
-                ]
+                'submenu' => $import
             ];
         }
 
