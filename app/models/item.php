@@ -1456,7 +1456,7 @@ EOT;
         $sql = <<<SQL
 SELECT count(*)
     FROM uids
-    WHERE uid_type = ? AND uid = ?
+    WHERE uid = ? AND uid_type = ?
     LIMIT 1
 SQL;
 
@@ -1475,7 +1475,7 @@ SQL;
 
                 foreach ($item[ItemMeta::COLUMN['UID_TYPES']] as $key => $type) {
 
-                    $this->db_main->run($sql, [$type, $item[ItemMeta::COLUMN['UIDS']][$key]]);
+                    $this->db_main->run($sql, [$item[ItemMeta::COLUMN['UIDS']][$key], $type]);
                     $exists = (int) $this->db_main->getResult();
 
                     if ($exists > 0) {

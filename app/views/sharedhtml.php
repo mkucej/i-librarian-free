@@ -120,6 +120,7 @@ HTML
         $el->option('PDFs', 'FT');
         $el->option($this->lang->t9n('PDF notes'), 'pdfnotes');
         $el->option($this->lang->t9n('Notes'), 'itemnotes');
+        $el->option("UID (DOI, PMID,&hellip;)", 'uid');
         $el->option("{$this->lang->t9n('Item')} ID", 'itemid');
         $search_type = $el->render();
 

@@ -44,6 +44,7 @@ class ItemsView extends TextView {
             'FT'        => $this->lang->t9n('PDF'),
             'pdfnotes'  => $this->lang->t9n('PDF notes'),
             'itemnotes' => $this->lang->t9n('Notes'),
+            'uid'       => 'UID',
             'itemid'    => $this->lang->t9n('Item') . ' ID',
             'TI'        => $this->lang->t9n('Title'),
             'AB'        => "{$this->lang->t9n('Title')} {$this->lang->t9n('or')} {$this->lang->t9n('Abstract')}",

@@ -30,6 +30,11 @@ use ZipArchive;
 class ItemsModel extends AppModel {
 
     /**
+     * @var ScalarUtils
+     */
+    private $scalar_utils;
+
+    /**
      * Basic item paging.
      *
      * @param string $collection Library or clipboard.
@@ -876,6 +881,13 @@ EOT;
 
             $item_ids = explode(' ', $search['search_query'][0]);
             return $this->searchIds($item_ids, $collection, $orderby, $limit, $offset, $display_action, $project_id);
+        }
+
+        // Item UID search.
+        if ($search['search_type'][0] === 'uid') {
+
+            $uids = explode(' ', $search['search_query'][0]);
+            return $this->searchUids($uids, $collection, $limit, $offset, $display_action, $project_id);
         }
 
         // Item note search.
@@ -2009,6 +2021,177 @@ SELECT count(*)
 EOT;
 
         $columns_count = $item_ids;
+
+        if ($collection === 'clipboard') {
+
+            $columns_count[] = $this->user_id;
+
+        } elseif ($collection === 'project') {
+
+            $columns_count[] = $project_id;
+        }
+
+        $this->db_main->run($sql_count, $columns_count);
+        $output['total_count'] = $this->db_main->getResult();
+
+        $this->db_main->commit();
+
+        return $output;
+    }
+
+    private function searchUids(
+        array $uids,
+        string $collection,
+        int $limit = 10,
+        int $offset = 0,
+        $display_action = 'title',
+        int $project_id = null
+    ) {
+
+        $output = [
+            'items' => [],
+            'total_count' => 0
+        ];
+
+        $join_collection = '';
+        $where_collection = '';
+        $normalized_uids = [];
+        $placeholder_arr = [];
+
+        // Normalize patent numbers.
+        $this->scalar_utils = $this->di->getShared('ScalarUtils');
+
+        foreach ($uids as $uid) {
+
+            // Normalize patent numbers.
+            if (preg_match('/^[A-Z]{2}[0-9]{10,12}[A-Z0-9]{0,2}$/u', $uid) === 1) {
+
+                $normalized_array = array_filter($this->scalar_utils->normalizePatentNumber($uid));
+
+                // Search using LIKE, because saved patent IDs may have kind codes.
+                foreach ($normalized_array as $value) {
+
+                    $normalized_uids[] = "$value%";
+                    $placeholder_arr[] = 'uid LIKE ?';
+                }
+
+                // Add the original uid too.
+                $normalized_uids[] = $uid;
+                $placeholder_arr[] = 'uid = ?';
+
+            } else {
+
+                $normalized_uids[] = $uid;
+                $placeholder_arr[] = 'uid = ?';
+            }
+        }
+
+        // Search columns.
+        $columns = $normalized_uids;
+        $placeholders = join(' OR ', $placeholder_arr);
+
+        $this->db_main->beginTransaction();
+
+        if ($collection === 'clipboard') {
+
+            $join_collection = 'INNER JOIN clipboard ON uids.item_id=clipboard.item_id';
+            $where_collection = 'AND clipboard.user_id = ?';
+
+            $columns[] = $this->user_id;
+
+        } elseif ($collection === 'project' and is_int($project_id) === true) {
+
+            if ($this->verifyProject($project_id) === false) {
+
+                $this->db_main->rollBack();
+                throw new Exception('you are not authorized to access this project', 403);
+            }
+
+            // Get project title.
+            $sql = <<<EOT
+SELECT project
+    FROM projects
+    WHERE id = ?
+EOT;
+
+            $this->db_main->run($sql, [$project_id]);
+            $output['project'] = $this->db_main->getResult();
+
+            $join_collection = 'INNER JOIN projects_items ON uids.item_id=projects_items.item_id';
+            $where_collection = 'AND projects_items.project_id = ?';
+
+            $columns[] = $project_id;
+        }
+
+        $sql = <<<EOT
+SELECT DISTINCT uids.item_id
+    FROM uids
+    $join_collection
+    WHERE $placeholders
+    $where_collection
+    ORDER BY uids.item_id DESC
+    LIMIT ? OFFSET ?
+EOT;
+
+        // Limit, offset.
+        if ($display_action === 'export' || is_array($display_action)) {
+
+            // Export and omnitool have max item limit.
+            $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+            $columns[] = 0;
+
+        } else {
+
+            // Search is paged.
+            $columns[] = $limit;
+            $columns[] = $offset;
+        }
+
+        // Run the search query.
+        $this->db_main->run($sql, $columns);
+        $rows = $this->db_main->getResultRows();
+
+        if (empty($rows)) {
+
+            return $output;
+        }
+
+        // Omnitool.
+        if (is_array($display_action)) {
+
+            // End transaction.
+            $this->db_main->commit();
+
+            $item_ids = array_column($rows, 'item_id');
+
+            // Peform omnitool actions.
+            $this->omnitool($item_ids, $display_action);
+
+            return [];
+        }
+
+        // Add item data for display, or export.
+        $output['items'] = $this->itemData($rows, $display_action);
+
+        // Export. No need to count.
+        if ($display_action === 'export') {
+
+            // End transaction.
+            $this->db_main->commit();
+            return $output;
+        }
+
+        // Count.
+
+        $sql_count = <<<EOT
+SELECT count(DISTINCT uids.item_id)
+    FROM uids
+    $join_collection
+    WHERE $placeholders
+    $where_collection
+EOT;
+
+        $columns_count = $normalized_uids;
 
         if ($collection === 'clipboard') {
 
