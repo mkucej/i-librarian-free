@@ -30,6 +30,7 @@ final class Queue {
             'google'     => crc32('IL_LOCK_GOOGLE'),
             'ieee'       => crc32('IL_LOCK_IEEE'),
             'nasa'       => crc32('IL_LOCK_NASA'),
+            'patents'    => crc32('IL_LOCK_PATENTS'),
             'pubmed'     => crc32('IL_LOCK_PUBMED')
         ];
 

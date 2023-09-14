@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Librarian\ItemMeta;
 use Librarian\Container\DependencyInjector;
+use Librarian\Media\ScalarUtils;
 
 /**
  * Class Patents.
@@ -23,6 +24,8 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
      * @var Client
      */
     private Client $client;
+
+    private ScalarUtils $scalar_utils;
 
     /**
      * @var string Fetch URL.
@@ -41,6 +44,7 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
 
         parent::__construct($di);
 
+        $this->scalar_utils = $this->di->get('ScalarUtils');
         $this->client = $this->di->get('HttpClient', [
             [
                 'timeout' => 30,
@@ -63,6 +67,10 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
      * @throws Exception|GuzzleException
      */
     public function fetch(string $number): array {
+
+        // Google accepts international, and US 7-digit numbers.
+        $numbers = $this->scalar_utils->normalizePatentNumber($number);
+        $number = empty($numbers['INT']) ? $numbers['US7'] : $numbers['INT'];
 
         try {
 
@@ -207,10 +215,25 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
             }
         }
 
-        $output['items'][0][ItemMeta::COLUMN['URLS']][0] = 'https://patents.google.com/patent/' . $number;
+        $numbers = $this->scalar_utils->normalizePatentNumber($number);
 
-        $output['items'][0][ItemMeta::COLUMN['UID_TYPES']][] = 'PAT';
-        $output['items'][0][ItemMeta::COLUMN['UIDS']][] = $number;
+        foreach ($numbers as $type => $value) {
+
+            if (empty($value)) {
+
+                continue;
+            }
+
+            // Add normalized numbers to UIDs.
+            $output['items'][0][ItemMeta::COLUMN['UID_TYPES']][] = 'PAT';
+            $output['items'][0][ItemMeta::COLUMN['UIDS']][] = $value;
+
+            // Add Google link.
+            if ($type === 'US7' || $type === 'INT') {
+
+                $output['items'][0][ItemMeta::COLUMN['URLS']][0] = 'https://patents.google.com/patent/' . $number;
+            }
+        }
 
         // Reference type.
         $output['items'][0][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['PATENT'];

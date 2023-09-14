@@ -488,4 +488,61 @@ TBODY
 
         return $match === 1;
     }
+
+    /**
+     * Normalize patent numbers.
+     * Remove kind codes, provide both 6- and 7- digit US numbers.
+     *
+     * @param string $number
+     * @return array
+     */
+    public function normalizePatentNumber(string $number): array {
+
+        $numbers = [
+            'INT' => '',
+            'US6' => '',
+            'US7' => '',
+        ];
+
+        // Remove kind codes.
+        if (preg_match('/[A-Z]/u', substr($number, -1)) === 1) {
+
+            $number = substr($number, 0, -1);
+
+        } elseif (preg_match('/[A-Z]/u', substr($number, -2, -1)) === 1) {
+
+            $number = substr($number, 0, -2);
+        }
+
+        // Extra processing for US numbers.
+        if (str_starts_with($number, 'US')) {
+
+            // 6-digit number.
+            if (strlen($number) === 12) {
+
+                $numbers['US6'] = $number;
+
+                // Add a 7-digit number.
+                $numbers['US7'] = substr($number, 0, 6) . '0' . substr($number, -6);
+            }
+
+            // 7-digit number.
+            if (strlen($number) === 13) {
+
+                $numbers['US7'] = $number;
+
+                // Add a 6-digit number, if 7 digits start with 0.
+                if ($number[6] === '0') {
+
+                    $numbers['US6'] = substr($number, 0, 6) . substr($number, -6);
+                }
+            }
+
+        } else {
+
+            $numbers['INT'] = $number;
+        }
+
+        return $numbers;
+    }
 }

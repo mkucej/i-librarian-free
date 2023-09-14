@@ -20,8 +20,6 @@ class DashboardModel extends AppModel {
      */
     protected function _get(): array {
 
-        $this->reporter = $this->di->get('Reporter');
-
         $output = [
             'last_items'     => [],
             'last_projects'  => [],

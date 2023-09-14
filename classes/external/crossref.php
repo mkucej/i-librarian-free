@@ -339,13 +339,6 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
                 switch ($article['type']) {
 
-                    case 'journal-article':
-                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['ARTICLE'];
-                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['ARTICLE'];
-                        // Publication.
-                        $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
-                        break;
-
                     case 'proceedings':
                     case 'proceedings-series':
                     case 'proceedings-article':
@@ -363,6 +356,13 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
                     case 'book-chapter':
                         $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['CHAPTER'];
                         $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['INCOLLECTION'];
+                        // Publication.
+                        $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
+                        break;
+
+                    default:
+                        $output['items'][$i][ItemMeta::COLUMN['REFERENCE_TYPE']] = ItemMeta::TYPE['ARTICLE'];
+                        $output['items'][$i][ItemMeta::COLUMN['BIBTEX_TYPE']] = ItemMeta::BIBTEX_TYPE['ARTICLE'];
                         // Publication.
                         $output['items'][$i][ItemMeta::COLUMN['SECONDARY_TITLE']] = $article['container-title'][0] ?? '';
                         break;

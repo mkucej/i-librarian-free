@@ -205,7 +205,7 @@ final class Pmc extends ExternalDatabase implements ExternalDatabaseInterface {
                     $from = date('Y/m/d', time() - $days * 86400);
                     $now = date('Y/m/d', time() - 86400);
 
-                    $queries[] = "$from:$now[PMCLIVEDATE]";
+                    $queries[] = "{$from}:{$now}[PMCLIVEDATE]";
                     $plural = $days === '1' ? '' : 's';
                     $search_name .= "\u{2022} last $days day$plural ";
                 }

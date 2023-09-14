@@ -6,6 +6,7 @@ use Exception;
 use Librarian\Container\DependencyInjector;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Librarian\Media\FileTools;
 
 class SupplementsController extends AppController {
 
@@ -99,7 +100,6 @@ class SupplementsController extends AppController {
 
             // Uploaded file.
             $uploaded_file = $this->getUploadedFile('file');
-
             $stream = $uploaded_file->getStream();
             $name = $uploaded_file->getClientFilename();
         }
@@ -228,10 +228,40 @@ class SupplementsController extends AppController {
 
         $disposition = isset($this->get['disposition']) ? $this->get['disposition'] : 'inline';
 
+        // Only allow inline view for some MIME types.
+        if ($disposition === 'inline') {
+
+            /** @var FileTools $file_tools */
+            $file_tools = $this->di->getShared('FileTools');
+            $mime = $file_tools->getMime($stream);
+
+            // Determine the file type.
+            switch ($mime) {
+
+                case 'image/gif':
+                case 'image/jpeg':
+                case 'image/png':
+                case 'video/webm':
+                case 'video/ogg':
+                case 'video/mp4':
+                case 'audio/mpeg':
+                case 'audio/ogg':
+                case 'audio/mp4':
+                case 'audio/webm':
+                case 'audio/wav':
+                case 'application/pdf':
+                    break;
+
+                default:
+                    $disposition = 'attachment';
+                    break;
+            }
+        }
+
         // Stream file to browser.
         $view = new FileView($this->di, $stream);
 
-        // Change filename. Remove the first six numbers.
+        // Change filename. Remove the first 9 numbers.
         $metadata = $stream->getMetadata();
         $view->filename = rawurldecode(substr(basename($metadata['uri']), 9));
 

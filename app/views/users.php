@@ -44,7 +44,7 @@ class UsersView extends TextView {
         $el = $this->di->get('Alert');
 
         $el->context('danger');
-        $el->html($this->lang->t9n('Users whose data you change will be logged out, potentially loosing their work in progress'));
+        $el->html($this->lang->t9n('Users whose data you change will be logged out, potentially losing their work in progress'));
         $warning = $el->render();
 
         $el = null;

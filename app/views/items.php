@@ -44,6 +44,7 @@ class ItemsView extends TextView {
             'FT'        => $this->lang->t9n('PDF'),
             'pdfnotes'  => $this->lang->t9n('PDF notes'),
             'itemnotes' => $this->lang->t9n('Notes'),
+            'uid'       => 'UID',
             'itemid'    => $this->lang->t9n('Item') . ' ID',
             'TI'        => $this->lang->t9n('Title'),
             'AB'        => "{$this->lang->t9n('Title')} {$this->lang->t9n('or')} {$this->lang->t9n('Abstract')}",
@@ -2249,16 +2250,6 @@ SCRIPT;
 
         $tag_checkboxes .= '</td></tr></table>';
 
-        /** @var Bootstrap\Card $el */
-        $el = $this->di->get('Element');
-
-        $el->id('omnitool-tags');
-        $el->addClass('mb-3 collapse');
-        $el->html($tag_checkboxes);
-        $inputs .= $el->render();
-
-        $el = null;
-
         /** @var Bootstrap\Input $el */
         $el = $this->di->get('Input');
 
@@ -2295,6 +2286,16 @@ SCRIPT;
         $el->checked('checked');
         $el->label($this->lang->t9n('no action'));
         $el->inline(true);
+        $inputs .= $el->render();
+
+        $el = null;
+
+        /** @var Bootstrap\Card $el */
+        $el = $this->di->get('Element');
+
+        $el->id('omnitool-tags');
+        $el->addClass('my-3 collapse');
+        $el->html($tag_checkboxes);
         $inputs .= $el->render();
 
         $el = null;
