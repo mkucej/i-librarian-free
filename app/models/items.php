@@ -3164,11 +3164,11 @@ EOT;
 
                     if ($value === 'add') {
 
-                        $this->tag($item_ids, $omnitool_actions['tags']);
+                        $this->tag($item_ids, $omnitool_actions['tags'] ?? []);
 
                     } elseif ($value === 'remove') {
 
-                        $this->untag($item_ids, $omnitool_actions['tags']);
+                        $this->untag($item_ids, $omnitool_actions['tags'] ?? []);
                     }
 
                     break;
