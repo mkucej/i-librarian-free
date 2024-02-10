@@ -186,7 +186,10 @@ SQL;
 
             $this->queue->release('binary');
 
-            foreach ($raw as $line) {
+            // Store landscape pages here.
+            $landscape_pages = [];
+
+            foreach ($raw as $k => $line) {
 
                 if (strpos($line, "Title:") === 0) {
 
@@ -206,8 +209,31 @@ SQL;
 
                     if ($page > 0) {
 
-                        $pdfinfo['page_sizes'][$page]['width']  = ($this->page_resolution * $match[6] / 72);
-                        $pdfinfo['page_sizes'][$page]['height'] = ($this->page_resolution * $match[8] / 72);
+                        $rot_match = [];
+
+                        // Get rotation angle.
+                        preg_match("/(Page\s+)(\d+)(\s+)(rot:)(\s+)(\d+)/", $raw[$k+1], $rot_match);
+
+                        $rotation = $rot_match[6] ?? 0;
+
+                        if ((string) $rotation === "90") {
+
+                            $landscape_pages[] = (string) $page;
+
+                            // Landscape.
+                            $w = $match[8];
+                            $h = $match[6];
+
+                        } else {
+
+                            // Portrait.
+                            $w = $match[6];
+                            $h = $match[8];
+                        }
+
+                        // Convert pt to px.
+                        $pdfinfo['page_sizes'][$page]['width']  = $w * $this->page_resolution / 72;
+                        $pdfinfo['page_sizes'][$page]['height'] = $h * $this->page_resolution / 72;
                     }
 
                 } elseif (strpos($line, "Page") === 0) {
@@ -218,11 +244,25 @@ SQL;
 
                     if ($page > 0) {
 
+                        $xmin = (float) $match[6] ?? 0;
+                        $ymin = (float) $match[8] ?? 0;
+                        $xmax = (float) $match[10] ?? 0;
+                        $ymax = (float) $match[12] ?? 0;
+
+                        // Rotate media boxes for landscape pages.
+                        if (in_array($page, $landscape_pages) !== false) {
+
+                            $xmax_l = $ymax + $xmin - $ymin;
+                            $ymax_l = $xmax + $ymin - $xmin;
+                            $xmax = $xmax_l;
+                            $ymax = $ymax_l;
+                        }
+
                         $pdfinfo['page_boxes'][$page]['mediabox'] = [
-                            'xmin' => (float) $match[6] ?? 0,
-                            'ymin' => (float) $match[8] ?? 0,
-                            'xmax' => (float) $match[10] ?? 0,
-                            'ymax' => (float) $match[12] ?? 0
+                            'xmin' => $xmin,
+                            'ymin' => $ymin,
+                            'xmax' => $xmax,
+                            'ymax' => $ymax
                         ];
 
                     } else {
@@ -233,11 +273,25 @@ SQL;
 
                         if ($page > 0) {
 
+                            $xmin = (float) $match[6] ?? 0;
+                            $ymin = (float) $match[8] ?? 0;
+                            $xmax = (float) $match[10] ?? 0;
+                            $ymax = (float) $match[12] ?? 0;
+
+                            // Rotate crop boxes for landscape pages.
+                            if (in_array($page, $landscape_pages) !== false) {
+
+                                $xmax_l = $ymax + $xmin - $ymin;
+                                $ymax_l = $xmax + $ymin - $xmin;
+                                $xmax = $xmax_l;
+                                $ymax = $ymax_l;
+                            }
+
                             $pdfinfo['page_boxes'][$page]['cropbox'] = [
-                                'xmin' => (float) $match[6] ?? 0,
-                                'ymin' => (float) $match[8] ?? 0,
-                                'xmax' => (float) $match[10] ?? 0,
-                                'ymax' => (float) $match[12] ?? 0
+                                'xmin' => $xmin,
+                                'ymin' => $ymin,
+                                'xmax' => $xmax,
+                                'ymax' => $ymax
                             ];
                         }
                     }
@@ -371,7 +425,7 @@ SQL;
 
                     exec($this->binary->pdftoppm()
                         . " -f $pageNumber -l $pageNumber -singlefile -cropbox "
-                        . " -scale-to-x $w -scale-to-y -1 -x 0 -y 0 -W $w -H $h -$device "
+                        . "-scale-dimension-before-rotation -scale-to-x $w -scale-to-y -1 -x 0 -y 0 -W $w -H $h -$device "
                         . escapeshellarg($this->file) . " " . escapeshellarg($imagePath));
 
                     $imagePath = "$imagePath.$type";
@@ -488,7 +542,7 @@ SQL;
         // Create image.
         exec($this->binary->pdftoppm()
             . " -singlefile -f $page -l $page -jpeg -jpegopt quality=80 -r 96 -cropbox"
-            . " -scale-to-x $width -scale-to-y -1 -x 0 -y 0 -W $width -H $height "
+            . " -scale-dimension-before-rotation -scale-to-x $width -scale-to-y -1 -x 0 -y 0 -W $width -H $height "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 
         $this->queue->release('binary');
@@ -520,7 +574,7 @@ SQL;
         // Create image.
         exec($this->binary->pdftoppm()
             . " -singlefile -f $page -l $page -jpeg -jpegopt quality=80 -cropbox"
-            . " -scale-to-x $width -scale-to-y -1 -W $width "
+            . " -scale-dimension-before-rotation -scale-to-x $width -scale-to-y -1 -x 0 -y 0 -W $width "
             . escapeshellarg($this->file) . " " . escapeshellarg($img_path));
 
         $this->queue->release('binary');
