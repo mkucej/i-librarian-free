@@ -175,6 +175,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
         // Add search terms.
         $queries = [];
+        $human_readable = "";
 
         foreach ($terms as $term) {
 
@@ -192,6 +193,8 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
                 $params['id_list'] = $value;
                 $queries = [];
+                $human_readable .= "id: " . $value . " ";
+
                 break;
             }
 
@@ -241,7 +244,7 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
         }
 
         $params['search_query'] = join(' AND ', $queries);
-        $human_readable = "{$params['search_query']} ";
+        $human_readable .= "{$params['search_query']} ";
 
         // Add filters. Only last submitted filter.
         if (!empty($filters)) {
@@ -330,8 +333,13 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
 
                 } else {
 
-                    $this->queue->release('arxiv');
-                    throw new Exception('arXiv server error');
+                    // Return empty result.
+                    $items = [
+                        'found'       => 0,
+                        'items'       => [],
+                        'search_name' => $human_readable . " • sort: $sort"
+                    ];
+                    return $items;
                 }
             }
         }
@@ -369,6 +377,12 @@ final class Arxiv extends ExternalDatabase implements ExternalDatabaseInterface 
             'found' => (int) $opensearch->totalResults,
             'items' => []
         ];
+
+        // No results.
+        if ($output['found'] === 0) {
+
+            return $output;
+        }
 
         // Articles.
         $i = 0;

@@ -157,7 +157,7 @@ final class Patents extends ExternalDatabase implements ExternalDatabaseInterfac
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
-        $dom->loadHTML($html);
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
 
         /** @var DOMNodeList $metas */
         $metas = $dom->getElementsByTagName('meta');

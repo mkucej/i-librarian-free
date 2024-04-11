@@ -567,7 +567,7 @@ HTML;
         $el->html('Go to last page');
 
         // Disabling.
-        if ((integer) $last_page === (integer) $from) {
+        if ((integer) $last_page === (integer) $from || (integer) $items['found'] === 0) {
 
             $el->elementName('button');
             $el->removeAttr('href');

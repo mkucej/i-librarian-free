@@ -95,14 +95,7 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
         } catch (BadResponseException $e) {
 
-            if ($e->getCode() === 404) {
-
-                return [
-                    'found' => 0,
-                    'items' => []
-                ];
-
-            } elseif ($e->getCode() === 429) {
+            if ($e->getCode() === 429) {
 
                 if ($this->tries < 3) {
 
@@ -118,8 +111,10 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
 
             } else {
 
-                $this->queue->release('crossref');
-                throw new Exception('Crossref server error');
+                return [
+                    'found' => 0,
+                    'items' => []
+                ];
             }
         }
     }
@@ -167,7 +162,9 @@ final class Crossref extends ExternalDatabase implements ExternalDatabaseInterfa
             // DOI search is special.
             if ($name === 'doi') {
 
-                return $this->fetch($value);
+                $items = $this->fetch($value);
+                $items['search_name'] = "$name: $value ";
+                return $items;
             }
         }
 
