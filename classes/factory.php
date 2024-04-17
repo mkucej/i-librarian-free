@@ -533,7 +533,7 @@ final class Factory {
             include IL_CLASS_PATH . DIRECTORY_SEPARATOR
                     . 'libraries' . DIRECTORY_SEPARATOR
                     . 'htmlpurifier' . DIRECTORY_SEPARATOR
-                    . 'htmlpurifier.php';
+                    . 'HTMLPurifier.standalone.php';
 
             $config = \HTMLPurifier_Config::createDefault();
             $config->set('Cache.SerializerPath', IL_TEMP_PATH);
