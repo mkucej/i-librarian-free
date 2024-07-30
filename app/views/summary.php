@@ -409,8 +409,7 @@ EOT;
 
             foreach ($item['pdfnotes'] as $note) {
 
-                $note_html = $this->sanitation->lmth($note['annotation']);
-                $pdfnotes .= "<p><b>{$note['name']}:</b> $note_html</p>";
+                $pdfnotes .= "<p><b>{$note['name']}:</b> $note[annotation]</p>";
             }
         }
 
