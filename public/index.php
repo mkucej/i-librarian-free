@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 /*
  * I, Librarian version.
  */
-const IL_VERSION = '5.11.0';
+const IL_VERSION = '5.11.1';
 
 /**
  * Define paths.
