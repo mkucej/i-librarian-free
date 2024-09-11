@@ -681,6 +681,10 @@ SQL;
         while(feof($fr) === false) {
 
             $line = fgets($fr);
+            // Remove zero width line breaks.
+            $line = str_replace("\u{200B}\n", "", $line);
+            // Remove zero width spaces.
+            $line = str_replace("\u{200B}", "", $line);
             $line = preg_replace( "/[^\p{L}\p{N}\p{P}\f]+/u", " ", $line);
             $line = preg_replace('/\s{2,}/u', ' ', $line);
 

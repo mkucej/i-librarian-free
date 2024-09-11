@@ -169,7 +169,7 @@ class ImportController extends AppController {
 
                     $line = fgets($ft);
 
-                    preg_match_all('/10\.\d{4,5}\.?\d*\/\s?\S+/ui', $line, $match, PREG_PATTERN_ORDER);
+                    preg_match_all('/10\.\d{4,5}\.?\d*\/\s?[^\/\s]+/ui', $line, $match, PREG_PATTERN_ORDER);
 
                     if (count($match[0]) > 0) {
 
@@ -185,7 +185,7 @@ class ImportController extends AppController {
                         // Extract DOI from parentheses.
                         if (substr($doi, -1) === ')' || substr($doi, -1) === ']') {
 
-                            preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\s?\S+)/ui', $line, $match2, PREG_PATTERN_ORDER);
+                            preg_match_all('/(.)(doi:\s?)?(10\.\d{4,5}\.?\d*\/\s?[^\/\s]+)/ui', $line, $match2, PREG_PATTERN_ORDER);
 
                             if (substr($doi, -1) === ')' && isset($match2[1][0]) === true && $match2[1][0] === '(') {
 

@@ -484,7 +484,7 @@ TBODY
      */
     public function isDoi(string $doi): bool {
 
-        $match = preg_match('/10\.\d{4,5}\.?\d*\/\S+/ui', $doi);
+        $match = preg_match('/10\.\d{4,5}\.?\d*\/[^\/\s]+/ui', $doi);
 
         return $match === 1;
     }

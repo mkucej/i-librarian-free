@@ -1143,7 +1143,7 @@ EOT;
             return $output;
         }
 
-        preg_match('/10\.\d{4,5}\.?\d*\/\s?\S+/ui', $pdf_text, $match, PREG_OFFSET_CAPTURE);
+        preg_match('/10\.\d{4,5}\.?\d*\/\s?[^\/\s]+/ui', $pdf_text, $match, PREG_OFFSET_CAPTURE);
 
         if (isset($match[0][0])) {
 
