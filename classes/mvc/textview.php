@@ -502,7 +502,7 @@ EOT
         if ($this->cache_settings['no-store'] === false) {
 
             $etag = Psr7\Utils::hash($this->stream, 'md5');
-            $this->response = $this->response->withHeader('ETag', $etag);
+            $this->response = $this->response->withHeader('ETag', '"' . $etag . '"');
         }
     }
 
