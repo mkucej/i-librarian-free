@@ -1411,6 +1411,8 @@ EOT;
 
         while ($entry = $this->parser->getEntry()) {
 
+            set_time_limit(600);
+
             $item = $this->_save($entry + $data);
 
             // Save PDF
