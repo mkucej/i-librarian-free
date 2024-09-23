@@ -89,6 +89,7 @@ final class AppSettings {
     ];
 
     public array $extra_mime_types = [
+        'application/zip', // Office documents are sometimes recognized as this.
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.visio',
