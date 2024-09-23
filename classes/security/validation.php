@@ -89,7 +89,7 @@ final class Validation {
         $ip = gethostbyname($host);
         $ip = ip2long($ip);
 
-        if ($ip === false) {
+        if ($ip === false || $ip === 0) {
 
             throw new Exception('invalid link provided', $this->http_code);
         }
