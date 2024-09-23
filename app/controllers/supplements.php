@@ -226,7 +226,7 @@ class SupplementsController extends AppController {
         $model = new SupplementsModel($this->di);
         $stream = $model->download($this->get['id'], $this->get['filename']);
 
-        $disposition = isset($this->get['disposition']) ? $this->get['disposition'] : 'inline';
+        $disposition = isset($this->get['disposition']) && $this->get['disposition'] === 'attachment' ? 'attachment' : 'inline';
 
         // Only allow inline view for some MIME types.
         if ($disposition === 'inline') {
