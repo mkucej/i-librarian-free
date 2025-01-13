@@ -184,7 +184,7 @@ class Bibtex {
                         continue;
                     }
 
-                    $output .= $this->prettyTag('url') . '{' . trim($url) . '},' . PHP_EOL;
+                    $output .= $this->prettyTag('url') . '{' . trim(str_replace("_", "\\_", $url)) . '},' . PHP_EOL;
                 }
             }
 
@@ -193,7 +193,7 @@ class Bibtex {
 
                 for ($i = 0; $i < count($item[ItemMeta::COLUMN['UIDS']]); $i++) {
 
-                    $output .= $this->prettyTag(strtolower($item[ItemMeta::COLUMN['UID_TYPES']][$i])) . '{' . $item[ItemMeta::COLUMN['UIDS']][$i] . '},' . PHP_EOL;
+                    $output .= $this->prettyTag(strtolower($item[ItemMeta::COLUMN['UID_TYPES']][$i])) . '{' . str_replace("_", "\\_", $item[ItemMeta::COLUMN['UIDS']][$i]) . '},' . PHP_EOL;
                 }
             }
 
