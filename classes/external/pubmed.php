@@ -385,7 +385,7 @@ final class Pubmed extends ExternalDatabase implements ExternalDatabaseInterface
                 // Pages.
                 $pages = '';
                 $start_page = (string) $article->MedlineCitation->Article->Pagination->StartPage ?? '';
-                $end_page = (string) $article->MedlineCitation->Article->Pagination->StartPage ?? '';
+                $end_page = (string) $article->MedlineCitation->Article->Pagination->EndPage ?? '';
                 $pagination = (string) $article->MedlineCitation->Article->Pagination->MedlinePgn ?? '';
 
                 if (!empty($start_page)) {
