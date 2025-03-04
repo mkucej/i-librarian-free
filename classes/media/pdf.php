@@ -96,7 +96,7 @@ EOT;
 
         $sql_metadata = <<<'EOT'
 CREATE TABLE IF NOT EXISTS metadata (
-    id         INETEGER PRIMARY KEY,
+    id         INTEGER PRIMARY KEY,
     bookmarks  TEXT,
     created    TEXT,
     has_links  TEXT,
