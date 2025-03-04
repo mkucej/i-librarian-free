@@ -270,8 +270,8 @@ final class Ldap {
         // Search user in admin group.
         $ldap_sr = @ldap_read(
             $this->ldap_connect,
-            $ldap_admingroup_dn,
-            "({$this->settings['ldap_filter']}=$ldap_user_dn)",
+            $ldap_user_dn,
+            "({$this->settings['ldap_filter']}=$ldap_admingroup_dn)",
             ['member']
         );
 
@@ -320,8 +320,8 @@ final class Ldap {
         // Search user in the specified group.
         $ldap_sr = @ldap_read(
             $this->ldap_connect,
-            $ldap_usergroup_dn,
-            "({$this->settings['ldap_filter']}=$ldap_user_dn)",
+            $ldap_user_dn,
+            "({$this->settings['ldap_filter']}=$ldap_usergroup_dn)",
             ['member']
         );
 
