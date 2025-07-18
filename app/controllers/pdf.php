@@ -203,7 +203,13 @@ class PdfController extends AppController {
         // Remote URL?
         $temp_save = IL_TEMP_PATH . DIRECTORY_SEPARATOR . uniqid('remote_pdf_');
 
-        if (!empty($this->post['remote_url'])) {
+        // Form input PDF has precedence over the remote link.
+        if(isset($uploaded_file)) {
+
+            $stream = $uploaded_file->getStream();
+            $client_name = $uploaded_file->getClientFilename();
+
+        } elseif (!empty($this->post['remote_url'])) {
 
             // Safe link?
             $this->validation->ssrfLink($this->post['remote_url']);
@@ -232,11 +238,6 @@ class PdfController extends AppController {
             // Open stream.
             $fp = \GuzzleHttp\Psr7\Utils::tryFopen($temp_save, 'r');
             $stream = \GuzzleHttp\Psr7\Utils::streamFor($fp);
-
-        } elseif(isset($uploaded_file)) {
-
-            $stream = $uploaded_file->getStream();
-            $client_name = $uploaded_file->getClientFilename();
         }
 
         if (is_object($stream)) {
