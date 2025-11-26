@@ -6,3 +6,4 @@ data/sessions
 data/supplements
 config/ilibrarian.ini
 .idea
+package.sh

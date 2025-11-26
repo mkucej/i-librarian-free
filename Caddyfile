@@ -1,0 +1,35 @@
+(common) {
+	root * /i-librarian/public
+
+	file_server
+
+	php_fastcgi unix//run/php/php8.1-fpm.sock {
+		# Forward headers.
+		header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+		# php.ini settings
+		env PHP_VALUE "upload_max_filesize=600M
+		post_max_size=900M
+		max_input_vars=10000"
+	}
+
+	respond /.* 403
+}
+
+:80 {
+	log {
+		output stdout
+		format json
+	}
+
+	handle /library* {
+		uri strip_prefix /library
+		root * /i-librarian/public
+		import common
+	}
+
+	handle {
+		import common
+	}
+
+	respond 404
+}
