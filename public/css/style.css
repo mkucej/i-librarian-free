@@ -899,3 +899,27 @@ div.il-expandable-left > button {
 .CtxtMenu_InfoContent {
     border: 1px solid rgba(0,10,20,0.15) !important;
 }
+
+/* ===== readability tweaks for PDF highlights =====
+   These overrides are intentionally minimal and low-risk:
+   - lower the fill opacity so highlights don't wash out text
+   - disable any backdrop-filter on highlight elements
+   - avoid highlights capturing pointer events (so selection/cursor stays reactive)
+   - use mix-blend-mode to reduce visual "softening" on top of rendered text
+   Tweak the rgba alpha values below to taste (0.08 - 0.18 work well).
+*/
+
+.pdfviewer-highlights > div {
+    pointer-events: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    mix-blend-mode: multiply;
+}
+
+.pdfviewer-highlights > .yellow { background-color: rgba(255, 247, 0, 0.778) !important; }
+.pdfviewer-highlights > .blue   { background-color: rgba(90, 151, 255, 0.782) !important; }
+.pdfviewer-highlights > .green  { background-color: rgba(80, 225, 80, 0.737) !important; }
+.pdfviewer-highlights > .red    { background-color: rgba(255, 100, 121, 0.747) !important; }
+
+/* For underlined highlight mode keep the underline but avoid any background fill */
+.pdfviewer-highlights.underlined > div { background-color: transparent !important; }
