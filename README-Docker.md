@@ -13,21 +13,21 @@ the directory permissions to 0777 instead.
 
 ```bash
 mkdir -p /var/www/i-librarian-free/library/config
-tar xf I-Librarian-5.11.2-Linux.tar.xz config/ilibrarian-default.ini --strip-components=1
+tar xf I-Librarian-5.11.3-Linux.tar.xz config/ilibrarian-default.ini --strip-components=1
 mv ilibrarian-default.ini /var/www/i-librarian-free/library/config/ilibrarian.ini
 ```
 
 ## Build an image
 
 ```bash
-docker build -t i-librarian-free:5.11.2 - < I-Librarian-5.11.2-Linux.tar.xz
+docker build -t i-librarian-free:5.11.3 - < I-Librarian-5.11.3-Linux.tar.xz
 ```
 
 ## Run container
 
 ```bash
 docker run -d --name il-free -p 127.0.0.1:9050:80 -v /var/www/i-librarian-free/library/data:/i-librarian/data \
-  -v /var/www/i-librarian-free/library/config:/i-librarian/config i-librarian-free:5.11.2
+  -v /var/www/i-librarian-free/library/config:/i-librarian/config i-librarian-free:5.11.3
 ```
 
 ## Docker compose alternative
@@ -35,7 +35,7 @@ docker run -d --name il-free -p 127.0.0.1:9050:80 -v /var/www/i-librarian-free/l
 ```YAML
 services:
   il-free:
-    image: i-librarian-free:5.11.2
+    image: i-librarian-free:5.11.3
     container_name: il-free
     restart: always
     ports:
