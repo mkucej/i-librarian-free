@@ -36,10 +36,6 @@ RUN apt update && \
     usermod -aG www-data caddy && \
     rm caddy_${CADDY_VERSION}_linux_amd64.tar.gz
 
-# User www-data.
-ENV UID="33"
-ENV GID="33"
-
 RUN mkdir /i-librarian
 RUN mkdir /run/php
 RUN mkdir /etc/caddy
@@ -55,7 +51,8 @@ COPY Caddyfile /etc/caddy/Caddyfile
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-RUN chown -R "$UID":"$GID" /i-librarian/data/
+# www-data UID is 33.
+RUN chown -R www-data:www-data /i-librarian/data/
 RUN chown -R caddy:caddy /var/log/caddy
 
 EXPOSE 80

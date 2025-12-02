@@ -1,20 +1,19 @@
 # I, Librarian Instructions
-## Contents
-  - Automated installation using installers
-  - Windows manual installation
-  - [Linux manual installation](README-Linux.md)
-  - [Mac OS X manual installation](README-Mac.md)
-  - First use
-  - Un-installation
+
+### [Docker installation](README-Docker.md)
+
+### [Linux manual installation](README-Linux.md)
+
+### [Mac OS X manual installation](README-Mac.md)
 
 ### Automated installation using installers
-You can [download](https://github.com/mkucej/i-librarian-free/releases) and execute installers for Windows 8, and 10 plus a DEB
+You can [download](https://github.com/mkucej/i-librarian-free/releases) and execute installers for Windows 10 plus a DEB
 package and a console installer for Ubuntu, Debian, and its derivatives. An installer
 for Mac OS X is not available. These installers will install and/or configure Apache
 and PHP for you. If you don't want that, follow the instructions below to install manually.
 
 ### Windows manual installation
-  * A running *Apache 2.4+* and *PHP 7.2+* are required. Install them using a Windows installer like WAMP.
+  * A running *Apache 2.4+* and *PHP 8+* are required. Install them using a Windows installer like WAMP.
   * Edit Apache configuration file (httpd.conf). Append this at the end using Notepad and edit as needed:
 
 ```apache_conf
@@ -59,4 +58,3 @@ Alias /librarian "C:\I, Librarian\public"
 * Otherwise un-install all programs that you installed solely to use *I, Librarian*.
 * These may include Apache, Nginx, and PHP - using package managers like Apt, Homebrew, or Macports will make this task easier. **Note: You might have other programs using these. Only remove if sure.**
 * Delete *I, Librarian* directory.
-

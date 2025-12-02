@@ -13,7 +13,7 @@ the directory permissions to 0777 instead.
 
 ```bash
 mkdir -p /var/www/i-librarian-free/library/config
-tar xzf I-Librarian-5.11.2-Linux.tar.xz config/ilibrarian-default.ini --strip-components=1
+tar xf I-Librarian-5.11.2-Linux.tar.xz config/ilibrarian-default.ini --strip-components=1
 mv ilibrarian-default.ini /var/www/i-librarian-free/library/config/ilibrarian.ini
 ```
 

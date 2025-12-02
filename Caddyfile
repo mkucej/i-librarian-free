@@ -23,7 +23,6 @@
 
 	handle /library* {
 		uri strip_prefix /library
-		root * /i-librarian/public
 		import common
 	}
 
