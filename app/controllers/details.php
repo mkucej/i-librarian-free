@@ -37,7 +37,7 @@ class DetailsController extends AppController {
 
         $details['PHP'] = [
             'present'  => PHP_VERSION,
-            'required' => '7.4.0'
+            'required' => '8.1.0'
         ];
 
         $model = new DetailsModel($this->di);
