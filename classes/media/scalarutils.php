@@ -139,13 +139,13 @@ TBODY
         switch (substr($bytes, -1)) {
             case 'k':
             case 'K':
-                return (integer) trim(substr($bytes, 0, -1)) * 1024;
+                return (int) trim(substr($bytes, 0, -1)) * 1024;
             case 'm':
             case 'M':
-                return (integer) trim(substr($bytes, 0, -1)) * 1024 * 1024;
+                return (int) trim(substr($bytes, 0, -1)) * 1024 * 1024;
             case 'g':
             case 'G':
-                return (integer) trim(substr($bytes, 0, -1)) * 1024 * 1024 * 1024;
+                return (int) trim(substr($bytes, 0, -1)) * 1024 * 1024 * 1024;
         }
 
         switch (substr($bytes, -2)) {
@@ -153,17 +153,17 @@ TBODY
             case 'Kb':
             case 'kB':
             case 'KB':
-                return (integer) trim(substr($bytes, 0, -2)) * 1024;
+                return (int) trim(substr($bytes, 0, -2)) * 1024;
             case 'mb':
             case 'Mb':
             case 'mB':
             case 'MB':
-                return (integer) trim(substr($bytes, 0, -2)) * 1024 * 1024;
+                return (int) trim(substr($bytes, 0, -2)) * 1024 * 1024;
             case 'gb':
             case 'Gb':
             case 'gB':
             case 'GB':
-                return (integer) trim(substr($bytes, 0, -2)) * 1024 * 1024 * 1024;
+                return (int) trim(substr($bytes, 0, -2)) * 1024 * 1024 * 1024;
         }
 
         // Fallback. Return input.

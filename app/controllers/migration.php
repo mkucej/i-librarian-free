@@ -32,7 +32,7 @@ final class MigrationController extends AppController {
     public function mainAction(): string {
 
         $model = new MainModel($this->di);
-        $num_users = (integer) $model->numUsers();
+        $num_users = (int) $model->numUsers();
 
         if ($num_users > 0) {
 
@@ -53,7 +53,7 @@ final class MigrationController extends AppController {
     public function legacyupgradeAction(): string {
 
         $model = new MainModel($this->di);
-        $num_users = (integer) $model->numUsers();
+        $num_users = (int) $model->numUsers();
 
         if ($num_users > 0) {
 

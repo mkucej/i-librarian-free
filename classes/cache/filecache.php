@@ -92,7 +92,7 @@ final class FileCache {
 
                 $expires = substr(strrchr($files[0], '_'), 1);
 
-                if ((integer) $expires > time()) {
+                if ((int) $expires > time()) {
 
                     return $this->loadContent($files[0]);
 
@@ -111,7 +111,7 @@ final class FileCache {
                 return $this->loadContent("$this->prefix{$key}_$match");
             }
 
-        } elseif (is_numeric($match) === true && (integer) $match > 1500000000) {
+        } elseif (is_numeric($match) === true && (int) $match > 1500000000) {
 
             // Modified.
 
@@ -152,7 +152,7 @@ final class FileCache {
         }
 
         // Tag type.
-        if (isset($match) === false || (is_numeric($match) === true && (integer) $match < 1500000000)) {
+        if (isset($match) === false || (is_numeric($match) === true && (int) $match < 1500000000)) {
 
             // Expires.
 
@@ -169,7 +169,7 @@ final class FileCache {
 
             return $this->saveContent($filename, $value);
 
-        } elseif (is_numeric($match) === true && (integer) $match > 1500000000) {
+        } elseif (is_numeric($match) === true && (int) $match > 1500000000) {
 
             // Modified.
 

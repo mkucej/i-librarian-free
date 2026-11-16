@@ -135,7 +135,7 @@ EOT;
         ];
 
         $this->db_main->run($sql, $columns);
-        $count = (integer) $this->db_main->getResult();
+        $count = (int) $this->db_main->getResult();
 
         return $count === 1;
     }

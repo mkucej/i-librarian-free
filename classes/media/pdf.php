@@ -1378,7 +1378,7 @@ EOT;
 
             if ($child->getName() === 'item' && isset($child['page'])) {
 
-                $this->bookmarks[] = ['title' => (string) $child, 'page' => (integer) $child['page'], 'level' => $level];
+                $this->bookmarks[] = ['title' => (string) $child, 'page' => (int) $child['page'], 'level' => $level];
 
             } elseif ($child->getName() === 'outline') {
 

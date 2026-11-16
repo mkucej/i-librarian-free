@@ -80,7 +80,7 @@ EOT;
                 if ($display_action === 'export' || is_array($display_action)) {
 
                     $columns = [
-                        (integer) $this->app_settings->getGlobal('max_items'),
+                        (int) $this->app_settings->getGlobal('max_items'),
                         0
                     ];
 
@@ -131,7 +131,7 @@ EOT;
 
                     $columns = [
                         $project_id,
-                        (integer) $this->app_settings->getGlobal('max_items'),
+                        (int) $this->app_settings->getGlobal('max_items'),
                         0
                     ];
 
@@ -161,7 +161,7 @@ EOT;
 
                     $columns = [
                         $this->user_id,
-                        (integer) $this->app_settings->getGlobal('max_items'),
+                        (int) $this->app_settings->getGlobal('max_items'),
                         0
                     ];
 
@@ -521,7 +521,7 @@ EOT;
         if ($display_action === 'export' || is_array($display_action)) {
 
             $final_columns = array_merge($columns, [
-                (integer) $this->app_settings->getGlobal('max_items'),
+                (int) $this->app_settings->getGlobal('max_items'),
                 0
             ]);
 
@@ -1095,7 +1095,7 @@ SELECT
     LIMIT ?
 EOT;
 
-        $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+        $columns[] = (int) $this->app_settings->getGlobal('max_items');
 
         // Try to get records from Cache.
         $cache->context('searches');
@@ -1281,7 +1281,7 @@ EOT;
 
         if ($display_action === 'export' || is_array($display_action)) {
 
-            $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+            $columns[] = (int) $this->app_settings->getGlobal('max_items');
             $columns[] = 0;
 
         } else {
@@ -1462,7 +1462,7 @@ EOT;
 
         if ($display_action === 'export' || is_array($display_action)) {
 
-            $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+            $columns[] = (int) $this->app_settings->getGlobal('max_items');
             $columns[] = 0;
 
         } else {
@@ -1787,7 +1787,7 @@ SELECT
     LIMIT ?
 EOT;
 
-        $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+        $columns[] = (int) $this->app_settings->getGlobal('max_items');
 
         // Try to get records from Cache.
         $cache->context('searches');
@@ -1948,7 +1948,7 @@ EOT;
         if ($display_action === 'export' || is_array($display_action)) {
 
             // Export and omnitool have max item limit.
-            $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+            $columns[] = (int) $this->app_settings->getGlobal('max_items');
             $columns[] = 0;
 
         } else {
@@ -2119,7 +2119,7 @@ EOT;
         if ($display_action === 'export' || is_array($display_action)) {
 
             // Export and omnitool have max item limit.
-            $columns[] = (integer) $this->app_settings->getGlobal('max_items');
+            $columns[] = (int) $this->app_settings->getGlobal('max_items');
             $columns[] = 0;
 
         } else {

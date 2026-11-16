@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start PHP-FPM.
-/usr/sbin/php-fpm8.1 -F &
+/usr/sbin/php-fpm8.5 -F &
 status=$?
 
 if [ $status -ne 0 ]; then

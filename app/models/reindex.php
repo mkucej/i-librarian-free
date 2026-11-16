@@ -487,7 +487,7 @@ EOT;
             $columns_ins = [
                 gzencode($text, 1),
                 '     ' . $scalar_utils->deaccent($text, false) . '     ',
-                (integer) $id
+                (int) $id
             ];
 
             $this->db_main->run($sql_ins, $columns_ins);

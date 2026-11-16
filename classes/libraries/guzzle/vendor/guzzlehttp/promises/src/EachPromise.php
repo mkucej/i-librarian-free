@@ -44,7 +44,7 @@ class EachPromise implements PromisorInterface
      *   aggregate promise that manages all of the promises. The aggregate
      *   promise may be resolved from within the callback to short-circuit
      *   the promise.
-     * - concurrency: (integer) Pass this configuration option to limit the
+     * - concurrency: (int) Pass this configuration option to limit the
      *   allowed number of outstanding concurrently executing promises,
      *   creating a capped pool of promises. There is no limit by default.
      *

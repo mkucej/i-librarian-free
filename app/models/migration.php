@@ -79,7 +79,7 @@ class MigrationModel extends AppModel {
         $this->db_library->connect();
 
         $this->db_library->run('PRAGMA user_version');
-        $version = (integer) $this->db_library->getResult();
+        $version = (int) $this->db_library->getResult();
 
         $this->db_library->close();
 
@@ -768,7 +768,7 @@ EOT;
 
                 $columns_update = [
                     $pdf_hash,
-                    (integer) $empty_id
+                    (int) $empty_id
                 ];
 
                 $this->db_main->run($sql_update_nohash, $columns_update);
@@ -954,7 +954,7 @@ EOT;
 
                 set_time_limit(30);
 
-                $id = (integer) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
+                $id = (int) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
                 $dir = IL_PDF_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id);
 
                 $this->makeDir($dir);
@@ -981,7 +981,7 @@ EOT;
 
                 set_time_limit(30);
 
-                $id = (integer) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
+                $id = (int) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
                 $dir = IL_SUPPLEMENT_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id);
 
                 $this->makeDir($dir);
@@ -1020,7 +1020,7 @@ EOT;
 
                 set_time_limit(30);
 
-                $id = (integer) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
+                $id = (int) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
                 $dir = IL_PDF_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id);
 
                 $this->makeDir($dir);
@@ -1047,7 +1047,7 @@ EOT;
 
                 set_time_limit(30);
 
-                $id = (integer) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
+                $id = (int) substr(pathinfo($file, PATHINFO_FILENAME), 0, 5);
                 $dir = IL_SUPPLEMENT_PATH . DIRECTORY_SEPARATOR . $this->getSubPath($id);
 
                 $this->makeDir($dir);

@@ -115,7 +115,7 @@ SELECT full_text
 EOT;
 
         $columns = [
-            (integer) $item_id
+            (int) $item_id
         ];
 
         $this->db_main->run($sql, $columns);
@@ -246,7 +246,7 @@ EOT;
             $columns_ins = [
                 gzencode($text, 1),
                 '     ' . $scalar_utils->deaccent($text, false) . '     ',
-                (integer) $item_id
+                (int) $item_id
             ];
 
             $this->db_main->run($sql_ins, $columns_ins);
@@ -266,7 +266,7 @@ EOT;
 
         $columns_update = [
             $pdf_hash,
-            (integer) $item_id
+            (int) $item_id
         ];
 
         $this->db_main->run($sql_update, $columns_update);
@@ -371,7 +371,7 @@ EOT;
         $columns_ins = [
             gzencode($text, 1),
             '     ' . $scalar_utils->deaccent($text, false) . '     ',
-            (integer) $item_id
+            (int) $item_id
         ];
 
         $this->db_main->run($sql_ins, $columns_ins);
@@ -1076,7 +1076,7 @@ EOT;
             $columns_ins = [
                 gzencode($text, 1),
                 '     ' . $scalar_utils->deaccent($text, false) . '     ',
-                (integer) $item_id
+                (int) $item_id
             ];
 
             $this->db_main->run($sql_ins, $columns_ins);
@@ -1131,7 +1131,7 @@ SELECT full_text
 EOT;
 
         $columns_ins = [
-            (integer) $item_id
+            (int) $item_id
         ];
 
         $this->db_main->run($sql_sel, $columns_ins);

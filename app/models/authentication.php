@@ -250,7 +250,7 @@ EOT;
 
             $this->db_main->run($sql, $columns);
 
-            $user_id = (integer) $this->db_main->lastInsertId();
+            $user_id = (int) $this->db_main->lastInsertId();
 
             // Failed.
             if ($user_id === 0) {
@@ -267,7 +267,7 @@ EOT;
                 ];
 
                 $this->db_main->run($sql, $columns);
-                $id = (integer) $this->db_main->getResult();
+                $id = (int) $this->db_main->getResult();
 
                 // Id hash already exists, try again.
                 if ($id > 0) {

@@ -139,7 +139,7 @@ EOT;
 
                 $columns_update = [
                     $pdf_hash,
-                    (integer) $empty_id
+                    (int) $empty_id
                 ];
 
                 $this->db_main->run($sql_update_nohash, $columns_update);

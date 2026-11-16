@@ -767,7 +767,7 @@ EOT;
         $el->html('Go to last page');
 
         // Disabling.
-        if ((integer) $last_page === (integer) $get['page'] || (integer) $last_page === 0) {
+        if ((int) $last_page === (int) $get['page'] || (int) $last_page === 0) {
 
             $el->elementName('button');
             $el->removeAttr('href');

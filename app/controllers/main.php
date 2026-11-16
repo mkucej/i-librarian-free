@@ -30,7 +30,7 @@ class MainController extends AppController {
         // Defaults to the registration view, if 0 accounts and not LDAP authentication.
         if ($this->app_settings->getIni('ldap', 'ldap_active') === "0") {
 
-            $num_users = (integer) $model->numUsers();
+            $num_users = (int) $model->numUsers();
 
             // Database is empty. Send registration form.
             if ($num_users === 0) {

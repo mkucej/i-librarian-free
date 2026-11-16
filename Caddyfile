@@ -3,7 +3,7 @@
 
 	file_server
 
-	php_fastcgi unix//run/php/php8.1-fpm.sock {
+	php_fastcgi unix//run/php/php8.5-fpm.sock {
 		# Forward headers.
 		header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
 		# php.ini settings

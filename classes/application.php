@@ -114,6 +114,11 @@ final class Application {
      */
     public function errorHandler(int $e_no, string $e_str, string $e_file, int $e_line) {
 
+        // Respect current error_reporting settings (e.g., ignore E_DEPRECATED)
+        if (!(error_reporting() & $e_no)) {
+            return false; 
+        }
+
         throw new ErrorException($e_str, 500, $e_no, $e_file, $e_line);
     }
 }

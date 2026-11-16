@@ -9470,7 +9470,7 @@ abstract class HTMLPurifier_URIScheme
 {
 
     /**
-     * Scheme's default port (integer). If an explicit port number is
+     * Scheme's default port (int). If an explicit port number is
      * specified that coincides with the default port, it will be
      * elided.
      * @type int
