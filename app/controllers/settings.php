@@ -80,7 +80,7 @@ class SettingsController extends AppController {
         }
 
         // Restrict icons_per_row values (it is a numeric value that could be attacked).
-        if (!in_array($this->post['settings']['icons_per_row'], [1, 2, 3, 4, 'auto'])) {
+        if (!in_array($this->post['settings']['icons_per_row'], [1, 2, 3, 4, 6, 12, 'auto'])) {
 
             throw new Exception('invalid value <kbd>Icons per row</kbd>', 422);
         }
