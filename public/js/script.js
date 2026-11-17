@@ -1405,45 +1405,6 @@ class ImageFilter {
 
 let imageFilter = new ImageFilter();
 
-let arxiv = {
-    url: 'https://export.arxiv.org/api/query?start=0&max_results=1&id_list=',
-    metadata: function (input) {
-        let output = {
-            'author_last_name': [],
-            'author_first_name': [],
-            'keywords': [],
-            'uid_types': [],
-            'uids': [],
-            'secondary_title': 'eprint'
-        }, entry = input.find('entry');
-        output.reference_type = 'article';
-        output.title = entry.children('title').text().replace(/\r?\n|\r/g, ' ') || '';
-        output.abstract = entry.children('summary').text().replace(/\r?\n|\r/g, ' ') || '';
-        let d = new Date(entry.children('published').text().replace(/\r?\n|\r/g, ' '));
-        output.publication_date = d.toISOString().substr(0, 10);
-        let doi = entry.children('arxiv\\:doi').text().replace(/\r?\n|\r/g, ' ') || '';
-        if (doi !== '') {
-            output.uid_types.push('DOI');
-            output.uids.push(doi);
-        }
-        if (entry.find('id').length === 1) {
-            output.uid_types.push('ARXIV');
-            let arxivId = entry.find('id').text().replace(/https?:\/\/arxiv\.org\/abs\//, '');
-            output.uids.push(arxivId);
-            $('.uploadable-url').val('https://arxiv.org/pdf/' + arxivId);
-        }
-        _.forEach(entry.find('name'), function (author, key) {
-            let parts = $(author).text().split(' ');
-            output.author_last_name[key] = parts.pop();
-            output.author_first_name[key] = parts.join(' ');
-        });
-        _.forEach(entry.children('category'), function (category, key) {
-            output.keywords[key] = $(category).attr('term');
-        });
-        return JSON.stringify(output);
-    }
-};
-
 /*
  * MVC.
  */
@@ -4450,8 +4411,8 @@ class ImportUidView extends View {
                         $('#upload-form').find('.reload-button').removeClass('d-none');
                     } else {
                         let item = response.items[0];
-                        $('.import-wizard-uid').html('Record found:<h5><a href="https://ieeexplore.ieee.org/document/"' + xploreid
-                            + ' target="_blank">' + item.title + '</a></h5>');
+                        $('.import-wizard-uid').html('Record found:<h5><a href="https://ieeexplore.ieee.org/document/' + xploreid
+                            + '" target="_blank">' + item.title + '</a></h5>');
                         $('#metadata').val(JSON.stringify(item));
                         $('#fetch-record').addClass('d-none');
                         $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
@@ -4461,25 +4422,23 @@ class ImportUidView extends View {
                 break;
             case 'ARXIV':
                 let arxivid = uid.replace(/arxiv:\s?/i, '');
-                $.when(model.load({url: arxiv.url + arxivid, cors: true, dataType: 'xml'})).done(function (response) {
-                    let entry = $(response).find('entry'), itemTitle = entry.children('title').text();
-                    if (itemTitle === '') {
+                $.when(model.load({
+                    url: window.IL_BASE_URL + 'index.php/arxiv/fetch',
+                    data: {uid: arxivid}
+                })).done(function (response) {
+                    if (response.items.length === 0) {
                         $('#uid-message').removeClass('d-none').addClass('d-flex');
                         $('#fetch-record').addClass('d-none');
-                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
+                        $('#upload-form').find('.reload-button').removeClass('d-none');
                     } else {
-                        $('.import-wizard-uid').html('Record found:<h5><a href="' + entry.children('id').text() + '" target="_blank">'
-                            + itemTitle + '</a></h5>');
-                        $('#metadata').val(arxiv.metadata($(response)));
+                        let item = response.items[0];
+                        $('.import-wizard-uid').html('Record found:<h5><a href="https://arxiv.org/abs/' + arxivid
+                            + '" target="_blank">' + item.title + '</a></h5>');
+                        $('#metadata').val(JSON.stringify(item));
                         $('#fetch-record').addClass('d-none');
                         $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
                         $('#phase-2').removeClass('d-none');
-                    }
-                }).fail(function (xhr) {
-                    if (xhr.status === 400) {
-                        $('#uid-message').removeClass('d-none').addClass('d-flex');
-                        $('#fetch-record').addClass('d-none');
-                        $('#upload-form').find(':submit, .reload-button').removeClass('d-none');
+                        $('.uploadable-url').val("https://arxiv.org/pdf/" + arxivid);
                     }
                 });
                 break;

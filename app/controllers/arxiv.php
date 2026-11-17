@@ -137,4 +137,28 @@ class ArxivController extends AppController {
         $view = new ExternalView($this->di);
         return $view->results("arXiv", $items, $from, $items['search_name'], $projects, $tags, $terms);
     }
+
+    /**
+     * Fetch arxiv id metadata. Used by the UID import wizard.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function fetchAction(): string {
+
+        $this->session->close();
+
+        // Authorization.
+        $this->authorization->signedId(true);
+
+        // Model.
+        $this->arxiv = $this->di->getShared('Arxiv');
+
+        // Get 10 results from $from.
+        $items = $this->arxiv->fetch($this->get['uid']);
+
+        // View.
+        $view = new DefaultView($this->di);
+        return $view->main($items ?? []);
+    }
 }
