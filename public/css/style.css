@@ -258,24 +258,66 @@ h5 {
     height: 100%;
 }
 
+.pdfviewer-highlights > div {
+    pointer-events: none;
+    backdrop-filter: none;
+    mix-blend-mode: multiply;
+}
+
+.img-night-mode .pdfviewer-highlights > div {
+    mix-blend-mode: screen;
+}
+
 .pdfviewer-highlights.underlined > div {
     background-color: transparent;
-    border-bottom-width: 4px;
+    border-bottom-width: 3px;
     border-bottom-style: solid;
     box-sizing: content-box;
-    margin-top: -2px;
+    margin-top: -1px;
 }
 
 .pdfviewer-highlights > .yellow {
-    background-color: rgba(255, 245, 0, 0.25);
+    background-color: rgba(255, 225, 0, 0.7);
 }
 
 .pdfviewer-highlights.underlined > .yellow {
-    border-bottom-color: rgba(255, 235, 0, 0.66);
+    border-bottom-color: rgba(255, 225, 0, 0.7);
 }
 
 .img-night-mode .yellow {
-    background-color: rgba(202, 202, 0, 0.25);
+    filter: brightness(0.5);
+}
+
+.img-night-mode .pdfviewer-highlights.underlined > .yellow {
+    filter: brightness(1);
+}
+
+.pdfviewer-highlights > .blue {
+    background-color: rgba(100, 150, 255, 0.5);
+}
+
+.pdfviewer-highlights.underlined > .blue {
+    border-bottom-color: rgba(50, 145, 240, 0.8);
+}
+
+.pdfviewer-highlights > .green {
+    background-color: rgba(80, 225, 110, 0.5);
+}
+
+.pdfviewer-highlights.underlined > .green {
+    border-bottom-color: rgba(60, 205, 110, 0.8);
+}
+
+.pdfviewer-highlights > .red {
+    background-color: rgba(255, 90, 110, 0.6);
+}
+
+.pdfviewer-highlights.underlined > .red {
+    border-bottom-color: rgba(255, 90, 110, 0.8);
+}
+
+.img-night-mode .red {
+    filter: brightness(0.75);
 }
 
 .highlight-yellow {
@@ -286,18 +328,6 @@ h5 {
     background-color: hsl(57, 80%, 50%);
 }
 
-.pdfviewer-highlights > .blue {
-    background-color: rgba(90, 150, 255, 0.25);
-}
-
-.pdfviewer-highlights.underlined > .blue {
-    border-bottom-color: rgba(47, 141, 237, 0.66);
-}
-
-.img-night-mode .blue {
-    background-color: rgba(83, 134, 255, 0.25);
-}
-
 .highlight-blue {
     background-color: hsl(210, 100%, 80%);
 }
@@ -306,36 +336,12 @@ h5 {
     background-color: hsl(210, 90%, 70%);
 }
 
-.pdfviewer-highlights > .green {
-    background-color: rgba(80, 225, 130, 0.25);
-}
-
-.pdfviewer-highlights.underlined > .green {
-    border-bottom-color: rgba(60, 205, 110, 0.66);
-}
-
-.img-night-mode .green {
-    background-color: rgba(100, 190, 150, 0.25);
-}
-
 .highlight-green {
     background-color: hsl(150, 60%, 70%);
 }
 
 .highlight-green:hover {
     background-color: hsl(150, 50%, 60%);
-}
-
-.pdfviewer-highlights > .red {
-    background-color: rgba(255, 100, 120, 0.25);
-}
-
-.pdfviewer-highlights.underlined > .red {
-    border-bottom-color: rgba(255, 100, 120, 0.66);
-}
-
-.img-night-mode .red {
-    background-color: rgba(255, 100, 120, 0.25);
 }
 
 .highlight-red {
