@@ -44,6 +44,11 @@ class ResetpasswordController extends AppController {
         // Authorization.
         $this->authorization->signedId(false);
 
+        if ($this->app_settings->getIni('reset_password','reset_password') !== '1') {
+
+            throw new Exception('password reset is not allowed', 403);
+        }
+
         // Model.
         $model = new AccountModel($this->di);
         $password = $model->resetPassword($this->post['username']);
