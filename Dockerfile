@@ -2,8 +2,14 @@ FROM ubuntu:26.04
 
 ARG TIMEZONE="UTC"
 ARG CADDY_VERSION="2.11.9"
+ARG TESSERACT_ALL_LANGS=false
 
-RUN apt update && \
+RUN TESS_PKG="tesseract-ocr tesseract-ocr-ell"; \
+    if [ "$TESSERACT_ALL_LANGS" = "true" ]; then \
+        TESS_PKG="tesseract-ocr-all"; \
+    fi; \
+    \
+    apt update && \
 	DEBIAN_FRONTEND=noninteractive TZ=${TIMEZONE} apt-get install -qy --no-install-recommends \
     ca-certificates \
     wget \
@@ -24,7 +30,7 @@ RUN apt update && \
     libreoffice-math \
     libreoffice-writer \
     poppler-utils \
-    tesseract-ocr && \
+    $TESS_PKG && \
     case "$(uname -m)" in \
       x86_64)  CADDY_ARCH="amd64" ;; \
       aarch64) CADDY_ARCH="arm64" ;; \

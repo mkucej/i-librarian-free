@@ -23,11 +23,18 @@ mv ilibrarian-default.ini /var/www/i-librarian-free/library/config/ilibrarian.in
 docker build -t i-librarian-free:5.11.3 - < I-Librarian-5.11.3-Linux.tar.xz
 ```
 
+If you need non-English languages for OCR:
+```bash
+docker build --build-arg TESSERACT_ALL_LANGS=true -t i-librarian-free:5.11.3 - < I-Librarian-5.11.3-Linux.tar.xz
+```
+
 ## Run container
 
 ```bash
-docker run -d --name il-free -p 127.0.0.1:9050:80 -v /var/www/i-librarian-free/library/data:/i-librarian/data \
-  -v /var/www/i-librarian-free/library/config:/i-librarian/config i-librarian-free:5.11.3
+docker run -d --name il-free -p 127.0.0.1:9050:80 \
+  -v /var/www/i-librarian-free/library/data:/i-librarian/data \
+  -v /var/www/i-librarian-free/library/config:/i-librarian/config \
+  i-librarian-free:5.11.3
 ```
 
 ## Docker compose alternative
@@ -72,4 +79,28 @@ example.com {
         reverse_proxy 127.0.0.1:9050
     }
 }
+```
+
+## Keep the image up-to-date
+
+Rebuild the image periodically to apply newest Ubuntu 26.04 security patches:
+
+```bash
+docker build --pull -t i-librarian-free:5.11.3 - < I-Librarian-5.11.3-Linux.tar.xz
+```
+
+Then tear down and restart the container:
+```bash
+docker container stop il-free
+docker container rm il-free
+docker run -d --name il-free -p 127.0.0.1:9050:80 \
+  -v /var/www/i-librarian-free/library/data:/i-librarian/data \
+  -v /var/www/i-librarian-free/library/config:/i-librarian/config \
+  i-librarian-free:5.11.3
+```
+
+Alternatively, restart container with Docker compose:
+```bash
+docker compose down
+docker compose up -d
 ```
