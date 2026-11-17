@@ -7,7 +7,7 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 /*
  * I, Librarian version.
  */
-const IL_VERSION = '5.11.3';
+const IL_VERSION = '5.11.4';
 
 /**
  * Define paths.
